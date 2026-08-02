@@ -1,0 +1,10 @@
+volet,temoin,rmse,rmse_cams,gain_pct,n
+Volet spatial · stations jamais vues,biais global,15.880795880613482,16.973541582454608,6.43793575155045,3225341
+Volet spatial · stations jamais vues,biais par mois calendaire,15.729731908329631,16.973541582454608,7.327932524174519,3225341
+Volet spatial · stations jamais vues,biais par type de station,15.883054480476819,16.973541582454608,6.424629159921558,3225341
+Volet spatial · stations jamais vues,biais par type × mois,15.733153718293405,16.973541582454608,7.307772854213179,3225341
+"Volet temporel · mois jamais vus, stations connues",biais global,15.977204046592437,16.973541582454608,5.869944884643729,3225341
+"Volet temporel · mois jamais vus, stations connues",biais par station,14.951143194313781,16.973541582454608,11.91500535298633,3225341
+"Volet temporel · mois jamais vus, stations connues",biais par station × mois calendaire,15.800985992098848,16.973541582454608,6.90813749540532,3225341
+"Volet temporel · mois jamais vus, stations connues",biais par station × heure,14.613800910338117,16.973541582454608,13.902464966744077,3225341
+référence,MOS appris,13.71339504400928,16.97354158278805,19.2072262755388,3225341

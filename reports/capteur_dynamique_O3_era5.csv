@@ -1,0 +1,2 @@
+polluant,variante,n_features,features,q1_percentile,q1_verdict,q2_constance,q2_verdict,q3_rmse_corriger,q3_rmse_abstention,q3_verdict,duree_s
+O3,era5,10,maille_lat|maille_lon|precipitation_mm|rayonnement_w_m2|temperature_c|point_rosee_c|pression_hpa|couche_limite_m|vent_direction_deg|vent_vitesse_m_s,60.53353964723299,aucun_signal,0.9,info_au_dela_cams,12.428505076070511,15.764942594477,aucune_ne_bat_corriger,60.7

@@ -1,0 +1,63 @@
+# ── Données : 62 Go, reconstituées par les scripts d'ingestion ──────────────────
+#
+# Rien de `data/` n'entre dans le dépôt. Les sources sont publiques — Copernicus ADS/CDS,
+# LCSQA, IGN, data.gouv.fr — et chaque script d'ingestion sait les retélécharger. Ce qui
+# doit être versionné, c'est la **requête** qui produit la donnée, pas la donnée.
+data/
+
+# ── Sorties volumineuses : régénérables par les scripts qui les écrivent ────────
+#
+# `reports/` contient 1,2 Go dont 300 Mo pour un seul CSV de prédictions. Les tableaux de
+# résultats (quelques kilooctets) sont versionnés ; les tables de prédictions ligne à ligne
+# ne le sont pas — elles se recalculent, et leur diff n'a aucun sens.
+reports/mos_*.csv
+reports/queue_predictions_*.csv
+reports/*_predictions.csv
+reports/log_*.txt
+reports/optuna/
+reports/figures/*.html
+
+# Journaux et traces d'exécution
+*.log
+nohup.out
+
+# ── Artefacts partiels : par construction jamais complets ──────────────────────
+#
+# Le projet écrit sous un nom provisoire puis renomme. Un `.partiel` qui traîne signale un
+# lot interrompu — il ne doit ni être versionné ni être confondu avec un artefact valide.
+*.partiel
+*.parquet.partiel
+
+# ── Python ──────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# ── Notebooks : sorties non déterministes ──────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Secrets — jamais, sous aucun prétexte ──────────────────────────────────────
+.cdsapirc
+.adsapirc
+*.key
+*.pem
+.env
+secrets.*
+
+# ── Système ─────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Sorties intermédiaires volumineuses, régénérables ──────────────────────────
+#
+# Tables ligne à ligne et rendus d'image : plusieurs mégaoctets chacun, aucun diff
+# lisible, et reproduits par les scripts qui les nomment.
+reports/calendrier_*.csv
+reports/heatmap_annuelle_*.csv
+reports/figures/rendu/

@@ -1,0 +1,13 @@
+polluant,epreuve,detecteur,seuil,n_obs,n_positifs,TP,FP,FN,TN,n_alertes,POD,POD_ic95_bas,POD_ic95_haut,SR,FAR,CSI,biais_frequence,delta_csi_bas,delta_csi_haut
+NO2,double aveugle,cams_seuil,200.0,115833,0,0,0,0,115833,0,,,,,,,,,
+NO2,double aveugle,mos_seuil,200.0,115833,0,0,0,0,115833,0,,,,,,,,,
+NO2,double aveugle,cams_budget,200.0,115833,0,0,0,0,115833,0,,,,,,,,,
+NO2,double aveugle,mos_budget,200.0,115833,0,0,0,0,115833,0,,,,,,,,,
+NO2,spatiale,cams_seuil,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0
+NO2,spatiale,mos_seuil,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0
+NO2,spatiale,cams_budget,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0
+NO2,spatiale,mos_budget,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0
+NO2,temporelle,cams_seuil,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0
+NO2,temporelle,mos_seuil,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0
+NO2,temporelle,cams_budget,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0
+NO2,temporelle,mos_budget,200.0,347093,6,0,0,6,347087,0,0.0,0.0,0.3903430336530645,,,0.0,0.0,0.0,0.0

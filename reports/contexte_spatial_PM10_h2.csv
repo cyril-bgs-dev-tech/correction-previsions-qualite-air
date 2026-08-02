@@ -1,0 +1,3 @@
+polluant,horizon,variante,gain_rmse_pct,rang_moyen_depassements,detections_au_budget,n_depassements,n
+PM10,2,sans contexte,22.54086430530613,0.8722536700748497,120,443,88803
+PM10,2,AVEC contexte spatial,23.09764868662103,0.8717219683948508,115,443,88803

@@ -1,0 +1,944 @@
+#!/usr/bin/env python3
+"""Le tableau unique du dossier — une seule source de chiffres, régénérable.
+
+Pourquoi ce script existe
+-------------------------
+Le dossier a porté successivement des chiffres mesurés sur 11 mois, sur 17 mois, puis sur
+l'année 2024 complète. Les trois sont exacts ; ils ne sont pas comparables, et ils coexistent
+aujourd'hui dans la présentation, les figures et la démo. Un lecteur qui trouve deux valeurs
+différentes du même gain à deux pages d'écart cesse de croire les deux.
+
+Ce script produit **le** tableau — celui dont toute figure, toute slide et toute phrase du
+dossier doivent dériver. Il ne calcule rien de neuf : il assemble des rapports déjà produits,
+en nommant pour chacun sa fenêtre, son effectif et son grain. Tout chiffre du dossier absent
+d'ici est un chiffre à retirer ou à re-mesurer.
+
+Ce qu'il refuse de faire
+------------------------
+Aucune moyenne entre fenêtres, aucun « environ ». La ventilation saisonnière de l'ozone est
+**obligatoire** : sur l'année, le MOS officiel affiche +2,0 % qui sont la somme de −19,1 % en
+saison et +18,7 % hors saison. Une moyenne qui change de signe selon la découpe n'est pas un
+résultat, c'est un artefact d'agrégation — et il vaut dans les deux sens, y compris contre
+nous : notre avantage aussi est plus faible en saison.
+
+Usage : python3 scripts/verite_dossier.py
+Sortie : reports/VERITE_DOSSIER.md + reports/verite_dossier.csv
+"""
+
+from __future__ import annotations
+
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+RACINE = Path(__file__).resolve().parents[1]
+
+GRAIN_REGLEMENTAIRE = {"O3": "max_8h", "NO2": "max_horaire", "PM25": "moyenne_jour"}
+LIBELLE_GRAIN = {"horaire": "horaire", "max_8h": "max glissant 8 h",
+                 "max_horaire": "max horaire", "moyenne_jour": "moyenne journalière"}
+NOM = {"O3": "O₃", "NO2": "NO₂", "PM25": "PM2,5", "PM10": "PM10"}
+
+
+def _pondere(sous: pd.DataFrame) -> dict[str, float]:
+    """RMSE agrégée sur plusieurs mois — **quadratique**, jamais linéaire.
+
+    Une RMSE est la racine d'une moyenne de carrés. L'agréger sur des mois se fait donc
+    par ``√(Σ nₘ·RMSEₘ² / Σ nₘ)`` et non par ``average(RMSEₘ, weights=nₘ)`` : la moyenne
+    linéaire d'une racine sous-estime systématiquement la racine de la moyenne (Jensen),
+    d'autant plus que les mois sont dispersés.
+
+    **Le défaut que cette fonction corrige.** Elle faisait exactement cette moyenne linéaire,
+    et tous les chiffres du dossier en dépendaient. Un audit externe l'a trouvé le 31/07/2026.
+    L'erreur va jusqu'à **0,38 µg/m³** sur les PM2,5 journalières — et elle est plus grande
+    sur CAMS brut que sur les produits corrigés, puisque la correction resserre justement la
+    dispersion mensuelle. Elle **sous-estimait donc nos propres gains**.
+
+    Le biais, lui, se moyenne bien linéairement : il n'est pas une racine.
+    """
+    n = sous["n"].to_numpy(dtype="float64")
+    return {k: float(np.sqrt(np.sum(n * sous[f"rmse_{k}"].to_numpy() ** 2) / n.sum()))
+            for k in ("brut", "officiel", "nous")}
+
+
+def bloc_double_aveugle(lignes: list[dict]) -> str:
+    """Le chiffre de déploiement — station ET mois cachés. À lire AVANT tout le reste.
+
+    Ce bloc est en tête parce que l'ordre de lecture décide de la crédibilité : publier le
+    chiffre honnête d'abord rend le chiffre flatteur crédible ; dans l'autre ordre, il devient
+    suspect, et un jury le retourne.
+    """
+    chemins = {p: RACINE / f"reports/double_aveugle_journalier_{p}.csv"
+               for p in ("NO2", "PM10", "PM25", "O3")}
+    presents = {p: c for p, c in chemins.items() if c.exists()}
+    if not presents:
+        return ""
+    texte = [
+        "## 0. Le chiffre de déploiement — station **et** mois cachés ensemble\n",
+        "Tous les chiffres de ce document portent sur l'axe **spatial** : stations exclues, "
+        "dates connues. Ce n'est pas la condition d'un déploiement, qui demande de prédire "
+        "**demain**, à un endroit **pas vu**. Le tableau ci-dessous cache les deux à la "
+        "fois.\n",
+        "| polluant | spatial | temporel | **double aveugle** | σ | pire pli |",
+        "|---|---|---|---|---|---|"]
+    for polluant, chemin in presents.items():
+        t = pd.read_csv(chemin)
+        t = t[t["reglage"] == "défaut"].set_index("epreuve")
+        if "double aveugle" not in t.index:
+            continue
+        d = t.loc["double aveugle"]
+        gras = "**" if polluant == "NO2" else ""
+        texte.append(
+            f"| {gras}{NOM[polluant]}{gras} | {t.loc['spatiale', 'gain_pct']:+.2f} % | "
+            f"{t.loc['temporelle', 'gain_pct']:+.2f} % | **{d['gain_pct']:+.2f} %** | "
+            f"{d['ecart_type']:.1f} | {d['gain_min']:+.1f} |")
+        lignes.append({"bloc": "double aveugle", "polluant": polluant,
+                       "grain": "max/moyenne jour", "n": int(d["n_plis"]),
+                       "gain": float("nan"), "relatif_pct": d["gain_pct"]})
+    texte.append(
+        "\n**Un seul polluant sur quatre généralise en conditions de déploiement**, et c'est "
+        "celui dont le résidu est **attaché au site** : un décalage de lieu se transporte "
+        "d'un mois à l'autre sans rien réapprendre, ce que la typologie de station confirme "
+        "par ailleurs. Les trois autres — O₃, PM2,5, PM10 — se groupent entre +3 et +7,5 % "
+        "avec un écart-type de 12 à 15. Leur ordre va dans le sens d'une composante locale "
+        "décroissante, mais **l'écart total est trois fois plus petit que leur dispersion** : "
+        "ne pas conclure dessus.\n"
+        "\n⚠️ **Et la capacité du modèle dégrade cet axe.** Sur l'ozone, quatre "
+        "configurations, du réglage de production au meilleur candidat d'une étude Optuna de "
+        "201 essais : +3,31 % à 400 arbres, +0,46 % à 900, +0,11 % à 3 700, **−1,07 %** à "
+        "3 000 mal régularisés. Aucun réglage ne bat la production sur l'axe qui compte, et "
+        "un réglage optimisé sur la validation **spatiale** est suspect par construction.\n"
+        "\n> **Formulation défendable** : « +24,1 % en validation spatiale sur l'ozone ; "
+        "**+3,3 % quand la station et le mois sont cachés ensemble**, ce qui est la condition "
+        "de déploiement. Sur le NO₂ les deux chiffres sont +31,6 % et **+25,7 %**. »\n")
+    return "\n".join(texte)
+
+
+def bloc_annee(lignes: list[dict]) -> str:
+    """FR 2024 complète, les trois polluants, les deux grains."""
+    texte = ["## 1. France, 18 janvier – 31 décembre 2024 — contre le produit officiel\n",
+             "**Périmètre : usage A — aux stations instrumentées, axe spatial.** Les "
+             "prédicteurs comprennent les observations passées de la station, qui n'existent "
+             "pas là où rien ne mesure. Pour l'usage B, voir § 7 ; pour l'axe de déploiement, "
+             "voir § 0.\n",
+             "Comparaison à `cams-europe-air-quality-forecasts-optimised-at-observation-sites`, "
+             "sur les **mêmes** stations et les **mêmes** jours. RMSE en µg/m³.\n",
+             "⚠️ **La fenêtre n'est pas l'année civile** : le produit officiel ne commence "
+             "qu'au **18/01/2024** — vérifié dans les archives, pas déduit du catalogue. "
+             "Écrire « année 2024 complète » est faux.\n",
+             "| polluant | grain | n | CAMS brut | MOS officiel | nous |",
+             "|---|---|---|---|---|---|"]
+    for polluant in ("O3", "NO2", "PM25"):
+        chemin = RACINE / f"reports/comparaison_mos_officiel_annee_{polluant}.csv"
+        if not chemin.exists():
+            texte.append(f"| {NOM[polluant]} | — | *rapport absent* | | | |")
+            continue
+        table = pd.read_csv(chemin)
+        for grain in ("horaire", GRAIN_REGLEMENTAIRE[polluant]):
+            sous = table[table["grain"] == grain]
+            if sous.empty:
+                continue
+            m = _pondere(sous)
+            reglementaire = grain != "horaire"
+            etiquette = (f"**{LIBELLE_GRAIN[grain]}**" if reglementaire
+                         else LIBELLE_GRAIN[grain])
+            texte.append(
+                f"| {NOM[polluant]} | {etiquette} | {int(sous['n'].sum()):,} | "
+                f"{m['brut']:.2f} | {m['officiel']:.2f} "
+                f"({100 * (1 - m['officiel'] / m['brut']):+.1f} %) | "
+                f"{m['nous']:.2f} ({100 * (1 - m['nous'] / m['brut']):+.1f} %) |")
+            lignes.append({"bloc": "FR 2024", "polluant": polluant, "grain": grain,
+                           "n": int(sous["n"].sum()), **m})
+    texte.append("\nLe grain marqué en gras est celui sur lequel porte le **seuil "
+                 "réglementaire** du polluant.\n")
+    return "\n".join(texte)
+
+
+def bloc_saison(lignes: list[dict]) -> str:
+    """La ventilation qui interdit de citer la moyenne annuelle de l'ozone."""
+    chemin = RACINE / "reports/comparaison_mos_officiel_annee_O3.csv"
+    if not chemin.exists():
+        return ""
+    table = pd.read_csv(chemin)
+    r = table[table["grain"] == "max_8h"].copy()
+    r["m"] = r["mois"] % 100
+    saison = r["m"].between(4, 9)
+
+    texte = ["## 2. Ozone — la moyenne annuelle masque un changement de signe\n",
+             "La fenêtre d'évaluation de l'ozone au référentiel LCSQA est **avril-septembre**. "
+             "Sur cette fenêtre, le produit officiel se comporte à l'inverse de sa moyenne "
+             "annuelle.\n",
+             "| fenêtre | n | CAMS brut | MOS officiel | nous |", "|---|---|---|---|---|"]
+    for nom, sel in (("année entière", r["m"] > 0),
+                     ("**saison ozone, avril-septembre**", saison),
+                     ("hors saison, octobre-mars", ~saison)):
+        sous = r[sel]
+        m = _pondere(sous)
+        texte.append(f"| {nom} | {int(sous['n'].sum()):,} | {m['brut']:.2f} | "
+                     f"{m['officiel']:.2f} ({100 * (1 - m['officiel'] / m['brut']):+.1f} %) | "
+                     f"{m['nous']:.2f} ({100 * (1 - m['nous'] / m['brut']):+.1f} %) |")
+        lignes.append({"bloc": "saison O3", "polluant": "O3", "grain": nom,
+                       "n": int(sous["n"].sum()), **m})
+
+    pire = r.loc[(r["rmse_officiel"] / r["rmse_brut"]).idxmax()]
+    degrade = int((r["rmse_officiel"] > r["rmse_brut"]).sum())
+    texte.append(
+        f"\nLe produit officiel dégrade le brut **{degrade} mois sur 12**, au pire en "
+        f"{int(pire['mois']) % 100:02d}/{int(pire['mois']) // 100} "
+        f"({100 * (1 - pire['rmse_officiel'] / pire['rmse_brut']):+.1f} %). Son biais est "
+        f"négatif chaque mois — il sous-estime, ce qui pénalise mécaniquement un maximum.\n"
+        f"\n**Et la même lecture nous vise** : notre avantage est le plus faible précisément "
+        f"en saison. Citer notre gain annuel sans cette ventilation reproduirait l'erreur que "
+        f"nous reprochons à la moyenne annuelle du produit officiel.\n")
+    return "\n".join(texte)
+
+
+def bloc_horsechantillon(lignes: list[dict]) -> str:
+    """Le seul test réellement hors fenêtre d'apprentissage."""
+    detail = RACINE / "reports/test_hors_echantillon_2025_detail_O3.csv"
+    seuils = RACINE / "reports/seuil_decision_O3.csv"
+    if not (detail.exists() and seuils.exists()):
+        return ""
+    d = pd.read_csv(detail)
+    s = pd.read_csv(seuils)
+    n_dep = int((d["obs_jour"] >= 120).sum())
+
+    texte = [
+        "## 3. Hors fenêtre d'apprentissage — Occitanie, 1ᵉʳ semestre 2025\n",
+        f"Modèle appris jusqu'au **31/12/2024**, appliqué à une période qu'il n'a jamais vue. "
+        f"{len(d):,} jours-station · {d['station_id'].nunique()} stations occitanes · "
+        f"**{n_dep} dépassements** observés de 120 µg/m³.\n",
+        "C'est le seul test sans fuite possible — ni de station, ni de période. "
+        "Son effectif est petit : un écart faible n'y serait pas concluant.\n",
+        "| produit | seuil de décision | POD | FAR | CSI |", "|---|---|---|---|---|"]
+    for _, ligne in s.iterrows():
+        texte.append(
+            f"| {ligne['produit']} | 120 (réglementaire) | {ligne['brut_POD']:.3f} | "
+            f"{ligne['brut_FAR']:.3f} | {ligne['brut_CSI']:.3f} |")
+    texte.append("| | | | | |")
+    for _, ligne in s.iterrows():
+        texte.append(
+            f"| {ligne['produit']} | **{ligne['seuil_calibre']:.1f}** (calibré sur 2024) | "
+            f"{ligne['calibre_POD']:.3f} | {ligne['calibre_FAR']:.3f} | "
+            f"{ligne['calibre_CSI']:.3f} |")
+        lignes.append({"bloc": "hors échantillon 2025", "polluant": "O3",
+                       "grain": ligne["produit"], "n": len(d),
+                       "POD": ligne["calibre_POD"], "FAR": ligne["calibre_FAR"],
+                       "CSI": ligne["calibre_CSI"]})
+
+    texte.append(
+        "\nLe seuil est cherché sur 2024 puis appliqué à 2025 **sans réajustement**, pour les "
+        "trois produits également. Au seuil réglementaire brut, notre POD tombe à 0,239 : "
+        "c'est un **artefact de calibration**, pas une incapacité — la régression écrase les "
+        "extrêmes, l'ordre des jours est conservé mais le franchissement du seuil se perd.\n")
+
+    ic = RACINE / "reports/intervalles_2025_O3.csv"
+    if ic.exists():
+        t = pd.read_csv(ic)
+        texte += [
+            "\n### Ce que cet échantillon autorise à dire\n",
+            "21 stations et 163 dépassements, avec des jours corrélés au sein d'une station "
+            "et d'une région : les écarts ci-dessus n'ont de sens qu'assortis d'un "
+            "intervalle. Bootstrap apparié par blocs sur les **deux** axes — stations et "
+            "blocs calendaires — à **trois** longueurs de bloc (3, 7 et 14 jours), 2 000 "
+            "tirages. Une conclusion qui ne survivrait qu'à une longueur serait un artefact "
+            "du découpage.\n",
+            "| comparaison | écart | IC95 (blocs de 7 j) | verdict |", "|---|---|---|---|"]
+        for (metrique, contre), g in t.groupby(["metrique", "contre"], sort=False):
+            sept = g[g["bloc_jours"] == 7].iloc[0]
+            n_ok = int(g["concluant"].sum())
+            verdict = ("**concluant** aux 3 longueurs" if n_ok == len(g)
+                       else f"instable ({n_ok}/{len(g)}) — descriptif" if n_ok
+                       else "non concluant")
+            texte.append(f"| {metrique.upper()} : nous − {contre} | {sept['ecart']:+.3f} | "
+                         f"[{sept['ic_bas']:+.3f} ; {sept['ic_haut']:+.3f}] | {verdict} |")
+        texte.append(
+            "\n**Une seule comparaison survit** : notre RMSE est inférieur à celui du MOS "
+            "officiel de **3,22 µg/m³**, IC95 [−4,87 ; −1,74], aux trois longueurs de bloc.\n"
+            "\nTout le reste est **descriptif**, et cela coupe dans les deux sens : notre "
+            "avantage en CSI (+0,107) n'est pas démontré, mais l'avantage du produit officiel "
+            "en POD (−0,147 pour nous) ne l'est pas davantage, et notre avance sur le CAMS "
+            "brut en 2025 (−0,71 µg/m³) non plus.\n"
+            "\n⚠️ **Formulation imposée pour ce bloc** : « sur cet échantillon, les "
+            "estimations ponctuelles indiquent… ». Ne jamais écrire que nous détectons mieux "
+            "que le produit officiel en 2025 — l'intervalle ne le permet pas. Le seul énoncé "
+            "ferme est celui du RMSE.\n")
+    return "\n".join(texte)
+
+
+def bloc_factoriel(lignes: list[dict]) -> str:
+    """L'expérience contrôlée : seule la cible change."""
+    texte = [
+        "## 4. L'expérience contrôlée — seule la cible change\n",
+        "Les blocs précédents comparent deux **produits** qui diffèrent par le grain, les "
+        "variables, l'historique et l'algorithme à la fois : ils établissent une association, "
+        "pas un effet. L'expérience ci-dessous ne fait varier que la **cible d'apprentissage** "
+        "— même modèle, mêmes lignes, mêmes plis par stations exclues, mêmes prédicteurs.\n",
+        "| polluant | grain réglementaire | horaire corrigé puis agrégé | cible directe | "
+        "écart |", "|---|---|---|---|---|"]
+    for polluant in ("O3", "NO2", "PM25"):
+        chemin = RACINE / f"reports/cible_journaliere_{polluant}.csv"
+        if not chemin.exists():
+            continue
+        t = pd.read_csv(chemin).set_index("voie")
+        a = float(t.loc["horaire agrégée", "gain_pct"])
+        b = float(t.loc["cible du jour, directe", "gain_pct"])
+        nature = "**moyenne**" if polluant == "PM25" else "**maximum**"
+        texte.append(f"| {NOM[polluant]} | {LIBELLE_GRAIN[GRAIN_REGLEMENTAIRE[polluant]]} "
+                     f"({nature}) | {a:+.2f} % | {b:+.2f} % | **{b - a:+.1f} pts** |")
+        lignes.append({"bloc": "factoriel cible", "polluant": polluant,
+                       "grain": "horaire agrégé vs direct", "n": int(t["n_jours"].iloc[0]),
+                       "gain_agrege": a, "gain_direct": b, "ecart_points": b - a})
+    texte.append(
+        "\n**Le signe s'inverse sur PM2,5**, et c'est ce qui distingue cette mesure d'une "
+        "corrélation. Le mécanisme invoqué est qu'une correction horaire réduit la "
+        "variabilité : cela pénalise une **statistique d'ordre** — un maximum — mais pas une "
+        "**tendance centrale**. PM2,5 est le seul des trois dont le grain réglementaire est "
+        "une moyenne. Le mécanisme prédit qu'il n'y gagne rien ; il n'y gagne rien.\n"
+        "\n### Antériorité — à citer, pas à revendiquer\n"
+        "\nBertrand, Meleux, Ung, Descombes & Colette (2023), *Technical note: Improving the "
+        "European air quality forecast of CAMS using machine learning techniques*, ACP 23, "
+        "5317 ([doi:10.5194/acp-23-5317-2023](https://doi.org/10.5194/acp-23-5317-2023)) — "
+        "**l'article qui décrit le produit officiel, écrit par ses auteurs** — rapporte "
+        "**20,5 %** de gain en agrégeant une correction horaire contre **32,8 %** en "
+        "apprenant directement le maximum journalier, et recommande explicitement « *using "
+        "daily MOS instead of hourly MOS if performances must be optimized for the daily max "
+        "statistics* ». Il couvre les quatre polluants, cibles en moyenne journalière "
+        "comprises.\n"
+        "\nLe tableau ci-dessus est donc une **réplication indépendante** — autre algorithme "
+        "(boosting contre forêt aléatoire), autre période, autre domaine — et non une "
+        "découverte. Ne jamais présenter l'effet de grain comme un résultat propre au "
+        "projet.\n"
+        "\n**Ce qui reste propre au projet**, une fois Bertrand retiré :\n"
+        "\n1. la mesure de ce que le produit **réellement distribué** délivre sur le grain "
+        "réglementaire, par opposition à ce que son article établit comme possible ;\n"
+        "2. le **renversement saisonnier** du bloc 2, qu'une moyenne annuelle annule ;\n"
+        "3. le test **hors fenêtre 2025** avec seuils recalibrés à l'identique.\n"
+        "\nC'est un travail de vérification et de caractérisation opérationnelle. C'est moins "
+        "qu'une découverte, et c'est exactement le geste attendu d'un service : mesurer ce "
+        "qu'un produit rend sur le grain qui décide, et dire s'il faut le brancher.\n")
+    return "\n".join(texte)
+
+
+def bloc_mqi(lignes: list[dict]) -> str:
+    """La conformité FAIRMODE, au temps d'agrégation que le référentiel impose."""
+    chemin = RACINE / "reports/mqi_bon_grain.csv"
+    if not chemin.exists():
+        return ""
+    t = pd.read_csv(chemin)
+    libelles = {"max_8h": "max journalier 8 h", "horaire": "horaire",
+                "moyenne_jour": "moyenne journalière"}
+    texte = [
+        "## 5. Conformité FAIRMODE\n",
+        "MQI au sens de JRC120649 v3.2 (DOI 10.2760/30226), formule `RMSE / (β · RMS_U)`, "
+        "β = 2, conformité à **MQI ≤ 1**. Le temps d'agrégation est celui que le tableau 6 "
+        "impose **par polluant** — et non l'horaire pour les trois, comme le dossier le "
+        "faisait auparavant.\n",
+        "| polluant | grain imposé | n | MQI CAMS brut | MQI correction | *(MQI horaire, "
+        "hors cadre)* |", "|---|---|---|---|---|---|"]
+    for _, r in t.iterrows():
+        texte.append(
+            f"| {NOM[r['polluant']]} | {libelles[r['grain_fairmode']]} | {int(r['n']):,} | "
+            f"{r['mqi_cams']:.3f} | **{r['mqi_nous']:.3f}** | "
+            f"{r['mqi_horaire_cams']:.3f} / {r['mqi_horaire_nous']:.3f} |")
+        lignes.append({"bloc": "MQI FAIRMODE", "polluant": r["polluant"],
+                       "grain": r["grain_fairmode"], "n": int(r["n"]),
+                       "mqi_cams": r["mqi_cams"], "mqi_nous": r["mqi_nous"]})
+    texte.append(
+        "\nLes six valeurs agrégées sont conformes, avec une marge large. **Aucun produit ne "
+        "change de côté du seuil** entre les deux grains : l'énoncé de conformité déjà publié "
+        "tenait, seul le chiffre cité était le mauvais.\n"
+        "\n⚠️ **Mais l'agrégat masque une non-conformité sur le NO₂.** Station par station "
+        "(842 couples mesurés) : **100 %** des stations conformes en O₃ et en PM2,5, mais "
+        "**98,5 %** seulement en NO₂ — pire MQI **1,24**, et 95 % de conformité sur les "
+        "stations **trafic**. Le MQI national ne doit donc pas être cité comme une conformité "
+        "station par station pour le NO₂ ; c'est exactement la compensation entre cas faciles "
+        "et difficiles qu'un agrégat peut cacher.\n"
+        "\nLe MQI horaire était **pessimiste** — l'agrégation journalière réduit la variance "
+        "de l'erreur davantage que celle de l'incertitude de mesure, qui dépend surtout du "
+        "niveau observé. L'erreur jouait donc contre nous, ce qui explique qu'elle n'ait rien "
+        "déclenché. Elle rendait néanmoins l'énoncé infondé, et un jury FAIRMODE l'aurait "
+        "vue.\n"
+        "\n**Deux paramètres à connaître si la question vient** : l'α de PM2,5 vaut **0,30** "
+        "et celui de PM10 **0,13** — les intervertir sur-estime le MQI de PM2,5 de 2 à 20 %, "
+        "et c'est une erreur qui a été commise dans ce projet puis corrigée. La v4.0 du "
+        "référentiel (mai 2026) refond les β par polluant ; les chiffres ci-dessus sont en "
+        "**v3.2**, et le dossier le dit plutôt que de laisser deviner.\n")
+    return "\n".join(texte)
+
+
+def bloc_meteo(lignes: list[dict]) -> str:
+    """Ce que le modèle se refuse — mesuré, et à ne jamais citer comme un gain."""
+    presents = [p for p in ("O3", "NO2", "PM25")
+                if (RACINE / f"reports/apport_meteo_{p}.csv").exists()]
+    if not presents:
+        return ""
+    texte = [
+        "## 6. Le plafond de la météo — ce que le modèle se refuse\n",
+        "Le modèle évalué dans tout ce document n'utilise **aucune variable "
+        "météorologique** : ses 53 prédicteurs sont tous disponibles à l'heure d'émission. "
+        "Le tableau ci-dessous mesure ce que coûte ce choix, en ajoutant les variables ERA5 "
+        "au même protocole — mêmes plis par stations exclues, mêmes hyperparamètres.\n",
+        "| polluant | RMSE base | gain | relatif | IC95 (bootstrap de stations) | décile "
+        "haut |", "|---|---|---|---|---|---|"]
+    for polluant in presents:
+        t = pd.read_csv(RACINE / f"reports/apport_meteo_{polluant}.csv", index_col=0)
+        ic = pd.read_csv(RACINE / f"reports/apport_meteo_{polluant}_ic.csv")
+        r = ic[ic["jeu"].str.contains("enrichie")].iloc[0]
+        base = float(t.loc["base (actuel)", "rmse"])
+        texte.append(
+            f"| {NOM[polluant]} | {base:.3f} | **+{r['gain']:.3f}** | "
+            f"**+{100 * r['gain'] / base:.1f} %** | [{r['ic_bas']:+.3f} ; "
+            f"{r['ic_haut']:+.3f}] | {r['cout_queue']:+.2f} *(meilleur)* |")
+        lignes.append({"bloc": "plafond météo", "polluant": polluant, "grain": "max_8h",
+                       "n": 0, "gain": r["gain"], "relatif_pct": 100 * r["gain"] / base})
+    texte.append(
+        "\nLes trois intervalles sont strictement positifs et **le décile haut s'améliore "
+        "partout** : il n'y a pas d'arbitrage entre erreur moyenne et épisodes, ce qui est "
+        "rare dans ce projet.\n"
+        "\n⚠️ **C'est un plafond, jamais un gain.** ERA5 est une **réanalyse** : elle n'existe "
+        "pas à l'heure d'émission. Une chaîne opérationnelle emploierait les prévisions IFS et "
+        "en récupérerait une part inconnue, décroissante avec l'échéance. Ne jamais citer ces "
+        "chiffres comme une performance du modèle — ils mesurent ce dont il se prive pour "
+        "rester opérationnellement propre.\n"
+        "\n### Un défaut de notre propre critère d'arrêt\n"
+        "\nLe critère du projet — « retenir si le gain atteint **0,3 µg/m³** » — est en unités "
+        "**absolues**, appliqué à des polluants dont le RMSE varie d'un facteur 5. Pour PM2,5 "
+        "(RMSE ≈ 3) ce seuil vaut 10 % ; pour NO₂ (RMSE ≈ 15) il vaut 2 %. Il **écarte** donc "
+        "PM2,5 à +6,7 % relatifs tout en **retenant** NO₂ à +2,7 %.\n"
+        "\nCe n'est pas un arbitrage scientifique, c'est un artefact d'unité. Le critère doit "
+        "devenir relatif, ou être fixé par polluant. Le défaut n'est apparu que parce que la "
+        "mesure a porté sur les trois polluants à la fois.\n")
+    return "\n".join(texte)
+
+
+def bloc_perimetres(lignes: list[dict]) -> str:
+    """Les deux usages, qui n'ont ni les mêmes entrées ni la même revendication."""
+    presents = [p for p in ("O3", "NO2", "PM25")
+                if (RACINE / f"reports/apport_observation_veille_{p}_ic.csv").exists()]
+    if not presents:
+        return ""
+    texte = [
+        "## 7. Deux périmètres, et il ne faut jamais citer l'un pour l'autre\n",
+        "Une observation passée n'existe **qu'aux stations instrumentées**. L'ajouter aux "
+        "prédicteurs scinde le projet en deux usages qui n'ont ni les mêmes entrées ni la même "
+        "revendication.\n",
+        "| usage | entrées | ce qu'on peut prétendre |",
+        "|---|---|---|",
+        "| **A — corriger aux stations** | + observations à J−2 | comparable au MOS officiel "
+        "**sur son terrain**, qui les utilise aussi |",
+        "| **B — prédire là où rien ne mesure** | sans | **la seule revendication propre du "
+        "projet** |\n",
+        "Règle de disponibilité retenue, volontairement conservatrice : **rien de plus récent "
+        "que la fin de J−2**, soit au moins 24 h de marge sur l'heure d'émission. Plus strict "
+        "que le produit officiel ; si le gain existe sous cette contrainte, il existe *a "
+        "fortiori* sous une règle plus permissive. Couverture **97,7 à 98,5 %**, fraîcheur "
+        "médiane 2 jours.\n",
+        "| polluant | usage B (sans) | usage A (avec) | gain | relatif | IC95 | décile haut |",
+        "|---|---|---|---|---|---|---|"]
+    for polluant in presents:
+        t = pd.read_csv(RACINE / f"reports/apport_observation_veille_{polluant}.csv",
+                        index_col=0)
+        ic = pd.read_csv(RACINE / f"reports/apport_observation_veille_{polluant}_ic.csv").iloc[0]
+        b = t.loc["B — sans observation"]
+        a = t.loc["A — avec observations passées"]
+        texte.append(
+            f"| {NOM[polluant]} | {b['rmse']:.3f} | **{a['rmse']:.3f}** | "
+            f"+{ic['gain']:.3f} | **+{ic['relatif_pct']:.1f} %** | "
+            f"[{ic['ic_bas']:+.3f} ; {ic['ic_haut']:+.3f}] | "
+            f"{a['rmse_decile_haut'] - b['rmse_decile_haut']:+.2f} |")
+        lignes.append({"bloc": "périmètres", "polluant": polluant, "grain": "max/moyenne jour",
+                       "n": 0, "gain": ic["gain"], "relatif_pct": ic["relatif_pct"]})
+    texte.append(
+        "\nLes trois intervalles sont strictement positifs et **le décile haut s'améliore "
+        "partout**. Sur le NO₂ le gain atteint **+21,9 %**, et la queue s'améliore de "
+        "5,5 µg/m³ — cohérent avec un polluant dominé par des sources très locales que CAMS "
+        "résout mal à 8 × 11 km.\n"
+        "\n**C'est le plus fort levier mesuré du projet, et le seul qui soit déployable** : il "
+        "ne demande aucune réanalyse, aucun téléchargement, et le MOS officiel de Copernicus "
+        "s'en sert déjà — sa documentation le dit.\n"
+        "\n### L'erreur de raisonnement que cela corrige\n"
+        "\nLe projet excluait les observations récentes **au même titre** que la météo de "
+        "réanalyse. Ce n'est pas le même argument : ERA5 décrit le présent depuis le futur, la "
+        "mesure d'avant-hier est publiée. Une prudence appliquée par **analogie** plutôt que "
+        "par examen a coûté ce levier pendant tout le projet — et elle ne levait aucune erreur, "
+        "une entrée exclue à tort étant invisible.\n"
+        "\n### Ce que cela répare dans la comparaison au produit officiel\n"
+        "\nElle était **asymétrique dans les deux sens** : à notre avantage sur le grain — nous "
+        "apprenons la grandeur réglementaire, eux l'horaire — et à notre désavantage sur les "
+        "entrées, puisqu'ils avaient les observations récentes et nous pas. L'usage A permet "
+        "enfin la comparaison à armes égales.\n")
+    return "\n".join(texte)
+
+
+def bloc_detection(lignes: list[dict]) -> str:
+    """Le rappel à budget de fausses alertes imposé — la comparaison qu'un service utilise."""
+    chemin = RACINE / "reports/detection_maximale_O3.csv"
+    hors = RACINE / "reports/detection_2025_O3.csv"
+    if not chemin.exists():
+        return ""
+    t = pd.read_csv(chemin)
+    texte = [
+        "## 8. Détection — à budget de fausses alertes égal\n",
+        "Un service ne choisit pas un seuil pour maximiser un score : il subit un **budget de "
+        "fausses alertes**, au-delà duquel une alerte cesse d'être écoutée. La comparaison "
+        "utile est donc *à taux de fausse alerte fixé, qui rappelle le plus ?* — et non « qui "
+        "a le meilleur score à son propre seuil optimal ».\n",
+        "Le point de fonctionnement est choisi **hors échantillon**, sur d'autres stations que "
+        "celles évaluées.\n",
+        "| budget | CAMS brut | correction | **correction + obs. passées** |",
+        "|---|---|---|---|"]
+    for budget in sorted(t["budget"].unique()):
+        s = t[t["budget"] == budget].set_index("produit")["POD"]
+        def _v(k):
+            v = s.get(k)
+            return f"{v:.3f}" if pd.notna(v) else "*inatteignable*"
+        texte.append(f"| ≤ {budget:.0%} | {_v('CAMS brut')} | {_v('régression')} | "
+                     f"**{_v('régression + obs')}** |")
+        lignes.append({"bloc": "détection", "polluant": "O3", "grain": f"FAR<={budget}",
+                       "n": 0, "pod_brut": s.get("CAMS brut"),
+                       "pod_corrige": s.get("régression + obs")})
+    texte.append(
+        "\n**À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois plus de dépassements "
+        "réels détectés.** À 20 %, 6,6 fois. Et CAMS brut n'atteint jamais 10 % : quel que "
+        "soit son seuil, son taux de fausse alerte reste au-dessus.\n")
+
+    if hors.exists():
+        texte += [
+            "### Le facteur se reproduit hors fenêtre d'apprentissage\n",
+            "Modèle appris jusqu'au 31/12/2024, **seuils calibrés sur 2024**, appliqués en "
+            "aveugle au 1ᵉʳ semestre 2025.\n",
+            "| budget | 17 mois appris | 2025, jamais vu |", "|---|---|---|",
+            "| ≤ 20 % | 6,6× | **6,8×** |", "| ≤ 30 % | 3,6× | **3,5×** |",
+            "| ≤ 40 % | 2,0× | **1,9×** |",
+            "\nLes taux de fausse alerte **constatés** sur 2025 (0,030 à 0,165) restent sous "
+            "les budgets visés : les seuils calibrés sur 2024 sont conservateurs.\n"
+            "\n**La distinction que cela établit** : la précision ponctuelle généralise mal "
+            "dans le temps — +1,1 % en saison ozone, prospectif strict — mais le **classement "
+            "des jours par risque** généralise bien. *Le modèle sait ordonner ce qu'il ne sait "
+            "pas chiffrer*, et c'est l'ordre qui décide d'une alerte.\n"
+            "\n⚠️ L'échantillon 2025 reste petit — 21 stations, ~160 dépassements. La "
+            "**reproduction des facteurs** est plus informative que leur valeur.\n"]
+
+    complet = RACINE / "reports/detection_complete_O3.csv"
+    if complet.exists():
+        t = pd.read_csv(complet)
+        s = t[t["budget"] == 0.30].set_index("produit")["POD"]
+        t25 = pd.read_csv(RACINE / "reports/detection_complete_PM25.csv")
+        s25 = t25[t25["budget"] == 0.30].set_index("produit")["POD"]
+        texte += [
+            "### Les leviers s'additionnent — et aucun ne se noie dans le précédent\n",
+            "Rappel à **30 % de fausses alertes**, point de fonctionnement choisi hors "
+            "échantillon.\n",
+            "| produit | O₃ | PM2,5 |", "|---|---|---|"]
+        for nom in ("CAMS brut", "correction", "+ observations J−2",
+                    "+ membres d'ensemble", "+ feux"):
+            def _v(serie):
+                v = serie.get(nom)
+                return f"{v:.3f}" if pd.notna(v) else "*budget inatteignable*"
+            gras = "**" if nom == "+ feux" else ""
+            texte.append(f"| {gras}{nom}{gras} | {gras}{_v(s)}{gras} | {gras}{_v(s25)}{gras} |")
+            lignes.append({"bloc": "détection empilée", "polluant": "O3+PM25",
+                           "grain": nom, "n": 0, "pod_o3": s.get(nom),
+                           "pod_pm25": s25.get(nom)})
+        texte.append(
+            "\nSur l'ozone, **3,5 fois le CAMS brut** à 30 % de budget, **5,6 fois** à 20 %. "
+            "Sur PM2,5, le brut n'atteint aucun de ces budgets.\n"
+            "\n**Un résultat qui contredit le RMSE** : les six membres d'ensemble sont **nuls "
+            "en RMSE sur l'ozone** — gain négatif, IC contenant zéro — et valent pourtant ici "
+            "autant que les observations passées sur PM2,5 (+0,067 de rappel). *Une variable "
+            "peut n'apporter rien à la précision ponctuelle et beaucoup au classement des jours "
+            "à risque.* Tester en détection ce qui a été écarté sur le RMSE, et réciproquement.\n")
+
+    texte.append(
+        "### Les trois polluants ne sont pas dans la même situation\n"
+        "\n| polluant | seuil | dépassements | meilleur rappel à 30 % de fausses alertes |\n"
+        "|---|---|---|---|\n"
+        "| **O₃** | 120 µg/m³ (max 8 h) | 2 293 sur 134 423 (1,71 %) | **0,656** — 3,6× le brut |\n"
+        "| **PM2,5** | 25 µg/m³ (moyenne jour) | 1 844 sur 105 744 (1,74 %) | **0,485** — le brut n'atteint pas ce budget |\n"
+        "| **NO₂** | 120 µg/m³ (max horaire) | **270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable** ; 0,044 à 40 % |\n"
+        "\n**Le NO₂ n'est pas détectable à ce grain**, et ce n'est pas un défaut de méthode : "
+        "l'événement est dix fois plus rare que pour les deux autres. Au seuil d'information "
+        "horaire de 200 µg/m³, il n'y a que **2 dépassements** dans tout le corpus — le "
+        "problème n'existe pas. Ce constat confirme, avec un protocole plus net, ce que le "
+        "projet avait déjà mesuré (POD 0,084, Brier skill +0,017).\n"
+        "\n*Un seuil sans événements ne mesure pas une incapacité à détecter : il mesure "
+        "l'absence de ce qu'on cherche. Compter les positifs avant de conclure.*\n"
+        "\n**Une différence entre polluants** : sur PM2,5 la perte pondérée **aide** (0,485 "
+        "contre 0,437 pour la régression simple), alors qu'elle est neutre sur l'ozone. Le "
+        "choix de la perte dépend donc du polluant, ce qu'une mesure sur l'ozone seul aurait "
+        "laissé croire universel.\n"
+        "\n### Trois techniques qui n'apportent rien, une fois le seuil libre\n"
+        "\n| technique | avantage annoncé | d'où il venait |\n|---|---|---|\n"
+        "| classification | POD 0,483 → 0,641 | la régression était seuillée à **120 µg/m³**, "
+        "valeur qu'un moindre carré n'atteint presque jamais |\n"
+        "| perte pondérée | queue −3,1 % → +3,1 % | mesuré **à seuil fixe** |\n"
+        "| quantile 0,90 | écarté sur RMSE 20,90 | RMSE est un critère de prédiction "
+        "**ponctuelle**, pas de détection |\n"
+        "\nMesurées à budget de fausses alertes égal et seuil choisi hors échantillon, les "
+        "trois s'effacent : 0,656 pour la régression pondérée contre 0,656 pour la régression "
+        "simple, 0,573 pour le quantile, 0,622 pour la classification. **Ce qui décide est "
+        "l'ordre des jours par risque, pas la fonction de perte.**\n"
+        "\n*Note* : maximiser le F1 ≡ maximiser le CSI, puisque `F1 = 2·CSI/(1+CSI)` est "
+        "strictement croissante. La précision seule est un objectif dégénéré.\n")
+    return "\n".join(texte)
+
+
+def bloc_signalements(lignes: list[dict]) -> str:
+    """Le décompte des signalements — ce qu'un service aurait publié, jour par jour."""
+    chemin = RACINE / "reports/heatmap_annuelle_O3.csv"
+    if not chemin.exists():
+        return ""
+    import sys as _sys
+    _sys.path.insert(0, str(RACINE / "scripts"))
+    from calendrier_signalements import selectionner  # noqa: E402
+
+    d = pd.read_csv(chemin, parse_dates=["jour"])
+    texte = [
+        "## 9. Les signalements, comptés — France et Occitanie\n",
+        "Les blocs précédents mesurent des erreurs. Celui-ci compte ce qu'un service aurait "
+        "**publié** : le nombre de jours-station dépassant 120 µg/m³ en maximum journalier 8 h, "
+        "sur 2024. C'est la traduction du RMSE en unité de décision.\n",
+        "| périmètre | produit | jours-station | jours avec ≥1 signalement | pic (stations le "
+        "même jour) |", "|---|---|---|---|---|"]
+    for perimetre, libelle in (("france", "France (270 stations)"),
+                               ("occitanie", "Occitanie (21 stations)")):
+        sous = selectionner(d, perimetre)
+        for colonne, nom in (("obs_jour", "**la vérité**"),
+                             ("officiel_mos", "MOS officiel"),
+                             ("nous", "notre correction complète")):
+            if colonne not in sous:
+                continue
+            s = sous[sous[colonne] >= 120.0].groupby("jour").size()
+            total, jours, pic = int(s.sum()), int(len(s)), int(s.max()) if len(s) else 0
+            reference = int((sous["obs_jour"] >= 120.0).sum())
+            part = f" ({100 * total / reference:.0f} %)" if colonne != "obs_jour" else ""
+            texte.append(f"| {libelle} | {nom} | {total:,}{part} | {jours} | {pic} |")
+            lignes.append({"bloc": "signalements", "polluant": "O3", "grain": perimetre,
+                           "n": total, "produit": nom, "jours": jours, "pic": pic})
+    texte.append(
+        "\n**Le produit officiel annonce 21 % des jours-station en France, et 7 % en "
+        "Occitanie.** L'écart régional est cohérent avec la ventilation saisonnière du bloc 2 : "
+        "il est en défaut sur la fenêtre ozone, et l'Occitanie est une région où l'ozone estival "
+        "domine.\n"
+        "\n**Le pic est le chiffre le plus parlant.** La vérité monte à 106 stations le même "
+        "jour en France ; le produit officiel plafonne à 26. Il ne rate pas seulement des jours, "
+        "il rate l'**ampleur** de ceux qu'il détecte. Notre correction atteint 91 — elle "
+        "retrouve la forme des grands épisodes.\n"
+        "\n⚠️ **La comparaison lui est favorable sur un point** : nos prédictions sont hors "
+        "échantillon, chaque station prédite par un modèle qui ne l'a jamais vue, tandis que le "
+        "produit officiel utilise les observations récentes de ces mêmes stations.\n"
+        "\nFigures : `reports/figures/calendrier_france.html` et `calendrier_occitanie.html`.\n")
+    return "\n".join(texte)
+
+
+def bloc_front(lignes: list[dict]) -> str:
+    """Le front précision–rappel — la seule comparaison qui ne dépende pas d'un seuil."""
+    fichiers = {a: RACINE / f"reports/front_precision_rappel_O3_{a}.csv"
+                for a in (2024, 2025)}
+    if not all(f.exists() for f in fichiers.values()):
+        return ""
+    texte = [
+        "## 10. Le front précision–rappel — à qualité d'annonce identique\n",
+        "Comparer deux détecteurs par leur **nombre d'annonces** ne dit rien : un produit "
+        "bruyant en émet davantage et paraît meilleur. La comparaison qui vaut est à "
+        "**précision fixée**, ou à **rappel fixé**.\n",
+        "| | précision | rappel | fausses alertes |", "|---|---|---|---|",
+        "| **2025 — Occitanie, hors échantillon** (3 183 jours-station, 160 dépassements) | "
+        "| | |",
+        "| MOS officiel, seuil réglementaire | 68,5 % | 46,2 % | 34 |",
+        "| nous, seuil réglementaire | **97,1 %** | 42,5 % | **2** |",
+        "| **nous, à sa précision** | 68,7 % | **76,9 %** | 56 |",
+        "| nous, à son rappel | **94,0 %** | 49,4 % | **5** |",
+        "| **2024 — France, stations exclues** (72 372 jours-station, 918 dépassements) | "
+        "| | |",
+        "| MOS officiel | 61,2 % | 15,8 % | 92 |",
+        "| nous, seuil réglementaire | 76,9 % | 47,1 % | 130 |",
+        "| **nous, à sa précision** | 61,9 % | **64,1 %** | 362 |",
+        "| nous, à son rappel | **96,7 %** | 16,1 % | **5** |",
+        "\n> À **qualité d'annonce identique**, nous détectons **1,7 fois plus** de "
+        "dépassements hors échantillon et **4,1 fois plus** sur la France. À **rappel "
+        "identique**, nous produisons **5 fausses alertes contre 92**.\n",
+        "Le front **domine** : à tout point de fonctionnement du produit officiel, nous sommes "
+        "strictement meilleurs sur l'autre axe. C'est le seul résultat du projet qui se dise "
+        "sans réserve d'axe.\n",
+        "**Traduction pour un service** : à 68,5 % de précision — la sienne aujourd'hui — il "
+        "passerait de **46 % à 77 % des épisodes détectés**, sans dégrader la qualité de ses "
+        "annonces.\n",
+        "⚠️ **Deux réserves.** Le seuil est balayé sur les données évaluées : c'est un front, "
+        "pas un point de fonctionnement validé — la version calibrée hors échantillon figure au "
+        "bloc 8. Et le produit officiel utilise les observations récentes de ces stations, ce "
+        "que notre variante « usage B » ne fait pas.\n",
+        "\n### Le réentraînement continu ne comble pas l'écart\n",
+        "Le produit officiel est réentraîné en continu, notre modèle est figé au 31/12/2024. "
+        "Réentraîné mensuellement avec tout l'historique jusqu'à J−2, le gain est de "
+        "**−0,02 µg/m³** — nul. L'Occitanie n'ajoute que 2 903 jours-station à un socle de "
+        "131 097, soit 2 %. Le levier est réel en principe, **vide faute de volume** — et il le "
+        "serait aussi pour une AASQA, dont le réseau régional est petit.\n"]
+    lignes.append({"bloc": "front", "polluant": "O3", "grain": "précision égale",
+                   "n": 3183, "rappel_nous": 0.769, "rappel_officiel": 0.462})
+    return "\n".join(texte)
+
+
+def bloc_generalisation() -> str:
+    """Ce qui est démontré, et ce qui ne l'est pas — sans arrondir."""
+    return (
+        "## 10 ter. La barre réelle — PREV'AIR, et non CAMS brut\n\n"
+        "Tout ce document compare à **CAMS brut**, que les AASQA ne consomment pas : elles "
+        "reçoivent **PREV'AIR**. Le rapport *Performances Prev'air en 2024* (J. Salles "
+        "Loustau, INERIS/LCSQA, publié le 08/04/2026) donne enfin cette barre.\n\n"
+        "⚠️ **Le grain n'est pas le nôtre.** Le rapport précise p. 17 : « seul le **maximum "
+        "journalier** d'ozone est ainsi considéré », donc le maximum horaire et non le "
+        "maximum glissant 8 h. Nos 9,53 µg/m³ ne s'y comparent pas. Il a fallu recalculer "
+        "sur leur grain. Le reste des conventions concorde : stations de **fond** (288 chez "
+        "eux, 254 chez nous), filtre à 75 %, fenêtre avril–septembre.\n\n"
+        "| | RMSE | biais | corrélation |\n|---|---|---|---|\n"
+        "| MOCAGE (J0, 288 stations) | 14,6 | +0,14 | 0,70 |\n"
+        "| CHIMERE brut (J0) | 13,9 | +4,2 | 0,67 |\n"
+        "| **AS-CHI** — adaptation statistique en production | **13,3** | +3,1 | **0,74** |\n"
+        "| CAMS brut (J+1, 254 stations) | 11,08 | −2,02 | 0,822 |\n"
+        "| **notre correction** | **8,84** | **+0,05** | **0,880** |\n\n"
+        "⚠️ **Ne jamais citer 8,84 contre 13,3.** CAMS brut est déjà à 11,08 contre 13,9 pour "
+        "CHIMERE brut : une part de l'écart vient de l'**amont**, et c'est attendu — CAMS "
+        "Europe est une médiane d'ensemble de neuf à onze modèles dont CHIMERE lui-même.\n\n"
+        "**La seule comparaison défendable oppose chaque correction à son propre brut :**\n\n"
+        "| | brut | corrigé | gain de la correction |\n|---|---|---|---|\n"
+        "| PREV'AIR (CHIMERE → AS-CHI) | 13,9 | 13,3 | **+4,3 %** |\n"
+        "| ce projet (CAMS → nous) | 11,08 | 8,84 | **+20,2 %** |\n\n"
+        "Cette lecture neutralise le confondant d'amont **et** celui des DROM, inclus dans "
+        "leur moyenne France avec une RMSE avoisinant 20 mais affectant les deux lignes "
+        "également. Deux écarts jouent **contre** nous, donc ne fragilisent pas la "
+        "conclusion : leurs scores sont à **J0** et les nôtres à **J+1** ; et notre 8,84 "
+        "vient de plis `i % 3`, optimistes — au protocole bloqué le gain descendrait vers "
+        "13-14 %, soit **encore trois fois** celui de l'adaptation statistique.\n\n"
+        "### Le motif qui se répète, et c'est le vrai résultat\n\n"
+        "> « l'amélioration apportée par l'adaptation statistique diminue au fur et à mesure "
+        "des échéances, jusqu'à une légère **dégradation** des performances pour l'AS par "
+        "rapport au modèle brut à partir de J2 pour la RMSE » — *Performances Prev'air en "
+        "2024*, p. 22\n\n"
+        "C'est **exactement** ce que ce dossier mesure sur le MOS de Copernicus : dégradation "
+        "huit mois sur douze, −19,6 % en saison ozone. Deux post-traitements officiels, deux "
+        "chaînes différentes — CHIMERE et CAMS —, le **même retournement**. Ce n'est plus "
+        "l'anomalie d'un produit, c'est un motif de la famille de méthodes.\n\n"
+        "## 10 bis. Le dossier lu dans les conventions d'une AASQA\n\n"
+        "Nos scores sont des **RMSE groupées** sur tous les couples station–temps réunis. Un "
+        "rapport AASQA conforme au référentiel LCSQA calcule autre chose : **stations de fond "
+        "seules**, disponibilité **≥ 75 %** (opérateur large, comme le pseudo-code du "
+        "référentiel technique national), score temporel **par station puis moyenne non "
+        "pondérée des stations**, échéances séparées, ozone limité à **avril–septembre**. "
+        "Comparer nos chiffres à un rapport d'AASQA sans ce recalcul serait comparer deux "
+        "grandeurs différentes.\n\n"
+        "Recalculé sur les stations de fond passant le seuil de disponibilité, échéance "
+        "J+1 :\n\n"
+        "| polluant | n stations | CAMS brut | notre correction | gain **AASQA** | gain ML "
+        "groupé | écart |\n|---|---|---|---|---|---|---|\n"
+        "| O₃ | 254 | 10,062 | **7,879** | **+21,7 %** | +21,9 % | −0,2 pt |\n"
+        "| NO₂ | 217 | 15,458 | **10,101** | **+34,7 %** | +36,3 % | −1,6 pt |\n"
+        "| PM2,5 | 156 | 3,936 | **2,772** | **+29,6 %** | +26,4 % | **+3,2 pt** |\n"
+        "| **PM10** | 191 | 6,349 | **4,236** | **+33,3 %** | +32,7 % | +0,6 pt |\n\n"
+        "⚠️ **Les PM10 n'apparaissent pas au tableau principal** (§ 1) : celui-ci "
+        "compare au post-traitement officiel de Copernicus, que le projet n'a pas "
+        "téléchargé pour ce polluant. Le chiffre ci-dessus est donc une comparaison à "
+        "**CAMS brut seul**, sur 19 mois appariés (2024-01 → 2026-08) et non sur la "
+        "fenêtre 2024 des trois autres — à ne pas aligner sans le dire.\n\n"
+        "Le biais y est le plus parlant : CAMS **sous-estime les PM10 de 2,08 µg/m³** "
+        "en moyenne sur les stations de fond ; la correction ramène ce biais à "
+        "**+0,04** et la corrélation de 0,689 à **0,866**. C'est le polluant qui porte "
+        "**40 des 52 vigilances** réellement déclarées en Occitanie.\n\n"
+        "**Le changement de convention joue dans les deux sens.** L'audit supposait que la "
+        "RMSE groupée nous flattait : c'est vrai pour le NO₂ (−1,6 point), **faux pour les "
+        "PM2,5** où la convention AASQA nous est plus favorable de 3,2 points, et négligeable "
+        "pour l'ozone. Ce n'est pas un biais systématique mais une dépendance au polluant — "
+        "et elle n'était pas prévisible sans la calculer.\n\n"
+        "Le résultat le plus démonstratif du dossier apparaît dans cette convention : sur les "
+        "**150 stations urbaines de fond**, CAMS sous-estime le NO₂ de **−11,6 µg/m³** en "
+        "biais moyen ; notre correction ramène ce biais à **−0,5** et la RMSE de 17,7 à "
+        "**11,0**.\n\n"
+        "Ventilation par zone, O₃ puis NO₂ — RMSE (biais) :\n\n"
+        "| zone | O₃ CAMS | O₃ nous | NO₂ CAMS | NO₂ nous |\n|---|---|---|---|---|\n"
+        "| urbaine | 9,790 (+0,62) | **7,670** (+0,41) | 17,674 (**−11,59**) | "
+        "**10,975** (−0,51) |\n"
+        "| périurbaine | 9,736 (+0,29) | **7,701** (−0,25) | 13,692 (−7,52) | "
+        "**9,934** (+0,88) |\n"
+        "| rurale | **11,192 (−2,54)** | **8,650** (−0,43) | 5,130 (+0,45) | "
+        "5,142 (+1,22) |\n\n"
+        "Deux lectures opposées, et les deux comptent. Sur l'**ozone**, le rural est la zone "
+        "la moins bien traitée — CAMS y sous-estime de 2,5 µg/m³ et la correction, qui efface "
+        "ce biais, y reste la moins performante ; ce sont les stations les plus isolées, donc "
+        "celles où le voisinage n'aide pas, ce que la validation par plis bloqués (§ 11) "
+        "mesure par ailleurs. Sur le **NO₂ en rural**, à l'inverse, **la correction n'apporte "
+        "rien** (5,142 contre 5,130) et dégrade légèrement le biais : là où CAMS est déjà "
+        "juste — niveau bas, aucune source locale —, il n'y a rien à corriger.\n\n"
+        "⚠️ **Les seuils d'information français ne sont pas évaluables sur cette fenêtre.** "
+        "À 180 µg/m³ en maximum horaire, l'ozone compte **32 dépassements sur 60 400 "
+        "jours-station** : CAMS en détecte 3, notre correction 2 à J+1, et **aucun des deux "
+        "à J+3**. Le NO₂ à 200 µg/m³ n'en compte que **3**, aucun détecté. Un modèle entraîné "
+        "**directement** sur le maximum horaire donne le même résultat qu'une transposition "
+        "depuis le grain 8 h : l'échec est mécanique, pas méthodologique. **Et il n'est pas une affaire de calibration** : mesurée, la pente de régression de l'observé sur le prédit vaut **1,007** — le modèle n'est pas contracté, son échelle est juste. Une calibration isotone du score vers les bandes de l'indice, décidée au coût attendu minimal avec pénalité asymétrique, n'apporte que **+1,2 point** de rappel contre un simple abaissement de seuil à budget de fausses annonces égal — sous la barre de bruit de ±2 points. Le rang du régresseur porte déjà toute la décision disponible. Ce qui manque est de l'**information** : 53 prédicteurs qui ne contiennent rien distinguant un jour à 175 µg/m³ d'un jour à 185, et 32 événements pour l'apprendre. **Notre facteur 3,6× porte sur la valeur cible européenne (120 µg/m³, "
+        "max 8 h), jamais sur le seuil de procédure.**\n\n"
+        "⚠️ **PM10 : lacune de périmètre, pas de donnée.** Le projet n'a jamais ingéré les "
+        "PM10, ni en observation ni en prévision. Or sur les **52 vigilances réellement "
+        "déclarées** par ATMO Occitanie entre janvier 2025 et mars 2026, **40 portent sur les "
+        "PM10** et 12 sur l'ozone. Le déclenchement opérationnel se fait donc aux trois "
+        "quarts sur un polluant hors de notre périmètre. Les PM2,5 à 25 µg/m³ répondent à une "
+        "autre question et ne les remplacent pas.\n\n"
+        "⚠️ **Les vigilances déclarées sont une cible, jamais un prédicteur.** Mesuré : "
+        "l'historique est diffusé vers 9h40 **le matin de la journée qu'il concerne** "
+        "(médiane +10,0 h après l'échéance, **aucune** ligne disponible avant). L'utiliser en "
+        "entrée d'une prévision J+1 serait la faute reprochée à ERA5.\n\n"
+        "## 11. Ce que la validation démontre, et ce qu'elle ne démontre pas\n\n"
+        "| propriété | mesure | verdict |\n|---|---|---|\n"
+        "| Généralisation **spatiale** (stations exclues) | **+29,7 %**, σ 1,2, aucun pli "
+        "négatif | ✅ démontrée |\n"
+        "| Généralisation **temporelle** (mois caché) | +6,7 %, pire pli **−35,5 %**, "
+        "5 négatifs sur 17 | ❌ non démontrée |\n"
+        "| **Blocage conjoint** station × mois | **+1,5 %**, pire **−41,4 %**, "
+        "**8 négatifs sur 17** | ⚠️ marginale |\n"
+        "| **Prospectif strict** (rolling-origin) | **+6,3 %**, pire **−7,3 %**, "
+        "4 négatifs sur 16 | ⚠️ voir ci-dessous |\n"
+        "| Détection de dépassement, hors échantillon | CSI 0,495 (officiel 0,387) | "
+        "✅ à seuil calibré |\n\n"
+        "| Généralisation spatiale, **plis bloqués** (≥ 50 km) | **+18,5 %** contre "
+        "+28,6 % non bloqué | ⚠️ chiffrée ci-dessous |\n\n"
+        "### Le blocage spatial des plis — l'optimisme, mesuré\n\n"
+        "Le protocole du projet construit ses plis par `i % n` sur l'identifiant de station. "
+        "C'est arbitraire, et surtout **non bloqué spatialement**. **Les distances dépendent du polluant, et il faut donner celle de la "
+        "population évaluée.** Sur les 813 stations de métropole toutes espèces confondues, "
+        "le plus proche voisin est à 2,4 km en médiane ; mais la population qui mesure "
+        "l'ozone n'en compte que 270, plus dispersées "
+        "(**médiane 14,3 km**, 39 % sous 10 km). Pour le NO₂ : 340 stations, **4,1 km**, "
+        "66 % sous 10 km. Pour les PM2,5 : 227 stations, 12,3 km, 45 %.\n\n"
+        "En regroupant les stations par k-moyennes et en sortant des **grappes entières** — "
+        "la fuite tombe de 79 % à **3 %** — puis en creusant un fossé de 50 km autour du "
+        "test :\n\n"
+        "| polluant | plis `i % n` | blocs seuls | fossé 50 km | voisin médian |\n|---|---|---|---|---|\n"
+        "| O₃ | +28,60 % | +19,21 % | **+18,47 %** | 14,3 km |\n"
+        "| PM2,5 | +28,37 % | — | **+20,64 %** | 12,3 km |\n"
+        "| NO₂ | +33,14 % | — | **+30,96 %** | 4,1 km |\n\n"
+        "### Le rayon du fossé, choisi par la donnée et non par le score\n\n"
+        "Les rayons de 25 puis 50 km avaient été **essayés**, donc choisis après avoir "
+        "vu les résultats — ce qui n'est pas un protocole. Le rayon juste se lit dans "
+        "la **portée de l'autocorrélation des résidus** : au-delà, une station voisine "
+        "n'informe plus. Mesurée sur les couples de stations partageant au moins "
+        "120 jours :\n\n"
+        "| polluant | corrélation des résidus à 0–5 km | portée (r < 0,1) | perte au blocage |\n|---|---|---|---|\n"
+        "| O₃ | **0,647** | **150 km** | −10,1 pts |\n"
+        "| PM2,5 | 0,499 | 150 km | −7,7 pts |\n"
+        "| NO₂ | **0,262** | 75 km | −2,2 pts |\n\n"
+        "**La perte au blocage est monotone dans cette corrélation.** L'explication "
+        "n'est donc pas la densité du réseau mais la **portée** : une voisine de NO₂ "
+        "à 2 km ne renseigne presque rien sur le résidu (0,26), une voisine d'ozone à "
+        "50 km en renseigne encore un tiers (0,32). Les résidus de **CAMS brut** sont "
+        "bien plus corrélés (0,85 sur l'ozone) que ceux de la correction : celle-ci "
+        "**absorbe** une part de la structure spatiale, ce qu'on lui demande.\n\n"
+        "### La décomposition, avec son témoin\n\n"
+        "Au rayon justifié de **150 km**, le gain ozone tombe à **+10,46 %**. Mais un "
+        "fossé de 150 km retire **127 stations d'entraînement par pli sur 180** : une "
+        "part de la chute est de la **famine de données**, pas de la fuite supprimée. "
+        "Le témoin — retirer autant de stations **au hasard**, sans blocage — le "
+        "sépare :\n\n"
+        "| protocole (O₃) | gain | ce que l'écart isole |\n|---|---|---|\n"
+        "| `i % 3` | +28,60 % | — |\n"
+        "| blocs spatiaux, jeu complet | +19,21 % | **−9,4 pts de fuite** |\n"
+        "| blocs + retrait **aléatoire** de 127 stations | +16,20 % | **−3,0 pts de volume** |\n"
+        "| blocs + fossé 150 km | +10,46 % | −8,8 pts, dont 3,0 de volume |\n\n"
+        "**Corrigé du confondant de volume, le gain à indépendance spatiale réelle vaut "
+        "environ +13,5 %.** Ni +18,5 % — fossé trop court — ni +10,5 % — confondu par la "
+        "perte de données. C'est le premier chiffre de ce dossier qui soit décomposé.\n\n"
+        "⚠️ **L'explication par la proximité ne tient pas.** Le NO₂ a les stations les "
+        "**plus serrées** (4,1 km) et c'est lui qui **résiste le mieux** au blocage ; l'ozone, "
+        "trois fois plus dispersé, perd le plus. C'est l'inverse de ce qu'une explication par "
+        "le voisinage prédit. Une première version du dossier affirmait ce mécanisme : il est "
+        "retiré, et l'écart reste **mesuré mais inexpliqué**.\n\n"
+        "⚠️ **Cela n'invalide aucune comparaison.** Tous les produits — CAMS, MOS officiel, "
+        "nos variantes — sont évalués sur les mêmes plis ; le front précision–rappel, les "
+        "mesures d'apport et les ablations gardent leur valeur. Ce qui bouge est le chiffre "
+        "**absolu**, et seulement pour l'usage *prédire là où rien ne mesure*. Publier les "
+        "deux, en nommant l'usage de chacun.\n\n"
+        "**« Station inconnue » signifie *autre station du même réseau*, pas *lieu "
+        "quelconque*.** Deux stations d'une même maille reçoivent la **même** valeur CAMS ; "
+        "l'écart de leurs résidus est donc exactement l'écart de leurs observations — vérifié "
+        "à l'identique dans les données. Cette divergence intra-maille vaut **3,61 µg/m³** en "
+        "**médiane des écarts-types horaires par maille**, et **6,1 µg/m³** en moyenne sur "
+        "paires journalières (IC95 par bootstrap de maille [5,0 ; 7,6]). La distribution est "
+        "très asymétrique, d'où l'écart entre les deux résumés : **citer lequel des deux, "
+        "toujours.**\n\n"
+        "⚠️ **Ce n'est pas un « plancher », et le mot a été retiré du dossier.** Trois raisons, "
+        "chacune vérifiée :\n"
+        "\n1. la divergence mélange différence de support, gradients urbains réels, bruit "
+        "instrumental et sélection du réseau — rien n'établit qu'aucune méthode ne descende "
+        "sous cette valeur ;\n"
+        "2. la décomposition par strates ne trouve **qu'une seule typologie exploitable** "
+        "(fond) : le réseau ne fournit presque aucune paire trafic ou industrielle dans une "
+        "même maille, et l'IC reste large (~40 % de la moyenne) ;\n"
+        "3. l'ancienne formule « 26 % du RMSE » comparait une **médiane d'écarts-types** à un "
+        "**RMSE** — deux grandeurs non commensurables. Elle est retirée.\n\n"
+        "*Nuance mesurée au passage : l'écart-type intra-maille du résidu **corrigé** dépasse "
+        "souvent celui du résidu brut. C'est attendu — la correction donne des valeurs "
+        "différentes à des stations que CAMS traite à l'identique — mais cela signifie aussi "
+        "qu'elle peut sur-différencier.*\n\n"
+        "**Une part du gain accompagne le défaut du forçage.** En partageant les jours à la "
+        "médiane du RMSE de CAMS, la correction rend **+14,0 %** quand le forçage est bon "
+        "contre **+23,6 %** quand il dérive.\n\n"
+        "⚠️ **Cet écart est en partie arithmétique, et il faut le dire.** Avec `e = Y − CAMS` "
+        "et `m` la correction prédite, `ΔMSE = e² − (e − m)² = 2em − m²`. Stratifier les jours "
+        "par l'erreur **réalisée** de CAMS sélectionne donc directement le premier terme : un "
+        "gain plus grand là où l'erreur brute est grande est en partie mécanique, puisqu'il y "
+        "a davantage de perte réductible. La corrélation de **+0,953** en ΔMSE partage sa "
+        "variable explicative avec le gain qu'elle explique.\n\n"
+        "L'énoncé défendable est donc : *la correction retire davantage de perte sur les cas "
+        "où CAMS s'avère mauvais ; nous n'avons pas montré qu'elle **anticipe** une dérive.* "
+        "Trancher exigerait une stratification **ex ante** — version de la chaîne, dispersion "
+        "inter-membres, contrôle de processus — ne contenant pas l'observation.\n\n"
+        "⚠️ **Ne pas citer le +0,913** mesuré sur les deux ruptures des 13/11 et 03/12/2024 : "
+        "il repose sur 5 paires de mois et son leave-one-out descend à **+0,135**. Le +0,953 "
+        "en ΔMSE le remplace.\n\n"
+        "Ce que cela ne dit **pas** : que la correction nuit quand le forçage est juste. Elle "
+        "gagne encore +14,0 % — elle gagne moins, elle ne nuit pas, sauf ponctuellement.\n")
+
+
+def main() -> int:
+    lignes: list[dict] = []
+    blocs = [
+        f"# La vérité du dossier — chiffres gelés\n",
+        f"*Généré le {datetime.now():%d/%m/%Y à %H h %M} par `scripts/verite_dossier.py`. "
+        f"**Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre "
+        f"qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois "
+        f"citées ailleurs sont périmées.*\n",
+        bloc_double_aveugle(lignes),
+        bloc_annee(lignes),
+        bloc_saison(lignes),
+        bloc_horsechantillon(lignes),
+        bloc_factoriel(lignes),
+        bloc_mqi(lignes),
+        bloc_meteo(lignes),
+        bloc_perimetres(lignes),
+        bloc_detection(lignes),
+        bloc_signalements(lignes),
+        bloc_front(lignes),
+        bloc_generalisation(),
+        "## 12. Registre\n\n"
+        "Ces mesures comparent des produits, pas des équipes. Le post-traitement officiel "
+        "répond à des contraintes d'exploitation — couverture européenne, réentraînement "
+        "continu, publication horaire — que ce projet n'a pas, et son article recommande "
+        "lui-même la cible journalière lorsque l'usage porte sur un maximum : le choix "
+        "horaire du produit distribué est donc **documenté et assumé**, pas un oubli.\n\n"
+        "Le phénomène mesuré ici est **publié** — Bertrand et al. 2023 pour le grain sur CAMS, "
+        "Huang et al. 2017 pour la réduction de variabilité en post-traitement. Ce travail les "
+        "réplique et caractérise le produit déployé ; il ne les découvre pas.\n\n"
+        "**Interdits de formulation** : « nous battons Copernicus », « leur produit est "
+        "défaillant », « nous avons découvert ». Les faits suffisent, et ils sont plus "
+        "solides sans adjectif.\n",
+    ]
+    sortie = RACINE / "reports/VERITE_DOSSIER.md"
+    sortie.write_text("\n".join(blocs), encoding="utf-8")
+    pd.DataFrame(lignes).to_csv(RACINE / "reports/verite_dossier.csv", index=False)
+    print(f"Écrit : {sortie.relative_to(RACINE)} ({len(lignes)} lignes de chiffres)")
+    print(f"Écrit : reports/verite_dossier.csv", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

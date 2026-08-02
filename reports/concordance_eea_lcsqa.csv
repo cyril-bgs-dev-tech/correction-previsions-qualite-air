@@ -1,0 +1,3 @@
+polluant,decalage_h,n_stations_communes,part_stations_eea_retrouvees,derive_mensuelle,n,biais_moyen,ecart_absolu_median,ecart_absolu_p95,correlation,part_identiques
+NO2,0,343,0.9346049046321526,0.0,2791447,-6.337215071609815e-05,0.0,0.0,0.9999964963628101,0.9999147395598054
+PM25,0,235,0.975103734439834,0.0,1863132,0.004803846426340163,0.0,0.0,0.9995057778710882,0.9974832701064659

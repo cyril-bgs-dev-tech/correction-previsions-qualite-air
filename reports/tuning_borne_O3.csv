@@ -1,0 +1,3 @@
+modele,rmse_test,num_leaves,learning_rate,n_estimators,min_child_samples,reg_lambda
+défaut,8.84895752179242,63,0.05,400,200,0.0
+réglé,8.293553320635734,255,0.03,900,50,10.0

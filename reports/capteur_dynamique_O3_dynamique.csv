@@ -1,0 +1,2 @@
+polluant,variante,n_features,features,q1_percentile,q1_verdict,q2_constance,q2_verdict,q3_rmse_corriger,q3_rmse_abstention,q3_verdict,duree_s
+O3,dynamique,7,heure_cos|heure_sin|jour_annee_cos|jour_annee_sin|weekend|cams_moy_jour|cams_jour,57.52810158975771,aucun_signal,0.5,pas_plus_que_cams,10.043407353220758,12.512362540818035,aucune_ne_bat_corriger,55.1

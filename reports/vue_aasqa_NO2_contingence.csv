@@ -1,0 +1,4 @@
+horizon,produit,seuil,TP,FP,FN,TN
+J+1,CAMS brut,200.0,0,0,3,108527
+J+1,notre correction (transposée),200.0,0,0,3,108527
+J+1,notre correction (apprise sur ce grain),200.0,0,0,3,108527

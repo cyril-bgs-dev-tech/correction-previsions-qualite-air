@@ -1,0 +1,27 @@
+=== LUR PM25 · metropole · fond seul ===
+176 stations · 33 variables candidates
+Cible : moyenne pluriannuelle · 11.5 ± 5.1 µg/m³ (min 4.3, max 42.0)
+
+--- Modèle sur l'échantillon complet (R² ajusté 0.146) ---
+  chene_lambda100m                 coef   -1.674e-01   R²aj cumulé 0.037
+  route_lambda300m                 coef   +2.548e+00   R²aj cumulé 0.109
+  conifere_lambda30000m            coef   +6.048e-01   R²aj cumulé 0.135
+  feuillu_autre_lambda100m         coef   -2.332e-01   R²aj cumulé 0.146
+
+--- Validation leave-one-station-out ---
+  RMSE          4.95 µg/m³
+  MAE           3.35 µg/m³
+  Biais         -0.03 µg/m³
+  R²            0.039
+  RMSE baseline 5.05 µg/m³  (prédire la moyenne partout)
+  → gain sur la baseline : +2.0 %
+
+--- Stations les plus mal prédites ---
+                                  nom  observe  predit  erreur
+Strasbourg Neudorf Ecoquartier Danube     42.0    11.4   -30.5
+                                Arles     32.3    12.3   -20.0
+                     Fos Les Carabins     30.8    12.8   -18.0
+                 PALAIS S/ V.- Garros     27.3    11.1   -16.2
+                   Tarbes lycée Dupuy     28.0    12.2   -15.8
+
+Écrit : lur_metropole_PM25.csv

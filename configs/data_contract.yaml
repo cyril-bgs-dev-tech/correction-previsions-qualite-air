@@ -1,0 +1,244 @@
+# =============================================================================
+# CONTRAT DE DONNÉES — référentiel canonique du projet
+# =============================================================================
+# Toute source ingérée est convertie vers ce référentiel AVANT d'entrer dans
+# data/interim. Aucune exception : une source qu'on n'arrive pas à convertir
+# proprement est documentée comme non conforme, pas intégrée « à peu près ».
+#
+# Ce fichier est la source de vérité. Le code lit ces valeurs, il ne les
+# redéfinit jamais en dur.
+# =============================================================================
+
+version: "0.1.0"
+derniere_maj: "2026-07-28"
+
+
+# -----------------------------------------------------------------------------
+# 1. GRILLE TEMPORELLE CANONIQUE
+# -----------------------------------------------------------------------------
+temps:
+  pas_natif: "1H"
+  fuseau_stockage: "UTC"
+
+  # Convention d'horodatage : le timestamp désigne le DÉBUT de l'intervalle,
+  # intervalle fermé à gauche, ouvert à droite -> [t, t+1h)
+  convention_intervalle: "debut"
+  fermeture: "gauche"
+
+  # POURQUOI UTC EN STOCKAGE :
+  # l'heure locale française comporte deux anomalies annuelles — une heure
+  # dupliquée en octobre, une heure inexistante en mars. Indexer en heure locale
+  # produit des doublons d'index et des trous fantômes, et décale silencieusement
+  # les cycles diurnes entre l'été et l'hiver. L'heure locale est RECALCULÉE
+  # comme colonne dérivée pour l'interprétation et pour les indicateurs
+  # réglementaires (qui, eux, sont définis en jour local).
+  fuseau_local: "Europe/Paris"
+
+  # PIÈGE MAJEUR À TRAITER SOURCE PAR SOURCE :
+  # les conventions d'horodatage divergent entre producteurs. Chaque adaptateur
+  # d'ingestion DOIT déclarer explicitement, dans sa fiche, laquelle il applique.
+  conventions_sources_a_declarer:
+    - "instantane"        # valeur ponctuelle à l'instant t (obs météo synoptiques)
+    - "moyenne_avant"     # moyenne sur (t-1h, t]  -> décaler de -1h
+    - "moyenne_apres"     # moyenne sur [t, t+1h)  -> conforme, aucun décalage
+    - "cumul_avant"       # cumul sur (t-1h, t]    -> précipitations, rayonnement
+    - "cumul_apres"       # cumul sur [t, t+1h)
+
+  # Les variables ACCUMULÉES (précipitations, rayonnement) sont le piège numéro un
+  # des réanalyses : elles sont souvent cumulées sur l'heure PRÉCÉDENTE alors que
+  # les variables instantanées de la même source sont datées à l'heure même.
+  # Mélanger les deux introduit un décalage d'une heure sur une partie seulement
+  # des variables — erreur silencieuse et coûteuse.
+
+  # Agrégations dérivées
+  agregations:
+    journalier:
+      # Les indicateurs réglementaires sont définis en JOUR LOCAL, pas en jour UTC.
+      base: "jour_local"
+      couverture_minimale: 0.75   # à confirmer contre REGLEMENTAIRE.md
+    glissant_8h:
+      # Utilisé pour l'ozone (maximum journalier de la moyenne glissante sur 8 h)
+      base: "moyenne_glissante"
+      fenetre: "8H"
+
+
+# -----------------------------------------------------------------------------
+# 2. UNITÉS CANONIQUES
+# -----------------------------------------------------------------------------
+unites:
+
+  concentrations:
+    unite: "ug.m-3"
+
+    # CONDITIONS DE RÉFÉRENCE — à ne surtout pas laisser implicite.
+    # La conversion ppb -> µg/m3 dépend de la température et de la pression de
+    # référence. L'Europe et les États-Unis n'utilisent PAS la même convention :
+    #   - UE  : 20 °C, 1013,25 hPa  -> 1 ppb NO2 = 1,913 µg/m3
+    #   - EPA : 25 °C, 1013,25 hPa  -> 1 ppb NO2 = 1,880 µg/m3
+    # Soit ~1,8 % d'écart systématique. Appliquer la convention américaine à des
+    # données européennes introduit un biais constant, invisible et non détectable
+    # a posteriori. On applique la convention UE.
+    conditions_reference_gaz:
+      temperature_K: 293.15
+      pression_Pa: 101325.0
+      norme: "UE (directive qualité de l'air ambiant)"
+
+    # Les particules (PM10, PM2.5) sont exprimées en conditions AMBIANTES,
+    # pas aux conditions de référence. Aucune conversion ne leur est appliquée.
+    particules_conditions: "ambiantes"
+
+  meteo:
+    temperature: "degC"          # convertir depuis K : x - 273.15
+    temperature_rosee: "degC"
+    humidite_relative: "pct"
+    pression_surface: "hPa"      # convertir depuis Pa : x / 100
+    vent_u: "m.s-1"
+    vent_v: "m.s-1"
+    vent_vitesse: "m.s-1"
+    vent_direction: "deg"
+    precipitation: "mm"          # cumul sur l'intervalle horaire
+    rayonnement_global: "W.m-2"
+    hauteur_couche_limite: "m"
+
+    # CONVENTION DE DIRECTION DU VENT — second piège majeur.
+    # En météorologie, la direction indique d'où VIENT le vent (0° = nord,
+    # 90° = est), sens horaire. En mathématiques, l'angle indique où l'on VA,
+    # depuis l'est, sens trigonométrique. Les deux diffèrent d'une réflexion ET
+    # d'une rotation de 90°. Confondre les deux fait pointer les panaches dans
+    # la mauvaise direction — ce qui ruinerait silencieusement toutes les
+    # variables d'exposition anisotrope au vent (voir S3.b.3).
+    convention_direction: "meteorologique_origine"
+    # u = -vitesse * sin(dir * pi/180)
+    # v = -vitesse * cos(dir * pi/180)
+    # La direction n'est JAMAIS moyennée directement (moyenne de 350° et 10°
+    # = 180°, soit l'exact opposé du bon résultat). On moyenne u et v.
+
+  geospatial:
+    distance: "m"
+    surface: "m2"
+    altitude: "m"
+
+  emissions:
+    unite: "kg.an-1"
+
+
+# -----------------------------------------------------------------------------
+# 3. RÉFÉRENTIEL SPATIAL
+# -----------------------------------------------------------------------------
+espace:
+  # CRS de CALCUL : toute géométrie et toute distance se calculent ici.
+  # Lambert-93 est le système légal français, conforme et métrique.
+  # Interdiction absolue de calculer une distance sur des coordonnées
+  # géographiques non projetées : à 43°N, 1° de longitude vaut ~81 km contre
+  # ~111 km pour 1° de latitude, soit ~27 % de distorsion anisotrope — orientée
+  # précisément selon l'axe mer/intérieur que le projet cherche à exploiter.
+  crs_calcul: "EPSG:2154"
+
+  # CRS d'échange, conservé en colonnes pour l'interopérabilité et la cartographie.
+  crs_echange: "EPSG:4326"
+
+  # CRS des produits européens (Copernicus, EEA). Les couches arrivant dans ce
+  # système sont reprojetées, jamais mélangées telles quelles.
+  crs_europeen: "EPSG:3035"
+
+  grille_cible:
+    resolution_m: 1000
+    alignement: "EPSG:2154, origine multiple de la résolution"
+  grille_zoom_toulouse:
+    resolution_m: 100
+
+
+# -----------------------------------------------------------------------------
+# 4. SCHÉMA CANONIQUE DES OBSERVATIONS
+# -----------------------------------------------------------------------------
+schema_observations:
+  cles:
+    - station_id        # identifiant canonique interne, stable dans le temps
+    - timestamp_utc     # début d'intervalle, tz-aware UTC
+    - polluant
+
+  colonnes:
+    valeur:        {type: "float64", unite: "ug.m-3"}
+    flag_qualite:  {type: "category", valeurs: ["valide", "provisoire", "invalide", "manquant"]}
+    source:        {type: "category"}
+    # Distinguer données validées et provisoires est structurant : les données
+    # validées arrivent avec plusieurs mois de retard, alors que l'opérationnel
+    # tourne sur du provisoire. Entraîner sur du validé et prédire sur du
+    # provisoire crée un décalage de distribution silencieux. La colonne permet
+    # de le mesurer plutôt que de le subir.
+
+  # Valeur manquante = NaN. Jamais de sentinelle numérique (-999, -9999) :
+  # elles survivent aux agrégations et contaminent les statistiques.
+  sentinelle_manquant: "NaN"
+
+
+schema_stations:
+  cles: [station_id]
+  colonnes:
+    code_source:      {type: "string"}   # code natif du producteur
+    nom:              {type: "string"}
+    lon_wgs84:        {type: "float64"}
+    lat_wgs84:        {type: "float64"}
+    x_l93:            {type: "float64", unite: "m"}
+    y_l93:            {type: "float64", unite: "m"}
+    altitude:         {type: "float64", unite: "m"}
+    typologie:        {type: "category", valeurs: ["urbaine", "periurbaine", "rurale", "trafic", "industrielle"]}
+    date_ouverture:   {type: "date"}
+    date_fermeture:   {type: "date"}
+    # Les changements de site et de métrologie créent des ruptures de série qui
+    # ressemblent à des tendances réelles. À tracer explicitement.
+    ruptures_connues: {type: "list[date]"}
+
+
+# -----------------------------------------------------------------------------
+# 5. POLLUANTS
+# -----------------------------------------------------------------------------
+polluants:
+  PM25:
+    nom: "Particules < 2,5 µm"
+    coeur: true
+    masse_molaire: null
+    conditions: "ambiantes"
+  NO2:
+    nom: "Dioxyde d'azote"
+    coeur: true
+    masse_molaire_g_mol: 46.0055
+    conditions: "reference"
+  O3:
+    nom: "Ozone"
+    coeur: true
+    masse_molaire_g_mol: 47.9982
+    conditions: "reference"
+  PM10:
+    nom: "Particules < 10 µm"
+    coeur: false
+    masse_molaire: null
+    conditions: "ambiantes"
+  SO2:
+    nom: "Dioxyde de soufre"
+    coeur: false
+    masse_molaire_g_mol: 64.0638
+    conditions: "reference"
+
+
+# -----------------------------------------------------------------------------
+# 6. RÈGLES DE VALIDATION À L'INGESTION
+# -----------------------------------------------------------------------------
+validation:
+  plages_plausibles_ug_m3:
+    # Bornes de DÉTECTION D'ANOMALIE, pas de troncature. Un dépassement est
+    # signalé et inspecté, jamais écrêté en silence : un pic de pollution réel
+    # ne doit pas être rasé par un nettoyage automatique.
+    PM25: [0, 1000]
+    PM10: [0, 2000]
+    NO2:  [0, 1000]
+    O3:   [0, 600]
+    SO2:  [0, 1500]
+
+  controles_obligatoires:
+    - "index temporel strictement croissant, sans doublon"
+    - "index tz-aware en UTC"
+    - "valeurs gelees : detection de repetitions identiques sur > 6 h consecutives"
+    - "valeurs negatives : signalees, non converties automatiquement en zero"
+    - "coordonnees dans l'emprise France metropolitaine"
+    - "aucune sentinelle numerique residuelle (-999, -9999)"
