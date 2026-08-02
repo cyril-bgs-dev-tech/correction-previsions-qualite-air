@@ -1,0 +1,31 @@
+# Versions sous lesquelles le projet a effectivement tourné le 03/08/2026.
+# Généré par `pip freeze` restreint aux dépendances déclarées — pas un gel de
+# l'environnement entier, qui embarquerait 300 paquets sans rapport.
+#
+# Usage :  pip install -r requirements-lock.txt
+#          (ou `pip install -e ".[dev]"` pour les bornes souples de pyproject.toml)
+
+cdsapi==0.7.7
+lightgbm==4.6.0
+matplotlib==3.11.0
+netCDF4==1.7.4
+numpy==2.4.6
+optuna==4.9.0
+pandas==2.3.3
+playwright==1.61.0
+plotly==6.8.0
+pyarrow==23.0.1
+pyproj==3.7.2
+pytest==9.1.1
+pyyaml==6.0.3
+rasterio==1.5.0
+requests==2.34.2
+scikit-learn==1.6.1
+scipy==1.17.1
+shapely==2.1.2
+streamlit==1.60.0
+xarray==2026.7.0
+xgboost==3.2.0
+
+# Non installés dans l'environnement de référence — optionnels :
+# cfgrib

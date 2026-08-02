@@ -1,0 +1,52 @@
+# Intégration continue — courte, sans réseau, sans données
+#
+# Pourquoi elle existe. Deux tests de `test_copernicus.py` ont échoué pendant des jours
+# sans que personne ne le voie : ils figeaient « 3 espèces » alors que les PM10 avaient été
+# ajoutés au projet. Le code avait raison, le test avait tort — et le dépôt affirmait dans
+# son README que la suite passait.
+#
+# Ce qu'elle ne fait pas. Aucun accès réseau, aucun téléchargement Copernicus, aucune
+# donnée. Les 279 tests tournent sur des fixtures et s'exécutent en une vingtaine de
+# secondes. Une CI qui demande 62 Go de données ne serait jamais lancée.
+
+name: tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installer le socle et les outils de test
+        # `.[dev]` seulement : les extras `grib` (eccodes système) et `demo` (Streamlit)
+        # ne sont pas requis par la suite et alourdiraient l'installation.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Vérifier que le paquet s'importe depuis une installation propre
+        # Contrôle distinct des tests : une dépendance oubliée dans `pyproject.toml` se
+        # voit ici, pas dans une suite qui tourne sur la machine de l'auteur.
+        run: python -c "import aq; print('aq importé depuis une installation propre')"
+
+      - name: Tests
+        run: pytest -q --no-header
+
+      - name: Lint (indicatif, ne bloque pas)
+        continue-on-error: true
+        run: |
+          pip install ruff
+          ruff check scripts src tests --output-format=concise || true

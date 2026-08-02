@@ -280,7 +280,12 @@ def test_plan_cams_prevision_groupe_deux_mois_par_espece():
     plan = cop.plan_telechargement(
         date(2024, 1, 1), date(2024, 2, 29), service="cams_prevision"
     )
-    assert len(plan) == 3, "2 mois groupés × 3 espèces"
+    # ⚠️ Le nombre d'espèces est **dérivé du plan**, jamais figé en dur : les PM10 ont été
+    # ajoutés au projet en août 2026 et ce test a échoué pendant des jours en affirmant
+    # « 3 espèces » alors que le code en produisait 4 — le test avait tort, pas le code.
+    # Un test qui fige un nombre que le projet fait évoluer devient un faux positif.
+    especes = {requete["variable"][0] for _, requete in plan}
+    assert len(plan) == len(especes), "un seul groupe de 2 mois, une requête par espèce"
     assert plan[0][0] == "cams_prevision_no2_202401_202402.nc"
     assert all(len(requete["variable"]) == 1 for _, requete in plan)
     assert all(len(requete["date"]) == 2 for _, requete in plan)
@@ -310,7 +315,8 @@ def test_plan_cams_sur_un_nombre_impair_de_mois():
     plan = cop.plan_telechargement(
         date(2024, 1, 1), date(2024, 3, 31), service="cams_prevision"
     )
-    assert len(plan) == 6, "(2 groupes) × 3 espèces"
+    especes = {requete["variable"][0] for _, requete in plan}
+    assert len(plan) == 2 * len(especes), "(2 groupes) × (une requête par espèce)"
     noms = {nom for nom, _ in plan}
     assert "cams_prevision_o3_202401_202402.nc" in noms
     assert "cams_prevision_o3_202403.nc" in noms

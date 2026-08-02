@@ -44,8 +44,10 @@ Ces limites sont documentées au même titre que les résultats favorables — v
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"          # socle + tests
-pip install -e ".[dev,grib,demo]"  # + décodage GRIB et démonstration
+
+pip install -e ".[dev]"                # socle + tests
+pip install -r requirements-lock.txt   # ou : les versions exactes du 03/08/2026
+pip install -e ".[dev,grib,demo]"      # + décodage GRIB et démonstration
 ```
 
 `cfgrib` est optionnel car il dépend de la bibliothèque système `eccodes`. Il n'est requis
@@ -54,7 +56,7 @@ que par les scripts d'ingestion IFS.
 ## Vérifier l'installation
 
 ```bash
-pytest -q                        # ~250 tests, sans réseau ni données
+pytest -q     # 279 tests, sans réseau ni données · ~17 s
 ```
 
 ## Trois commandes qui produisent les résultats du tableau
@@ -103,7 +105,7 @@ scores continus, jours pour la détection — jamais par ligne.
 | `src/aq/` | bibliothèque — ingestion, contrôles, modèles, évaluation |
 | `scripts/` | expériences, une par question |
 | `reports/` | résultats, journaux et notes de synthèse |
-| `tests/` | ~250 tests, sans accès réseau |
+| `tests/` | **279 tests**, sans accès réseau, vérifiés en intégration continue |
 | `docs/` | échanges de recherche documentaire, prompts et réponses |
 | `CLAUDE.md` | **les règles nées des erreurs commises** — à lire en premier |
 | `REPRISE.md` | état du projet, ce qui reste, ce qui a été écarté |
