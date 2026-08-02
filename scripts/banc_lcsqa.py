@@ -281,7 +281,7 @@ def main(polluant: str, horizon: int, n_spa: int, grandeur: str | None,
               f"{c['SR']:7.3f} {c['CSI']:7.3f} {c['biais_frequence']:9.3f}")
         lignes.append({"mode": f"{mode}_dépassements", "seuil": seuil, **c})
 
-    sortie = RACINE / f"reports/banc_lcsqa_{polluant}_{epreuve}.csv"
+    sortie = RACINE / f"reports/banc_lcsqa_{polluant}_h{horizon}_{epreuve}.csv"
     pd.DataFrame(lignes).to_csv(sortie, index=False)
     print(f"\n⚠️ `FULL` n'est disponible qu'aux stations instrumentées. `NO_LOCAL_OBS` est")
     print(f"   le seul mode qui décrive une prédiction en un lieu sans capteur.")

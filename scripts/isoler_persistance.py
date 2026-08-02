@@ -191,7 +191,7 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     if r7 >= r0:
         print(f"\n  ⚠️ Le modèle NE BAT PAS la moyenne glissante. À dire tel quel.")
 
-    sortie = RACINE / f"reports/persistance_{polluant}.csv"
+    sortie = RACINE / f"reports/persistance_{polluant}_h{horizon}.csv"
     pd.DataFrame(lignes).to_csv(sortie, index=False)
     print(f"\nÉcrit : {sortie.relative_to(RACINE)} · {(time.time() - depart) / 60:.1f} min")
     return 0
