@@ -46,7 +46,7 @@ que Copernicus publie (`cams-europe-air-quality-forecasts-optimised-at-observati
 | PM2,5 | moyenne journalière | 4,17 | 3,43 (+17,6 %) | **2,91 (+30,1 %)** |
 
 Aux conventions d'un rapport AASQA — stations de **fond** seules, disponibilité > 75 %, score
-**par station puis moyenne non pondérée**, ozone limité à avril–septembre, échéance J+1 :
+**par station puis moyenne non pondérée**, ozone limité à avril–septembre, échéance J0 (1-24 h) :
 
 | polluant | n stations | CAMS brut | corrigé | gain |
 |---|---|---|---|---|

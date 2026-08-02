@@ -188,7 +188,7 @@ Si une seule question devait guider les 23 jours : *le gain survit-il jusqu’à
 - « Temps réel » pour de la donnée **horaire non validée**.  
 - « Carte satellite » pour du **CAMS modèle**.  
 - « Norme OMS » confondue avec **valeur limite UE**.  
-Utiliser juste : *fond / proximité, échéance J+1, run, représentativité, épisode, procédure préfectorale*.
+Utiliser juste : *fond / proximité, échéance J0 (1-24 h), run, représentativité, épisode, procédure préfectorale*.
 
 ---
 

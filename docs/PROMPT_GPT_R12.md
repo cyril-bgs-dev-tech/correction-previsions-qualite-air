@@ -9,7 +9,7 @@
 ## Le contexte, en huit lignes
 
 Post-traitement statistique des prévisions **CAMS Europe** sur les stations françaises. Le
-modèle apprend le résidu `observation − CAMS` à J+1, cible journalière, LightGBM, corpus de
+modèle apprend le résidu `observation − CAMS` à J0 (1-24 h), cible journalière, LightGBM, corpus de
 36 mois.
 
 L'évaluation la plus dure cache **simultanément la station et le mois** — c'est la condition

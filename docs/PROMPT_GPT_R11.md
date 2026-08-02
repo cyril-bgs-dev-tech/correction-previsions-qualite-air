@@ -9,7 +9,7 @@
 
 Post-traitement statistique des prévisions **CAMS Europe** (grille 0,1°, soit ≈ 8 km en
 longitude × 11 km en latitude aux latitudes françaises) sur les stations de mesure
-françaises. Le modèle apprend le **résidu** `observation − CAMS` à l'échéance J+1, cible
+françaises. Le modèle apprend le **résidu** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h), cible
 journalière, ~57 prédicteurs, LightGBM.
 
 Corpus : **36 mois**, 476 stations, observations réglementaires LCSQA.

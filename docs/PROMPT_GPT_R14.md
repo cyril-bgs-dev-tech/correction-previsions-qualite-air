@@ -15,7 +15,7 @@ dossier est un projet technique réalisé seul, que je veux présenter comme une
 utile et non comme une démonstration de compétence hors-sol.
 
 **Ce que le projet fait.** Post-traitement statistique des prévisions **CAMS Europe** sur
-les stations de mesure françaises, à l'échéance J+1. Un modèle à gradient boosté apprend le
+les stations de mesure françaises, à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h). Un modèle à gradient boosté apprend le
 résidu `observation − CAMS` et le retranche. Corpus de 36 mois, 476 stations, observations
 LCSQA.
 

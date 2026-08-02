@@ -94,7 +94,7 @@ Ce projet a déjà perdu des journées sur chacun. Tu dois les éviter explicite
 ## Les chiffres du projet, pour cadrer la comparaison
 
 Convention AASQA — stations de fond, disponibilité ≥ 75 %, score par station puis moyenne non
-pondérée, échéance J+1, O₃ limité à avril–septembre, validation par stations entièrement
+pondérée, échéance J0 (1-24 h), O₃ limité à avril–septembre, validation par stations entièrement
 exclues :
 
 | polluant | grandeur | n stations | CAMS brut | ce projet |

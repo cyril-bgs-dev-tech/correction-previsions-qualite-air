@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 02/08/2026 à 13 h 31 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 03/08/2026 à 01 h 03 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -9,7 +9,7 @@ Tous les chiffres de ce document portent sur l'axe **spatial** : stations exclue
 | polluant | spatial | temporel | **double aveugle** | σ | pire pli |
 |---|---|---|---|---|---|
 | **NO₂** | +31.57 % | +45.94 % | **+25.71 %** | 5.0 | +15.5 |
-| PM10 | +31.26 % | +15.41 % | **+7.47 %** | 14.8 | -30.0 |
+| PM10 | +27.94 % | +19.09 % | **+11.36 %** | 9.7 | -8.5 |
 | PM2,5 | +25.63 % | +12.65 % | **+5.14 %** | 12.2 | -18.0 |
 | O₃ | +24.10 % | +9.38 % | **+3.31 %** | 13.3 | -35.0 |
 
@@ -262,12 +262,12 @@ Les blocs précédents mesurent des erreurs. Celui-ci compte ce qu'un service au
 
 | périmètre | produit | jours-station | jours avec ≥1 signalement | pic (stations le même jour) |
 |---|---|---|---|---|
-| France (270 stations) | **la vérité** | 1,128 | 73 | 106 |
-| France (270 stations) | MOS officiel | 237 (21 %) | 40 | 26 |
-| France (270 stations) | notre correction complète | 703 (62 %) | 53 | 91 |
-| Occitanie (21 stations) | **la vérité** | 72 | 26 | 13 |
-| Occitanie (21 stations) | MOS officiel | 5 (7 %) | 3 | 3 |
-| Occitanie (21 stations) | notre correction complète | 31 (43 %) | 10 | 12 |
+| France (270 stations) | **la vérité** | 7,133 | 204 | 204 |
+| France (270 stations) | MOS officiel | 1,095 (15 %) | 64 | 163 |
+| France (270 stations) | notre correction complète | 6,113 (86 %) | 154 | 198 |
+| Occitanie (21 stations) | **la vérité** | 655 | 90 | 22 |
+| Occitanie (21 stations) | MOS officiel | 113 (17 %) | 17 | 17 |
+| Occitanie (21 stations) | notre correction complète | 555 (85 %) | 68 | 22 |
 
 **Le produit officiel annonce 21 % des jours-station en France, et 7 % en Occitanie.** L'écart régional est cohérent avec la ventilation saisonnière du bloc 2 : il est en défaut sur la fenêtre ozone, et l'Occitanie est une région où l'ozone estival domine.
 
@@ -342,7 +342,7 @@ C'est **exactement** ce que ce dossier mesure sur le MOS de Copernicus : dégrad
 
 Nos scores sont des **RMSE groupées** sur tous les couples station–temps réunis. Un rapport AASQA conforme au référentiel LCSQA calcule autre chose : **stations de fond seules**, disponibilité **≥ 75 %** (opérateur large, comme le pseudo-code du référentiel technique national), score temporel **par station puis moyenne non pondérée des stations**, échéances séparées, ozone limité à **avril–septembre**. Comparer nos chiffres à un rapport d'AASQA sans ce recalcul serait comparer deux grandeurs différentes.
 
-Recalculé sur les stations de fond passant le seuil de disponibilité, échéance J+1 :
+Recalculé sur les stations de fond passant le seuil de disponibilité, échéance J0 (1-24 h) :
 
 | polluant | n stations | CAMS brut | notre correction | gain **AASQA** | gain ML groupé | écart |
 |---|---|---|---|---|---|---|

@@ -341,7 +341,7 @@ C'est **exactement** ce que ce dossier mesure sur le MOS de Copernicus : dégrad
 
 Nos scores sont des **RMSE groupées** sur tous les couples station–temps réunis. Un rapport AASQA conforme au référentiel LCSQA calcule autre chose : **stations de fond seules**, disponibilité **≥ 75 %** (opérateur large, comme le pseudo-code du référentiel technique national), score temporel **par station puis moyenne non pondérée des stations**, échéances séparées, ozone limité à **avril–septembre**. Comparer nos chiffres à un rapport d'AASQA sans ce recalcul serait comparer deux grandeurs différentes.
 
-Recalculé sur les stations de fond passant le seuil de disponibilité, échéance J+1 :
+Recalculé sur les stations de fond passant le seuil de disponibilité, échéance J0 (1-24 h) :
 
 | polluant | n stations | CAMS brut | notre correction | gain **AASQA** | gain ML groupé | écart |
 |---|---|---|---|---|---|---|

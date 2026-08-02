@@ -21,7 +21,7 @@ Post-traitement statistique (MOS) des prévisions CAMS Europe de qualité de l'a
 l'échelle de la France, évalué sur l'Occitanie, avec pour finalité une **candidature
 spontanée à ATMO Occitanie (AASQA) le 22 août 2026**.
 
-Sortie : correction du champ CAMS aux stations, à échéance J+1 à J+3, pour O₃, NO₂ et PM2,5.
+Sortie : correction du champ CAMS aux stations, à échéance J0 (1-24 h) à J+3, pour O₃, NO₂ et PM2,5.
 
 ## 2. Données réellement sur disque
 

@@ -21,7 +21,7 @@ expliquer le mécanisme. Un chiffre qu'on ne sait pas expliquer ne se défend pa
 ## Partie A — Expliquer mes résultats mesurés
 
 Contexte : je corrige statistiquement les prévisions **CAMS Europe** (grille 0,1°, soit
-≈ 8 km × 11 km aux latitudes françaises) sur les stations françaises, à l'échéance J+1,
+≈ 8 km × 11 km aux latitudes françaises) sur les stations françaises, à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h),
 en cible journalière. Le modèle apprend le résidu `observation − CAMS`. Corpus de 36 mois,
 476 stations. Évaluation avec stations **et** mois cachés simultanément.
 

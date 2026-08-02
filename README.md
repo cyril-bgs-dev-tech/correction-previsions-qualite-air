@@ -1,7 +1,7 @@
 # Correction statistique des prévisions de qualité de l'air
 
 Post-traitement des prévisions **CAMS Europe** aux stations de mesure françaises. Le modèle
-apprend le **résidu** `observation − CAMS` à l'échéance J+1 et le retranche.
+apprend le **résidu** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h) et le retranche.
 
 Corpus : **36 mois**, 476 stations, observations réglementaires LCSQA, cible journalière.
 
