@@ -243,7 +243,8 @@ def main(polluant: str, horizon: int, n_spa: int, chronologique: bool) -> int:
                        "ecart_type": sd, "n_plis_negatifs": neg,
                        "chronologique": chronologique})
 
-    suff = "_chrono" if chronologique else ""
+    # L'échéance dans le nom : un lot J+1 écrasait un lot J0 sans laisser de trace.
+    suff = f"_h{horizon}" + ("_chrono" if chronologique else "")
     sortie = RACINE / f"reports/leviers_36mois_{polluant}{suff}.csv"
     pd.DataFrame(lignes).to_csv(sortie, index=False)
     print(f"\n⚠️ `era5` est une RÉANALYSE : son gain est un plafond, pas une performance.")
