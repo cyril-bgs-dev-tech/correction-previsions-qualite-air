@@ -20,8 +20,9 @@ Deux épisodes, choisis pour leur asymétrie :
 
 **Deux limites à énoncer avant tout résultat.**
 
-1. Le projet ne modélise pas les **PM10**. Le 25/07 est donc rejoué sur les **PM2.5**,
-   corrélées mais distinctes : on ne peut pas conclure sur le dépassement PM10 lui-même.
+1. *(levée le 03/08)* Le projet **modélise désormais les PM10**, depuis le flux LCSQA. Le
+   25/07 est donc rejoué sur le polluant qui a réellement déclenché la procédure, et non
+   plus sur les PM2,5 prises comme approximation.
 2. Le modèle n'a **pas** tourné en direct ce jour-là. On montre ce qu'il aurait produit avec
    les entrées de l'époque, ce qui n'est pas la même chose qu'une prévision émise à temps.
 
@@ -62,9 +63,13 @@ from modele_final import REGLE  # noqa: E402
 from scores_episodes import scores  # noqa: E402
 
 MOIS_REJEU = "202607"
-SEUILS = {"O3": 120.0, "NO2": 120.0, "PM25": 25.0}
+SEUILS = {"O3": 120.0, "NO2": 120.0, "PM25": 25.0, "PM10": 50.0}
 EPISODES = {
     "O3": [("2026-07-08", "information"), ("2026-07-09", "ALERTE")],
+    # ⚠️ Le 25/07 est un épisode **PM10**, et le projet les modélise depuis le flux LCSQA.
+    # Il était rejoué sur les PM2,5 faute de mieux ; il ne l'est plus.
+    "PM10": [("2026-07-25", "constaté a posteriori"), ("2026-07-26", "information/alerte"),
+             ("2026-07-27", "information/alerte")],
     "PM25": [("2026-07-25", "constaté a posteriori"), ("2026-07-26", "information/alerte"),
              ("2026-07-27", "information/alerte")],
 }
@@ -90,12 +95,29 @@ def charger_rejeu(polluant: str, horizon: int) -> pd.DataFrame:
     prev = prev[prev["echeance_h"].between(bas, haut)]
     debut, fin = prev["timestamp_utc"].min(), prev["timestamp_utc"].max()
 
-    obs = pd.read_parquet(
-        RACINE / "data/processed/panel_occitanie_complet.parquet",
-        filters=[("timestamp_utc", ">=", debut), ("timestamp_utc", "<=", fin),
-                 ("polluant", "==", polluant)],
-        columns=["station_id", "timestamp_utc", "valeur"],
-    )
+    # ⚠️ Le panel occitan a longtemps été « le seul qui couvre cette date ». Ce n'est plus
+    # vrai : le flux LCSQA a porté le corpus à 2026-07 sur les quatre polluants, ozone
+    # compris. Lire l'ancien panel faisait échouer le rejeu d'ozone avec un message
+    # affirmant que « le flux temps réel est rompu depuis le 01/07/2025 » — devenu faux, et
+    # publié par le projet contre lui-même. On lit le panel unifié, et l'ancien en secours.
+    sources = [RACINE / "data/processed/panel_unifie_lcsqa.parquet",
+               RACINE / "data/processed/panel_occitanie_complet.parquet"]
+    obs = None
+    for src in sources:
+        if not src.exists():
+            continue
+        t = pd.read_parquet(
+            src,
+            filters=[("timestamp_utc", ">=", debut), ("timestamp_utc", "<=", fin),
+                     ("polluant", "==", polluant)],
+            columns=["station_id", "timestamp_utc", "valeur"])
+        if t["valeur"].notna().any():
+            print(f"  observations lues dans {src.name}", flush=True)
+            obs = t
+            break
+    if obs is None:
+        raise SystemExit(f"{polluant} : aucune observation renseignée en {MOIS_REJEU} "
+                         f"dans {[s.name for s in sources]}")
     jeu = prev.merge(obs, on=["station_id", "timestamp_utc"]).rename(
         columns={colonne: "cams"})
     renseignees = int(jeu["valeur"].notna().sum())
@@ -110,9 +132,9 @@ def charger_rejeu(polluant: str, horizon: int) -> pd.DataFrame:
     if renseignees == 0:
         raise SystemExit(
             f"{polluant} : {len(jeu):,} lignes appariées en {MOIS_REJEU}, **aucune "
-            f"renseignée**.\nLe flux temps réel d'ozone est rompu pour la France depuis le "
-            f"01/07/2025 : juillet 2026\nn'a pas d'observation d'ozone à confronter. Le rejeu "
-            f"n'est possible que sur PM2.5.")
+            f"renseignée** — alors que les sources ont été parcourues jusqu'à en trouver "
+            f"une qui le soit.\nLa cause est donc dans l'appariement (station, horodatage, "
+            f"fuseau), pas dans la disponibilité.")
 
     # Aucune météo : cf. l'en-tête. Les prédicteurs sortent de `colonnes_admises` sur le jeu
     # d'entraînement, qui n'en contient pas.
@@ -234,7 +256,7 @@ def main(polluant: str, horizon: int) -> int:
           f"station × jour · correction utile sur "
           f"{100 * detail['correction_utile'].mean():.1f} % d'entre elles")
     print(f"\nÉcrit : {sortie.relative_to(RACINE)} · {time.time() - depart:.0f}s")
-    print("Rappel des limites : PM10 non modélisées · le modèle n'a pas tourné en direct "
+    print("Rappel des limites : stations connues du modèle · le modèle n'a pas tourné en direct "
           "ce jour-là.\nToutes les entrées sont disponibles à l'heure d'émission : aucune "
           "réanalyse, aucune météo.", flush=True)
     return 0
