@@ -3,7 +3,9 @@
 Post-traitement des prévisions **CAMS Europe** aux stations de mesure françaises. Le modèle
 apprend le **résidu** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h) et le retranche.
 
-Corpus : **36 mois**, 476 stations, observations réglementaires LCSQA, cible journalière.
+Corpus : **36 mois**, **29,1 M d'enregistrements horaires**, observations réglementaires
+LCSQA, cible journalière. Prévisions extraites à 476 points ; **438 stations effectivement
+évaluées**, de 236 (PM2,5) à 344 (NO₂) selon le polluant.
 
 ---
 
@@ -56,7 +58,7 @@ que par les scripts d'ingestion IFS.
 ## Vérifier l'installation
 
 ```bash
-pytest -q     # 279 tests, sans réseau ni données · ~17 s
+pytest -q     # 282 tests, sans réseau ni données · ~17 s
 ```
 
 ## Trois commandes qui produisent les résultats du tableau
@@ -105,7 +107,7 @@ scores continus, jours pour la détection — jamais par ligne.
 | `src/aq/` | bibliothèque — ingestion, contrôles, modèles, évaluation |
 | `scripts/` | expériences, une par question |
 | `reports/` | résultats, journaux et notes de synthèse |
-| `tests/` | **279 tests**, sans accès réseau, vérifiés en intégration continue |
+| `tests/` | **282 tests**, sans accès réseau, vérifiés en intégration continue |
 | `docs/` | échanges de recherche documentaire, prompts et réponses |
 | `CLAUDE.md` | **les règles nées des erreurs commises** — à lire en premier |
 | `REPRISE.md` | état du projet, ce qui reste, ce qui a été écarté |

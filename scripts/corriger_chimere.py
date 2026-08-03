@@ -143,6 +143,13 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     p["jour"] = pd.to_datetime(p["jour"]).dt.tz_localize(None)
     d = d.merge(p, on=["station_id", "jour"], how="left")
 
+    # ⚠️ PREV'AIR fait tourner **CHIMERE *et* MOCAGE** — page « Le système PREV'AIR »,
+    # lue le 03/08. Les deux sont membres de l'ensemble CAMS et présents ici à 100 %.
+    # Leur médiane est donc la composition de PREV'AIR, dans sa configuration européenne.
+    # Ce n'est pas leur chaîne — ni maille, ni inventaire, ni assimilation — mais c'est le
+    # plus proche analogue accessible sans leurs données.
+    if {"chimere", "mocage"} <= set(d.columns):
+        d["prevair_like"] = d[["chimere", "mocage"]].median(axis=1)
     d = d.dropna(subset=["chimere", "cams_jour", "valeur"]).reset_index(drop=True)
     predicteurs = base + cols_typo + noms_mem
 
@@ -156,7 +163,8 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     # L'ancre est la quantité dont on apprend le RÉSIDU et à laquelle on ajoute la
     # correction. Changer d'ancre change la cible d'apprentissage, pas seulement la
     # référence de comparaison — c'est bien deux modèles distincts qu'on ajuste.
-    pred = {a: np.full(len(d), np.nan) for a in ("cams_jour", "chimere")}
+    ancres = ["cams_jour", "chimere"] + (["prevair_like"] if "prevair_like" in d else [])
+    pred = {a: np.full(len(d), np.nan) for a in ancres}
     for i, m in enumerate(mois):
         dans = d["station_id"].isin(groupes[i % n_spa])
         m_test, m_train = (d["mois"] == m) & dans, (d["mois"] != m) & ~dans
@@ -167,7 +175,9 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
         for ancre in pred:
             pred[ancre][idx] = ajuster(DEFAUT, tr, te, predicteurs, ancre)
 
-    ok = np.isfinite(pred["cams_jour"]) & np.isfinite(pred["chimere"])
+    ok = np.ones(len(d), dtype=bool)
+    for v in pred.values():
+        ok &= np.isfinite(v)
     d = d[ok].reset_index(drop=True)
     o = d["valeur"].to_numpy()
     ens, chi = d["cams_jour"].to_numpy(), d["chimere"].to_numpy()
@@ -180,8 +190,12 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
           f"{'J0' if horizon == 1 else f'J+{horizon - 1}'} · double aveugle\n{'═' * 74}")
     print(f"  {'système':26s} {'RMSE':>8s} {'vs son brut':>12s} {'vs ensemble brut':>17s}")
     lignes, r_ens = [], rmse(ens)
-    for nom, brut, corrige in (("ensemble CAMS", ens, p_ens),
-                               ("membre CHIMERE seul", chi, p_chi)):
+    systemes = [("ensemble CAMS (6 membres)", ens, p_ens),
+                ("membre CHIMERE seul", chi, p_chi)]
+    if "prevair_like" in d:
+        systemes.append(("médiane CHIMERE+MOCAGE", d["prevair_like"].to_numpy(),
+                         pred["prevair_like"][ok]))
+    for nom, brut, corrige in systemes:
         rb, rc = rmse(brut), rmse(corrige)
         print(f"  {nom + ' — brut':26s} {rb:8.3f} {'—':>12s} "
               f"{100 * (1 - rb / r_ens):16.2f}%")
