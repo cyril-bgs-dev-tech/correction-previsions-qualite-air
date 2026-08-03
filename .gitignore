@@ -61,3 +61,20 @@ Thumbs.db
 reports/calendrier_*.csv
 reports/heatmap_annuelle_*.csv
 reports/figures/rendu/
+
+# ── Matériel de candidature — JAMAIS public ────────────────────────────────────
+#
+# Le dépôt est destiné à être lu par le destinataire de la candidature. Y publier la
+# lettre, les notes d'orateur, la planification et le scan de leur propre offre
+# transformerait une sincérité en tactique — et exposerait des coordonnées personnelles.
+#
+# Ces fichiers restent sur le disque, hors suivi de version.
+docs/LETTRE_ATMO_OCCITANIE.md
+docs/SOUTENANCE_ATMO_6_DIAPOSITIVES.md
+docs/NOTE_ATMO_OCCITANIE.md
+docs/ROADMAP.md
+ROADMAP_*.md
+reports/offre_atmo_occitanie.png
+reports/VERIFICATION_CANDIDATURE.md
+reports/verification_candidature.csv
+scripts/verifier_dossier_candidature.py
