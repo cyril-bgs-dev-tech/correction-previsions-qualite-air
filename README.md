@@ -58,8 +58,15 @@ que par les scripts d'ingestion IFS.
 ## Vérifier l'installation
 
 ```bash
-pytest -q     # 282 tests, sans réseau ni données · ~17 s
+pytest -q     # ~17 s, sans réseau
 ```
+
+**Depuis un clone frais : 273 passent, 9 sont sautés.** Les neuf sautés sont les contrôles
+d'ingestion de `test_stations.py`, qui ont besoin des données brutes — ils s'annoncent
+« Dataset absent, lancer l'ingestion » plutôt que d'échouer. Les 273 autres tournent sur des
+fixtures et ne demandent ni réseau ni téléchargement.
+
+*Vérifié le 03/08/2026 par clone, installation et exécution dans un environnement vierge.*
 
 ## Trois commandes qui produisent les résultats du tableau
 
@@ -107,7 +114,7 @@ scores continus, jours pour la détection — jamais par ligne.
 | `src/aq/` | bibliothèque — ingestion, contrôles, modèles, évaluation |
 | `scripts/` | expériences, une par question |
 | `reports/` | résultats, journaux et notes de synthèse |
-| `tests/` | **282 tests**, sans accès réseau, vérifiés en intégration continue |
+| `tests/` | **282 tests** — 273 sans aucune donnée, 9 sautés faute de données brutes |
 | `docs/` | échanges de recherche documentaire, prompts et réponses |
 | `CLAUDE.md` | **les règles nées des erreurs commises** — à lire en premier |
 | `REPRISE.md` | état du projet, ce qui reste, ce qui a été écarté |
