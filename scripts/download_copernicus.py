@@ -155,6 +155,49 @@ def verifier(chemin: Path, service: str) -> str | None:
     return None
 
 
+def jours_attendus(nom: str) -> int | None:
+    """Nombre de journées qu'un dossier de membres doit contenir, d'après son nom.
+
+    ⚠️ **Tous** les jetons de mois, jamais le dernier seul : `..._202401_202402` en porte
+    deux, et une expression ancrée à droite n'attendrait que 29 jours au lieu de 60.
+    Rend `None` quand le nom ne porte aucun mois — auquel cas on ne sait pas compter.
+    """
+    jetons = re.findall(r"_(\d{4})(\d{2})(?=_|$)", Path(nom).stem)
+    if not jetons:
+        return None
+    return sum(pd.Period(f"{a}-{m}").days_in_month for a, m in jetons)
+
+
+def est_complet(dossier: Path, nom: str) -> bool:
+    """Le seul juge de la reprise — **sur le contenu**, jamais sur l'existence.
+
+    ⚠️ Ce test existait déjà dans `acheve()`, à l'intérieur de `main`, et il était juste.
+    Mais `telecharger()` en refaisait un second, plus faible — `membres.is_dir()` — et
+    c'est celui-là qui décidait. Résultat : un mois à 30 jours sur 31 était **signalé**
+    incomplet à l'écran, inscrit dans les restants, puis sauté avec la mention « déjà
+    présent ». Le trou ne se refermait jamais.
+
+    Deux contrôles sur la même question, c'est le plus faible qui gagne. Il n'y en a
+    plus qu'un. C'est la règle 4 de `CLAUDE.md` : le test de reprise porte sur le
+    **contenu attendu**.
+    """
+    final = dossier / nom
+    if final.exists():
+        return True
+    membres = dossier / Path(nom).stem
+    if not membres.is_dir():
+        return False
+    attendus = jours_attendus(nom)
+    if attendus is None:
+        return True
+    presents = len(list(membres.glob("*.nc")))
+    if presents < attendus:
+        print(f"  ↻ {membres.name} incomplet : {presents}/{attendus} jours — "
+              f"repris", flush=True)
+        return False
+    return True
+
+
 def telecharger(
     service: str, identifiants: cop.Identifiants, dossier: Path,
     nom: str, requete: dict,
@@ -164,10 +207,15 @@ def telecharger(
     Le résultat est un fichier netCDF (ERA5) ou un dossier de membres journaliers
     (CAMS). Les deux valent marque d'achèvement pour la reprise.
     """
+    if est_complet(dossier, nom):
+        return nom, "déjà présent"
+
+    # ⚠️ `final` et `membres` restent nécessaires plus bas — la destination de l'archive
+    # dépaquetée et celle du netCDF simple. Les avoir supprimés en unifiant le test de
+    # reprise a fait planter le lot sur un `NameError` que les 282 tests ne voyaient pas :
+    # ils couvrent `est_complet`, pas le corps complet de `telecharger`.
     final = dossier / nom
     membres = dossier / Path(nom).stem
-    if final.exists() or membres.is_dir():
-        return nom, "déjà présent"
 
     _, jeu = SERVICES[service]
 
@@ -220,33 +268,8 @@ def main(service: str, debut: date, fin: date) -> int:
     dossier.mkdir(parents=True, exist_ok=True)
 
     def acheve(nom: str) -> bool:
-        """Un mois est fait s'il a laissé un netCDF (ERA5) ou **tous** ses jours (CAMS).
-
-        Compter les jours, et non se contenter de l'existence du dossier : une
-        interruption en cours de dépaquetage laisse un dossier partiel, que la reprise
-        sauterait alors définitivement. Le trou ne se verrait ensuite que dans les
-        métriques, sans jamais s'y annoncer.
-        """
-        if (dossier / nom).exists():
-            return True
-        membres = dossier / Path(nom).stem
-        if not membres.is_dir():
-            return False
-        # **Tous** les jetons de mois du nom, jamais le dernier seul. Un nom groupé
-        # `cams_prevision_pm10_202401_202402` porte deux mois ; une expression ancrée à
-        # droite ne capturait que `202402` et n'attendait donc que 29 jours au lieu de 60.
-        # Une paire à moitié téléchargée — janvier complet, six jours de février — passait
-        # pour complète et n'était **jamais reprise**. C'est le défaut de la règle 4 bis de
-        # `CLAUDE.md`, dans sa forme exacte.
-        jetons = re.findall(r"_(\d{4})(\d{2})(?=_|$)", membres.name)
-        if not jetons:
-            return True
-        attendus = sum(pd.Period(f"{a}-{m}").days_in_month for a, m in jetons)
-        presents = len(list(membres.glob("*.nc")))
-        if presents < attendus:
-            print(f"  ↻ {membres.name} incomplet : {presents}/{attendus} jours",
-                  flush=True)
-        return presents >= attendus
+        """Délègue à `est_complet` — un seul juge pour toute la reprise."""
+        return est_complet(dossier, nom)
 
     plan = plan_du_plus_recent(service, debut, fin)
     restants = [(nom, req) for nom, req in plan if not acheve(nom)]

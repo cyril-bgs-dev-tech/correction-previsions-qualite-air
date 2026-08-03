@@ -50,5 +50,8 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+# `scripts` est sur le chemin : plusieurs scripts portent une logique testable
+# — la reprise de téléchargement, le plan de requêtes — qu'il serait absurde de
+# dupliquer dans `src` pour pouvoir l'éprouver.
+pythonpath = ["src", "scripts"]
 testpaths = ["tests"]

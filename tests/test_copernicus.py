@@ -368,3 +368,59 @@ def test_normalisation_preserve_les_longitudes_era5():
     propre = cop.normaliser_longitudes(brut)
     np.testing.assert_allclose(propre.longitude.values, lon)
     np.testing.assert_allclose(propre.latitude.values, lat[::-1])
+
+
+# ── La reprise porte sur le CONTENU, jamais sur l'existence ────────────────────
+#
+# Défaut trouvé le 03/08/2026, et il avait exactement la forme que la règle 4 de
+# `CLAUDE.md` interdit. `acheve()` testait bien la complétude — 30 jours sur 31,
+# incomplet, à reprendre — mais `telecharger()` refaisait un second test, plus faible
+# (`membres.is_dir()`), et c'est **celui-là qui décidait**.
+#
+# Résultat visible dans le journal : le mois était signalé incomplet à l'écran, inscrit
+# dans les restants, puis sauté avec la mention « déjà présent ». Trois mois de juillet
+# 2026 sont restés à 30 jours sur 31 sans que le trou se referme jamais.
+#
+# Deux contrôles sur la même question : c'est le plus faible qui gagne.
+
+
+def _dossier_membres(base, nom, n_jours, mois="2026-07"):
+    sous = base / nom.removesuffix(".nc")
+    sous.mkdir(parents=True, exist_ok=True)
+    for i in range(1, n_jours + 1):
+        (sous / f"ENS_FORECAST_{mois}-{i:02d}.nc").write_bytes(b"x")
+    return sous
+
+
+def test_un_mois_troue_nest_pas_repute_complet(tmp_path):
+    """30 jours sur 31 doit être **repris**, pas sauté."""
+    import download_copernicus as dl
+
+    nom = "cams_prevision_pm10_202607.nc"
+    _dossier_membres(tmp_path, nom, 30)
+    assert dl.jours_attendus(nom) == 31
+    assert not dl.est_complet(tmp_path, nom), "30/31 passe pour complet"
+
+
+def test_un_mois_entier_est_complet(tmp_path):
+    import download_copernicus as dl
+
+    nom = "cams_prevision_pm10_202607.nc"
+    _dossier_membres(tmp_path, nom, 31)
+    assert dl.est_complet(tmp_path, nom)
+
+
+def test_le_compte_de_jours_lit_TOUS_les_jetons_du_nom():
+    """`..._202401_202403` porte deux mois : 31 + 31 jours, pas 31.
+
+    Une expression ancrée à droite ne capturerait que le dernier — c'est le défaut de la
+    règle 4 bis, qui a déjà coûté 35 % du jeu d'entraînement à ce projet.
+    """
+    import download_copernicus as dl
+
+    assert dl.jours_attendus("cams_prevision_o3_202401_202403.nc") == 62
+    # 2024 est bissextile : février y compte 29 jours. Attendre 28 était MON erreur,
+    # pas celle du code — et un test faux qui « échoue » coûte autant qu'un défaut réel.
+    assert dl.jours_attendus("cams_prevision_o3_202402.nc") == 29
+    assert dl.jours_attendus("cams_prevision_o3_202502.nc") == 28  # 2025, non bissextile
+    assert dl.jours_attendus("fichier_sans_mois.nc") is None
