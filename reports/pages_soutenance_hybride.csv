@@ -1,0 +1,5 @@
+polluant,gain,rmse_nous,rmse_aasqa,att_nous,att_aasqa,att_budget_egal,budget_alertes,observes,faux_nous,faux_aasqa,stations,part_amelioree,mois,n,nom_nous,couverture_membres_pct,chaine
+O3,22.01460749594001,9.471278218139371,12.144938832802936,7120,6249,6798,9778,9337,3544,3529,263,100.0,19,143757,hybridation modèle appris + chaîne AASQA,94.6938236051114,médiane CAMS + krigeage usuel
+NO2,44.11098955148444,11.118374674989742,19.893668872938598,544,79,433,1026,1810,966,947,328,100.0,19,180945,hybridation modèle appris + chaîne AASQA,94.79565613860565,médiane CAMS + krigeage usuel
+PM10,25.640235628236596,5.087222339156581,6.841364254091624,319,228,296,717,963,529,489,309,100.0,19,168436,hybridation modèle appris + chaîne AASQA,99.82604668835641,médiane CAMS + krigeage usuel
+PM25,19.248234047545143,3.2397138116556006,4.011941749438748,1993,1578,1875,3299,3632,1670,1721,230,96.52173913043478,19,126664,hybridation modèle appris + chaîne AASQA,100.0,médiane CAMS

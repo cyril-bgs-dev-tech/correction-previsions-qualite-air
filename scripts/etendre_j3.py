@@ -133,11 +133,21 @@ def main(especes: list[str], debut: str, fin: str) -> int:
             continue
         dest = cands[0]
         n_attendu = pd.Period(f"{an}-{mo:02d}").days_in_month
-        # ⚠️ Reprise sur le CONTENU : compter les fichiers J3 déjà présents, pas
-        # l'existence du dossier. C'est la règle 4, et le défaut corrigé le 03/08.
-        if len(list(dest.glob(f"{PREFIXE}*.nc"))) >= n_attendu:
+        # ⚠️ Les dossiers sont GROUPÉS par deux mois (`..._202308_202309`, 61 jours).
+        # Compter les fichiers J3 du dossier entier contre le calendrier d'UN mois faisait
+        # sauter le second : après août (31 fichiers), septembre voyait 31 ≥ 30 et passait.
+        # Onze mois sur trente-six ont été annoncés « déjà faits » sans l'être.
+        #
+        # C'est la règle 4 encore : le test de reprise porte sur le contenu ATTENDU — ici
+        # les journées de CE mois, nommément, pas un total.
+        jours = pd.date_range(f"{an}-{mo:02d}-01", periods=n_attendu)
+        presents = sum((dest / f"{PREFIXE}{d:%Y-%m-%d}.nc").exists() for d in jours)
+        if presents >= n_attendu:
             sautes += 1
             continue
+        if presents:
+            print(f"  [{i}/{len(taches)}] {esp} {an}-{mo:02d} · {presents}/{n_attendu} "
+                  f"jours présents — repris", flush=True)
         try:
             req = cop.requete_cams_prevision(an, mo, variables=[VARIABLE[esp]],
                                              echeances_h=ECHEANCES)

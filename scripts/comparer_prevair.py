@@ -58,7 +58,22 @@ ARCHIVE = RACINE / "data/raw/prevair"
 #
 # Sur les particules, « MAXJ » désigne donc la **moyenne journalière** — le grain du seuil
 # de 50 µg/m³. Croire le nom de fichier aurait doublé la RMSE (règle 4 bis).
+# ⚠️ CORRIGÉ le 03/08. J'avais conclu que « MAXJ est en fait la moyenne journalière »,
+# faute d'avoir inventorié le catalogue : **`MOYJ` existe aussi**. Le test propre, une fois
+# les deux produits connus :
+#
+#     produit  comparé à   biais    RMSE    corr
+#     MAXJ1    maximum     -7,55   35,95   0,117
+#     MAXJ1    moyenne     +7,19   17,57   0,192
+#     MOYJ1    moyenne     -1,61    7,51   0,405   ← sans comparaison
+#
+# `MOYJ` EST la moyenne journalière. `MAXJ` est bien le maximum, simplement très mal
+# corrélé au maximum horaire d'une station — ce qui est attendu d'un produit à 1,7 km :
+# un maximum est un extrême local, une moyenne est un champ.
+#
+# Chaque polluant se compare donc au produit de SON grain réglementaire.
 AGREGAT = {"PM10": "mean", "PM25": "mean", "O3": "max", "NO2": "max"}
+PRODUIT = {"PM10": "MOYJ", "PM25": "MOYJ", "O3": "MAXJ", "NO2": "MAXJ"}
 
 
 def extraire(fichier: Path, stations: pd.DataFrame) -> pd.DataFrame | None:
@@ -97,7 +112,9 @@ def main(polluant: str, echeance: str) -> int:
     # ⚠️ Les noms sont en MAJUSCULES : `PREVAIR.prevision.20260802.MAXJ1.PM10.public.nc`.
     # Un motif en minuscules ne trouvait rien et sortait sur « lancer archiver_prevair.py »,
     # message trompeur puisque l'archive existait. On compare sans tenir compte de la casse.
-    cle = f".{echeance}.{polluant}.".upper()
+    # L'échéance est donnée en chiffre ; le préfixe MAXJ/MOYJ suit le grain du polluant.
+    n = echeance[-1] if echeance[-1].isdigit() else "1"
+    cle = f".{PRODUIT[polluant]}{n}.{polluant}.".upper()
     fichiers = sorted(f for f in ARCHIVE.glob("*.nc")
                       if cle in f.name.upper() and "PREVISION" in f.name.upper())
     if not fichiers:

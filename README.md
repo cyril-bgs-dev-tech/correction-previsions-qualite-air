@@ -1,5 +1,20 @@
 # Correction statistique des prévisions de qualité de l'air
 
+> **🚧 Publication en cours — 4 août 2026.** Le code et les rapports chiffrés sont
+> **visibles et à jour**. Les pages de restitution HTML — carte de France par station,
+> cartes de chaleur régionales et départementales, champs spatialisés — sont
+> **régénérables par script** et ne sont pas versionnées : elles pèsent 137 Mo et se
+> reconstruisent par `scripts/pages_soutenance.py`, `pages_regions.py` et
+> `page_champ_region.py`.
+>
+> **Travaux en cours :** intégration d'un second modèle de chimie indépendant
+> (**NASA GEOS-CF**, 35 mois extraits) et champs spatialisés régionaux. Les chiffres
+> ci-dessous portent sur le double aveugle et restent valides ; la comparaison à la chaîne
+> concurrente a été **corrigée trois fois le 03-04/08**, toujours à notre défaveur, et les
+> rapports en portent la trace.
+
+---
+
 Post-traitement des prévisions **CAMS Europe** aux stations de mesure françaises. Le modèle
 apprend le **résidu** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h) et le retranche.
 

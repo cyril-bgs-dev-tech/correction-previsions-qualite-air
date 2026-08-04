@@ -160,6 +160,57 @@ C'est la même vigilance, appliquée à l'exécution plutôt qu'aux résultats.
 
 ---
 
+## 1 ter. Une mesure n'est pas une propriété
+
+### La règle
+
+**Un débit mesuré une fois n'est pas un débit.** Sur un service distant et partagé, une
+durée est un **échantillon** : elle dépend de la charge du serveur, du cache, de l'heure.
+Avant toute extrapolation, mesurer **au moins deux fois, à des moments distincts**, et
+extrapoler depuis la **pire** valeur — jamais la meilleure, jamais la première.
+
+Et son corollaire, qui est le même défaut vu de l'autre bout :
+
+**Un code 200 n'est pas un résultat.** Comparer le **volume reçu** au volume demandé.
+Une réponse de 92 octets pour une requête de 1,1 Mo n'est pas un téléchargement rapide,
+c'est une page d'erreur.
+
+```python
+# ✗  une mesure, une conclusion, un plan
+t = chrono(requete)                 # 29 s
+print(f"extrapolation : {t * N / 3600:.1f} h")
+
+# ✓  plusieurs mesures espacées, la pire retenue, et le reçu vérifié
+durees = []
+for _ in range(3):
+    t0 = time.time(); r = requete(); durees.append(time.time() - t0)
+    if len(r) < attendu * 0.9:
+        raise ValueError(f"{len(r)} octets reçus pour {attendu} demandés")
+    time.sleep(30)                  # espacer : mesurer trois fois d'affilée mesure le cache
+print(f"médiane {median(durees):.0f} s · pire {max(durees):.0f} s → "
+      f"extrapolation {max(durees) * N / 3600:.1f} h")
+```
+
+### Les erreurs qui ont produit cette règle — le 04/08, sur GEOS-CF
+
+- **29 s mesurées une fois, citées trois fois.** Une requête OPeNDAP de 4 variables ×
+  120 échéances a mis 29 s. J'en ai tiré « 60 fois moins cher », « ~45 min à quatre
+  ouvriers », et je me suis reproché de ne pas l'avoir adoptée. Refaite : **76 s** pour
+  **cinq fois moins** de données, puis **504 Gateway Time-out**. La première mesure
+  bénéficiait d'un cache et d'un serveur au repos.
+- **Trois codes 200 pris pour trois services disponibles.** `curl -o /dev/null -w "%{http_code}"`
+  sur trois points d'entrée OPeNDAP a rendu `200, 200, 200`. C'étaient trois pages
+  d'erreur HTML : *« is not an available dataset »*. Il a fallu demander le `.dds` pour
+  le voir.
+
+### Le fil commun
+
+Les deux fois, j'ai conclu depuis un **signal disponible** plutôt que depuis le **signal
+demandé** — une durée au lieu d'une distribution, un code de statut au lieu d'une charge
+utile. C'est la règle 2 bis appliquée au réseau : *compter le reçu contre le demandé*.
+
+---
+
 ## 2. Lecture de fichiers — charger avant d'indexer
 
 ### La règle
@@ -249,6 +300,55 @@ coup.
 
 ---
 
+## 2 ter. Écrire — le chiffre affiché n'est pas le chiffre enregistré
+
+### La règle
+
+La règle 2 bis protège la **lecture**. Celle-ci protège l'**écriture**, et le défaut est
+symétrique : un résultat s'affiche à l'écran, semble juste, et **n'entre dans aucun
+fichier**. Le rapport a le bon nombre de colonnes, le script rend 0, et la mesure a disparu.
+
+Deux gestes, qui coûtent trois lignes :
+
+1. **Construire l'objet enregistré au plus tard.** `pd.DataFrame(lignes)` fige une **copie**
+   des dictionnaires ; toute mutation postérieure de `lignes` n'y entre jamais. La table se
+   construit après le dernier calcul, jamais avant.
+2. **Exiger nommément les colonnes attendues avant d'écrire**, et lever si l'une manque.
+   Un `nan` dans une colonne de référence s'imprime `+nan%` sans que rien ne s'en émeuve.
+
+```python
+# ✗  la copie est prise avant les mesures suivantes ; elles n'y seront jamais
+t = pd.DataFrame(lignes)
+...
+for r in lignes: r.update(critiques_vues=...)   # mute les dicts, pas `t`
+
+# ✓  construire en dernier, puis exiger ce qu'on croit avoir mesuré
+t = pd.DataFrame(lignes)
+if manque := [c for c in ATTENDUES if c not in t]:
+    raise SystemExit(f"colonnes absentes du rapport : {manque}")
+```
+
+### Les deux erreurs qui ont produit cette règle — le 03/08
+
+- **Les situations critiques, affichées et jamais écrites.** `tableau_comparatif.py`
+  construisait sa table **avant** le bloc qui compte les détections. Les six chiffres qui
+  décident de tout le dossier s'affichaient à l'écran ; les quatre CSV portaient 15 colonnes
+  d'allure parfaitement normale et **aucune** de ces mesures. Découvert par hasard, en
+  comptant les colonnes pour autre chose.
+- **La référence sortie en `nan`.** L'ancre de la chaîne concurrente héritait des trous de
+  CHIMERE/MOCAGE — un filtre `notna().mean() > 0.3` tolérait 70 % de manquants. Trois
+  polluants sur quatre ont affiché `+nan%` dans la colonne de gain, **sans rien lever**.
+  Seul PM10, qui repliait sur CAMS, a produit un chiffre.
+
+### Le fil commun avec le reste du fichier
+
+Aucun des deux n'a planté. Le premier a produit un fichier **complet en apparence**, le
+second une colonne **vide en apparence normale**. C'est exactement la règle 5, appliquée à
+la sortie plutôt qu'à l'entrée : *si ce traitement n'enregistrait pas ce qu'il affiche,
+est-ce que je m'en apercevrais ?*
+
+---
+
 ## 3. Volume — ne télécharger que la fenêtre utile
 
 ### La règle
@@ -291,6 +391,39 @@ dossier.
   nom définitif — table sans précipitation ni rayonnement, sautée à jamais ensuite.
 
 Dans les deux cas : aucune erreur levée, aucun signal, propagation silencieuse.
+
+### Le complément du 03/08 — **d'où vient l'attendu**
+
+La règle dit de tester le **contenu attendu**. Elle ne dit pas **d'où l'attendu est
+calculé**, et c'est exactement là que le défaut est revenu **trois fois en une journée**,
+sous trois formes différentes :
+
+| | forme prise | ce qui décidait à tort |
+|---|---|---|
+| matin | `telecharger()` testait `is_dir()` quand `acheve()` testait la complétude | **le plus faible des deux contrôles** |
+| midi | l'artefact ne portait pas son échéance dans son nom | un lot J+1 **écrasait** un lot J0 |
+| soir | reprise comptant les fichiers d'un dossier **de deux mois** contre le calendrier d'**un seul** | 11 mois sur 36 sautés en silence |
+
+Le fil commun n'est pas « tester le contenu » — c'était fait à chaque fois. C'est que
+**l'attendu venait d'ailleurs que de la demande** : d'un autre contrôle, d'un nom sans
+échéance, d'un total au lieu d'une liste.
+
+> **Ne jamais comparer un compte à un compte.** Nommer les artefacts attendus un par un,
+> et vérifier leur présence individuellement.
+
+```python
+# ✗  un total, qui passe pour complet dès qu'un autre mois a rempli le dossier
+if len(list(dossier.glob("J3_*.nc"))) >= jours_du_mois: sauter()
+
+# ✓  la liste nommée de ce qui est demandé
+jours = pd.date_range(f"{an}-{mo:02d}-01", periods=jours_du_mois)
+presents = sum((dossier / f"J3_{d:%Y-%m-%d}.nc").exists() for d in jours)
+```
+
+**Et le contrôle qui a réellement attrapé le défaut n'était dans aucun script** : c'est
+d'avoir recompté les mois disponibles *à côté*, et vu que « 11 déjà faits » ne collait pas
+avec un corpus de 36 mois complets. **Un script ne peut pas s'auditer sur une hypothèse
+qu'il porte lui-même.** Le lot annonçait « 0 échec » avec la moitié du travail non faite.
 
 ### Le corollaire
 

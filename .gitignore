@@ -78,3 +78,12 @@ reports/offre_atmo_occitanie.png
 reports/VERIFICATION_CANDIDATURE.md
 reports/verification_candidature.csv
 scripts/verifier_dossier_candidature.py
+
+# ── Artefacts régénérables — 137 Mo mesurés le 04/08 ─────────────────────────
+# Les pages HTML se reconstruisent par `scripts/pages_soutenance.py`,
+# `pages_regions.py` et `page_champ_region.py` depuis les parquets de prédictions.
+# Les versionner alourdirait l'historique de 137 Mo pour zéro information : le code
+# qui les produit est déjà suivi, et lui seul mérite de l'être.
+reports/html/
+proto/
+data/processed/champs/

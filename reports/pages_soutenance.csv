@@ -1,0 +1,5 @@
+polluant,gain,rmse_nous,rmse_aasqa,att_nous,att_aasqa,att_budget_egal,budget_alertes,observes,faux_nous,faux_aasqa,stations,part_amelioree,mois,n,nom_nous,couverture_membres_pct,chaine
+O3,22.428236800279887,9.421043192132744,12.144938832802936,7292,6249,6896,9778,9337,3525,3529,263,100.0,19,143757,"modèle appris, toutes familles déployables",94.6938236051114,médiane CAMS + krigeage usuel
+NO2,44.159912828431416,11.10864204027212,19.893668872938598,526,79,436,1026,1810,880,947,328,100.0,19,180945,"modèle appris, toutes familles déployables",94.79565613860565,médiane CAMS + krigeage usuel
+PM10,25.899068953611526,5.0695146085567035,6.841364254091624,321,228,299,717,963,477,489,309,100.0,19,168436,"modèle appris, toutes familles déployables",99.82604668835641,médiane CAMS + krigeage usuel
+PM25,19.215128987543693,3.241041967378975,4.011941749438748,1893,1578,1890,3299,3632,1422,1721,230,96.08695652173913,19,126664,"modèle appris, toutes familles déployables",100.0,médiane CAMS

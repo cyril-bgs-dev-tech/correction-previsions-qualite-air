@@ -116,6 +116,42 @@ def extraire_un_mois(archive: Path, stations: pd.DataFrame, mois: str) -> pd.Dat
     return pd.concat([large, resume], axis=1).reset_index()
 
 
+# Plafonds de **plausibilité physique**, en µg/m³. Au-delà, la valeur n'est pas une
+# concentration : c'est un code de remplissage que le service n'a pas signalé.
+#
+# ⚠️ Mesuré le 04/08/2026 : le membre CHIMERE de **décembre 2025** portait 22 848 valeurs
+# jusqu'à **1,3 × 10¹²** µg/m³, quand le p99,9 de tous les membres PM10 vaut 110. Rien
+# n'avait levé — ni à l'extraction, ni au chargement — et le krigeage du biais les a
+# propagées jusqu'à une RMSE de **4 milliards** dans un rapport. Le p99,99 sautait de
+# 110 à 1,5 × 10¹¹ : la séparation est totale, aucun risque de couper du signal.
+PLAFOND = {"o3": 1200.0, "no2": 1500.0, "pm25": 1500.0, "pm10": 2000.0}
+
+
+def assainir(large, espece: str, membres: list[str]) -> tuple:
+    """Masque les valeurs physiquement impossibles et **rend le compte**.
+
+    Ne lève pas pour quelques valeurs — un modèle peut produire un pic aberrant isolé —
+    mais lève au-delà de 1 % : à ce niveau ce n'est plus un artefact, c'est un fichier
+    corrompu qu'il ne faut pas écrire sous un nom définitif.
+    """
+    plafond = PLAFOND.get(espece, 5000.0)
+    total = 0
+    for m in membres:
+        if m not in large.columns:
+            continue
+        mauvais = large[m] > plafond
+        n = int(mauvais.sum())
+        if n:
+            large.loc[mauvais, m] = float("nan")
+            total += n
+    part = total / max(len(large) * len(membres), 1)
+    if part > 0.01:
+        raise ValueError(
+            f"{espece} : {total:,} valeurs au-dessus de {plafond:g} µg/m³ "
+            f"({100 * part:.2f} %) — fichier suspect, non écrit")
+    return large, total
+
+
 def main(scope: str) -> int:
     archives = sorted(SOURCE.glob("membres_*.nc"))
     if not archives:
