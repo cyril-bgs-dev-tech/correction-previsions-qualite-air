@@ -87,3 +87,13 @@ scripts/verifier_dossier_candidature.py
 reports/html/
 proto/
 data/processed/champs/
+
+# ── Matériel de candidature et correspondance : JAMAIS publié ────────────────
+# Le courriel de demande d'archive PREV'AIR portait l'adresse personnelle ET le
+# numéro de téléphone dans un dépôt public — constaté le 04/08. Le dépôt sert à
+# montrer le travail, pas à exposer des coordonnées.
+docs/MAIL_*.md
+docs/LETTRE_*.md
+docs/NOTE_ATMO*.md
+docs/SOUTENANCE_*.md
+ROADMAP_*.md
