@@ -49,6 +49,8 @@ dire ainsi est plus informatif que d'imposer un seuil unique.
 
 Usage : python3 scripts/recalibrer_amplitude.py --polluant PM10
 Sortie : reports/recalibrage_<polluant>.csv · reports/valeur_economique_<polluant>.csv
+         Hors configuration par défaut, le nom porte l'échéance et la variante :
+         `..._h2_typo.csv`. Sans cela un passage à `--horizon 2` écrasait le J0.
 """
 
 from __future__ import annotations
@@ -120,6 +122,13 @@ def valeur_economique(v: np.ndarray, a: np.ndarray, alphas: np.ndarray) -> np.nd
 
 def main(polluant: str, typologie: bool, horizon: int = 1) -> int:
     suff = f"_h{horizon}" + ("_typo" if typologie else "")
+    # ⚠️ `suff` désigne l'ENTRÉE ; les sorties portaient un nom qui n'en gardait rien —
+    # un passage à `--horizon 2` ou `--sans-typologie` écrasait donc silencieusement les
+    # résultats du précédent. C'est le défaut `CLAUDE.md` § 4 (« un lot J+1 écrasait un
+    # lot J0 »), trouvé le 06/08 en cherchant les jumeaux de la même collision dans
+    # `tableau_comparatif.py`. Vide pour la configuration par défaut, pour que les
+    # fichiers déjà écrits restent valides.
+    sortie = "" if (horizon == 1 and typologie) else suff
     f = RACINE / f"data/interim/oof/oof_{polluant}{suff}.parquet"
     if not f.exists():
         raise SystemExit(f"absent : {f.name} — lancer oof_double_aveugle.py d'abord")
@@ -175,14 +184,14 @@ def main(polluant: str, typologie: bool, horizon: int = 1) -> int:
               f"{c['POD']:7.3f} {c['precision']:7.3f} {c['CSI']:7.3f}")
         lignes.append({"polluant": polluant, "systeme": nom, "rmse": rmse, "sdr": sdr,
                        "seuil": seuil, "n": len(e), **c})
-    pd.DataFrame(lignes).to_csv(RACINE / f"reports/recalibrage_{polluant}.csv", index=False)
+    pd.DataFrame(lignes).to_csv(RACINE / f"reports/recalibrage_{polluant}{sortie}.csv", index=False)
 
     # ── ② Valeur économique relative — pour quels utilisateurs le système sert ────
     alphas = np.concatenate([np.linspace(0.002, 0.05, 25), np.linspace(0.06, 0.5, 23)])
     courbes = {nom: valeur_economique(v, x > seuil, alphas)
                for nom, x in systemes.items()}
     tab = pd.DataFrame({"alpha_cout_sur_perte": alphas, **courbes})
-    tab.to_csv(RACINE / f"reports/valeur_economique_{polluant}.csv", index=False)
+    tab.to_csv(RACINE / f"reports/valeur_economique_{polluant}{sortie}.csv", index=False)
 
     print(f"\n{'═' * 76}\n② VALEUR ÉCONOMIQUE RELATIVE — V(α), α = coût d'action / perte\n"
           f"{'═' * 76}")

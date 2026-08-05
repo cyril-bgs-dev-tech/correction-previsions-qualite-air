@@ -400,7 +400,7 @@ def main(polluant: str, horizon: int, n_spa: int, membres: str = "auto") -> int:
     pd.DataFrame({"code": [f"sys{i}" for i in range(1, len(systemes) + 1)],
                   "systeme": [n for n, _, _ in systemes],
                   "configuration": [c for _, c, _ in systemes]}).to_csv(
-        dossier / f"systemes_{polluant}_h{horizon}.csv", index=False)
+        dossier / f"systemes_{polluant}_h{horizon}{suff}.csv", index=False)
     brut.to_parquet(dossier / f"comparatif_{polluant}_h{horizon}{suff}.parquet",
                     index=False)
 
