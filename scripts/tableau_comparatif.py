@@ -22,8 +22,15 @@ avoir à recouper cinq rapports. Cinq systèmes, dans l'ordre de la chaîne opé
 2. **La ligne 3 n'est pas PREV'AIR.** C'est leur *famille* de méthode — biais récent
    interpolé spatialement — dont la formule exacte n'est pas publiée et a depuis évolué vers
    de l'apprentissage. Aucune ligne de ce tableau ne mesure leur produit.
-3. **Les membres n'existent pas pour les PM10.** Les lignes 2 à 4 sont donc absentes sur le
-   polluant qui déclenche pourtant le plus de procédures. C'est dit, pas contourné.
+3. **Les membres PM10 n'existent que depuis 2025-01** — téléchargés le 04/08/2026. La
+   réserve précédente (« les lignes 2 à 4 sont absentes sur PM10 ») est **levée** : le
+   polluant qui déclenche le plus de procédures a enfin sa comparaison au concurrent.
+   Le prix est une **fenêtre plus courte** — 19 mois contre 36 pour les trois autres —
+   parce que les six systèmes partagent les mêmes lignes, et que cet invariant prime sur
+   la taille du corpus. Comparer nos 36 mois à leurs 19 serait la comparaison inéquitable
+   que ce fichier existe pour éviter.
+   ⚠️ **La fenêtre est donc écrite dans le CSV** (`fenetre`, `n_mois`) : `n` seul ne dit
+   pas si 56 238 lignes couvrent 19 mois ou 31.
 
 Le réglage de la ligne 4, et d'où il vient
 --------------------------------------------
@@ -325,6 +332,15 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     t.insert(0, "polluant", polluant)
     t.insert(1, "horizon", horizon)
     t.insert(2, "n", int(ok.sum()))
+    # ⚠️ **La fenêtre s'écrit dans le fichier, lue dans les données.** Sans elle, `n` seul
+    # ne dit pas si 56 238 lignes couvrent 19 mois ou 31. Le cas s'est produit le 05/08 :
+    # l'arrivée des membres d'ensemble PM10 (téléchargés le 04/08, disponibles seulement à
+    # partir de 2025-01) a restreint tout le tableau PM10 à 19 mois — car les six systèmes
+    # partagent les mêmes lignes, ce qui est l'invariant du tableau. PM10 se retrouve donc
+    # sur une fenêtre différente des trois autres polluants, et rien ne le disait.
+    mois = pd.to_datetime(d.loc[ok, "jour"]).dt.strftime("%Y-%m")
+    t.insert(3, "fenetre", f"{mois.min()}→{mois.max()}")
+    t.insert(4, "n_mois", int(mois.nunique()))
     t.to_csv(RACINE / f"reports/tableau_comparatif_{polluant}_h{horizon}.csv", index=False)
 
     # ── Les prédictions ligne à ligne, pour tout ce qui se calcule après coup ────
