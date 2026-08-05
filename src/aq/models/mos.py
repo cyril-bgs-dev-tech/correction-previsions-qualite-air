@@ -28,6 +28,8 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
+from aq.models.moteur import N_JOBS  # une seule source pour la borne de fils
+
 # Le cycle diurne et le cycle annuel sont **circulaires** : coder l'heure par un entier
 # de 0 à 23 place minuit et 23 h aux extrémités opposées de l'échelle, alors qu'ils se
 # suivent. Un arbre de décision doit alors dépenser plusieurs coupures pour reconstituer
@@ -85,7 +87,14 @@ def _modele(graine: int):
         subsample_freq=1,
         colsample_bytree=0.8,
         random_state=graine,
-        n_jobs=-1,
+        # ⚠️ **Jamais `n_jobs=-1`.** LightGBM prend alors les 32 cœurs, et deux ajustements
+        # lancés ensemble en demandent 64 : ce n'est pas un ralentissement de 2×, c'est un
+        # effondrement — la contention porte sur la **bande passante mémoire**, pas sur les
+        # cœurs (`CLAUDE.md` règle 1). Mesuré le 05/08/2026 sur `fit_mos.py`, corpus
+        # identique de 7,05 M de paires : **114 s le premier pli en solo, 1 473 s à deux
+        # en parallèle — ×12,9**. La valeur 8 est celle que `aq.models.moteur` retient
+        # déjà ; ce fichier était le seul à ne pas la suivre.
+        n_jobs=N_JOBS,
         verbose=-1,
     )
 

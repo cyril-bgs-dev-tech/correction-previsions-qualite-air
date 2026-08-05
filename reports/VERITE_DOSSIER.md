@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 05/08/2026 à 16 h 30 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 05/08/2026 à 18 h 26 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -29,12 +29,12 @@ Comparaison à `cams-europe-air-quality-forecasts-optimised-at-observation-sites
 
 | polluant | grain | n | CAMS brut | MOS officiel | nous |
 |---|---|---|---|---|---|
-| O₃ | horaire | 333,991 | 18.49 | 14.47 (+21.7 %) | 13.08 (+29.3 %) |
-| O₃ | **max glissant 8 h** | 14,931 | 14.16 | 13.63 (+3.8 %) | 9.95 (+29.7 %) |
-| NO₂ | horaire | 1,300,663 | 8.04 | 6.62 (+17.7 %) | 7.60 (+5.5 %) |
-| NO₂ | **max horaire** | 57,824 | 15.47 | 12.16 (+21.4 %) | 10.44 (+32.5 %) |
-| PM2,5 | horaire | 720,731 | 5.60 | 4.98 (+11.0 %) | 4.42 (+21.1 %) |
-| PM2,5 | **moyenne journalière** | 31,960 | 4.17 | 3.43 (+17.6 %) | 2.91 (+30.1 %) |
+| O₃ | horaire | 2,698,299 | 17.72 | 14.96 (+15.6 %) | 14.29 (+19.4 %) |
+| O₃ | **max glissant 8 h** | 110,747 | 12.53 | 12.84 (-2.5 %) | 10.04 (+19.9 %) |
+| NO₂ | horaire | 1,481,913 | 8.44 | 6.93 (+17.8 %) | 8.03 (+4.8 %) |
+| NO₂ | **max horaire** | 58,231 | 15.47 | 12.16 (+21.4 %) | 10.63 (+31.3 %) |
+| PM2,5 | horaire | 809,770 | 5.80 | 5.25 (+9.6 %) | 4.75 (+18.1 %) |
+| PM2,5 | **moyenne journalière** | 32,124 | 4.18 | 3.44 (+17.8 %) | 3.05 (+26.9 %) |
 
 Le grain marqué en gras est celui sur lequel porte le **seuil réglementaire** du polluant.
 
@@ -44,11 +44,11 @@ La fenêtre d'évaluation de l'ozone au référentiel LCSQA est **avril-septembr
 
 | fenêtre | n | CAMS brut | MOS officiel | nous |
 |---|---|---|---|---|
-| année entière | 14,931 | 14.16 | 13.63 (+3.8 %) | 9.95 (+29.7 %) |
-| **saison ozone, avril-septembre** | 5,014 | 11.37 | 14.13 (-24.3 %) | 9.80 (+13.8 %) |
-| hors saison, octobre-mars | 9,917 | 15.38 | 13.36 (+13.1 %) | 10.03 (+34.8 %) |
+| année entière | 110,747 | 12.53 | 12.84 (-2.5 %) | 10.04 (+19.9 %) |
+| **saison ozone, avril-septembre** | 56,077 | 11.17 | 13.31 (-19.2 %) | 9.84 (+11.9 %) |
+| hors saison, octobre-mars | 54,670 | 13.79 | 12.35 (+10.4 %) | 10.23 (+25.8 %) |
 
-Le produit officiel dégrade le brut **1 mois sur 12**, au pire en 07/2024 (-24.3 %). Son biais est négatif chaque mois — il sous-estime, ce qui pénalise mécaniquement un maximum.
+Le produit officiel dégrade le brut **12 mois sur 12**, au pire en 04/2025 (-55.0 %). Son biais est négatif chaque mois — il sous-estime, ce qui pénalise mécaniquement un maximum.
 
 **Et la même lecture nous vise** : notre avantage est le plus faible précisément en saison. Citer notre gain annuel sans cette ventilation reproduirait l'erreur que nous reprochons à la moyenne annuelle du produit officiel.
 
