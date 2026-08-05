@@ -899,6 +899,191 @@ def bloc_generalisation() -> str:
         "gagne encore +14,0 % — elle gagne moins, elle ne nuit pas, sauf ponctuellement.\n")
 
 
+
+def bloc_pile_complete(lignes: list[dict]) -> str:
+    """L'empilement cumulatif de tous les leviers — le seul chiffre de synthèse honnête.
+
+    La somme des apports isolés donnerait un total très supérieur, et faux : deux leviers
+    qui captent la même information ne s'additionnent pas.
+    """
+    fs = {p: RACINE / f"reports/methode_maximale_{p}_h2.csv"
+          for p in ("NO2", "O3", "PM10", "PM25")}
+    presents = {p: f for p, f in fs.items() if f.exists()}
+    if not presents:
+        return ""
+    tables = {p: pd.read_csv(f) for p, f in presents.items()}
+    texte = [
+        "## 12. La pile complète — ce que valent tous les leviers ensemble\n",
+        "Double aveugle **station ET mois cachés**, J+2, fenêtre du flux GEOS-CF v1. "
+        "L'ordre des étages est **déclaré avant la mesure** : le réordonner après coup "
+        "flatterait un étage choisi. Deux périmètres qui ne se confondent jamais — "
+        "**PARTOUT** (utilisable là où aucune station n'existe) et **AUX STATIONS** "
+        "(exige l'historique du point). ERA5 figure **hors méthode** : c'est une réanalyse, "
+        "elle n'existe pas quand la prévision est émise, son gain est un **plafond**.\n",
+        "| étage | " + " | ".join(NOM[p] for p in tables) + " |",
+        "|---" * (len(tables) + 1) + "|"]
+    etages = list(next(iter(tables.values()))["configuration"])
+    for e in etages:
+        cells = []
+        for p, tb in tables.items():
+            r = tb[tb["configuration"] == e]
+            if r.empty:
+                cells.append("—"); continue
+            r = r.iloc[0]
+            m = r["apport_marginal_pct"]
+            gras = "**" if str(e).startswith("★") else ""
+            cells.append(f"{gras}{r['gain_pct']:+.2f} %{gras}"
+                         + ("" if pd.isna(m) else f" *({m:+.2f})*"))
+            lignes.append({"bloc": "pile complète", "polluant": p, "grain": e,
+                           "n": int(r["n_plis"]), "gain": r["gain_pct"],
+                           "relatif_pct": r["apport_marginal_pct"]})
+        texte.append(f"| {e} | " + " | ".join(cells) + " |")
+    f0 = next(iter(tables.values())).iloc[0]
+    texte.append(f"\n⚠️ **Les fenêtres diffèrent selon le polluant** : "
+                 + " · ".join(f"{NOM[p]} {tb['n_mois'].iloc[0]} mois ({tb['fenetre'].iloc[0]})"
+                              for p, tb in tables.items())
+                 + ". Seuls les **écarts entre étages** se comparent d'un polluant à l'autre, "
+                   "jamais les niveaux.\n")
+    texte.append("⚠️ Ne jamais citer le chiffre **AUX STATIONS** comme une performance de "
+                 "spatialisation : il exige l'historique d'observations du point, que la "
+                 "spatialisation n'a par définition pas.\n")
+    return "\n".join(texte)
+
+
+def bloc_geoscf(lignes: list[dict]) -> str:
+    """La seule source d'information venue de l'extérieur du périmètre CAMS."""
+    fs = {p: RACINE / f"reports/apport_geoscf_{p}_h2_v1.csv"
+          for p in ("O3", "NO2", "PM25")}
+    presents = {p: f for p, f in fs.items() if f.exists()}
+    if not presents:
+        return ""
+    texte = [
+        "## 13. GEOS-CF — la seule information venue de l'extérieur\n",
+        "Modèle de chimie-transport de la NASA, inventaire d'émissions et assimilation "
+        "**indépendants** de CAMS. Tous les autres leviers du dossier réarrangent ce que "
+        "CAMS contient déjà.\n",
+        "⚠️ **Le fournisseur a changé de flux au milieu de la fenêtre** — v1 retiré le "
+        "2 janvier 2026, v2 démarré le 5 août 2025 — et les deux ne sont **pas le même "
+        "prédicteur**. Sur le mois de recouvrement, l'ozone diffère de **+15,41 µg/m³** en "
+        "moyenne, soit l'ordre de grandeur de l'erreur des modèles eux-mêmes. Tout apport "
+        "se mesure **par flux** ; le corpus mixte est écarté, et les chiffres publiés le "
+        "04/08 qui en venaient sont retirés.\n",
+        "| polluant | apport au plancher d'information | étendue (partitions) | "
+        "corrélation des erreurs | n |",
+        "|---|---|---|---|---|"]
+    for p, f in presents.items():
+        t = pd.read_csv(f)
+        r = t.iloc[-1]
+        # ⚠️ **La médiane sur plusieurs partitions, jamais une seule.** Le fichier d'apport
+        # ne porte qu'une partition ; publier sa valeur ferait passer un tirage pour un
+        # résultat. Quand le balayage existe, c'est lui qui fait foi — et son étendue est
+        # publiée avec, parce qu'un gain de cet ordre s'y déplace.
+        fs = RACINE / f"reports/stabilite_geoscf_{p}_v1.csv"
+        if fs.exists():
+            s = pd.read_csv(fs)["gain_pct"]
+            valeur, etendue = float(s.median()), f"{s.min():+.2f} → {s.max():+.2f} ({len(s)})"
+        else:
+            valeur, etendue = float(r["delta_plancher_pct"]), "*une seule partition*"
+        texte.append(f"| {NOM[p]} | **{valeur:+.2f} %** | {etendue} | "
+                     f"{r['corr_erreurs']:+.3f} | {int(r['n']):,} |")
+        lignes.append({"bloc": "GEOS-CF v1", "polluant": p, "grain": "plancher",
+                       "n": int(r["n"]), "gain": valeur})
+    texte.append("\n**Le mélange nu ne marche jamais** : GEOS-CF seul est bien pire que CAMS "
+                 "partout, et leur moyenne est systématiquement pire que CAMS seul. En "
+                 "**variables**, le modèle apprend *où* croire le modèle étranger — ce qu'une "
+                 "moyenne ne sait pas faire.\n")
+    texte.append("> **apport ≈ décorrélation × qualité.** Sur PM2,5 GEOS-CF est plus "
+                 "décorrélé de CAMS que deux membres CAMS entre eux, et apporte pourtant le "
+                 "moins — parce qu'il y est quatre fois plus mauvais.\n")
+    return "\n".join(texte)
+
+
+def bloc_episodes_reels(lignes: list[dict]) -> str:
+    """La confrontation aux procédures préfectorales réellement déclarées."""
+    f = RACINE / "reports/episodes_reels_occitanie.csv"
+    if not f.exists():
+        return ""
+    t = pd.read_csv(f)
+    texte = [
+        "## 14. Les épisodes **réellement déclenchés** — la mesure la plus dure du dossier\n",
+        "Tout le reste de ce document compte des « épisodes » au sens **journée-station en "
+        "classe ATMO ≥ 3** — des milliers d'occurrences. Un déclenchement réel est une "
+        "**zone-jour sous procédure préfectorale**, et il y en a **52 en quatorze mois** en "
+        "Occitanie (PM10 40 · O₃ 12 · NO₂ **0**). Vérité terrain publiée par l'AASQA "
+        "elle-même. **Les deux comptes ne se comparent pas.**\n"]
+    for p, sous in t.groupby("polluant"):
+        n_ep = int(sous["episodes"].iloc[0])
+        n_zj = int(sous["zones_jours"].iloc[0])
+        texte += [f"\n**{NOM.get(p, p)}** — {n_ep} épisodes évalués, {n_zj:,} zones-jours\n",
+                  "| système | attrapés | rappel | fausses | précision |", "|---|---|---|---|---|"]
+        for _, r in sous.iterrows():
+            gras = "**" if r["systeme"] == "notre modèle" else ""
+            texte.append(f"| {gras}{r['systeme']}{gras} | {int(r['attrapes'])}/{n_ep} | "
+                         f"{r['rappel_pct']:.1f} % | {int(r['fausses'])} | "
+                         f"{r['precision_pct']:.1f} % |")
+            lignes.append({"bloc": "épisodes réels", "polluant": p, "grain": r["systeme"],
+                           "n": n_ep, "POD": r["rappel_pct"], "FAR": 100 - r["precision_pct"]})
+    texte.append("\n⚠️ **Trois lectures, dans l'ordre.** (1) Le plafond n'est pas le nombre "
+                 "d'épisodes déclarés mais la ligne « observation » : sur PM10, douze "
+                 "épisodes n'ont **aucune station** au-dessus du seuil en moyenne "
+                 "journalière — la procédure se déclenche sur autre chose que la grandeur "
+                 "prédite. (2) Tous les systèmes sont quasi aveugles sur PM10, nous très "
+                 "légèrement moins. (3) Sur O₃ nous attrapons tout et crions au loup ~9 % "
+                 "des zones-jours ; CAMS brut, qui en rate le tiers, est trois fois plus "
+                 "précis. **À seuil physique fixé, le recalage d'amplitude joue contre "
+                 "nous.**\n")
+    texte.append("Ce tableau est pris **à seuil fixe, sans réglage**. Le § 8 montre qu'à "
+                 "**volume d'alertes constant** le classement s'inverse. Les deux sont "
+                 "vraies ; il faut dire laquelle on montre et pourquoi.\n")
+    return "\n".join(texte)
+
+
+def bloc_agregation_zone(lignes: list[dict]) -> str:
+    """L'échelle de décision — et le seul gain sec du dossier."""
+    f = RACINE / "reports/agregation_zone_occitanie.csv"
+    if not f.exists():
+        return ""
+    t = pd.read_csv(f)
+    o3 = t[(t["polluant"] == "O3") & (t["regle"] == "max (existant)")
+           & (t["systeme"] == "notre modèle")]
+    if o3.empty:
+        return ""
+    sans = o3[~o3["persistance"]].iloc[0]
+    avec = o3[o3["persistance"]].iloc[0]
+    baisse = 100 * (1 - avec["fausses"] / max(sans["fausses"], 1))
+    texte = [
+        "## 15. À quelle échelle décider — la persistance est gratuite\n",
+        "La décision était prise par station-jour puis agrégée par le **maximum** — « au "
+        "moins une station dépasse » — c'est-à-dire l'agrégateur qui **maximise les fausses "
+        "alertes**. Il n'avait pas été retenu : il avait été subi.\n",
+        "| règle | attrapés | fausses | rappel |", "|---|---|---|---|",
+        f"| max (existant) | {int(sans['attrapes'])}/{int(sans['n_episodes'])} | "
+        f"{int(sans['fausses'])} | {sans['rappel_pct']:.0f} % |",
+        f"| **max + persistance** | **{int(avec['attrapes'])}/{int(avec['n_episodes'])}** | "
+        f"**{int(avec['fausses'])}** | **{avec['rappel_pct']:.0f} %** |",
+        f"\n**−{baisse:.0f} % de fausses alertes, zéro épisode perdu.** Ce n'est pas un "
+        "arbitrage, c'est un gain sec : une fausse alerte est un accident isolé, un épisode "
+        "réel est **installé**, et la procédure préfectorale exige elle-même la persistance. "
+        "Notre règle était instantanée alors que la décision qu'elle imite ne l'est pas.\n",
+        "⚠️ **L'agrégateur de zone, lui, est un arbitrage — et à moitié un artefact.** Une "
+        "règle « k parmi n » ne peut pas déclencher là où le réseau porte moins de k "
+        "stations : elle l'**éteint**. Le réseau occitan a une **médiane de 2 stations par "
+        "département**, et 3 départements sur 9 n'en portent qu'une. La chute des fausses "
+        "alertes se décompose en deux mécanismes de taille comparable — silence sélectif des "
+        "zones creuses, et vrai effet d'agrégation dans les zones denses. Ne jamais "
+        "présenter le premier comme une méthode.\n",
+        "⚠️ **À 12 épisodes d'ozone, aucun écart entre systèmes n'est significatif** : tous "
+        "les intervalles de bootstrap se recouvrent. Le seul chiffre solide de cette section "
+        "est la baisse de fausses alertes, parce qu'elle est **à rappel exactement "
+        "identique**.\n"]
+    for _, r in o3.iterrows():
+        lignes.append({"bloc": "agrégation zone", "polluant": "O3",
+                       "grain": f"max{' + persistance' if r['persistance'] else ''}",
+                       "n": int(r["n_episodes"]), "POD": r["rappel_pct"],
+                       "FAR": 100 - r["precision_pct"]})
+    return "\n".join(texte)
+
+
 def main() -> int:
     lignes: list[dict] = []
     blocs = [
@@ -919,7 +1104,11 @@ def main() -> int:
         bloc_signalements(lignes),
         bloc_front(lignes),
         bloc_generalisation(),
-        "## 12. Registre\n\n"
+        bloc_pile_complete(lignes),
+        bloc_geoscf(lignes),
+        bloc_episodes_reels(lignes),
+        bloc_agregation_zone(lignes),
+        "## 16. Registre — ce que ces mesures ne disent pas\n\n"
         "Ces mesures comparent des produits, pas des équipes. Le post-traitement officiel "
         "répond à des contraintes d'exploitation — couverture européenne, réentraînement "
         "continu, publication horaire — que ce projet n'a pas, et son article recommande "

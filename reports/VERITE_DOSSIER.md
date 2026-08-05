@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 05/08/2026 à 02 h 12 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 05/08/2026 à 16 h 30 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -29,8 +29,8 @@ Comparaison à `cams-europe-air-quality-forecasts-optimised-at-observation-sites
 
 | polluant | grain | n | CAMS brut | MOS officiel | nous |
 |---|---|---|---|---|---|
-| O₃ | horaire | 1,648,619 | 17.42 | 14.45 (+17.0 %) | 13.56 (+22.1 %) |
-| O₃ | **max glissant 8 h** | 73,108 | 12.45 | 11.93 (+4.1 %) | 9.53 (+23.4 %) |
+| O₃ | horaire | 333,991 | 18.49 | 14.47 (+21.7 %) | 13.08 (+29.3 %) |
+| O₃ | **max glissant 8 h** | 14,931 | 14.16 | 13.63 (+3.8 %) | 9.95 (+29.7 %) |
 | NO₂ | horaire | 1,300,663 | 8.04 | 6.62 (+17.7 %) | 7.60 (+5.5 %) |
 | NO₂ | **max horaire** | 57,824 | 15.47 | 12.16 (+21.4 %) | 10.44 (+32.5 %) |
 | PM2,5 | horaire | 720,731 | 5.60 | 4.98 (+11.0 %) | 4.42 (+21.1 %) |
@@ -44,11 +44,11 @@ La fenêtre d'évaluation de l'ozone au référentiel LCSQA est **avril-septembr
 
 | fenêtre | n | CAMS brut | MOS officiel | nous |
 |---|---|---|---|---|
-| année entière | 73,108 | 12.45 | 11.93 (+4.1 %) | 9.53 (+23.4 %) |
-| **saison ozone, avril-septembre** | 38,054 | 10.31 | 12.34 (-19.6 %) | 9.27 (+10.1 %) |
-| hors saison, octobre-mars | 35,054 | 14.41 | 11.48 (+20.4 %) | 9.81 (+31.9 %) |
+| année entière | 14,931 | 14.16 | 13.63 (+3.8 %) | 9.95 (+29.7 %) |
+| **saison ozone, avril-septembre** | 5,014 | 11.37 | 14.13 (-24.3 %) | 9.80 (+13.8 %) |
+| hors saison, octobre-mars | 9,917 | 15.38 | 13.36 (+13.1 %) | 10.03 (+34.8 %) |
 
-Le produit officiel dégrade le brut **8 mois sur 12**, au pire en 06/2024 (-43.2 %). Son biais est négatif chaque mois — il sous-estime, ce qui pénalise mécaniquement un maximum.
+Le produit officiel dégrade le brut **1 mois sur 12**, au pire en 07/2024 (-24.3 %). Son biais est négatif chaque mois — il sous-estime, ce qui pénalise mécaniquement un maximum.
 
 **Et la même lecture nous vise** : notre avantage est le plus faible précisément en saison. Citer notre gain annuel sans cette ventilation reproduirait l'erreur que nous reprochons à la moyenne annuelle du produit officiel.
 
@@ -262,12 +262,12 @@ Les blocs précédents mesurent des erreurs. Celui-ci compte ce qu'un service au
 
 | périmètre | produit | jours-station | jours avec ≥1 signalement | pic (stations le même jour) |
 |---|---|---|---|---|
-| France (270 stations) | **la vérité** | 7,133 | 204 | 204 |
-| France (270 stations) | MOS officiel | 1,095 (15 %) | 64 | 163 |
-| France (270 stations) | notre correction complète | 6,113 (86 %) | 154 | 198 |
-| Occitanie (21 stations) | **la vérité** | 655 | 90 | 22 |
-| Occitanie (21 stations) | MOS officiel | 113 (17 %) | 17 | 17 |
-| Occitanie (21 stations) | notre correction complète | 555 (85 %) | 68 | 22 |
+| France (270 stations) | **la vérité** | 10,803 | 285 | 204 |
+| France (270 stations) | MOS officiel | 1,095 (10 %) | 64 | 163 |
+| France (270 stations) | notre correction complète | 9,347 (87 %) | 214 | 222 |
+| Occitanie (21 stations) | **la vérité** | 979 | 137 | 22 |
+| Occitanie (21 stations) | MOS officiel | 113 (12 %) | 17 | 17 |
+| Occitanie (21 stations) | notre correction complète | 824 (84 %) | 103 | 22 |
 
 **Le produit officiel annonce 21 % des jours-station en France, et 7 % en Occitanie.** L'écart régional est cohérent avec la ventilation saisonnière du bloc 2 : il est en défaut sur la fenêtre ozone, et l'Occitanie est une région où l'ozone estival domine.
 
@@ -448,7 +448,84 @@ L'énoncé défendable est donc : *la correction retire davantage de perte sur l
 
 Ce que cela ne dit **pas** : que la correction nuit quand le forçage est juste. Elle gagne encore +14,0 % — elle gagne moins, elle ne nuit pas, sauf ponctuellement.
 
-## 12. Registre
+## 12. La pile complète — ce que valent tous les leviers ensemble
+
+Double aveugle **station ET mois cachés**, J+2, fenêtre du flux GEOS-CF v1. L'ordre des étages est **déclaré avant la mesure** : le réordonner après coup flatterait un étage choisi. Deux périmètres qui ne se confondent jamais — **PARTOUT** (utilisable là où aucune station n'existe) et **AUX STATIONS** (exige l'historique du point). ERA5 figure **hors méthode** : c'est une réanalyse, elle n'existe pas quand la prévision est émise, son gain est un **plafond**.
+
+| étage | NO₂ | O₃ | PM10 | PM2,5 |
+|---|---|---|---|---|
+| base (CAMS, terrain, calendrier) | +26.61 % | +7.01 % | +8.52 % | +2.08 % |
+| + typologie | +35.58 % *(+8.96)* | +6.88 % *(-0.13)* | +10.12 % *(+1.61)* | +2.24 % *(+0.16)* |
+| + membres | +36.13 % *(+0.55)* | +9.83 % *(+2.95)* | +14.20 % *(+4.07)* | +5.76 % *(+3.52)* |
+| + feux | +36.38 % *(+0.24)* | +11.93 % *(+2.10)* | +15.09 % *(+0.89)* | +7.80 % *(+2.04)* |
+| + geoscf | +38.71 % *(+2.33)* | +13.75 % *(+1.82)* | +17.43 % *(+2.34)* | +9.90 % *(+2.10)* |
+| ★ MAXIMALE — PARTOUT | **+38.71 %** *(+0.00)* | **+13.75 %** *(+0.01)* | **+17.43 %** *(-0.00)* | **+9.90 %** *(-0.00)* |
+| ★ MAXIMALE — AUX STATIONS (+ veille) | **+45.85 %** *(+7.14)* | **+21.66 %** *(+7.92)* | **+23.76 %** *(+6.33)* | **+19.60 %** *(+9.70)* |
+| plafond ERA5 (NON déployable) | +49.28 % *(+10.58)* | +25.41 % *(+11.67)* | +26.22 % *(+8.79)* | +23.61 % *(+13.71)* |
+
+⚠️ **Les fenêtres diffèrent selon le polluant** : NO₂ 29 mois (2023-08→2025-12) · O₃ 29 mois (2023-08→2025-12) · PM10 24 mois (2024-01→2025-12) · PM2,5 29 mois (2023-08→2025-12). Seuls les **écarts entre étages** se comparent d'un polluant à l'autre, jamais les niveaux.
+
+⚠️ Ne jamais citer le chiffre **AUX STATIONS** comme une performance de spatialisation : il exige l'historique d'observations du point, que la spatialisation n'a par définition pas.
+
+## 13. GEOS-CF — la seule information venue de l'extérieur
+
+Modèle de chimie-transport de la NASA, inventaire d'émissions et assimilation **indépendants** de CAMS. Tous les autres leviers du dossier réarrangent ce que CAMS contient déjà.
+
+⚠️ **Le fournisseur a changé de flux au milieu de la fenêtre** — v1 retiré le 2 janvier 2026, v2 démarré le 5 août 2025 — et les deux ne sont **pas le même prédicteur**. Sur le mois de recouvrement, l'ozone diffère de **+15,41 µg/m³** en moyenne, soit l'ordre de grandeur de l'erreur des modèles eux-mêmes. Tout apport se mesure **par flux** ; le corpus mixte est écarté, et les chiffres publiés le 04/08 qui en venaient sont retirés.
+
+| polluant | apport au plancher d'information | étendue (partitions) | corrélation des erreurs | n |
+|---|---|---|---|---|
+| O₃ | **+2.52 %** | +2.20 → +2.69 (4) | +0.660 | 75,072 |
+| NO₂ | **+2.82 %** | +2.66 → +3.00 (4) | +0.807 | 93,674 |
+| PM2,5 | **+1.14 %** | *une seule partition* | +0.427 | 63,132 |
+
+**Le mélange nu ne marche jamais** : GEOS-CF seul est bien pire que CAMS partout, et leur moyenne est systématiquement pire que CAMS seul. En **variables**, le modèle apprend *où* croire le modèle étranger — ce qu'une moyenne ne sait pas faire.
+
+> **apport ≈ décorrélation × qualité.** Sur PM2,5 GEOS-CF est plus décorrélé de CAMS que deux membres CAMS entre eux, et apporte pourtant le moins — parce qu'il y est quatre fois plus mauvais.
+
+## 14. Les épisodes **réellement déclenchés** — la mesure la plus dure du dossier
+
+Tout le reste de ce document compte des « épisodes » au sens **journée-station en classe ATMO ≥ 3** — des milliers d'occurrences. Un déclenchement réel est une **zone-jour sous procédure préfectorale**, et il y en a **52 en quatorze mois** en Occitanie (PM10 40 · O₃ 12 · NO₂ **0**). Vérité terrain publiée par l'AASQA elle-même. **Les deux comptes ne se comparent pas.**
+
+
+**O₃** — 12 épisodes évalués, 5,161 zones-jours
+
+| système | attrapés | rappel | fausses | précision |
+|---|---|---|---|---|
+| observation | 12/12 | 100.0 % | 412 | 2.8 % |
+| CAMS brut | 8/12 | 66.7 % | 102 | 7.3 % |
+| chaîne AASQA | 11/12 | 91.7 % | 446 | 2.4 % |
+| **notre modèle** | 12/12 | 100.0 % | 473 | 2.5 % |
+
+**PM10** — 33 épisodes évalués, 5,174 zones-jours
+
+| système | attrapés | rappel | fausses | précision |
+|---|---|---|---|---|
+| observation | 21/33 | 63.6 % | 18 | 53.8 % |
+| CAMS brut | 1/33 | 3.0 % | 3 | 25.0 % |
+| chaîne AASQA | 1/33 | 3.0 % | 9 | 10.0 % |
+| **notre modèle** | 2/33 | 6.1 % | 11 | 15.4 % |
+
+⚠️ **Trois lectures, dans l'ordre.** (1) Le plafond n'est pas le nombre d'épisodes déclarés mais la ligne « observation » : sur PM10, douze épisodes n'ont **aucune station** au-dessus du seuil en moyenne journalière — la procédure se déclenche sur autre chose que la grandeur prédite. (2) Tous les systèmes sont quasi aveugles sur PM10, nous très légèrement moins. (3) Sur O₃ nous attrapons tout et crions au loup ~9 % des zones-jours ; CAMS brut, qui en rate le tiers, est trois fois plus précis. **À seuil physique fixé, le recalage d'amplitude joue contre nous.**
+
+Ce tableau est pris **à seuil fixe, sans réglage**. Le § 8 montre qu'à **volume d'alertes constant** le classement s'inverse. Les deux sont vraies ; il faut dire laquelle on montre et pourquoi.
+
+## 15. À quelle échelle décider — la persistance est gratuite
+
+La décision était prise par station-jour puis agrégée par le **maximum** — « au moins une station dépasse » — c'est-à-dire l'agrégateur qui **maximise les fausses alertes**. Il n'avait pas été retenu : il avait été subi.
+
+| règle | attrapés | fausses | rappel |
+|---|---|---|---|
+| max (existant) | 12/12 | 473 | 100 % |
+| **max + persistance** | **12/12** | **312** | **100 %** |
+
+**−34 % de fausses alertes, zéro épisode perdu.** Ce n'est pas un arbitrage, c'est un gain sec : une fausse alerte est un accident isolé, un épisode réel est **installé**, et la procédure préfectorale exige elle-même la persistance. Notre règle était instantanée alors que la décision qu'elle imite ne l'est pas.
+
+⚠️ **L'agrégateur de zone, lui, est un arbitrage — et à moitié un artefact.** Une règle « k parmi n » ne peut pas déclencher là où le réseau porte moins de k stations : elle l'**éteint**. Le réseau occitan a une **médiane de 2 stations par département**, et 3 départements sur 9 n'en portent qu'une. La chute des fausses alertes se décompose en deux mécanismes de taille comparable — silence sélectif des zones creuses, et vrai effet d'agrégation dans les zones denses. Ne jamais présenter le premier comme une méthode.
+
+⚠️ **À 12 épisodes d'ozone, aucun écart entre systèmes n'est significatif** : tous les intervalles de bootstrap se recouvrent. Le seul chiffre solide de cette section est la baisse de fausses alertes, parce qu'elle est **à rappel exactement identique**.
+
+## 16. Registre — ce que ces mesures ne disent pas
 
 Ces mesures comparent des produits, pas des équipes. Le post-traitement officiel répond à des contraintes d'exploitation — couverture européenne, réentraînement continu, publication horaire — que ce projet n'a pas, et son article recommande lui-même la cible journalière lorsque l'usage porte sur un maximum : le choix horaire du produit distribué est donc **documenté et assumé**, pas un oubli.
 
