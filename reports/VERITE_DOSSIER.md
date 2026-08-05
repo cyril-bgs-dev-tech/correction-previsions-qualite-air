@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 03/08/2026 à 01 h 03 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 05/08/2026 à 02 h 12 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -342,7 +342,7 @@ C'est **exactement** ce que ce dossier mesure sur le MOS de Copernicus : dégrad
 
 Nos scores sont des **RMSE groupées** sur tous les couples station–temps réunis. Un rapport AASQA conforme au référentiel LCSQA calcule autre chose : **stations de fond seules**, disponibilité **≥ 75 %** (opérateur large, comme le pseudo-code du référentiel technique national), score temporel **par station puis moyenne non pondérée des stations**, échéances séparées, ozone limité à **avril–septembre**. Comparer nos chiffres à un rapport d'AASQA sans ce recalcul serait comparer deux grandeurs différentes.
 
-Recalculé sur les stations de fond passant le seuil de disponibilité, échéance J0 (1-24 h) :
+Recalculé sur les stations de fond passant le seuil de disponibilité, échéance J+1 :
 
 | polluant | n stations | CAMS brut | notre correction | gain **AASQA** | gain ML groupé | écart |
 |---|---|---|---|---|---|---|
