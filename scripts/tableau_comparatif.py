@@ -181,13 +181,23 @@ def main(polluant: str, horizon: int, n_spa: int, membres: str = "auto") -> int:
 
     from leviers_36mois import joindre_feux, joindre_membres  # noqa: PLC0415
     debut, fin = d["mois"].min().replace("-", ""), d["mois"].max().replace("-", "")
+    jointes: list[str] = []
     for nom_f, fn in (("feux", lambda x: joindre_feux(x, debut, fin)),
                       ("membres", lambda x: joindre_membres(x, polluant, debut, fin))):
+        # ⚠️ Un `except: pass` muet faisait disparaître une famille entière du modèle sans
+        # laisser de trace (règle 2 bis § 3, et 2 quater). On journalise la cause, et on
+        # affiche le **périmètre effectif** — les familles réellement jointes — plutôt que
+        # celles qui étaient demandées.
         try:
             d, aj = fn(d)
             familles += aj
-        except Exception:  # noqa: BLE001
-            pass
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️ famille « {nom_f} » NON jointe : {type(e).__name__}: {e}",
+                  flush=True)
+            jointes.append(f"{nom_f}✗")
+        else:
+            jointes.append(f"{nom_f}({len(aj)})")
+    print(f"  familles jointes : {' · '.join(jointes)}", flush=True)
 
     # ── CHIMERE, s'il existe pour ce polluant ────────────────────────────────
     #
@@ -213,7 +223,17 @@ def main(polluant: str, horizon: int, n_spa: int, membres: str = "auto") -> int:
         avant = len(d)
         d = d.merge(jm, on=["station_id", "jour"], how="left")
         assert len(d) == avant
-        a_chimere = d["chimere"].notna().mean() > 0.3
+        couv = float(d["chimere"].notna().mean())
+        a_chimere = couv > 0.3
+        if a_chimere and couv < 0.999:
+            # Règle 2 quater : ce seuil décide du PÉRIMÈTRE, pas d'un détail. `ok` prend
+            # l'intersection des systèmes finis, donc faire entrer CHIMERE avec une
+            # couverture partielle ampute tout le tableau. On le dit, chiffré.
+            perdu = 100 * (1 - couv)
+            print(f"  ⚠️ CHIMERE couvre {100 * couv:.0f} % des lignes : le faire entrer "
+                  f"dans l'échelle retirera ~{perdu:.0f} % du corpus à TOUS les systèmes.\n"
+                  f"     `--membres non` conserve le corpus long, ancré sur CAMS.",
+                  flush=True)
     a_prevair = a_chimere and "prevair_like" in d and d["prevair_like"].notna().mean() > 0.3
     print(f"{polluant} · {len(d):,} jours-station · {len(ids)} stations · "
           f"CHIMERE {'disponible' if a_chimere else 'ABSENT (pas de membres)'}", flush=True)

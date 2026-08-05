@@ -125,11 +125,15 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     groupes = np.array_split(rng.permutation(ids), n_spa)
     mois = np.sort(d["mois"].unique())
     pred = {k: np.full(len(d), np.nan) for k in modes}
+    ecartes: list[str] = []
     for i, mm in enumerate(mois):
         dans = d["station_id"].isin(groupes[i % n_spa])
         mt, mr = (d["mois"] == mm) & dans, (d["mois"] != mm) & ~dans
         te, tr = d[mt], d[mr]
+        # Règle 2 quater : un pli écarté change le DÉNOMINATEUR. On le compte et
+        # on le nomme, sinon le corpus rétrécit sans que rien ne le dise.
         if len(te) < 200 or len(tr) < 1000:
+            ecartes.append(f"{mm}({len(te)}/{len(tr)})")
             continue
         idx = np.flatnonzero(mt.to_numpy())
         for nom, colonnes in modes.items():
@@ -138,6 +142,11 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
             print(f"  {i + 1}/{len(mois)} mois · {(time.time() - depart) / 60:.1f} min",
                   flush=True)
 
+    if ecartes:
+        print(f"  ⚠️ {len(ecartes)} pli(s) écarté(s) sur {len(mois)} pour effectif "
+              f"insuffisant : {', '.join(ecartes)}", flush=True)
+    else:
+        print(f"  {len(mois)} plis sur {len(mois)} exécutés", flush=True)
     ok = np.ones(len(d), bool)
     for nom, v in pred.items():
         if not np.isfinite(v).any():

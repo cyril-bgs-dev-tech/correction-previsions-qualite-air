@@ -349,6 +349,93 @@ est-ce que je m'en apercevrais ?*
 
 ---
 
+## 2 quater. Une condition de disponibilité ne change jamais le périmètre en silence
+
+### La règle
+
+Les règles 2 bis et 2 ter protègent la lecture et l'écriture. Celle-ci protège **ce qui est
+comparé**. Le défaut n'est ni une donnée fausse ni une donnée perdue : c'est un `if` sur la
+**disponibilité** qui décide, tout seul, **de quoi on parle**.
+
+> **Un seuil de couverture, une exception avalée ou un pli écarté ne sont pas des détails
+> d'implémentation : ce sont des décisions de protocole.** Toute condition portant sur la
+> disponibilité des données doit soit **replier ligne à ligne en comptant le repli**, soit
+> **être exposée en option de ligne de commande** — jamais trancher en dur.
+
+Trois formes, un seul mécanisme :
+
+| forme | ce qui change en silence |
+|---|---|
+| `if colonne.notna().mean() > 0,3:` fait entrer un système | le **corpus**, par intersection des systèmes finis |
+| `except Exception: pass` autour d'une jointure | une **famille de variables** disparaît du modèle |
+| `if len(te) < 200: continue` | le **dénominateur** : des plis sortent du compte |
+
+Et le contrôle qui les attrape toutes : **afficher le périmètre effectif, pas le périmètre
+demandé.** Lignes retenues, mois retenus, plis exécutés sur plis prévus, familles réellement
+jointes. Un script qui n'imprime que son résultat ne permet pas de voir qu'il a changé de
+question.
+
+### L'erreur qui a produit cette règle — le 05/08
+
+`tableau_comparatif.py` décidait d'inclure CHIMERE dans l'échelle des systèmes par
+`d["chimere"].notna().mean() > 0.3`. Les six systèmes partageant les mêmes lignes — `ok` prend
+l'**intersection** des systèmes finis — franchir ce seuil restreint **tout le tableau** à la
+fenêtre des membres.
+
+Sur PM10, dont les membres n'existent que depuis 2025-01, cela a troqué **39 % du corpus
+(31 mois → 19) contre deux lignes**, sans un mot. Personne ne l'a décidé : un `0.3` codé en
+dur l'a fait. Et j'ai d'abord **rationalisé ce défaut après coup**, en le présentant comme un
+arbitrage réfléchi — ce qui est pire que le défaut lui-même.
+
+Le comble : les deux tables étaient légitimes, chacune avec ses lignes communes. **Il n'y avait
+rien à trancher.** `--membres auto|non` les publie toutes les deux. Et la variante longue s'est
+révélée être **à la fois le plus grand corpus et le test le plus dur** — le substitut ancré sur
+CAMS (RMSE 7,20) est un adversaire plus fort que la chaîne réelle (7,63).
+
+### La bonne forme existait déjà dans le dépôt
+
+`maximum_deployable.py` a exactement le même seuil `> 0.3` et ne souffre pas du défaut, parce
+qu'il fait les deux gestes :
+
+```python
+# ✗  le seuil bascule tout le périmètre, en silence
+a_chimere = d["chimere"].notna().mean() > 0.3     # …puis `ok` intersecte, 39 % du corpus part
+
+# ✓  repli ligne à ligne, et le repli est COMPTÉ
+brut = d[dispo].mean(axis=1).to_numpy()
+replis = ~np.isfinite(brut)
+if replis.any():
+    nom += " (CAMS en repli)"
+    print(f"  ⚠️ {replis.sum():,} lignes sans {'/'.join(dispo)} — repli sur CAMS")
+brut = np.where(replis, socle, brut)
+```
+
+**Replier conserve le périmètre ; basculer le détruit.** Et un repli compté est une réserve
+publiable ; un repli muet est un chiffre faux.
+
+### Les jumeaux trouvés au scan du 05/08
+
+- 🔴 `tableau_comparatif.py` — `except Exception: pass` **entièrement muet** autour des
+  jointures de familles. Une famille qui échoue à se joindre disparaît du modèle sans trace.
+  C'est la règle 2 bis § 3, encore vivante dans le dépôt.
+- 🔴 `if len(te) < 200 or len(tr) < 1000: continue` — recopié dans **au moins cinq scripts**
+  (`apport_geoscf`, `apport_asymetrie_membres`, `banc_lcsqa`, `capteur_situation_anormale`,
+  `methode_maximale`) et **aucun n'affiche le nombre de plis écartés**. C'est ainsi que PM10 a
+  tourné sur 24 plis au lieu de 29 sans que rien ne le dise — visible seulement parce que
+  `methode_maximale` écrit `n_plis` dans son CSV.
+- ✅ Faux positifs, à ne pas « corriger » : les `notna().mean()` de `apport_tropomi`,
+  `extraire_sol`, `krigeage_du_biais`, `champ_region` **rapportent** une couverture sans rien
+  décider — c'est précisément ce que la règle demande. Et `corriger_chimere.py:214` ne gouverne
+  qu'un affichage.
+
+### Le fil commun
+
+C'est la règle 5 appliquée à la **question posée** plutôt qu'aux données : *si ce traitement
+répondait à une autre question que celle que je crois avoir posée, est-ce que je m'en
+apercevrais ?* Sans affichage du périmètre effectif, la réponse est non.
+
+---
+
 ## 3. Volume — ne télécharger que la fenêtre utile
 
 ### La règle
