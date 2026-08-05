@@ -23,14 +23,24 @@ avoir à recouper cinq rapports. Cinq systèmes, dans l'ordre de la chaîne opé
    interpolé spatialement — dont la formule exacte n'est pas publiée et a depuis évolué vers
    de l'apprentissage. Aucune ligne de ce tableau ne mesure leur produit.
 3. **Les membres PM10 n'existent que depuis 2025-01** — téléchargés le 04/08/2026. La
-   réserve précédente (« les lignes 2 à 4 sont absentes sur PM10 ») est **levée** : le
-   polluant qui déclenche le plus de procédures a enfin sa comparaison au concurrent.
-   Le prix est une **fenêtre plus courte** — 19 mois contre 36 pour les trois autres —
-   parce que les six systèmes partagent les mêmes lignes, et que cet invariant prime sur
-   la taille du corpus. Comparer nos 36 mois à leurs 19 serait la comparaison inéquitable
-   que ce fichier existe pour éviter.
-   ⚠️ **La fenêtre est donc écrite dans le CSV** (`fenetre`, `n_mois`) : `n` seul ne dit
-   pas si 56 238 lignes couvrent 19 mois ou 31.
+   réserve précédente (« les lignes 2 à 4 sont absentes sur PM10 ») est **levée**, mais
+   elle se paie : les six systèmes partageant les mêmes lignes, faire entrer CHIMERE
+   restreint tout le tableau à **19 mois** au lieu de 31.
+   **On ne tranche donc pas — les deux tables sont publiées** (`--membres auto|non`) :
+
+   | variante | fenêtre | systèmes | notre gain vs chaîne |
+   |---|---|---|---|
+   | `auto` | 19 mois, 2025-01→2026-07 | 6, chaîne **réelle** CHIMERE+MOCAGE | **+21,32 %** |
+   | `non` | 31 mois, 2024-01→2026-07 | 4, chaîne **ancrée CAMS** | **+13,26 %** |
+
+   ⚠️ **Et le substitut est un adversaire PLUS FORT que la chaîne réelle** : le krigeage
+   ancré sur CAMS rend 7,20 de RMSE, celui ancré sur CHIMERE+MOCAGE 7,63. La variante
+   longue est donc à la fois le corpus le plus grand **et** le test le plus dur. C'est
+   elle qu'il faut montrer en premier ; la courte sert à dire que face à la chaîne
+   *nommée*, l'écart se creuse.
+
+   ⚠️ **La fenêtre est écrite dans le CSV** (`fenetre`, `n_mois`, `variante`) : `n` seul
+   ne dit pas si 56 238 lignes couvrent 19 mois ou 31.
 
 Le réglage de la ligne 4, et d'où il vient
 --------------------------------------------
@@ -150,7 +160,7 @@ def scores(o: np.ndarray, x: np.ndarray, ref: np.ndarray,
     return s | loi_des_erreurs(o, x)
 
 
-def main(polluant: str, horizon: int, n_spa: int) -> int:
+def main(polluant: str, horizon: int, n_spa: int, membres: str = "auto") -> int:
     depart = time.time()
     jeu = charger(polluant, horizon)
     cols = colonnes_admises(jeu)
@@ -180,7 +190,17 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
             pass
 
     # ── CHIMERE, s'il existe pour ce polluant ────────────────────────────────
-    mem = charger_membres(polluant, d["jour"])
+    #
+    # ⚠️ **Ce choix troque du corpus contre des lignes, et il doit être explicite.**
+    # Les six systèmes partagent les mêmes lignes (`ok` prend l'intersection). Faire entrer
+    # CHIMERE restreint donc TOUT le tableau à la fenêtre des membres. Sur PM10, dont les
+    # membres n'existent que depuis 2025-01, cela fait passer le corpus de 31 mois à 19 —
+    # 39 % de lignes en moins — en échange de deux systèmes supplémentaires.
+    #
+    # Le seuil `> 0.3` décidait seul de cet arbitrage, en silence. Il n'y a aucune raison de
+    # trancher : les deux tables sont légitimes, chacune avec ses lignes communes. D'où
+    # `--membres non`, qui produit la variante longue ancrée sur CAMS.
+    mem = charger_membres(polluant, d["jour"]) if membres != "non" else None
     a_chimere = mem is not None
     if a_chimere:
         agr = "max" if grandeur in ("max_8h", "max_horaire") else "mean"
@@ -341,7 +361,10 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     mois = pd.to_datetime(d.loc[ok, "jour"]).dt.strftime("%Y-%m")
     t.insert(3, "fenetre", f"{mois.min()}→{mois.max()}")
     t.insert(4, "n_mois", int(mois.nunique()))
-    t.to_csv(RACINE / f"reports/tableau_comparatif_{polluant}_h{horizon}.csv", index=False)
+    t.insert(5, "variante", "sans membres (ancre CAMS)" if membres == "non" else "auto")
+    suff = "_sansmembres" if membres == "non" else ""
+    t.to_csv(RACINE / f"reports/tableau_comparatif_{polluant}_h{horizon}{suff}.csv",
+             index=False)
 
     # ── Les prédictions ligne à ligne, pour tout ce qui se calcule après coup ────
     # Sans ce fichier, chaque question posée au tableau — décomposition, recalage,
@@ -358,10 +381,11 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
                   "systeme": [n for n, _, _ in systemes],
                   "configuration": [c for _, c, _ in systemes]}).to_csv(
         dossier / f"systemes_{polluant}_h{horizon}.csv", index=False)
-    brut.to_parquet(dossier / f"comparatif_{polluant}_h{horizon}.parquet", index=False)
+    brut.to_parquet(dossier / f"comparatif_{polluant}_h{horizon}{suff}.parquet",
+                    index=False)
 
-    print(f"\nÉcrit : reports/tableau_comparatif_{polluant}_h{horizon}.csv")
-    print(f"        data/processed/predictions/comparatif_{polluant}_h{horizon}.parquet "
+    print(f"\nÉcrit : reports/tableau_comparatif_{polluant}_h{horizon}{suff}.csv")
+    print(f"        data/processed/predictions/comparatif_{polluant}_h{horizon}{suff}.parquet "
           f"({len(brut):,} lignes × {len(systemes)} systèmes) · "
           f"{(time.time() - depart) / 60:.1f} min")
     return 0
@@ -372,5 +396,8 @@ if __name__ == "__main__":
     a.add_argument("--polluant", default="NO2")
     a.add_argument("--horizon", type=int, default=2)
     a.add_argument("--plis-spatiaux", type=int, default=3)
+    a.add_argument("--membres", choices=("auto", "non"), default="auto",
+                   help="`non` force l'ancre CAMS et écarte CHIMERE : conserve le corpus "
+                        "long au prix des deux lignes de l'ensemble")
     n = a.parse_args()
-    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux))
+    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.membres))
