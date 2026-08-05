@@ -62,7 +62,15 @@ from scores_episodes import scores  # noqa: E402
 # La leçon vaut au-delà du NO₂ : un seuil sans événements ne mesure pas une incapacité à
 # détecter, il mesure l'absence de ce qu'on cherche à détecter. Vérifier le nombre de positifs
 # **avant** de conclure d'une détection.
-SEUILS = {"O3": 120.0, "NO2": 120.0, "PM25": 25.0}
+#
+# **PM10 : 50 µg/m³ en moyenne journalière.** C'est à la fois le seuil réglementaire
+# d'information et la borne de la classe ATMO « mauvais » — les deux coïncident, ce qui est
+# le cas le plus favorable et n'arrive pour aucun autre polluant ici. C'est aussi le seuil
+# retenu par `episodes_reels.py` contre les épisodes réellement déclarés : les deux mesures
+# sont donc directement raccordables. Son absence de cette table est la seule raison pour
+# laquelle la tête de détection n'avait jamais tourné sur le polluant qui déclenche
+# **40 des 52 procédures** réelles en Occitanie.
+SEUILS = {"O3": 120.0, "NO2": 120.0, "PM25": 25.0, "PM10": 50.0}
 BUDGETS = (0.10, 0.20, 0.30, 0.40)
 
 

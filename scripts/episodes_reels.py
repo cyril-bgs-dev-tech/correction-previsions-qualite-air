@@ -131,6 +131,23 @@ def main(horizon: int) -> int:
         if d.empty:
             continue
 
+        # ⚠️ **Second contrôle d'inévaluabilité, par polluant.** Le contrôle ci-dessus teste
+        # « ce département porte-t-il UNE station » ; il ne dit rien de « porte-t-il des
+        # prédictions POUR CE POLLUANT ». L'ARIÈGE a une station dans `stations.parquet` —
+        # elle passe donc le premier filtre — et **aucune station prédite**, pour aucun
+        # polluant. Ses **3 épisodes PM10** disparaissaient du dénominateur en silence :
+        # rappel publié 2/33 = 6,1 % au lieu de 2/36 = 5,6 %. Le compte manquant gonfle
+        # toujours le rappel. Trouvé au contrôle du 05/08 ; c'est `CLAUDE.md` § 4 —
+        # l'attendu venait d'ailleurs que de la demande.
+        muets = sorted(set(vrais["dep"]) - set(d["dep"]))
+        if muets:
+            perdus = vrais[vrais["dep"].isin(muets)]
+            print(f"\n⚠️ {polluant} : {len(perdus)} épisode(s) INÉVALUABLES — départements "
+                  f"sans aucune station prédite : {', '.join(muets)}", flush=True)
+            vrais = vrais[~vrais["dep"].isin(muets)]
+            if vrais.empty:
+                continue
+
         systemes = {"CAMS brut": "cams", "chaîne AASQA": "aasqa_r",
                     "notre modèle": "nous_r"}
         # Le **maximum par (département, jour)** : une procédure se déclenche dès qu'un
@@ -142,7 +159,14 @@ def main(horizon: int) -> int:
         g["reel"] = [(a, b) in reels for a, b in zip(g["dep"], g["jour"])]
 
         n_couvert = int(g["reel"].sum())
-        print(f"\n{'═' * 84}\n{polluant} · {len(vrais)} épisodes déclarés, "
+        # Le dénominateur affiché est **le nombre d'épisodes évaluables**, et l'on exige
+        # qu'il n'en manque aucun : après le filtre par polluant ci-dessus, tout écart
+        # restant est un défaut d'appariement, pas une lacune de réseau.
+        if n_couvert != len(vrais):
+            raise SystemExit(
+                f"{polluant} : {len(vrais)} épisodes évaluables mais {n_couvert} retrouvés "
+                f"dans la grille — appariement (département, jour) à vérifier")
+        print(f"\n{'═' * 84}\n{polluant} · {len(vrais)} épisodes évaluables, "
               f"{n_couvert} retrouvés dans nos zones-jours prédites\n"
               f"seuil {seuil:.0f} µg/m³ — {nature}\n{'═' * 84}")
         print(f"  {len(g):,} zones-jours évaluées sur {g['dep'].nunique()} départements")
