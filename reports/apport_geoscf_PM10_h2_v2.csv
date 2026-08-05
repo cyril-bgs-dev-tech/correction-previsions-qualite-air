@@ -1,0 +1,3 @@
+polluant,horizon,configuration,r,rmse,plancher,delta_plancher_pct,n,corr_erreurs,version_geoscf
+PM10,2,"① base (terrain, calendrier, typologie, 6 membres)",0.7126753643710428,6.46688731341726,6.457968458828004,0.0,23168,0.448395195613267,v2
+PM10,2,② + GEOS-CF,0.7153895911328222,6.441736230108503,6.432484327102724,0.3946153018205556,23168,0.448395195613267,v2

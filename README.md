@@ -8,7 +8,10 @@
 > `page_champ_region.py`.
 >
 > **Travaux en cours :** intégration d'un second modèle de chimie indépendant
-> (**NASA GEOS-CF**, 35 mois extraits) et champs spatialisés régionaux. Les chiffres
+> (**NASA GEOS-CF**, 36 mois extraits — 29 sur le flux v1, 8 sur le flux v2 qui lui a
+> succédé, et **un mois dans les deux** pour mesurer leur écart) et champs spatialisés
+> régionaux. Les deux flux n'étant pas le même prédicteur, tout apport se mesure **par
+> flux** : le corpus mixte est écarté. Les chiffres
 > ci-dessous portent sur le double aveugle et restent valides ; la comparaison à la chaîne
 > concurrente a été **corrigée trois fois le 03-04/08**, toujours à notre défaveur, et les
 > rapports en portent la trace.

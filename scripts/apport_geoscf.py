@@ -71,10 +71,28 @@ def plancher(o, x) -> tuple[float, float]:
     return r, float(o.std()) * np.sqrt(max(1 - r ** 2, 0.0))
 
 
-def charger_geoscf(grandeur: str) -> pd.DataFrame:
-    fs = sorted(glob.glob(str(RACINE / "data/processed/meteo/geoscf_metropole_*.parquet")))
+def charger_geoscf(grandeur: str, version: str = "mixte") -> pd.DataFrame:
+    """Charge le corpus GEOS-CF, **par version** si on le demande.
+
+    ⚠️ v1 et v2 **ne sont pas le même prédicteur**. Mesuré le 04/08 sur octobre 2025,
+    extrait dans les deux versions aux mêmes stations et aux mêmes heures : l'ozone diffère
+    de **+15,4 µg/m³** en moyenne, les PM2,5 de **−9,1**, avec une RMSE d'écart de 18,9 et
+    13,8 — soit l'ordre de grandeur de l'erreur des modèles contre les observations, et non
+    un ordre en dessous.
+
+    Un corpus mixte donne donc au modèle une variable qui **change de définition** en
+    janvier 2026. Tout apport mesuré dessus peut venir du modèle apprenant à distinguer les
+    deux régimes, ce qui n'est pas de l'information sur la qualité de l'air.
+    """
+    tous = sorted(glob.glob(str(RACINE / "data/processed/meteo/geoscf_metropole_*.parquet")))
+    if version == "v1":
+        fs = [f for f in tous if "_v2" not in f]
+    elif version == "v2":
+        fs = [f for f in tous if "_v2" in f]
+    else:
+        fs = tous
     if not fs:
-        raise SystemExit("aucun fichier GEOS-CF — lancer extraire_geoscf.py")
+        raise SystemExit(f"aucun fichier GEOS-CF en version « {version} »")
     t = pd.concat([pd.read_parquet(f) for f in fs], ignore_index=True)
     t["jour"] = pd.to_datetime(t["timestamp_utc"]).dt.floor("D")
     cols = [c for c in t.columns if c.startswith("geoscf_")]
@@ -85,8 +103,15 @@ def charger_geoscf(grandeur: str) -> pd.DataFrame:
     return j
 
 
-def main(polluant: str, horizon: int, n_spa: int) -> int:
-    depart = time.time()
+def preparer(polluant: str, horizon: int,
+             version: str) -> tuple[pd.DataFrame, dict[str, list[str]], str]:
+    """Construit le jeu journalier et les familles de colonnes, **une seule fois**.
+
+    ⚠️ Extrait de `main` pour que `stabilite_apport_geoscf.py` mesure la dispersion du gain
+    sur *exactement* la même préparation. Une seconde préparation recopiée aurait divergé en
+    silence — jointure, filtre de couverture, ordre des colonnes — et les deux scripts
+    auraient rendu des chiffres non comparables sans que rien ne lève.
+    """
     jeu = charger(polluant, horizon)
     cols = colonnes_admises(jeu)
     jeu[cols] = jeu[cols].replace([np.inf, -np.inf], 30_000.0)
@@ -120,7 +145,7 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
         d["memb_etendue"] = d[pres].max(axis=1) - d[pres].min(axis=1)
         familles += pres + ["memb_etendue"]
 
-    g = charger_geoscf(grandeur)
+    g = charger_geoscf(grandeur, version)
     g["jour"] = pd.to_datetime(g["jour"]).dt.tz_localize(None)
     avant = len(d)
     d = d.merge(g, on=["station_id", "jour"], how="left")
@@ -129,13 +154,22 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     cols_geo = [c for c in d.columns if c.startswith("geoscf_")]
     jumeau = JUMEAU.get(polluant)
     couvert = d[jumeau].notna() if jumeau in d else pd.Series(False, index=d.index)
-    print(f"  couverture GEOS-CF : {100 * couvert.mean():.1f} % des jours-station",
-          flush=True)
+    print(f"  couverture GEOS-CF ({version}) : {100 * couvert.mean():.1f} % "
+          f"des jours-station", flush=True)
     # ⚠️ Comparer sur les MÊMES lignes : sans cela, l'ajout de GEOS-CF changerait aussi
     # l'échantillon, et l'on mesurerait un effet de sélection au lieu d'un apport.
     d = d[couvert].reset_index(drop=True)
     if len(d) < 20_000:
         raise SystemExit(f"{len(d):,} lignes couvertes — trop peu")
+    return d, {"base": base, "familles": familles, "geo": cols_geo,
+               "membres": pres if fs else []}, jumeau
+
+
+def main(polluant: str, horizon: int, n_spa: int, version: str) -> int:
+    depart = time.time()
+    d, colonnes, jumeau = preparer(polluant, horizon, version)
+    base, familles = colonnes["base"], colonnes["familles"]
+    cols_geo, pres = colonnes["geo"], colonnes["membres"]
 
     o = d["valeur"].to_numpy()
     cams = d["cams_jour"].to_numpy()
@@ -144,7 +178,7 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
 
     print(f"\n{'═' * 84}\n① DÉCORRÉLATION DES ERREURS — c'est elle qui décide\n{'═' * 84}")
     print(f"  corr(erreur CAMS, erreur GEOS-CF) = {np.corrcoef(e_cams, e_geos)[0, 1]:+.4f}")
-    if len(fs) and len(pres) >= 2:
+    if len(pres) >= 2:
         # ⚠️ Les membres ne couvrent pas entièrement le sous-ensemble GEOS : une
         # corrélation calculée sans masque sort `nan` et le repère de comparaison
         # disparaît en silence — c'est arrivé le 04/08.
@@ -212,7 +246,9 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
         print(f"    plus — l'information manquante n'est pas dans un second modèle.")
     else:
         print(f"\n  → Apport {gain:+.2f} % du plancher. À confirmer sur un second polluant.")
-    f = RACINE / f"reports/apport_geoscf_{polluant}_h{horizon}.csv"
+    t["version_geoscf"] = version
+    suff = "" if version == "mixte" else f"_{version}"
+    f = RACINE / f"reports/apport_geoscf_{polluant}_h{horizon}{suff}.csv"
     t.to_csv(f, index=False)
     print(f"\nÉcrit : {f.relative_to(RACINE)} · {(time.time() - depart) / 60:.1f} min")
     return 0
@@ -223,5 +259,6 @@ if __name__ == "__main__":
     a.add_argument("--polluant", default="O3")
     a.add_argument("--horizon", type=int, default=2)
     a.add_argument("--plis-spatiaux", type=int, default=3)
+    a.add_argument("--version", default="mixte", choices=("mixte", "v1", "v2"))
     n = a.parse_args()
-    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux))
+    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.version))
