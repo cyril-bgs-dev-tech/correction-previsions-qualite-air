@@ -1,0 +1,172 @@
+<!-- ══════════════════════ PAGE 4 ══════════════════════════════════════ -->
+<section class="page" id="resultats">
+  <div class="chapeau-page">
+    <p class="eyebrow">Page 04 — Les résultats</p>
+    <h1>Contre la chaîne réglementaire, année par année</h1>
+    <p class="chapeau">
+      Trois systèmes, <strong>sur exactement les mêmes jours-stations</strong>&#8239;: l'ensemble
+      européen <strong>CAMS brut</strong> qui sert de dénominateur à tout gain, la
+      <strong>stratégie réglementaire</strong> d'une AASQA — biais récent interpolé
+      spatialement — et <strong>notre modèle</strong>. Échéance <strong>J+1</strong>, grandeur
+      réglementaire de chaque polluant, protocole du <strong>double aveugle</strong>&#8239;:
+      station et mois cachés ensemble.
+    </p>
+    <p class="these">
+      Leur méthode est rejouée <em>dans son meilleur réglage</em>, pas dans sa version usuelle&#8239;:
+      fenêtre de 30 jours au lieu de 3, portée de 200 km au lieu de 50, donneurs de même
+      typologie. Sur le NO₂ ce réglage la fait passer de <strong>+3,5 %</strong> à
+      <strong>+21,4 %</strong>. Se comparer à une version bridée d'une méthode n'apprend rien.
+    </p>
+  </div>
+
+  <!-- ── La réserve, en tête et non en note ───────────────────────────── -->
+  <div class="limites limites--haut">
+    <h3>Ce que la ligne « AASQA » est, et ce qu'elle n'est pas</h3>
+    <ul>
+      <li>
+        <strong>Leur méthode est reproduite&#8239;; leur modèle ne l'est pas.</strong> Le CHIMERE
+        dont nous disposons est le <strong>membre de l'ensemble CAMS</strong> — emprise
+        européenne, maille 0,1°, <strong>sans assimilation</strong>. Celui de PREV'AIR est
+        national, à 1,7 km et assimilé. Aucune ligne <em>de cette page</em> ne mesure donc leur
+        produit&#8239;: il y faudrait leur archive, et la mise à disposition publique ne conserve
+        que <strong>six jours glissants</strong>.
+      </li>
+      <li>
+        <strong>Mais la réserve n'est plus une hypothèse — elle est mesurée.</strong> Neuf
+        journées de PREV'AIR <em>réel</em> ont été captées (avril 2025, puis 27/07 → 02/08/2026).
+        Sur le seul face-à-face possible — PM10, moyenne journalière à J+1,
+        <strong>860 jours-station</strong> — les trois RMSE sont&#8239;: CAMS brut <b>8,29</b>,
+        <strong>PREV'AIR réel <b>7,49</b></strong>, notre correction <b>6,08</b>&#8239;µg/m³.
+        <br>Leur chaîne réelle rend donc <strong>+9,7 %</strong> contre CAMS brut là où notre
+        simulation de leur méthode n'en rend que <strong>+4,1 %</strong>&#8239;: la simulation les
+        <strong>sous-estime</strong>, comme annoncé, et l'écart affiché sur cette page reste un
+        <strong>majorant</strong> de notre avance. <em>Six jours et un seul polluant ne font pas
+        un banc d'essai</em> — c'est une vérification de sens, pas une comparaison.
+      </li>
+      <li>
+        <strong>Les PM10 sont publiés en deux variantes, et la longue vient en premier.</strong>
+        Les membres d'ensemble n'existent pour ce polluant que depuis 2025-01. Deux tables
+        également légitimes en découlent, et les cacher l'une l'autre serait le défaut&#8239;:
+        <br>· <strong>PM10 — 31 mois</strong>, chaîne réglementaire <strong>ancrée sur
+        CAMS</strong>. C'est à la fois le plus grand corpus <em>et</em> le test le plus dur&#8239;:
+        ce substitut atteint une RMSE de <b>7,20</b>, soit un adversaire <strong>plus
+        fort</strong> que la chaîne nommée (<b>7,63</b>).
+        <br>· <strong>PM10 · chaîne nommée — 19 mois</strong>, CHIMERE+MOCAGE réel. Face à
+        l'adversaire nommé, l'écart <em>se creuse</em> — ce qui est le sens du second tableau,
+        pas une amélioration de notre modèle.
+        <br>C'est pourtant le polluant qui déclenche <strong>40 des 52 procédures</strong> réelles.
+      </li>
+      <li>
+        <strong>Aucun gain n'est affiché sans son effectif.</strong> Les couples polluant × année
+        sous 500 jours-station sont retirés — PM2,5 2025 n'en compte que <strong>73</strong> —&nbsp;;
+        les années de <strong>moins de six mois</strong> sont publiées mais
+        <span class="marq-faible">marquées</span>, avec leur fenêtre réelle. Sur l'ozone et les
+        PM2,5, « 2026 » ne contient qu'un mois — <strong>juillet 2026</strong>&#8239;: ce n'est pas
+        une année, et l'appeler ainsi serait un nom qui ment.
+      </li>
+      <li>
+        <strong>Un tiers du réseau par mois — c'est le protocole, pas une lacune.</strong> Le
+        double aveugle cache <em>ensemble</em> la station et le mois&#8239;: chaque mois est évalué sur
+        un <strong>tiers disjoint</strong> des stations, jamais vu à l'entraînement. Sur l'ozone,
+        270 stations donnent donc ~90 stations par mois. Une année complète cumule les trois
+        tiers et retrouve le réseau entier&#8239;; une fenêtre d'un seul mois ne peut structurellement
+        en montrer qu'un tiers.
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── Bloc 1 : le tableau ──────────────────────────────────────────── -->
+  <figure class="fig">
+    <h4>Gain de RMSE contre CAMS brut, par polluant et par année</h4>
+    <p class="sous">
+      Un gain positif signifie <em>moins d'erreur que l'ensemble européen brut</em>. La colonne
+      grise rappelle ce que vaut leur méthode <strong>non réglée</strong>&#8239;: l'écart entre les
+      deux colonnes est ce que le réglage leur apporte, pas ce que nous leur retirons.
+    </p>
+    <div class="fig-scroll">
+      <table class="tab-gains" id="p4-tab"><tbody></tbody></table>
+    </div>
+    <figcaption>
+      Lecture&#8239;: <b>−10,5 %</b> pour la stratégie AASQA sur l'ozone signifie qu'elle
+      <strong>dégrade</strong> CAMS brut de 10,5 %. Le krigeage d'un biais récent suppose un biais
+      stable&#8239;; sur l'ozone il ne l'est pas — il change de signe avec la saison.
+      <br>Le <span class="bat-ex">liseré ambre</span> marque les cases où <strong>leur méthode nous
+      bat</strong>&#8239;: c'est le cas sur l'ozone 2026, une année à effectif faible où CAMS brut se
+      dégrade fortement. Le signaler nous-mêmes est la seule posture tenable.
+      La colonne « nous » est le périmètre <strong>PARTOUT</strong> — aucune observation passée de
+      la station n'y entre, donc elle s'applique <em>là où rien ne mesure</em>. Le périmètre
+      « aux stations » afficherait davantage&#8239;; il ne vaut que là où un capteur existe déjà.
+    </figcaption>
+  </figure>
+
+  <!-- ── Bloc 2 : les deux cartes ─────────────────────────────────────── -->
+  <figure class="fig fig-int" id="p4-cartes-fig">
+    <h4>Où chaque système gagne, station par station</h4>
+    <p class="sous">
+      Même échelle pour les deux cartes, centrée sur zéro&#8239;: <span class="pastille pastille--acc"></span>
+      meilleur que CAMS brut, <span class="pastille pastille--ref"></span> moins bon. Une station
+      porte un point si elle compte au moins 30 jours dans l'année choisie.
+    </p>
+    <div class="p4-filtres" role="group" aria-label="Filtres des cartes">
+      <div class="seg" id="p4-pol" role="tablist" aria-label="Polluant"></div>
+      <div class="seg" id="p4-an" role="tablist" aria-label="Année"></div>
+      <p class="p4-eff" id="p4-eff"></p>
+    </div>
+    <p class="p4-fr" id="p4-fr"></p>
+    <div class="infob" id="p4-info" role="tooltip" aria-live="polite"></div>
+    <div class="p4-duo">
+      <div class="p4-carte">
+        <p class="p4-carte-t">Stratégie AASQA réglementaire<span id="p4-t-a"></span></p>
+        <svg id="p4-svg-a" viewBox="0 0 400 380" role="img"
+             aria-label="Carte de France : gain de la stratégie AASQA par station"></svg>
+      </div>
+      <div class="p4-carte">
+        <p class="p4-carte-t">Notre système<span id="p4-t-n"></span></p>
+        <svg id="p4-svg-n" viewBox="0 0 400 380" role="img"
+             aria-label="Carte de France : gain de notre système par station"></svg>
+      </div>
+    </div>
+    <div class="p4-echelle">
+      <span>−40 %</span><i class="p4-ramp"></i><span>+40 %</span>
+      <b id="p4-part"></b>
+    </div>
+    <p class="infob-aide">Survolez une station pour son nom, son effectif et ses deux gains</p>
+    <figcaption>
+      Les deux cartes portent <strong>les mêmes stations</strong> et la <strong>même
+      échelle</strong>&#8239;: seule la couleur change. Une carte à dominante terracotta à gauche et
+      teal à droite se lit sans légende — c'est le but.
+    </figcaption>
+  </figure>
+
+  <!-- ── Bloc 3 : la bande temporelle ─────────────────────────────────── -->
+  <figure class="fig fig-int" id="p4-bande-fig">
+    <h4>Le motif temporel réel, et ce que chaque système en restitue</h4>
+    <p class="sous">
+      Concentration <strong>moyennée sur toutes les stations disponibles</strong> chaque jour —
+      la même composition pour les quatre bandes, donc une comparaison exacte à chaque date.
+      Une bande qui ne reproduit pas les traînées d'épisode de la première les rate.
+    </p>
+    <div class="p4-filtres" role="group" aria-label="Filtre de la bande temporelle">
+      <div class="seg" id="p4-pol2" role="tablist" aria-label="Polluant"></div>
+      <p class="p4-eff" id="p4-eff2"></p>
+    </div>
+    <p class="p4-fr" id="p4-fr2"></p>
+    <div class="infob" id="p4-info2" role="tooltip" aria-live="polite"></div>
+    <div class="fig-scroll">
+      <svg id="p4-bande" viewBox="0 0 1000 250" role="img"
+           aria-label="Bandes temporelles comparées : observation, CAMS brut, stratégie AASQA, notre système"></svg>
+    </div>
+    <div class="p4-echelle">
+      <span id="p4-b-min"></span><i class="p4-ramp p4-ramp--seq"></i><span id="p4-b-max"></span>
+      <b>moyenne nationale du jour</b>
+    </div>
+    <figcaption>
+      L'observation est la vérité&#8239;; les trois autres bandes sont des prévisions du même jour.
+      Le contraste se lit <strong>verticalement</strong>&#8239;: à date égale, une case moins avancée
+      sur l'échelle que celle de l'observation <strong>sous-estime</strong> l'épisode, une case plus
+      avancée le <strong>sur-annonce</strong>. Sur le NO₂, la bande « CAMS brut » reste au bas de
+      l'échelle presque toute l'année&#8239;: la sous-estimation urbaine du modèle européen s'y voit
+      sans qu'aucun chiffre soit nécessaire.
+    </figcaption>
+  </figure>
+</section>

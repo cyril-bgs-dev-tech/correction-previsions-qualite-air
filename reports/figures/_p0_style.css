@@ -1,0 +1,72 @@
+/* ═══ Page 00 — la porte d'entrée ═════════════════════════════════════════
+   Une seule page du dossier tient sur un écran, et c'est celle-ci. Tout ce qui
+   n'aide pas à décider s'il faut lire la suite en a été retiré. */
+.page--synthese { padding-top: 60px; }
+.p0-haut { max-width: 74ch; }
+.page--synthese h1 { max-width: 24ch; }
+
+/* ── Les quatre chiffres de tête ─────────────────────────────────────────── */
+.p0-tuiles { display: grid; gap: 12px; margin: 38px 0 0;
+             grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.p0-tuile { padding: 16px 18px 14px; background: var(--surface);
+            border: 1px solid var(--trait); border-radius: var(--r);
+            border-top: 2px solid var(--accent); }
+.p0-tuile .pol { font-family: var(--mono); font-size: 10.4px; letter-spacing: .12em;
+                 text-transform: uppercase; color: var(--encre-3); }
+.p0-tuile .val { font-family: var(--mono); font-size: 34px; font-weight: 600;
+                 letter-spacing: -.03em; color: var(--accent); line-height: 1.05;
+                 font-variant-numeric: tabular-nums; margin: 5px 0 2px; }
+.p0-tuile .ctx { font-family: var(--mono); font-size: 10.4px; color: var(--encre-3);
+                 line-height: 1.5; }
+.p0-tuile .ctx b { color: var(--encre-2); }
+/* Un corpus tronqué suit son chiffre partout où le chiffre va. */
+.p0-tuile.tronque { border-top-color: var(--refute); }
+.p0-tuile .flag { display: block; margin-top: 5px; font-family: var(--mono);
+                  font-size: 9.8px; letter-spacing: .07em; color: var(--refute); }
+
+.p0-cond { margin: 16px 0 0; font-size: 13px; line-height: 1.62; color: var(--encre-3);
+           max-width: 96ch; }
+.p0-cond strong { color: var(--encre-2); }
+
+/* ── Contrepoids et chemin de lecture ────────────────────────────────────── */
+.p0-duo { display: grid; gap: 14px; margin: 30px 0 0;
+          grid-template-columns: minmax(260px, .85fr) minmax(320px, 1.15fr); }
+@media (max-width: 780px) { .p0-duo { grid-template-columns: 1fr; } }
+.p0-lab { margin: 0 0 8px; font-family: var(--mono); font-size: 10px;
+          text-transform: uppercase; letter-spacing: .13em; color: var(--encre-3); }
+.p0-contre { padding: 18px 20px; background: var(--refute-pale); border-radius: var(--r);
+             border: 1px solid color-mix(in srgb, var(--refute) 30%, var(--trait)); }
+.p0-contre .p0-lab { color: var(--refute); }
+.p0-gros { margin: 0; font-family: var(--mono); font-size: 30px; font-weight: 700;
+           letter-spacing: -.03em; color: var(--refute); line-height: 1.05; }
+.p0-txt { margin: 8px 0 0; font-size: 13.2px; line-height: 1.55; color: var(--encre-2); }
+.p0-txt strong { color: var(--encre); }
+
+.p0-lecture { padding: 18px 20px; background: var(--surface);
+              border: 1px solid var(--trait); border-radius: var(--r); }
+.p0-chemin { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.p0-chemin li { border-bottom: 1px solid var(--trait); }
+.p0-chemin li:last-child { border-bottom: 0; }
+.p0-chemin a { display: flex; align-items: baseline; gap: 9px; text-decoration: none;
+               padding: 7px 0 1px; font-size: 14px; font-weight: 600; color: var(--encre); }
+.p0-chemin a b { font-family: var(--mono); font-size: 10.6px; color: var(--accent);
+                 font-weight: 700; letter-spacing: .06em; }
+.p0-chemin a:hover { color: var(--accent); }
+.p0-chemin span { display: block; padding: 0 0 8px 26px; font-size: 12.6px;
+                  line-height: 1.45; color: var(--encre-3); }
+.p0-chemin li.p0-dur a b { color: var(--refute); }
+
+.p0-pied { margin: 26px 0 0; padding: 16px 18px; background: var(--surface-2);
+           border-left: 3px solid var(--trait-fort); border-radius: var(--r);
+           font-size: 13.4px; line-height: 1.62; color: var(--encre-2); max-width: 94ch; }
+.p0-pied strong { color: var(--encre); }
+
+/* La signature en trois mots — collée aux chiffres, pas reléguée en note.
+   Cinq familles de gains portent des noms voisins dans ce dossier ; un pourcentage
+   sans son périmètre, son épreuve et son échéance n'est pas citable. */
+.p0-signature { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
+                margin: 12px 0 0; padding: 9px 12px; background: var(--accent-pale);
+                border-radius: var(--r); font-size: 12.4px; color: var(--encre-2); }
+.p0-signature span { font-family: var(--mono); font-size: 9.6px; letter-spacing: .12em;
+                     text-transform: uppercase; color: var(--accent); }
+.p0-signature b { font-weight: 600; color: var(--encre); margin-right: 8px; }

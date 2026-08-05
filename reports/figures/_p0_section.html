@@ -1,0 +1,62 @@
+<!-- ══════════════════════ PAGE 0 ══════════════════════════════════════ -->
+<section class="page page--synthese" id="synthese">
+  <div class="p0-haut">
+    <p class="eyebrow">Synthèse — à lire en premier</p>
+    <h1>Corriger une prévision de qualité de l'air, et savoir de combien</h1>
+    <p class="chapeau">
+      Les prévisions européennes <strong>CAMS</strong> se trompent d'une façon qui se
+      <em>réapprend</em>&#8239;: leur erreur dépend du lieu, de la saison et du type de station.
+      Ce travail apprend ce résidu — <em>observation moins modèle</em> — et le retire. La
+      méthode est <strong>publiée depuis 2023</strong>&#8239;; ce qui a de la valeur ici n'est pas
+      de l'avoir inventée, c'est de l'avoir <strong>mesurée honnêtement</strong>, et d'avoir
+      cherché où elle échoue.
+    </p>
+  </div>
+
+  <div class="p0-tuiles" id="p0-tuiles"></div>
+  <p class="p0-signature" id="p0-signature"></p>
+
+  <p class="p0-cond">
+    Gain de RMSE contre <strong>CAMS brut</strong>, sur la <strong>pile complète</strong> —
+    tous les leviers empilés, GEOS-CF compris. Périmètre <strong>PARTOUT</strong>&#8239;: aucune
+    observation passée de la station n'entre dans le modèle, donc ces chiffres valent
+    <strong>là où rien ne mesure</strong>. Sur un réseau instrumenté ils montent à
+    <em>+45,85 % · +21,66 % · +23,76 % · +19,60 %</em>&#8239;; c'est le plus bas des deux qui est
+    mis en avant, parce que c'est <strong>le seul que CAMS ne sait pas faire</strong> — et
+    parce que l'autre exige l'historique du point, ce que la spatialisation n'a pas.
+    <br>⚠️ <strong>Les fenêtres diffèrent selon le polluant</strong>&#8239;: seuls les
+    <em>écarts entre étages</em> se comparent d'un polluant à l'autre, jamais les niveaux.
+    Les pages 04 et 05 mesurent la même architecture <strong>sans GEOS-CF, à J+1, sur
+    36 mois</strong> — d'autres chiffres, tout aussi justes, qui ne s'interchangent pas
+    avec ceux-ci.
+  </p>
+
+  <div class="p0-duo">
+    <div class="p0-contre">
+      <p class="p0-lab">Le contrepoids, dit avant qu'on le demande</p>
+      <p class="p0-gros" id="p0-contre-chiffre"></p>
+      <p class="p0-txt" id="p0-contre-txt"></p>
+    </div>
+    <div class="p0-lecture">
+      <p class="p0-lab">Le chemin de lecture</p>
+      <ol class="p0-chemin">
+        <li><a href="#sources"><b>01</b> D'où vient chaque chiffre</a><span>17 sources, ce qu'on en retire mesuré, et le piège levé pour chacune</span></li>
+        <li><a href="#concepts"><b>02</b> Ce que la correction apprend</a><span>23 concepts testés — et les dix qui ont été écartés, avec leur chiffre</span></li>
+        <li><a href="#architecture"><b>03</b> Un seul tronc, deux têtes</a><span>la meilleure erreur moyenne, ou le meilleur déclenchement — pas les deux</span></li>
+        <li><a href="#resultats"><b>04</b> Contre la chaîne réglementaire</a><span>année par année, station par station, sur deux cartes</span></li>
+        <li><a href="#seuils"><b>05</b> Se tromper de bande</a><span>l'erreur qui décide d'une communication, et non l'erreur en µg/m³</span></li>
+        <li class="p0-dur"><a href="#decision"><b>06</b> La décision réelle</a><span>les 52 procédures préfectorales — la mesure la plus dure du dossier</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <p class="p0-pied">
+    <strong>Ce que ce dossier ne prouve pas.</strong> Il ne mesure pas le produit
+    <strong>PREV'AIR</strong> — leur archive n'est pas publique au-delà de six jours glissants,
+    et la chaîne concurrente est donc <em>simulée</em>. Il ne détecte pas l'ozone au seuil
+    réglementaire français de 180&#8239;µg/m³ en maximum horaire, faute d'information et non de
+    réglage. Et il ne dit rien du NO₂ en épisode&#8239;: en quatorze mois, l'Occitanie n'a déclenché
+    <strong>aucune</strong> procédure sur ce polluant — celui, précisément, où la correction
+    gagne le plus.
+  </p>
+</section>

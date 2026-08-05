@@ -1,0 +1,105 @@
+<!-- ══════════════════════ PAGE 5 ══════════════════════════════════════ -->
+<section class="page" id="seuils">
+  <div class="chapeau-page">
+    <p class="eyebrow">Page 05 — Le déclenchement</p>
+    <h1>Se tromper de bande, et de combien</h1>
+    <p class="chapeau">
+      Un service ne publie pas une concentration&#8239;: il publie une <strong>bande</strong> — bon,
+      moyen, dégradé, mauvais, très mauvais. Deux systèmes de RMSE identique peuvent se tromper
+      très différemment de bande, et c'est la bande qui déclenche une communication. On mesure
+      donc ici la <strong>distance signée</strong> entre la classe prédite et la classe observée.
+    </p>
+    <p class="these">
+      <span class="d-ex d-neg2"></span><span class="d-ex d-neg1"></span> <strong>Sous-classer</strong>
+      annonce l'épisode plus bénin qu'il n'est&#8239;: c'est le manqué, la faute qui coûte.
+      <span class="d-ex d-pos1"></span><span class="d-ex d-pos2"></span> <strong>Sur-classer</strong>
+      est une fausse alerte — coûteuse aussi, mais pas de la même façon. Les deux ne
+      s'échangent pas à parité, et aucun score unique ne les arbitre à votre place.
+    </p>
+  </div>
+
+  <div class="limites limites--haut">
+    <h3>Pourquoi cinq systèmes et non trois</h3>
+    <ul>
+      <li>
+        <strong>Le cinquième existe pour ne pas tricher.</strong> Notre <strong>tête B</strong>
+        applique un recalibrage d'amplitude à la sortie de la tête A. Comparer une méthode
+        traitée à une méthode non traitée mélangerait deux choses&#8239;: ce que vaut notre modèle,
+        et ce que vaut le fait d'avoir recalibré. La ligne <strong>« AASQA + recalibrage »</strong>
+        applique <strong>exactement le même</strong> traitement post-hoc à leur méthode. C'est
+        l'écart entre ces deux lignes-là qui mesure notre apport, pas l'écart brut.
+      </li>
+      <li>
+        <strong>Le recalibrage ne fuit pas.</strong> Les deux lois de répartition sont estimées
+        <strong>sur les mois antérieurs seulement</strong> — sans fuite, et c'est ce qu'on ferait
+        en déploiement. Le premier mois n'a pas d'historique&#8239;: il est retiré
+        <strong>pour les cinq systèmes à la fois</strong>, jamais pour le seul qui en a besoin.
+      </li>
+      <li>
+        <strong>Le rang est préservé exactement.</strong> Le recalibrage transporte la prédiction
+        sur la loi des observations sans changer l'ordre&#8239;: à budget d'alertes constant, il ne
+        change <em>rien</em>. Seuls les franchissements de bande bougent — c'est-à-dire
+        exactement ce que cette page mesure.
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── Le sélecteur ─────────────────────────────────────────────────── -->
+  <div class="p4-filtres" role="group" aria-label="Polluant">
+    <div class="seg" id="p5-pol" role="tablist" aria-label="Polluant"></div>
+    <p class="p4-eff" id="p5-bandes"></p>
+  </div>
+
+  <!-- ── Bloc 1 : les profils de distance ─────────────────────────────── -->
+  <figure class="fig fig-int" id="p5-fig">
+    <h4>Où va l'erreur de bande, système par système et année par année</h4>
+    <p class="sous">
+      Chaque barre représente <strong>100 % des jours-station</strong> de l'année, répartis selon
+      la distance entre bande prédite et bande observée. Le bloc gris central est la
+      <strong>bande exacte</strong>&#8239;; ce qui est à sa gauche est sous-classé, à sa droite
+      sur-classé. Les cinq systèmes portent <strong>exactement les mêmes lignes</strong>.
+    </p>
+    <div class="infob" id="p5-info" role="tooltip" aria-live="polite"></div>
+    <div class="p5-grille" id="p5-grille"></div>
+    <div class="p5-legende">
+      <span><i class="d-ex d-neg2"></i>sous-classé de 2 bandes ou plus</span>
+      <span><i class="d-ex d-neg1"></i>sous-classé d'une bande</span>
+      <span><i class="d-ex d-zero"></i>bande exacte</span>
+      <span><i class="d-ex d-pos1"></i>sur-classé d'une bande</span>
+      <span><i class="d-ex d-pos2"></i>sur-classé de 2 bandes ou plus</span>
+    </div>
+    <p class="infob-aide">Survolez une barre pour la répartition exacte</p>
+    <figcaption>
+      La <strong>bande exacte</strong> favorise mécaniquement la tête A&#8239;: une prédiction
+      resserrée autour de la moyenne tombe souvent dans la bonne bande <em>parce que la plupart
+      des journées sont ordinaires</em>. Ce n'est pas la question qu'un service se pose.
+    </figcaption>
+  </figure>
+
+  <!-- ── Bloc 2 : le chiffre qui décide ───────────────────────────────── -->
+  <figure class="fig fig-int" id="p5-crit-fig">
+    <h4>Les journées réellement mauvaises, annoncées comme bénignes</h4>
+    <p class="sous">
+      Restreint aux jours-station <strong>observés en bande « mauvais » ou pire</strong>&#8239;:
+      quelle proportion chaque système annonce-t-il <strong>plus bénigne qu'elle n'est</strong>&#8239;?
+      <strong>Plus court est meilleur.</strong> C'est le seul chiffre de cette page dont dépend
+      une décision de communication.
+    </p>
+    <div class="infob" id="p5-info2" role="tooltip" aria-live="polite"></div>
+    <div class="p5-grille" id="p5-crit"></div>
+    <figcaption>
+      <strong>Personne n'est bon ici, et il faut le dire ainsi.</strong> Le meilleur système laisse
+      encore passer <strong>de la moitié aux trois quarts</strong> des journées critiques. Ce que
+      cette page montre est un <em>classement</em>, pas une réussite.
+      <br>L'arbitrage est explicite et chiffré&#8239;: sur l'ensemble de la période, la tête B
+      <strong>perd</strong> de <b>0,1</b> à <b>1,6</b> point de bande exacte pour
+      <strong>retirer</strong> de <b>15,6</b> à <b>29,6</b> points de journées critiques manquées.
+      Ce n'est pas « mieux », c'est <strong>un autre point de fonctionnement</strong> — et c'est au
+      service de le choisir, pas au modèle.
+      <br>Sur l'ensemble de la période, la tête B devance « AASQA + recalibrage » sur les quatre
+      polluants&#8239;: l'avantage ne vient donc pas du seul recalibrage. <strong>Trois années font
+      exception</strong> et sont visibles ci-dessus — NO₂ 2024 (85,6 % contre 84,9 %), puis O₃ et
+      PM2,5 2026, deux années à effectif faible où leur méthode passe devant.
+    </figcaption>
+  </figure>
+</section>

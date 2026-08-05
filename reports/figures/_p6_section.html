@@ -1,0 +1,260 @@
+<!-- ══════════════════════ PAGE 6 ══════════════════════════════════════ -->
+<section class="page" id="decision">
+  <div class="chapeau-page">
+    <p class="eyebrow">Page 06 — La décision réelle</p>
+    <h1>Aurions-nous annoncé les épisodes qui ont été déclenchés&#8239;?</h1>
+    <p class="chapeau">
+      Tout ce qui précède compte des « épisodes » au sens <strong>journée-station en classe
+      ATMO ≥ 3</strong> — des milliers d'occurrences, sur une métrique que ce projet a
+      lui-même définie. Ce n'est pas ce qu'une AASQA appelle un épisode. Un déclenchement
+      réel est une <strong>zone-jour sous procédure préfectorale</strong>, et il y en a
+      <strong>52 en quatorze mois</strong> en Occitanie&#8239;: PM10 40, ozone 12,
+      <strong>NO₂ zéro</strong>.
+    </p>
+    <p class="these">
+      C'est la seule mesure du dossier qui confronte le modèle à la <em>décision réelle</em>
+      plutôt qu'à un score qu'il a choisi. C'est aussi la seule où nos chiffres sont mauvais.
+      La sortir soi-même, avant qu'on la demande, est la seule posture tenable.
+    </p>
+  </div>
+
+  <div class="p6-src">
+    <b>Vérité terrain</b> — publiée par Atmo Occitanie elle-même, service ArcGIS
+    <code>epipol_occitanie</code>. Une zone est un <strong>département</strong>&#8239;; pour chaque
+    zone-jour déclarée, on demande&#8239;: au moins une station du département dépassait-elle le
+    seuil de procédure, selon chaque système&#8239;? Les fausses alertes se comptent sur
+    <strong>les mêmes zones-jours</strong>. Échéance <strong>J0</strong> — le jour même.
+  </div>
+
+  <!-- ── Le tableau ───────────────────────────────────────────────────── -->
+  <div class="p6-grille" id="p6-tables"></div>
+
+  <!-- ── Les trois lectures ───────────────────────────────────────────── -->
+  <div class="regle">
+    <h3>Les trois lectures, dans cet ordre</h3>
+    <p>
+      Aucune ne s'entend sans les deux autres. Prises séparément, la première nous excuse,
+      la deuxième nous flatte et la troisième nous accable.
+    </p>
+    <div class="conds">
+      <div class="cond">
+        <b>1 · Le plafond n'est pas 33, il est 21</b>
+        <p>
+          Douze épisodes déclarés n'ont <strong>aucune station</strong> du département au-dessus
+          de 50&#8239;µg/m³ en moyenne journalière. La procédure préfectorale se déclenche donc sur
+          autre chose que la grandeur que nous prédisons — prévision d'un dépassement, critère
+          de superficie, persistance. Comparer notre 2 à 33 est <em>injuste envers nous</em>&#8239;;
+          le comparer à 21 reste accablant — <strong>≈ 10 % de ce qui était atteignable</strong>.
+        </p>
+      </div>
+      <div class="cond">
+        <b>2 · Tout le monde est aveugle</b>
+        <p>
+          2 contre 1 et 1&#8239;: l'écart <strong>n'est pas exploitable</strong>, mais le classement
+          ne nous est pas défavorable. Et sur le polluant où notre modèle gagne le plus — le
+          <strong>NO₂, +37,6 %</strong> — il n'y a <strong>jamais</strong> de procédure en
+          Occitanie. Le gain le plus fort du dossier porte sur le polluant qui ne déclenche rien.
+        </p>
+      </div>
+      <div class="cond">
+        <b>3 · Sur l'ozone, nous crions au loup</b>
+        <p>
+          Nous attrapons <strong>12 épisodes sur 12</strong> — et émettons <strong>473 fausses
+          alertes</strong>, soit 9 % des zones-jours. CAMS brut, qui en rate le tiers, est
+          <strong>trois fois plus précis</strong>. À seuil physique fixé, sans budget d'alertes,
+          notre recalage d'amplitude joue <em>contre</em> nous.
+        </p>
+      </div>
+    </div>
+    <p class="reserve">
+      <strong>Ce que ces chiffres ne contredisent pas.</strong> Le dossier montre qu'<em>à volume
+      d'alertes constant</em> nous dominons à tous les budgets. Ce tableau-ci est pris à
+      <strong>seuil physique fixe</strong>, sans réglage — c'est la vue opérationnelle honnête,
+      et la seule où nos chiffres sont mauvais. Les deux sont vraies&#8239;; il faut dire laquelle
+      on montre, et pourquoi.
+    </p>
+  </div>
+
+  <!-- ── Les inévaluables ─────────────────────────────────────────────── -->
+  <div class="limites">
+    <h3>Sept épisodes sur 52 ne sont pas évaluables — et c'est un résultat</h3>
+    <ul id="p6-inev"></ul>
+    <p class="p6-note">
+      Un épisode perdu en silence sort du dénominateur et <strong>flatte le rappel</strong>.
+      Celui de l'Ariège a été trouvé au contrôle du 05/08&#8239;: il passait le premier filtre —
+      le département porte une station — et échouait au second, aucune prédiction pour ce
+      polluant. Le compte manquant gonfle <em>toujours</em> le rappel.
+    </p>
+  </div>
+
+  <!-- ── Le cadrage partenaires ───────────────────────────────────────── -->
+  <div class="p6-partenaires">
+    <h3>Ce que ce travail produit pour un pôle Partenariats</h3>
+    <p class="p6-intro">
+      Les quatre missions du poste ne parlent pas de modélisation. Elles parlent d'indicateurs
+      et de livrables pour des partenaires, de besoins métiers traduits en données, de
+      valorisation dans des projets collaboratifs et de diffusion de bonnes pratiques. La
+      matière existe déjà dans ce dossier&#8239;; ce qui manquait, c'est de la nommer.
+    </p>
+    <h4 class="p6-h4">Qui décide quoi, et avec quelle donnée</h4>
+    <p class="p6-intro">
+      Un pôle Partenariats ne produit pas des scores&#8239;: il produit ce dont quelqu'un a besoin
+      pour décider. Le tableau ci-dessous met en regard chaque partenaire, la décision qu'il
+      prend, et ce que ce travail lui fournit — <strong>y compris quand la réponse est
+      « rien »</strong>.
+    </p>
+    <div class="fig-scroll">
+      <table class="p6-tab-part">
+        <tbody>
+          <tr><th>partenaire</th><th>la décision qu'il prend</th><th>ce que ce travail fournit</th></tr>
+          <tr>
+            <td>Préfecture de département</td>
+            <td>déclencher ou lever une <strong>procédure</strong> — 52 zones-jours en 14 mois</td>
+            <td>la mesure de cette page, et un <strong>volume d'alertes choisi</strong> plutôt que subi</td>
+          </tr>
+          <tr>
+            <td>ARS</td>
+            <td>informer les publics sensibles, <strong>au moins quotidiennement</strong> en épisode</td>
+            <td>l'indice par commune et la liste des stations <strong>classée par risque du jour</strong></td>
+          </tr>
+          <tr>
+            <td>Toulouse Métropole · Montpellier Méditerranée Métropole</td>
+            <td>maintenir, modifier ou réévaluer les scénarios <strong>ZFE</strong></td>
+            <td>le champ spatialisé régional&#8239;; le NO₂ brut y est <strong>4 à 6× trop bas</strong>, corrigé à moins de 4&#8239;µg/m³ du réel</td>
+          </tr>
+          <tr>
+            <td>Région et collectivités — PPA, PCAET</td>
+            <td>bâtir et suivre les plans à l'échelle de leur territoire</td>
+            <td><strong>102 pages autonomes</strong>, une par territoire, sans serveur ni compte</td>
+          </tr>
+          <tr>
+            <td>LCSQA · Ineris</td>
+            <td>produire PREV'AIR et le flux national</td>
+            <td>une évaluation <strong>indépendante</strong> de leur chaîne, dans leurs propres conventions</td>
+          </tr>
+          <tr class="p6-rien">
+            <td>Partenaires sanitaires et agricoles</td>
+            <td>surveiller les <strong>pesticides</strong> dans l'air ambiant</td>
+            <td><strong>rien</strong> — hors périmètre de ce travail, et sans valeur réglementaire dans l'air ambiant</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="p6-note">
+      ⚠️ Ce tableau recense les partenaires que <strong>ce dossier atteste</strong> — chacun
+      sourcé dans le dépôt. Il ne prétend pas lister les adhérents des <strong>quatre collèges</strong>
+      statutaires (État · collectivités · émetteurs · associations et personnalités qualifiées)&#8239;:
+      cette liste appartient à Atmo Occitanie, et l'écrire sans source serait exactement le
+      défaut que le reste du dossier traque.
+    </p>
+
+    <h4 class="p6-h4">Et ce que le dossier produit déjà, mission par mission</h4>
+    <div class="p6-liv">
+      <article>
+        <b>Produire des indicateurs et des livrables</b>
+        <p>
+          <strong>102 pages HTML</strong> nationales, régionales et départementales,
+          <strong>autonomes et hors ligne</strong> — aucun serveur, aucun compte, aucune
+          dépendance externe. Un partenaire ouvre le fichier de son territoire et rien d'autre.
+        </p>
+      </article>
+      <article>
+        <b>Formaliser un besoin métier</b>
+        <p>
+          La descente région → département n'est pas un raffinement technique&#8239;: c'est la
+          traduction d'un besoin. <strong>Cette page en est l'exemple</strong> — passer de
+          « journée-station en classe ≥ 3 » à « zone-jour sous procédure préfectorale », c'est
+          remplacer la métrique du modélisateur par celle du décideur.
+        </p>
+      </article>
+      <article>
+        <b>Valoriser la donnée d'un partenaire</b>
+        <p>
+          Les épisodes de cette page viennent du <strong>portail ouvert d'Atmo Occitanie</strong>,
+          et les observations du <strong>flux LCSQA</strong>, qui transporte leurs propres
+          mesures. Le dossier ne se contente pas de citer ces sources&#8239;: il s'en sert pour se
+          juger lui-même.
+        </p>
+      </article>
+      <article>
+        <b>Diffuser les bonnes pratiques data</b>
+        <p>
+          Six pratiques, chacune <strong>outillée dans le dépôt</strong> et transposable à
+          n'importe quelle équipe donnée — détail ci-dessous.
+        </p>
+      </article>
+    </div>
+
+    <h4 class="p6-h4">Les six pratiques, et ce qui les prouve ici</h4>
+    <p class="p6-intro">
+      Une bonne pratique qui n'existe que dans une note de service n'est pas une pratique.
+      Chacune de celles-ci a un <strong>artefact</strong> dans ce dépôt, et chacune est née
+      d'une erreur réelle — le coût est indiqué quand il a été mesuré.
+    </p>
+    <ol class="p6-prat">
+      <li>
+        <b>Une source unique des chiffres</b>
+        <p>
+          <code>reports/VERITE_DOSSIER.md</code>, régénéré par un script&#8239;: <em>tout chiffre du
+          dossier absent d'ici est à retirer ou à re-mesurer</em>. Ce qu'il empêche&#8239;: le rapport,
+          la figure et la présentation qui affichent trois valeurs du même gain — un lecteur qui
+          en trouve deux cesse de croire les deux.
+        </p>
+      </li>
+      <li>
+        <b>Des contrôles d'entrée réutilisables, pas réécrits à chaque script</b>
+        <p>
+          <code>src/aq/ingest/controle.py</code> — huit fonctions&#8239;: <code>colonne_unique</code>,
+          <code>exiger_variables</code>, <code>exiger_axe</code>, <code>exiger_variation</code>,
+          <code>exiger_couverture</code>… Une colonne se désigne par <strong>son nom</strong>,
+          jamais par sa position&#8239;; et une assertion qui échoue <strong>lève</strong>, elle ne
+          journalise pas. Le contrôle réécrit à la main à chaque fois est précisément la façon
+          dont les défauts naissent.
+        </p>
+      </li>
+      <li>
+        <b>Vérifier les conventions dans les données, jamais les supposer</b>
+        <p>
+          Le flux national étiquette l'heure par son <strong>début</strong>, notre chaîne par sa
+          <strong>fin</strong>. Vérifié plutôt que supposé&#8239;: écart absolu
+          <strong>0,0001&#8239;µg/m³</strong> avec le décalage, <strong>2,99</strong> sans. Sans ce
+          contrôle, chaque observation s'apparie à la mauvaise heure de prévision — en silence.
+        </p>
+      </li>
+      <li>
+        <b>Afficher le périmètre effectif, pas le périmètre demandé</b>
+        <p>
+          « <em>N mois appariés sur M prévus</em> », les manquants nommés un par un. C'est ce
+          contrôle qui a révélé, sur ce dossier même, qu'un artefact décrivait
+          <strong>24 mois sur 37</strong> en paraissant complet. Un script qui n'imprime que son
+          résultat ne permet pas de voir qu'il a changé de question.
+        </p>
+      </li>
+      <li>
+        <b>Tests et intégration continue</b>
+        <p>
+          <strong>253 fonctions de test</strong> sur 19 fichiers, lancées par un workflow qui
+          vérifie d'abord que le paquet <strong>s'importe depuis une installation propre</strong>
+          — un test qui ne passe que sur le poste de son auteur ne prouve rien.
+        </p>
+      </li>
+      <li>
+        <b>Publier les résultats négatifs, et tenir un registre des erreurs</b>
+        <p>
+          <strong>Dix concepts mesurés puis écartés</strong>, chacun avec son chiffre, sont
+          publiés comme les autres (page 02). Et <code>CLAUDE.md</code> consigne
+          <strong>treize règles nées d'erreurs réelles</strong>, datées et chiffrées — combien
+          d'heures chacune a coûté, et le geste qui l'empêche de revenir. C'est le document
+          d'accueil d'un nouvel arrivant&#8239;: il apprend ce qui a déjà été payé.
+        </p>
+      </li>
+    </ol>
+    <p class="p6-note">
+      Ces six-là ne sont pas propres à la qualité de l'air ni à ce projet&#8239;: elles se transposent
+      à n'importe quel jeu de données d'une AASQA. Et l'assistant construit pour ce travail —
+      qui porte les conventions vérifiées, les pièges métier et le registre d'erreurs — peut
+      continuer d'apprendre le domaine et servir d'autres services, <em>si le besoin s'en
+      présente</em>. C'est une possibilité, pas une promesse&#8239;: elle n'a pas été mise à l'épreuve.
+    </p>
+  </div>
+</section>

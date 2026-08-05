@@ -1,0 +1,64 @@
+/* ═══ Page 05 — l'erreur de bande ═════════════════════════════════════════
+   Échelle divergente sur une grandeur signée : deux pôles, un gris neutre au
+   milieu. Sous-classer et sur-classer ne sont pas la même faute, donc pas la
+   même teinte ; l'intensité porte l'ampleur de l'écart. Le neutre reste gris —
+   une teinte au point milieu ferait lire « exact » comme un troisième pôle.
+
+   Les deux rampes sont passées au validateur, paire adjacente par paire adjacente.
+   Clair  : pire écart ΔE 12,2 en deutéranopie, 16,8 en vision normale.
+   Sombre : ΔE 8,6 (protanopie) et 15,3 — la première version tombait à 11,3 en vision
+   normale entre le violet « +1 » et le gris neutre, indiscernables. Les contrôles de
+   « bande de clarté » et de « chroma minimal » ne s'appliquent pas ici : ils valent pour
+   une palette catégorielle, alors qu'une rampe divergente DOIT varier en clarté et DOIT
+   avoir un milieu peu saturé. */
+:root {
+  --d2neg: #8E3421; --d1neg: #C9705A; --d0: #9DAEB0; --d1pos: #8674BE; --d2pos: #40307A;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --d2neg:#F5A184; --d1neg:#CC6B4E; --d0:#5A7076; --d1pos:#8E79D4; --d2pos:#C7B6F5; }
+}
+:root[data-theme="dark"]  { --d2neg:#F5A184; --d1neg:#CC6B4E; --d0:#5A7076; --d1pos:#8E79D4; --d2pos:#C7B6F5; }
+:root[data-theme="light"] { --d2neg:#8E3421; --d1neg:#C9705A; --d0:#9DAEB0; --d1pos:#8674BE; --d2pos:#40307A; }
+
+.d-ex { display: inline-block; width: 11px; height: 11px; border-radius: 2px;
+        vertical-align: -1px; margin-right: 3px; }
+i.d-ex { margin-right: 5px; }
+.d-neg2 { background: var(--d2neg); } .d-neg1 { background: var(--d1neg); }
+.d-zero { background: var(--d0); }
+.d-pos1 { background: var(--d1pos); } .d-pos2 { background: var(--d2pos); }
+
+.p5-grille { display: grid; gap: 12px;
+             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.p5-carte { background: var(--surface-2); border: 1px solid var(--trait);
+            border-radius: 4px; padding: 10px 12px 12px; }
+.p5-carte h5 { margin: 0 0 2px; font-family: var(--mono); font-size: 11px;
+               letter-spacing: .08em; text-transform: uppercase; color: var(--encre);
+               font-weight: 700; }
+.p5-carte .meta { margin: 0 0 9px; font-size: 11.6px; color: var(--encre-3); }
+.p5-carte .meta b { font-family: var(--mono); font-variant-numeric: tabular-nums;
+                    color: var(--encre-2); font-weight: 600; }
+
+.p5-lig { display: grid; grid-template-columns: 92px 1fr 46px; gap: 8px;
+          align-items: center; margin-bottom: 5px; }
+.p5-lig .nm { font-size: 11.4px; color: var(--encre-2); text-align: right;
+              line-height: 1.15; }
+.p5-lig.nous .nm { color: var(--encre); font-weight: 700; }
+.p5-lig .val { font-family: var(--mono); font-size: 11.6px; font-weight: 600;
+               font-variant-numeric: tabular-nums; color: var(--encre-2); }
+.p5-lig.nous .val { color: var(--accent); }
+/* 2 px de fond entre segments : sans cet écart, deux teintes voisines se soudent. */
+.p5-barre { display: flex; height: 15px; border-radius: 3px; overflow: hidden;
+            background: var(--surface); gap: 1.5px; cursor: help; }
+.p5-barre span { display: block; min-width: 0; }
+.p5-barre:hover { outline: 1.5px solid var(--accent); outline-offset: 1.5px; }
+
+/* Le bloc du bas : une seule mesure, donc une seule teinte — le manqué. */
+.p5-lig .mq { display: flex; height: 15px; border-radius: 3px; background: var(--surface);
+              cursor: help; }
+.p5-lig .mq i { display: block; background: var(--d2neg); border-radius: 3px; }
+.p5-lig.best .mq i { background: var(--accent); }
+.p5-lig.best .val { color: var(--accent); }
+
+.p5-legende { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 12px 0 0;
+              font-size: 11.8px; color: var(--encre-3); }
+.p5-faible { color: var(--ambre); font-family: var(--mono); font-size: 10.4px; }
