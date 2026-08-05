@@ -49,10 +49,19 @@ PREFIXES = {"O3": "o3", "NO2": "no2", "PM25": "pm25"}
 
 def main(polluant: str, horizon: int) -> int:
     prefixe = PREFIXES[polluant]
-    archives = sorted((RACINE / "data/raw/cams_mos_officiel").glob(f"{prefixe}_2024*.zip"))
+    # ⚠️ **L'année ne se code pas en dur** (règles 4 bis et 2 quater). Ce motif était
+    # `{prefixe}_2024*.zip`, écrit quand seule 2024 était archivée. Six mois de MOS officiel
+    # 2025 sur l'ozone — `o3_202501` à `o3_202506` — étaient depuis **exclus
+    # structurellement** : aucune régénération ne les aurait récupérés, et le tableau de
+    # `VERITE_DOSSIER` § 2 restait sur 2024 en se croyant complet.
+    archives = sorted((RACINE / "data/raw/cams_mos_officiel").glob(f"{prefixe}_20*.zip"))
     if not archives:
         print("aucune archive mensuelle", file=sys.stderr)
         return 1
+    # Le périmètre effectif est affiché, jamais supposé.
+    mois_dispo = [a.stem.split("_")[1] for a in archives]
+    print(f"  {len(archives)} archive(s) MOS officiel · {mois_dispo[0]} → {mois_dispo[-1]}",
+          flush=True)
 
     notre = pd.read_csv(RACINE / f"reports/mos_{polluant}_J{horizon}.csv",
                         parse_dates=["timestamp_utc"]).dropna(subset=["observe"])
