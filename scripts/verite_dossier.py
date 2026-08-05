@@ -473,6 +473,164 @@ def bloc_perimetres(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def _col(t: pd.DataFrame, nom: str, chemin) -> pd.Series:
+    """Désigner une colonne par son nom, et lever si elle manque (`CLAUDE.md` § 2 bis § 1)."""
+    if nom not in t.columns:
+        raise SystemExit(f"{chemin} : colonne '{nom}' absente — colonnes lues : {list(t.columns)}")
+    return t[nom]
+
+
+def _ligne_unique(t: pd.DataFrame, colonne: str, motif: str, chemin) -> pd.Series:
+    """Une ligne désignée par un motif qui n'en sélectionne QU'UNE.
+
+    Zéro correspondance et deux correspondances sont **toutes deux** des erreurs — c'est
+    précisément la faute que `CLAUDE.md` § 2 bis interdit (« la première colonne qui n'est
+    ni… ni… » avait sélectionné `level`, constante à 0).
+    """
+    r = t[_col(t, colonne, chemin).astype(str).str.startswith(motif)]
+    if len(r) != 1:
+        raise SystemExit(f"{chemin} : {len(r)} ligne(s) pour '{motif}' dans '{colonne}' — "
+                         f"il en faut exactement 1. Valeurs : {list(t[colonne])}")
+    return r.iloc[0]
+
+
+def bloc_reconciliation(lignes: list[dict]) -> str:
+    """Les cinq familles de gains, rapprochées — le risque n° 1 en entretien.
+
+    Le projet produit cinq familles de scores qui portent des noms voisins et mesurent des
+    choses différentes. Sur l'ozone elles valent +22,43 %, +21,66 %, +13,75 %, +9,2 % et
+    +3,31 % : **toutes justes, aucune interchangeable.** Jusqu'ici elles ne se croisaient
+    dans aucun document — seulement dans une fiche de mémoire, ce qui est exactement le
+    statut que ce fichier existe pour refuser.
+
+    ⚠️ Tout est **recalculé depuis les CSV**. Une version antérieure de la table de
+    réconciliation portait « +27,09 % O₃ » recopié d'une fiche de tableau de bord et non
+    d'une mesure : ces valeurs étaient périmées et ne correspondaient à aucune colonne des
+    fichiers. *Un chiffre recopié d'une fiche n'est pas un chiffre vérifié.*
+    """
+    POLLUANTS = ("O3", "NO2", "PM10", "PM25")
+
+    def prod(p: str) -> tuple[float, float, str] | None:
+        f = RACINE / f"reports/production_reelle_{p}_h1.csv"
+        if not f.exists():
+            return None
+        t = pd.read_csv(f)
+        r = _ligne_unique(t, "systeme", "notre modèle — moyenne des sept pertes", f)
+        return (float(r["gain_vs_aasqa_pct"]), float(r["gain_vs_cams_pct"]),
+                f"{r['mois_debut']}→{r['mois_fin']}")
+
+    def maxi(p: str) -> tuple[float, float, int, str] | None:
+        f = RACINE / f"reports/methode_maximale_{p}_h2.csv"
+        if not f.exists():
+            return None
+        t = pd.read_csv(f)
+        aux = _ligne_unique(t, "configuration", "★ MAXIMALE — AUX STATIONS", f)
+        par = _ligne_unique(t, "configuration", "★ MAXIMALE — PARTOUT", f)
+        return (float(aux["gain_pct"]), float(par["gain_pct"]),
+                int(par["n_mois"]), str(par["fenetre"]))
+
+    def aveugle(p: str) -> tuple[float, int] | None:
+        f = RACINE / f"reports/double_aveugle_journalier_{p}.csv"
+        if not f.exists():
+            return None
+        t = pd.read_csv(f)
+        r = t[(_col(t, "epreuve", f) == "double aveugle")
+              & (_col(t, "reglage", f) == "défaut")]
+        if len(r) != 1:
+            raise SystemExit(f"{f} : {len(r)} ligne(s) « double aveugle / défaut », il en faut 1")
+        return float(r.iloc[0]["gain_pct"]), int(r.iloc[0]["n_plis"])
+
+    def veille(p: str) -> float | None:
+        f = RACINE / f"reports/apport_observation_veille_{p}_ic.csv"
+        return float(pd.read_csv(f).iloc[0]["relatif_pct"]) if f.exists() else None
+
+    src = {p: (prod(p), maxi(p), aveugle(p), veille(p)) for p in POLLUANTS}
+    src = {p: v for p, v in src.items() if any(x is not None for x in v)}
+    if not src:
+        return ""
+
+    def c(x, fmt="{:+.2f} %") -> str:
+        # Virgule décimale : c'est LA section destinée à être recopiée telle quelle dans une
+        # diapositive ou une phrase d'entretien. Le reste du document est mixte.
+        return "—" if x is None else fmt.format(x).replace(".", ",")
+
+    texte = [
+        "## 7 ter. Les cinq familles de gains — laquelle citer, et jamais l'une pour l'autre\n",
+        "Ce projet produit **cinq familles de scores** qui portent des noms voisins et "
+        "répondent à des questions différentes. Elles sont **toutes justes et aucune n'est "
+        "interchangeable** : sur l'ozone, la même correction vaut de **+3,31 % à +22,43 %** "
+        "selon l'épreuve. Confondre deux lignes de ce tableau discrédite le dossier entier "
+        "plus sûrement qu'un chiffre faux — un chiffre faux se corrige, une confusion de "
+        "périmètre jette le doute sur tout le reste.\n",
+        "**Tout pourcentage cité hors de ce document doit venir avec trois mots : "
+        "périmètre · épreuve · échéance.**\n",
+        "| # | famille | épreuve | échéance | "
+        + " | ".join(NOM[p] for p in src) + " |",
+        "|---|---|---|---|" + "---|" * len(src)]
+
+    def ligne(num, nom, epreuve, ech, get, gras=False) -> None:
+        cells = []
+        for p, v in src.items():
+            x = get(v)
+            s = c(x)
+            cells.append(f"**{s}**" if (gras and x is not None) else s)
+            if x is not None:
+                lignes.append({"bloc": "réconciliation", "polluant": p, "grain": nom,
+                               "n": 0, "gain": float("nan"), "relatif_pct": x})
+        texte.append(f"| {num} | {nom} | {epreuve} | {ech} | " + " | ".join(cells) + " |")
+
+    ligne("①a", "**production, contre la chaîne en service** ⭐", "origine glissante, "
+          "station **connue**", "**J0**", lambda v: v[0][0] if v[0] else None, gras=True)
+    ligne("①b", "production, contre CAMS brut", "idem", "J0",
+          lambda v: v[0][1] if v[0] else None)
+    ligne("②", "**maximale — AUX STATIONS**", "double aveugle, pile complète **+ veille**",
+          "J+2", lambda v: v[1][0] if v[1] else None)
+    ligne("③", "**maximale — PARTOUT** ⭐", "double aveugle, **sans** la veille",
+          "J+2", lambda v: v[1][1] if v[1] else None, gras=True)
+    ligne("④", "apport de la seule observation de la veille (§ 7)", "usage A contre usage B",
+          "J+2", lambda v: v[3])
+    ligne("⑤", "double aveugle de référence", "base seule, **aucun levier**", "J+2",
+          lambda v: v[2][0] if v[2] else None)
+
+    corpus = []
+    for p, v in src.items():
+        bouts = []
+        if v[0]:
+            bouts.append(f"① {v[0][2]}")
+        if v[1]:
+            bouts.append(f"②③ {v[1][3]} ({v[1][2]} mois)")
+        if v[2]:
+            bouts.append(f"⑤ {v[2][1]} plis")
+        corpus.append(f"**{NOM[p]}** : " + ", ".join(bouts))
+    texte.append("\n**Les corpus ne coïncident pas** — " + " · ".join(corpus)
+                 + ". Les niveaux ne se comparent donc pas d'une ligne à l'autre ; seuls les "
+                   "écarts **internes à une même ligne** le peuvent.\n")
+    texte.append(
+        "### Comment les lire sans se tromper\n"
+        "\n- **① n'est comparable à aucune des autres.** Il est mesuré à **J0** et la station "
+        "évaluée est **connue du modèle**. C'est l'usage « exploitation sur un réseau "
+        "existant », pas une mesure de généralisation. Ne jamais l'opposer à un double aveugle.\n"
+        "- **③ est la seule revendication propre du projet** — prédire là où rien ne mesure. "
+        "C'est le chiffre à mettre en avant, et **c'est le plus bas** : c'est précisément ce "
+        "qui le rend crédible.\n"
+        "- **② − ③ mesure l'apport de la veille**, et ce faisant **change de périmètre**. ④ "
+        "mesure la même chose sur un autre corpus : les deux se recoupent, ils ne "
+        "s'additionnent pas.\n"
+        "- **⑤ → ③ est la démonstration de la méthode** : ce que la pile complète ajoute à "
+        "une base sans levier, à protocole d'épreuve identique. La comparaison est "
+        "**indicative, pas rigoureuse** — les deux lignes n'ont ni le même corpus ni le même "
+        "nombre de plis. La comparaison **rigoureuse** est interne à ③ : la ligne « base » de "
+        "`methode_maximale_<P>_h2.csv`, mesurée sur exactement les mêmes plis que le total.\n"
+        "\n### Les échéances ne sont pas les mêmes partout\n"
+        "\n`methode_maximale` est à **J+2** ; `detection_maximale`, `episodes_reels` et "
+        "`agregation_zone` sont à **J0** (`horizon=1`) ; les bancs FAIRMODE et LCSQA à "
+        "**J+1** ; les pages HTML de production à **J0**. Un jury demandera « à quelle "
+        "échéance ? » et la réponse **change selon le tableau montré**. Le rassurant est "
+        "mesuré — moins d'un point d'écart entre J0, J+1 et J+2 — mais cela **se dit**, "
+        "jamais ne se laisse découvrir.\n")
+    return "\n".join(texte)
+
+
 def bloc_detection(lignes: list[dict]) -> str:
     """Le rappel à budget de fausses alertes imposé — la comparaison qu'un service utilise."""
     chemin = RACINE / "reports/detection_maximale_O3.csv"
@@ -1100,6 +1258,7 @@ def main() -> int:
         bloc_mqi(lignes),
         bloc_meteo(lignes),
         bloc_perimetres(lignes),
+        bloc_reconciliation(lignes),
         bloc_detection(lignes),
         bloc_signalements(lignes),
         bloc_front(lignes),

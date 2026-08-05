@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 05/08/2026 à 18 h 26 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 06/08/2026 à 01 h 48 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -182,6 +182,34 @@ Le projet excluait les observations récentes **au même titre** que la météo 
 ### Ce que cela répare dans la comparaison au produit officiel
 
 Elle était **asymétrique dans les deux sens** : à notre avantage sur le grain — nous apprenons la grandeur réglementaire, eux l'horaire — et à notre désavantage sur les entrées, puisqu'ils avaient les observations récentes et nous pas. L'usage A permet enfin la comparaison à armes égales.
+
+## 7 ter. Les cinq familles de gains — laquelle citer, et jamais l'une pour l'autre
+
+Ce projet produit **cinq familles de scores** qui portent des noms voisins et répondent à des questions différentes. Elles sont **toutes justes et aucune n'est interchangeable** : sur l'ozone, la même correction vaut de **+3,31 % à +22,43 %** selon l'épreuve. Confondre deux lignes de ce tableau discrédite le dossier entier plus sûrement qu'un chiffre faux — un chiffre faux se corrige, une confusion de périmètre jette le doute sur tout le reste.
+
+**Tout pourcentage cité hors de ce document doit venir avec trois mots : périmètre · épreuve · échéance.**
+
+| # | famille | épreuve | échéance | O₃ | NO₂ | PM10 | PM2,5 |
+|---|---|---|---|---|---|---|---|
+| ①a | **production, contre la chaîne en service** ⭐ | origine glissante, station **connue** | **J0** | **+22,43 %** | **+44,16 %** | **+25,90 %** | **+19,22 %** |
+| ①b | production, contre CAMS brut | idem | J0 | +26,15 % | +51,24 % | +31,09 % | +19,22 % |
+| ② | **maximale — AUX STATIONS** | double aveugle, pile complète **+ veille** | J+2 | +21,66 % | +45,85 % | +23,76 % | +19,60 % |
+| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+2 | **+13,75 %** | **+38,71 %** | **+17,43 %** | **+9,90 %** |
+| ④ | apport de la seule observation de la veille (§ 7) | usage A contre usage B | J+2 | +9,24 % | +22,76 % | — | +9,28 % |
+| ⑤ | double aveugle de référence | base seule, **aucun levier** | J+2 | +3,31 % | +25,71 % | +11,36 % | +5,14 % |
+
+**Les corpus ne coïncident pas** — **O₃** : ① 2025-01→2026-07, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis · **NO₂** : ① 2025-01→2026-07, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis · **PM10** : ① 2025-01→2026-07, ②③ 2024-01→2025-12 (24 mois), ⑤ 30 plis · **PM2,5** : ① 2025-01→2026-07, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis. Les niveaux ne se comparent donc pas d'une ligne à l'autre ; seuls les écarts **internes à une même ligne** le peuvent.
+
+### Comment les lire sans se tromper
+
+- **① n'est comparable à aucune des autres.** Il est mesuré à **J0** et la station évaluée est **connue du modèle**. C'est l'usage « exploitation sur un réseau existant », pas une mesure de généralisation. Ne jamais l'opposer à un double aveugle.
+- **③ est la seule revendication propre du projet** — prédire là où rien ne mesure. C'est le chiffre à mettre en avant, et **c'est le plus bas** : c'est précisément ce qui le rend crédible.
+- **② − ③ mesure l'apport de la veille**, et ce faisant **change de périmètre**. ④ mesure la même chose sur un autre corpus : les deux se recoupent, ils ne s'additionnent pas.
+- **⑤ → ③ est la démonstration de la méthode** : ce que la pile complète ajoute à une base sans levier, à protocole d'épreuve identique. La comparaison est **indicative, pas rigoureuse** — les deux lignes n'ont ni le même corpus ni le même nombre de plis. La comparaison **rigoureuse** est interne à ③ : la ligne « base » de `methode_maximale_<P>_h2.csv`, mesurée sur exactement les mêmes plis que le total.
+
+### Les échéances ne sont pas les mêmes partout
+
+`methode_maximale` est à **J+2** ; `detection_maximale`, `episodes_reels` et `agregation_zone` sont à **J0** (`horizon=1`) ; les bancs FAIRMODE et LCSQA à **J+1** ; les pages HTML de production à **J0**. Un jury demandera « à quelle échéance ? » et la réponse **change selon le tableau montré**. Le rassurant est mesuré — moins d'un point d'écart entre J0, J+1 et J+2 — mais cela **se dit**, jamais ne se laisse découvrir.
 
 ## 8. Détection — à budget de fausses alertes égal
 
