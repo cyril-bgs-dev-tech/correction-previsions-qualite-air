@@ -169,6 +169,24 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     # déjà coûté trois configurations mesurées et perdues (05/08, 01 h 08) : un script qui
     # n'écrit qu'à la fin transforme n'importe quelle interruption en zéro résultat.
     partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}.csv.partiel"
+
+    # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
+    # `CLAUDE.md` § 2 quater : un pli écarté pour effectif insuffisant change le
+    # dénominateur sans rien dire. C'est ainsi que PM10 a tourné sur 24 plis au lieu de
+    # 29 — visible seulement parce que `n_plis` finit dans le CSV, et encore : sans le
+    # nombre PRÉVU à côté, un compte ne dit pas qu'il en manque. Le rejet ne dépend pas
+    # de la configuration (seulement des effectifs), il se calcule donc une seule fois.
+    ecartes = [(e, int(d[m_te].shape[0]), int(d[m_tr].shape[0])) for e, m_te, m_tr in plis
+               if len(d[m_te]) < 200 or len(d[m_tr]) < 1000]
+    n_prevus = len(plis)
+    if ecartes:
+        print(f"  ⚠️ {len(ecartes)} pli(s) écarté(s) sur {n_prevus} pour effectif "
+              f"insuffisant (test < 200 ou train < 1 000) :", flush=True)
+        for e, nte, ntr in ecartes:
+            print(f"       {e} — test {nte:,} · train {ntr:,}", flush=True)
+    print(f"  périmètre effectif : {n_prevus - len(ecartes)} plis exécutés "
+          f"sur {n_prevus} prévus", flush=True)
+
     lignes, precedent = [], None
     for nom, colonnes, per in configs:
         t0 = time.time()
@@ -193,6 +211,7 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
                        "perimetre": per, "n_colonnes": len(colonnes), "gain_pct": g,
                        "apport_marginal_pct": marge, "ecart_type": float(np.std(gains)),
                        "n_plis_negatifs": neg, "n_plis": len(gains),
+                       "n_plis_prevus": n_prevus, "n_plis_ecartes": len(ecartes),
                        "fenetre": f"{mois_ok[0]}→{mois_ok[-1]}", "n_mois": len(mois_ok)})
         pd.DataFrame(lignes).to_csv(partiel, index=False)   # jamais le nom définitif
         if not nom.startswith("★") and not nom.startswith("plafond"):

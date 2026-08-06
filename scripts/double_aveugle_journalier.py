@@ -112,11 +112,16 @@ def epreuve(d: pd.DataFrame, colonnes: list[str], ancre: str, params: dict,
     """
     details, obs, cams, pred = [], [], [], []
     depart = time.time()
+    ecartes: list[str] = []
 
     for etiquette, masque_test, masque_train in plis:
         te = d[masque_test]
         tr = d[masque_train]
         if len(te) < 200 or tr.empty:
+            # `CLAUDE.md` § 2 quater : un pli écarté change le DÉNOMINATEUR en silence.
+            # On le compte et on le nomme — un `continue` muet fait tourner l'épreuve sur
+            # moins de plis que prévu sans que le résultat ne s'en émeuve.
+            ecartes.append(f"{etiquette} (test {len(te):,})")
             continue
         p = ajuster(params, tr, te, colonnes, ancre)
         g = gain(te["valeur"].to_numpy(), te[ancre].to_numpy(), p)
@@ -127,11 +132,15 @@ def epreuve(d: pd.DataFrame, colonnes: list[str], ancre: str, params: dict,
     global_ = gain(np.concatenate(obs), np.concatenate(cams), np.concatenate(pred))
     pire = details[int(np.argmin(gains))] if len(gains) else {}
 
-    print(f"  {nom:16s} {len(details):2d} plis · gain {global_:+6.2f} % · "
+    print(f"  {nom:16s} {len(details):2d}/{len(plis):2d} plis · gain {global_:+6.2f} % · "
           f"étendue {gains.min():+6.1f} à {gains.max():+6.1f} · σ {gains.std():4.1f} · "
           f"pire = {pire.get('pli', '?')} · {time.time() - depart:4.0f}s", flush=True)
+    if ecartes:
+        print(f"    ⚠️ {len(ecartes)} pli(s) écarté(s) sur {len(plis)} pour effectif "
+              f"insuffisant : {', '.join(ecartes)}", flush=True)
 
-    return ({"epreuve": nom, "n_plis": len(details), "gain_pct": global_,
+    return ({"epreuve": nom, "n_plis": len(details), "n_plis_prevus": len(plis),
+             "n_plis_ecartes": len(ecartes), "gain_pct": global_,
              "gain_min": float(gains.min()), "gain_max": float(gains.max()),
              "ecart_type": float(gains.std()), "pire_pli": pire.get("pli"),
              "n_plis_negatifs": int((gains < 0).sum())}, details)

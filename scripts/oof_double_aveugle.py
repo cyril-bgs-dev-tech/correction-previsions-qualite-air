@@ -159,9 +159,12 @@ def main(polluant: str, horizon: int, n_plis_spatiaux: int, typologie: bool,
             ("temporelle", temporels, True, False),
             ("double aveugle", doubles, False, False)):
         t0, n_plis = time.time(), 0
+        ecartes: list[str] = []
         for etiquette, m_test, m_train in plis:
             te, tr = d[m_test], d[m_train]
             if len(te) < 200 or tr.empty:
+                # `CLAUDE.md` § 2 quater — un pli écarté sort du dénominateur en silence.
+                ecartes.append(f"{etiquette} (test {len(te):,})")
                 continue
             p = ajuster(DEFAUT, tr, te, predicteurs, "cams_jour")
             lignes.append(pd.DataFrame({
@@ -173,7 +176,11 @@ def main(polluant: str, horizon: int, n_plis_spatiaux: int, typologie: bool,
                 "pred": p,
                 "station_vue": station_vue, "mois_vu": mois_vu}))
             n_plis += 1
-        print(f"  {nom:16s} {n_plis:2d} plis · {time.time() - t0:4.0f}s", flush=True)
+        print(f"  {nom:16s} {n_plis:2d}/{len(plis):2d} plis · {time.time() - t0:4.0f}s",
+              flush=True)
+        if ecartes:
+            print(f"    ⚠️ {len(ecartes)} pli(s) écarté(s) sur {len(plis)} pour effectif "
+                  f"insuffisant : {', '.join(ecartes)}", flush=True)
 
     oof = pd.concat(lignes, ignore_index=True)
 

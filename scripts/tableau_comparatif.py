@@ -268,14 +268,23 @@ def main(polluant: str, horizon: int, n_spa: int, membres: str = "auto") -> int:
     groupes = np.array_split(rng.permutation(ids), n_spa)
     mois = np.sort(d["mois"].unique())
     nous = np.full(len(d), np.nan)
+    ecartes: list[str] = []
     for i, m in enumerate(mois):
         dans = d["station_id"].isin(groupes[i % n_spa])
         mt, mr = (d["mois"] == m) & dans, (d["mois"] != m) & ~dans
         te, tr = d[mt], d[mr]
         if len(te) < 200 or len(tr) < 1000:
+            # `CLAUDE.md` § 2 quater : ces lignes restent à `nan`, donc `ok` les retire de
+            # TOUS les systèmes — le mois disparaît du tableau entier, en silence.
+            ecartes.append(f"{m} (test {len(te):,} · train {len(tr):,})")
             continue
         nous[np.flatnonzero(mt.to_numpy())] = ajuster(DEFAUT, tr, te, base + familles,
                                                       "cams_jour")
+    print(f"  périmètre effectif : {len(mois) - len(ecartes)} mois ajustés sur {len(mois)}",
+          flush=True)
+    if ecartes:
+        print(f"  ⚠️ {len(ecartes)} mois écarté(s) pour effectif insuffisant, donc retiré(s) "
+              f"de TOUS les systèmes : {', '.join(ecartes)}", flush=True)
 
     # ── Tous sur EXACTEMENT les mêmes lignes ─────────────────────────────────
     EUR = "Europe 0,1° · sans assimilation"

@@ -175,6 +175,7 @@ def main(polluant: str, horizon: int, n_spa: int, grandeur: str | None,
     mois = np.sort(d["mois"].unique())
     modes = {"FULL": base + cols_typo + noms_mem, "NO_LOCAL_OBS": base + cols_typo}
     pred = {k: np.full(len(d), np.nan) for k in modes}
+    ecartes: list[str] = []
     for i, m in enumerate(mois):
         # ⚠️ Deux estimands distincts, et il faut publier les DEUX.
         #
@@ -190,10 +191,18 @@ def main(polluant: str, horizon: int, n_spa: int, grandeur: str | None,
         m_train = (d["mois"] != m) & (~dans if epreuve == "double" else True)
         te, tr = d[m_test], d[m_train]
         if len(te) < 200 or len(tr) < 1000:
+            # `CLAUDE.md` § 2 quater : un mois écarté ici laisse ses lignes en `nan`, donc
+            # hors du banc — le dénominateur change sans que le score ne bouge d'un pouce.
+            ecartes.append(f"{m} (test {len(te):,} · train {len(tr):,})")
             continue
         idx = np.flatnonzero(m_test.to_numpy())
         for nom, colonnes in modes.items():
             pred[nom][idx] = ajuster(DEFAUT, tr, te, colonnes, "cams_jour")
+    print(f"  périmètre effectif : {len(mois) - len(ecartes)} mois évalués sur {len(mois)}",
+          flush=True)
+    if ecartes:
+        print(f"  ⚠️ {len(ecartes)} mois écarté(s) pour effectif insuffisant : "
+              f"{', '.join(ecartes)}", flush=True)
     for nom, v in pred.items():
         d[nom] = v
     d["RAW"] = d["cams_jour"]
