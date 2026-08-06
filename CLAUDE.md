@@ -415,14 +415,24 @@ publiable ; un repli muet est un chiffre faux.
 
 ### Les jumeaux trouvés au scan du 05/08
 
-- 🔴 `tableau_comparatif.py` — `except Exception: pass` **entièrement muet** autour des
-  jointures de familles. Une famille qui échoue à se joindre disparaît du modèle sans trace.
-  C'est la règle 2 bis § 3, encore vivante dans le dépôt.
-- 🔴 `if len(te) < 200 or len(tr) < 1000: continue` — recopié dans **au moins cinq scripts**
-  (`apport_geoscf`, `apport_asymetrie_membres`, `banc_lcsqa`, `capteur_situation_anormale`,
-  `methode_maximale`) et **aucun n'affiche le nombre de plis écartés**. C'est ainsi que PM10 a
-  tourné sur 24 plis au lieu de 29 sans que rien ne le dise — visible seulement parce que
-  `methode_maximale` écrit `n_plis` dans son CSV.
+- ✅ `tableau_comparatif.py` — `except Exception: pass` **entièrement muet** autour des
+  jointures de familles. **Corrigé** : il journalise la cause et imprime les familles
+  réellement jointes (`feux(3) · membres✗`), c'est-à-dire le périmètre effectif.
+- 🟠 `if len(te) < 200 or len(tr) < 1000: continue` — le scan du 06/08 en trouve **vingt**
+  occurrences, pas cinq, dont **dix-huit sans compteur**. **Les cinq qui produisent des
+  chiffres publiés sont corrigés** (`methode_maximale`, `double_aveugle_journalier`,
+  `oof_double_aveugle`, `banc_lcsqa`, `tableau_comparatif`) : ils nomment les plis écartés
+  avec leurs effectifs et impriment « N exécutés sur M prévus ». **Treize restent**, tous
+  hors chemin de publication.
+
+  ⚠️ **Et la phrase que portait cette entrée était fausse.** Il était écrit « PM10 a tourné
+  sur 24 plis au lieu de 29 sans que rien ne le dise ». Vérification faite sur les CSV :
+  `n_plis == n_mois` sur les **quatre** polluants, donc **zéro pli écarté**. Les 24 mois de
+  PM10 sont sa **fenêtre de couverture GEOS-CF v1** (2024-01→2025-12), que le script
+  **imprime déjà**. Le défaut était réel comme risque latent, pas comme corruption réalisée
+  — et l'attribuer à un chiffre qu'il n'avait pas produit est exactement l'erreur que ce
+  fichier reproche ailleurs : *conclure depuis un signal disponible plutôt que depuis le
+  signal demandé*.
 - ✅ Faux positifs, à ne pas « corriger » : les `notna().mean()` de `apport_tropomi`,
   `extraire_sol`, `krigeage_du_biais`, `champ_region` **rapportent** une couverture sans rien
   décider — c'est précisément ce que la règle demande. Et `corriger_chimere.py:214` ne gouverne
