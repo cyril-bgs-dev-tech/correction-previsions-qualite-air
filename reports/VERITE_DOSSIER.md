@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 06/08/2026 à 01 h 48 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 06/08/2026 à 17 h 25 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -210,6 +210,43 @@ Ce projet produit **cinq familles de scores** qui portent des noms voisins et r�
 ### Les échéances ne sont pas les mêmes partout
 
 `methode_maximale` est à **J+2** ; `detection_maximale`, `episodes_reels` et `agregation_zone` sont à **J0** (`horizon=1`) ; les bancs FAIRMODE et LCSQA à **J+1** ; les pages HTML de production à **J0**. Un jury demandera « à quelle échéance ? » et la réponse **change selon le tableau montré**. Le rassurant est mesuré — moins d'un point d'écart entre J0, J+1 et J+2 — mais cela **se dit**, jamais ne se laisse découvrir.
+
+## 7 quater. Année par année, contre **deux dénominateurs** — la table de la page 04
+
+**Périmètre : PARTOUT** — aucune observation passée de la station n'entre dans le modèle, donc ces chiffres valent *là où rien ne mesure*. Épreuve : **double aveugle**, station et mois cachés ensemble. Échéance **J+1** (tranche 25-48 h d'une sortie 00 UTC). Ces trois mots ne s'omettent pas : ils ne sont **pas** ceux du § 12 ni ceux du § 14.
+
+Deux références, parce qu'elles répondent à deux questions. **Contre CAMS brut** pour *ordonner* les systèmes — dénominateur commun, mais personne n'exploite CAMS brut en l'état. **Contre la chaîne en service** pour *citer* un chiffre — le krigeage du biais récent dans ses **réglages usuels**, ce qu'une AASQA fait tourner. La dernière colonne oppose la **même méthode réglée au mieux**, adversaire plus dur.
+
+| polluant | fenêtre | n | CAMS brut | chaîne en service | nous | /CAMS | **/service** | /service réglé |
+|---|---|---|---|---|---|---|---|---|
+| O₃ | 2023 | 10,554 | 11.11 | 14.78 | 10.76 | +3.19 % | +27.24 % | +26.84 % |
+| O₃ | 2024 | 31,681 | 12.16 | 13.85 | 10.76 | +11.53 % | +22.29 % | +19.64 % |
+| O₃ | 2025 | 27,649 | 13.03 | 14.99 | 11.39 | +12.59 % | +24.00 % | +20.50 % |
+| O₃ | 2026 | 17,911 | 13.70 | 14.24 | 11.65 | +14.99 % | +18.21 % | +14.98 % |
+| **O₃** | **toutes** | 87,795 | 12.65 | 14.41 | 11.14 | +11.88 % | **+22.64 %** | +19.90 % |
+| NO₂ | 2023 | 13,193 | 24.59 | 22.71 | 15.54 | +36.82 % | +31.60 % | +15.90 % |
+| NO₂ | 2024 | 39,151 | 21.74 | 21.21 | 13.62 | +37.34 % | +35.77 % | +20.67 % |
+| NO₂ | 2025 | 35,248 | 23.29 | 22.48 | 14.59 | +37.33 % | +35.08 % | +21.74 % |
+| NO₂ | 2026 | 22,043 | 23.21 | 20.52 | 14.12 | +39.16 % | +31.22 % | +15.90 % |
+| **NO₂** | **toutes** | 109,635 | 22.90 | 21.68 | 14.28 | +37.64 % | **+34.13 %** | +19.53 % |
+| PM10 | 2024 | 35,399 | 7.52 | 7.53 | 6.62 | +12.00 % | +12.14 % | +4.25 % |
+| PM10 | 2025 | 35,822 | 7.40 | 6.94 | 5.91 | +20.16 % | +14.87 % | +3.02 % |
+| PM10 | 2026 | 20,513 | 7.73 | 7.07 | 6.17 | +20.24 % | +12.80 % | +3.45 % |
+| **PM10** | **toutes** | 91,734 | 7.52 | 7.20 | 6.25 | +16.94 % | **+13.26 %** | +3.65 % |
+| PM10 · chaîne nommée | 2025 | 35,725 | 7.40 | 7.61 | 5.91 | +20.18 % | +22.34 % | +17.55 % |
+| PM10 · chaîne nommée | 2026 | 20,513 | 7.73 | 7.67 | 6.17 | +20.24 % | +19.59 % | +15.43 % |
+| **PM10 · chaîne nommée** | **toutes** | 56,238 | 7.52 | 7.63 | 6.00 | +20.20 % | **+21.32 %** | +16.75 % |
+| PM2,5 | 2023 | 8,502 | 3.68 | 4.67 | 3.32 | +9.97 % | +29.04 % | +27.48 % |
+| PM2,5 | 2024 | 25,881 | 4.44 | 5.26 | 3.88 | +12.57 % | +26.14 % | +28.16 % |
+| PM2,5 | 2025 | 26,696 | 4.17 | 5.26 | 3.90 | +6.47 % | +25.79 % | +27.01 % |
+| PM2,5 | 2026 | 15,591 | 4.10 | 5.03 | 3.75 | +8.61 % | +25.46 % | +24.72 % |
+| **PM2,5** | **toutes** | 76,670 | 4.20 | 5.15 | 3.80 | +9.45 % | **+26.14 %** | +27.03 % |
+
+⚠️ **Les deux blocs de colonnes ne se lisent pas ensemble.** Sur l'ozone, la chaîne AASQA **dégrade** CAMS brut : notre gain passe de **+11,88 %** contre CAMS à **+22,64 %** contre elle, *sans qu'aucun modèle ait changé*. C'est la référence qui a bougé — et c'est exactement pourquoi un pourcentage se cite avec ses trois mots (§ 7 ter).
+
+⚠️ **Les PM10 sont publiés en deux variantes, et les deux sont légitimes.** Les membres d'ensemble n'existent pour ce polluant que depuis 2025-01, d'où deux tables. « PM10 » est la variante **longue — 31 mois**, chaîne réglementaire **ancrée sur CAMS** faute de membres ; « PM10 · chaîne nommée » est la variante **courte — 19 mois**, CHIMERE+MOCAGE réel. La longue est à la fois le plus grand corpus **et** le test le plus dur : son substitut atteint une RMSE de **7,20** contre **7,63** pour la chaîne nommée. **Le même modèle, sur les mêmes 19 mois, rend le même +20,2 % contre CAMS brut dans les deux tables** — seule la référence change. Ne jamais publier l'une en taisant l'autre.
+
+⚠️ **La réserve porte sur les deux dénominateurs.** Les lignes AASQA s'ancrent sur des modèles en configuration **européenne 0,1° sans assimilation**. La chaîne réelle tourne en version nationale, plus fine et assimilée : elle est donc **meilleure** que cette simulation, et tout écart affiché ici est un **majorant** de notre avance. Le § 10 ter chiffre cet écart sur les journées de PREV'AIR réel captées.
 
 ## 8. Détection — à budget de fausses alertes égal
 
@@ -538,16 +575,22 @@ Tout le reste de ce document compte des « épisodes » au sens **journée-stati
 
 Ce tableau est pris **à seuil fixe, sans réglage**. Le § 8 montre qu'à **volume d'alertes constant** le classement s'inverse. Les deux sont vraies ; il faut dire laquelle on montre et pourquoi.
 
-## 15. À quelle échelle décider — la persistance est gratuite
+## 15. À quelle échelle décider — la persistance est gratuite, **et elle n'est pas à nous**
 
 La décision était prise par station-jour puis agrégée par le **maximum** — « au moins une station dépasse » — c'est-à-dire l'agrégateur qui **maximise les fausses alertes**. Il n'avait pas été retenu : il avait été subi.
 
-| règle | attrapés | fausses | rappel |
-|---|---|---|---|
-| max (existant) | 12/12 | 473 | 100 % |
-| **max + persistance** | **12/12** | **312** | **100 %** |
+Exiger un dépassement prédit **deux jours de suite** retire un tiers des fausses alertes sans perdre un épisode. Voici ce que cela donne pour les **quatre** systèmes — parce que c'est une propriété de la *règle*, pas du modèle :
+
+| système | épisodes | fausses sans | fausses avec | écart | rappel |
+|---|---|---|---|---|---|
+| observation | 12/12 | 412 | 254 | -38.3 % | 100.0 % *(inchangé)* |
+| **notre modèle** | 12/12 | 473 | 312 | -34.0 % | 100.0 % *(inchangé)* |
+| chaîne AASQA | 11/12 | 446 | 310 | -30.5 % | 91.7 % *(inchangé)* |
+| CAMS brut | 8/12 | 102 | 44 | -56.9 % | **66.7 → 58.3 %** |
 
 **−34 % de fausses alertes, zéro épisode perdu.** Ce n'est pas un arbitrage, c'est un gain sec : une fausse alerte est un accident isolé, un épisode réel est **installé**, et la procédure préfectorale exige elle-même la persistance. Notre règle était instantanée alors que la décision qu'elle imite ne l'est pas.
+
+⚠️ **Mais elle profite à tout le monde, et davantage à l'observation qu'à nous.** La règle est gratuite pour trois systèmes sur quatre — rappel strictement inchangé — et **coûte un épisode à CAMS brut**, dont le rappel tombe. Le seul énoncé défendable est donc : *« la règle de décision vaut un tiers des fausses alertes, quel que soit le système qui l'alimente »*. Se l'attribuer serait faux.
 
 ⚠️ **L'agrégateur de zone, lui, est un arbitrage — et à moitié un artefact.** Une règle « k parmi n » ne peut pas déclencher là où le réseau porte moins de k stations : elle l'**éteint**. Le réseau occitan a une **médiane de 2 stations par département**, et 3 départements sur 9 n'en portent qu'une. La chute des fausses alertes se décompose en deux mécanismes de taille comparable — silence sélectif des zones creuses, et vrai effet d'agrégation dans les zones denses. Ne jamais présenter le premier comme une méthode.
 

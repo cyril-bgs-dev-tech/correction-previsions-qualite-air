@@ -631,6 +631,104 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def bloc_comparaison_annuelle(lignes: list[dict]) -> str:
+    """Le tableau de la page 04 — année par année, contre DEUX dénominateurs.
+
+    Pourquoi cette section a dû être écrite
+    ---------------------------------------
+    Elle manquait. La page 04 de la présentation est le plus gros tableau du dossier et
+    citait +13,26 %, +3,65 %, +21,32 %, +16,75 %, +22,64 %, +37,64 % — **aucun de ces
+    chiffres n'existait ici**, et `verite_dossier.py` ne lisait même pas
+    `comparaison_annuelle.csv`. Par la règle que ce fichier énonce lui-même en tête, ils
+    étaient donc « à retirer ou à re-mesurer ». C'est la récidive exacte du défaut trouvé à
+    l'audit du 05/08 sur les cinq résultats du 04-05/08.
+
+    Les deux dénominateurs, et pourquoi les deux
+    --------------------------------------------
+    **Contre CAMS brut** — dénominateur commun aux trois systèmes, donc le seul qui permette
+    de les *ordonner*. Mais personne n'exploite CAMS brut en l'état : le citer flatterait
+    tout le monde, nous compris.
+
+    **Contre la chaîne en service** — le krigeage du biais récent dans ses *réglages usuels*,
+    ce qu'une AASQA fait réellement tourner. C'est le chiffre qui se *cite*. Et à côté, le
+    gain contre la **même méthode réglée au mieux**, adversaire plus dur partout sauf sur
+    l'ozone, où le krigeage dégrade CAMS.
+
+    ⚠️ Cette inversion de l'ozone est exactement pourquoi un pourcentage exige ses trois
+    mots : notre +11,88 % contre CAMS devient +22,64 % contre la chaîne, **sans qu'aucun
+    modèle ait changé**. C'est la référence qui a bougé.
+    """
+    chemin = RACINE / "reports/comparaison_annuelle.csv"
+    if not chemin.exists():
+        return ""
+    t = pd.read_csv(chemin)
+    # Exiger nommément les colonnes avant d'écrire (`CLAUDE.md` § 2 ter § 2) : une colonne
+    # absente s'imprimerait `nan %` sans que rien ne s'en émeuve.
+    ATTENDUES = ("polluant", "annee", "n", "rmse_cams", "rmse_usuel", "rmse_aasqa",
+                 "rmse_nous", "gain_nous_pct", "gain_service_pct", "gain_service_opt_pct")
+    if manque := [c for c in ATTENDUES if c not in t.columns]:
+        raise SystemExit(f"{chemin.name} : colonnes absentes {manque} — "
+                         f"relancer scripts/page_comparaison_annuelle.py")
+    texte = [
+        "## 7 quater. Année par année, contre **deux dénominateurs** — la table de la page 04\n",
+        "**Périmètre : PARTOUT** — aucune observation passée de la station n'entre dans le "
+        "modèle, donc ces chiffres valent *là où rien ne mesure*. Épreuve : **double "
+        "aveugle**, station et mois cachés ensemble. Échéance **J+1** (tranche 25-48 h "
+        "d'une sortie 00 UTC). Ces trois mots ne s'omettent pas : ils ne sont **pas** ceux "
+        "du § 12 ni ceux du § 14.\n",
+        "Deux références, parce qu'elles répondent à deux questions. **Contre CAMS brut** "
+        "pour *ordonner* les systèmes — dénominateur commun, mais personne n'exploite CAMS "
+        "brut en l'état. **Contre la chaîne en service** pour *citer* un chiffre — le "
+        "krigeage du biais récent dans ses **réglages usuels**, ce qu'une AASQA fait "
+        "tourner. La dernière colonne oppose la **même méthode réglée au mieux**, "
+        "adversaire plus dur.\n",
+        "| polluant | fenêtre | n | CAMS brut | chaîne en service | nous | /CAMS | "
+        "**/service** | /service réglé |",
+        "|---|---|---|---|---|---|---|---|---|"]
+    for p, sous in t.groupby("polluant", sort=False):
+        for _, r in sous.iterrows():
+            an = str(r["annee"])
+            total = an == "toutes"
+            g = "**" if total else ""
+            texte.append(
+                f"| {g}{p}{g} | {g}{an}{g} | {int(r['n']):,} | {r['rmse_cams']:.2f} | "
+                f"{r['rmse_usuel']:.2f} | {r['rmse_nous']:.2f} | "
+                f"{r['gain_nous_pct']:+.2f} % | {g}{r['gain_service_pct']:+.2f} %{g} | "
+                f"{r['gain_service_opt_pct']:+.2f} % |")
+            if total:
+                lignes.append({"bloc": "comparaison annuelle", "polluant": p,
+                               "grain": "toutes années", "n": int(r["n"]),
+                               "rmse_brut": r["rmse_cams"], "rmse_service": r["rmse_usuel"],
+                               "rmse_nous": r["rmse_nous"],
+                               "gain_vs_brut": r["gain_nous_pct"],
+                               "gain_vs_service": r["gain_service_pct"],
+                               "gain_vs_service_regle": r["gain_service_opt_pct"]})
+    texte.append(
+        "\n⚠️ **Les deux blocs de colonnes ne se lisent pas ensemble.** Sur l'ozone, la "
+        "chaîne AASQA **dégrade** CAMS brut : notre gain passe de **+11,88 %** contre CAMS "
+        "à **+22,64 %** contre elle, *sans qu'aucun modèle ait changé*. C'est la référence "
+        "qui a bougé — et c'est exactement pourquoi un pourcentage se cite avec ses trois "
+        "mots (§ 7 ter).\n")
+    texte.append(
+        "⚠️ **Les PM10 sont publiés en deux variantes, et les deux sont légitimes.** Les "
+        "membres d'ensemble n'existent pour ce polluant que depuis 2025-01, d'où deux "
+        "tables. « PM10 » est la variante **longue — 31 mois**, chaîne réglementaire "
+        "**ancrée sur CAMS** faute de membres ; « PM10 · chaîne nommée » est la variante "
+        "**courte — 19 mois**, CHIMERE+MOCAGE réel. La longue est à la fois le plus grand "
+        "corpus **et** le test le plus dur : son substitut atteint une RMSE de **7,20** "
+        "contre **7,63** pour la chaîne nommée. **Le même modèle, sur les mêmes 19 mois, "
+        "rend le même +20,2 % contre CAMS brut dans les deux tables** — seule la référence "
+        "change. Ne jamais publier l'une en taisant l'autre.\n")
+    texte.append(
+        "⚠️ **La réserve porte sur les deux dénominateurs.** Les lignes AASQA s'ancrent sur "
+        "des modèles en configuration **européenne 0,1° sans assimilation**. La chaîne "
+        "réelle tourne en version nationale, plus fine et assimilée : elle est donc "
+        "**meilleure** que cette simulation, et tout écart affiché ici est un **majorant** "
+        "de notre avance. Le § 10 ter chiffre cet écart sur les journées de PREV'AIR réel "
+        "captées.\n")
+    return "\n".join(texte)
+
+
 def bloc_detection(lignes: list[dict]) -> str:
     """Le rappel à budget de fausses alertes imposé — la comparaison qu'un service utilise."""
     chemin = RACINE / "reports/detection_maximale_O3.csv"
@@ -1197,32 +1295,70 @@ def bloc_episodes_reels(lignes: list[dict]) -> str:
 
 
 def bloc_agregation_zone(lignes: list[dict]) -> str:
-    """L'échelle de décision — et le seul gain sec du dossier."""
+    """L'échelle de décision — et le seul gain sec du dossier.
+
+    ⚠️ **Ce bloc a lu les QUATRE systèmes, pas seulement le nôtre.** Il n'en montrait qu'un,
+    et présentait donc comme *notre* mérite ce qui est une propriété de la **règle de
+    décision** : l'observation elle-même y gagne davantage que nous. Écrire « −34 % grâce à
+    notre modèle » serait faux, et c'est la première question qu'un jury poserait. La page
+    05 de la présentation affichait déjà les quatre — la source de vérité était **en retard
+    sur le livrable qu'elle est censée gouverner**.
+    """
     f = RACINE / "reports/agregation_zone_occitanie.csv"
     if not f.exists():
         return ""
     t = pd.read_csv(f)
-    o3 = t[(t["polluant"] == "O3") & (t["regle"] == "max (existant)")
-           & (t["systeme"] == "notre modèle")]
+    # Configuration nommée en toutes lettres et FILTRÉE dessus : une ligne prise par son
+    # rang changerait de sens au prochain ajout de règle (`CLAUDE.md` § 2 bis § 1).
+    CONF = {"polluant": "O3", "regle": "max (existant)", "seuil": 120.0, "min_stations": 1}
+    ORDRE = ["observation", "notre modèle", "chaîne AASQA", "CAMS brut"]
+    for col, val in CONF.items():
+        if col in t.columns:
+            t = t[t[col] == val]
+    o3 = t[t["systeme"] == "notre modèle"]
     if o3.empty:
         return ""
     sans = o3[~o3["persistance"]].iloc[0]
     avec = o3[o3["persistance"]].iloc[0]
     baisse = 100 * (1 - avec["fausses"] / max(sans["fausses"], 1))
     texte = [
-        "## 15. À quelle échelle décider — la persistance est gratuite\n",
+        "## 15. À quelle échelle décider — la persistance est gratuite, **et elle n'est pas "
+        "à nous**\n",
         "La décision était prise par station-jour puis agrégée par le **maximum** — « au "
         "moins une station dépasse » — c'est-à-dire l'agrégateur qui **maximise les fausses "
         "alertes**. Il n'avait pas été retenu : il avait été subi.\n",
-        "| règle | attrapés | fausses | rappel |", "|---|---|---|---|",
-        f"| max (existant) | {int(sans['attrapes'])}/{int(sans['n_episodes'])} | "
-        f"{int(sans['fausses'])} | {sans['rappel_pct']:.0f} % |",
-        f"| **max + persistance** | **{int(avec['attrapes'])}/{int(avec['n_episodes'])}** | "
-        f"**{int(avec['fausses'])}** | **{avec['rappel_pct']:.0f} %** |",
+        "Exiger un dépassement prédit **deux jours de suite** retire un tiers des fausses "
+        "alertes sans perdre un épisode. Voici ce que cela donne pour les **quatre** "
+        "systèmes — parce que c'est une propriété de la *règle*, pas du modèle :\n",
+        "| système | épisodes | fausses sans | fausses avec | écart | rappel |",
+        "|---|---|---|---|---|---|"]
+    for nom in ORDRE:
+        g = t[t["systeme"] == nom]
+        if len(g) != 2:
+            continue
+        s = g[~g["persistance"].astype(bool)].iloc[0]
+        a = g[g["persistance"].astype(bool)].iloc[0]
+        d = 100 * (a["fausses"] - s["fausses"]) / max(s["fausses"], 1)
+        gratuite = int(s["attrapes"]) == int(a["attrapes"])
+        gras = "**" if nom == "notre modèle" else ""
+        rappel = (f"{s['rappel_pct']:.1f} % *(inchangé)*" if gratuite
+                  else f"**{s['rappel_pct']:.1f} → {a['rappel_pct']:.1f} %**")
+        texte.append(
+            f"| {gras}{nom}{gras} | {int(s['attrapes'])}/{int(s['n_episodes'])} | "
+            f"{int(s['fausses'])} | {int(a['fausses'])} | {d:+.1f} % | {rappel} |")
+        lignes.append({"bloc": "agrégation zone", "polluant": "O3",
+                       "grain": f"{nom} · max + persistance", "n": int(s["n_episodes"]),
+                       "POD": a["rappel_pct"], "FAR": 100 - a["precision_pct"]})
+    texte += [
         f"\n**−{baisse:.0f} % de fausses alertes, zéro épisode perdu.** Ce n'est pas un "
         "arbitrage, c'est un gain sec : une fausse alerte est un accident isolé, un épisode "
         "réel est **installé**, et la procédure préfectorale exige elle-même la persistance. "
         "Notre règle était instantanée alors que la décision qu'elle imite ne l'est pas.\n",
+        "⚠️ **Mais elle profite à tout le monde, et davantage à l'observation qu'à nous.** "
+        "La règle est gratuite pour trois systèmes sur quatre — rappel strictement "
+        "inchangé — et **coûte un épisode à CAMS brut**, dont le rappel tombe. Le seul "
+        "énoncé défendable est donc : *« la règle de décision vaut un tiers des fausses "
+        "alertes, quel que soit le système qui l'alimente »*. Se l'attribuer serait faux.\n",
         "⚠️ **L'agrégateur de zone, lui, est un arbitrage — et à moitié un artefact.** Une "
         "règle « k parmi n » ne peut pas déclencher là où le réseau porte moins de k "
         "stations : elle l'**éteint**. Le réseau occitan a une **médiane de 2 stations par "
@@ -1234,11 +1370,6 @@ def bloc_agregation_zone(lignes: list[dict]) -> str:
         "les intervalles de bootstrap se recouvrent. Le seul chiffre solide de cette section "
         "est la baisse de fausses alertes, parce qu'elle est **à rappel exactement "
         "identique**.\n"]
-    for _, r in o3.iterrows():
-        lignes.append({"bloc": "agrégation zone", "polluant": "O3",
-                       "grain": f"max{' + persistance' if r['persistance'] else ''}",
-                       "n": int(r["n_episodes"]), "POD": r["rappel_pct"],
-                       "FAR": 100 - r["precision_pct"]})
     return "\n".join(texte)
 
 
@@ -1259,6 +1390,7 @@ def main() -> int:
         bloc_meteo(lignes),
         bloc_perimetres(lignes),
         bloc_reconciliation(lignes),
+        bloc_comparaison_annuelle(lignes),
         bloc_detection(lignes),
         bloc_signalements(lignes),
         bloc_front(lignes),
