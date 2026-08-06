@@ -153,5 +153,63 @@
     });
   }
 
-  filtres(); bandes(); profils(); critiques();
+  /* La signature en trois mots. Deux signatures cohabitent sur cette page, et c'est le
+     fond du sujet : le § 15 ne porte ni le même périmètre (Occitanie, pas la France), ni
+     la même épreuve (épisodes préfectoraux, pas bandes ATMO), ni la même échéance (J0,
+     pas J+1) que les deux figures qui le précèdent. Une signature unique mentirait. */
+  function poser(cible, s) {
+    if (!cible || !s) return;
+    cible.innerHTML = '<span>périmètre</span><b>' + s.perimetre + '</b>' +
+                      '<span>épreuve</span><b>' + s.epreuve + '</b>' +
+                      '<span>échéance</span><b>' + s.echeance + '</b>';
+  }
+  function signer() {
+    var t = document.querySelectorAll('#seuils .sig3');
+    for (var i = 0; i < t.length; i++) {
+      if (t[i].id !== 'p5-persist-sig') poser(t[i], D.signature);
+    }
+    poser(document.getElementById('p5-persist-sig'),
+          (D.persistance || {}).signature);
+  }
+
+  /* ── § 15 · la persistance ─────────────────────────────────────────────────
+     Les quatre systèmes, toujours. Le tableau existe pour montrer que le −34 % de
+     notre ligne n'a rien d'une propriété du modèle : l'observation elle-même fait
+     mieux. N'afficher que notre ligne serait un chiffre juste et une phrase fausse. */
+  function persistance() {
+    var P = D.persistance;
+    if (!P) return;
+    var tb = document.querySelector('#p5-persist tbody');
+    tb.innerHTML =
+      '<tr><th>système</th><th>épisodes attrapés</th>' +
+      '<th>fausses alertes<span>règle instantanée</span></th>' +
+      '<th>fausses alertes<span>2 jours de suite</span></th>' +
+      '<th>écart</th><th>rappel</th></tr>';
+    P.systemes.forEach(function (s) {
+      var r = document.createElement('tr');
+      r.className = s.nom === 'notre modèle' ? 'nous' : (s.gratuite ? '' : 'coute');
+      var ep = s.avec.attrapes + ' / ' + s.episodes;
+      r.innerHTML =
+        '<td>' + s.nom + (s.gratuite ? '' :
+          ' <span class="marq-faible" title="la persistance lui coûte un épisode">'
+          + 'coûte un épisode</span>') + '</td>' +
+        '<td class="v">' + ep + '</td>' +
+        '<td class="v gris">' + ent(s.sans.fausses) + '</td>' +
+        '<td class="v">' + ent(s.avec.fausses) + '</td>' +
+        '<td class="v pos">' + s.delta_fausses_pct.toFixed(1) + ' %</td>' +
+        '<td class="v ' + (s.gratuite ? 'gris' : 'neg') + '">' +
+          s.sans.rappel.toFixed(1) + ' → ' + s.avec.rappel.toFixed(1) + ' %</td>';
+      tb.appendChild(r);
+    });
+    var n = P.systemes[0];
+    document.getElementById('p5-persist-conf').innerHTML =
+      'Configuration, en toutes lettres&#8239;: <b>' + P.conf.polluant + '</b> · seuil <b>' +
+      P.conf.seuil + ' µg/m³</b> — valeur cible européenne, <em>pas</em> le seuil de ' +
+      'procédure française à 180 · règle d\'agrégation <b>' + P.conf.regle + '</b> · ' +
+      '<b>' + ent(n.zones_jours) + '</b> zones-jours, <b>' + n.episodes +
+      '</b> épisodes déclarés · au moins <b>' + P.conf.min_stations +
+      '</b> station par département.';
+  }
+
+  filtres(); bandes(); profils(); critiques(); persistance(); signer();
 })();

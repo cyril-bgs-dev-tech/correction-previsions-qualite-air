@@ -35,13 +35,23 @@
   /* ── 1. Le tableau ───────────────────────────────────────────────────────── */
   function tableau() {
     var tb = document.querySelector('#p4-tab tbody');
-    tb.innerHTML = '<tr><th>année</th><th>jours-station</th><th>RMSE CAMS</th>' +
-      '<th>AASQA réglée</th><th>AASQA usuelle</th><th>nous</th></tr>';
+    /* Deux dénominateurs, deux groupes de colonnes, et l'en-tête le dit. Les trois
+       premières colonnes de gain se lisent CONTRE CAMS BRUT — c'est ce qui permet
+       d'ordonner les systèmes entre eux. La dernière se lit CONTRE LA CHAÎNE EN
+       SERVICE : c'est le chiffre qu'on cite, parce que CAMS brut, personne ne
+       l'exploite en l'état. Les mélanger produit deux valeurs du même gain. */
+    tb.innerHTML =
+      '<tr class="p4-surtitre"><th></th><th></th>' +
+      '<th colspan="4">gain contre <b>CAMS brut</b> — pour ordonner les systèmes</th>' +
+      '<th class="p4-col-tete">contre la <b>chaîne en service</b></th></tr>' +
+      '<tr><th>année</th><th>jours-station</th><th>RMSE CAMS</th>' +
+      '<th>AASQA réglée</th><th>AASQA usuelle</th><th>nous</th>' +
+      '<th class="p4-col-tete">nous</th></tr>';
     POLS.forEach(function (p) {
       var b = D.polluants[p];
       var tr = document.createElement('tr');
       tr.className = 'grp';
-      tr.innerHTML = '<td colspan="6">' + b.nom +
+      tr.innerHTML = '<td colspan="7">' + b.nom +
         ' <span>· ' + b.grandeur + ' · ' + b.unite + '</span></td>';
       tb.appendChild(tr);
       b.annees.forEach(function (a) {
@@ -57,10 +67,28 @@
           '<td class="v gris">' + a.rmse.cams.toFixed(2) + '</td>' +
           '<td class="v ' + cl(a.gain.aasqa) + bat + '">' + nf(a.gain.aasqa) + ' %</td>' +
           '<td class="v gris">' + nf(a.gain.usuel) + ' %</td>' +
-          '<td class="v ' + cl(a.gain.nous) + '">' + nf(a.gain.nous) + ' %</td>';
+          '<td class="v ' + cl(a.gain.nous) + '">' + nf(a.gain.nous) + ' %</td>' +
+          '<td class="v p4-col-tete ' + cl(a.gain.service) + '">' +
+            nf(a.gain.service, 2) + ' %' +
+            '<span class="p4-sec" title="contre la même méthode réglée au mieux — ' +
+            'l\'adversaire le plus dur">réglée au mieux&#8239;: ' +
+            nf(a.gain.service_opt, 2) + ' %</span></td>';
         tb.appendChild(r);
       });
     });
+  }
+
+  /* La signature en trois mots, posée sur CHAQUE figure et non sur la seule page 00.
+     Un pourcentage sans son périmètre, son épreuve et son échéance n'est pas citable ;
+     et une signature recopiée à la main dans quatre légendes finit par en démentir une. */
+  function signer() {
+    var s = D.signature;
+    if (!s) return;
+    var h = '<span>périmètre</span><b>' + s.perimetre + '</b>' +
+            '<span>épreuve</span><b>' + s.epreuve + '</b>' +
+            '<span>échéance</span><b>' + s.echeance + '</b>';
+    var cibles = document.querySelectorAll('#resultats .sig3');
+    for (var i = 0; i < cibles.length; i++) cibles[i].innerHTML = h;
   }
 
   /* ── 2. Les cartes ───────────────────────────────────────────────────────── */
@@ -321,6 +349,7 @@
   }
 
   tableau();
+  signer();
   filtres();
   dessinerCartes();
   bande();

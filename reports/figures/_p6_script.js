@@ -5,6 +5,18 @@
   var D = JSON.parse(n.textContent);
   var ent = function (x) { return x.toLocaleString('fr-FR'); };
 
+  /* La signature en trois mots. Celle de cette page ne partage AUCUN terme avec celle
+     des pages 04 et 05 : Occitanie et non France, procédures préfectorales et non
+     bandes ATMO, J0 et non J+1. Reporter le « 2 sur 33 » d'ici sur le tableau de la
+     page 04 comparerait deux mesures sans terme commun — d'où la signature, écrite
+     depuis le JSON et jamais recopiée à la main dans la prose. */
+  var sg = D.signature, hs = document.getElementById('p6-sig');
+  if (sg && hs) {
+    hs.innerHTML = '<span>périmètre</span><b>' + sg.perimetre + '</b>' +
+                   '<span>épreuve</span><b>' + sg.epreuve + '</b>' +
+                   '<span>échéance</span><b>' + sg.echeance + '</b>';
+  }
+
   var TITRE = {
     PM10: ['PM10 · seuil réglementaire',
            'seuil d’information <b>50 µg/m³</b> en moyenne journalière — <strong>exactement la grandeur que nous prédisons</strong>'],

@@ -21,6 +21,27 @@ Leur chaîne réelle ferait donc **mieux** que cette simulation : tout écart af
 ⚠️ **Sur les PM10 la référence réglementaire est CAMS + krigeage**, pas CHIMERE+MOCAGE : les
 membres d'ensemble n'existent pas pour ce polluant. Le libellé le porte.
 
+Contre quoi se mesure le gain — trois dénominateurs, jamais un seul
+---------------------------------------------------------------------
+Le tableau compare les **systèmes entre eux** contre un dénominateur commun, CAMS brut.
+Mais le **chiffre de tête** — celui qu'on cite — se mesure contre la chaîne **réellement en
+service**, c'est-à-dire le krigeage du biais récent dans ses **réglages usuels** (7 jours,
+50 km, p=2, tous donneurs — `tableau_comparatif.py:260`). C'est la doctrine du projet :
+CAMS brut, personne ne l'exploite en l'état.
+
+Trois valeurs sont donc écrites pour chaque année, et les trois sont publiées :
+
+| clé | contre quoi |
+|---|---|
+| `gain.nous` | **CAMS brut** — commun aux trois systèmes, sert à les ordonner |
+| `gain.service` | **la chaîne en service** — réglages usuels. *Le chiffre de tête.* |
+| `gain.service_opt` | la même méthode **réglée au mieux** — l'adversaire le plus dur |
+
+Publier le premier seul flatte ; publier les deux derniers seuls empêche de comparer les
+systèmes. Cacher `service_opt` derrière `service` serait exactement le défaut de référence
+flatteuse que ce projet traque : sur les PM10 à 31 mois, l'écart est **+13,3 %** contre
+**+3,7 %**.
+
 Trois contrôles, écrits avant d'avoir vu le résultat
 ------------------------------------------------------
 1. **Les systèmes sont désignés par leur libellé, jamais par leur rang** — l'ordre des colonnes
@@ -71,6 +92,14 @@ POLLUANTS = {
     "PM25":   ("PM25", "",             "PM2,5", "moyenne journalière", "µg/m³"),
 }
 
+# La signature en trois mots — périmètre, épreuve, échéance. Cinq familles de gains
+# portent des noms voisins dans ce dossier ; sur l'ozone elles valent +22,43, +21,66,
+# +13,75, +9,2 et +3,31 %, toutes justes et aucune interchangeable. Elle est écrite ici,
+# une fois, et va dans le JSON : une page qui la recopie à la main finit par la démentir.
+SIGNATURE = {"perimetre": "PARTOUT — aucune observation passée de la station",
+             "epreuve": "double aveugle — station ET mois cachés",
+             "echeance": "J+1 — tranche 25-48 h d'une sortie 00 UTC"}
+
 
 def rmse(o: np.ndarray, p: np.ndarray) -> float:
     return float(np.sqrt(np.mean((o - p) ** 2)))
@@ -88,38 +117,25 @@ def colonne(sys: pd.DataFrame, motif: str, polluant: str) -> str:
 def main() -> int:
     contours = json.loads((RACINE / "reports/carte_stations_contours.json").read_text())
     carte = pd.read_csv(RACINE / "reports/carte_stations.csv")
-    sortie: dict = {"contours": contours, "horizon": HORIZON,
+    sortie: dict = {"contours": contours, "horizon": HORIZON, "signature": SIGNATURE,
                     "seuils": {"annee": N_MIN_ANNEE, "faible": N_FAIBLE,
                                "station": N_MIN_STATION}, "polluants": {}}
     lignes_csv: list[dict] = []
     ecartees: list[str] = []
 
     for p, (espece, suffixe, nom, grandeur, unite) in POLLUANTS.items():
+        # Chaque variante lit SA table de systèmes. Le repli sur la table non suffixée a
+        # existé — la variante `sansmembres` n'était pas livrée et la correspondance était
+        # codée en dur ici — et il a survécu à la livraison du fichier : un repli muet ne
+        # se distingue pas d'un chemin nominal. `systemes_PM10_h2_sansmembres.csv` existe
+        # depuis le 06/08 et sa légende est celle qui était supposée ; le repli disparaît
+        # donc plutôt que de rester en embuscade.
         sysf = RACINE / f"data/processed/predictions/systemes_{espece}_h{HORIZON}{suffixe}.csv"
-        if not sysf.exists():
-            sysf = RACINE / f"data/processed/predictions/systemes_{espece}_h{HORIZON}.csv"
         parq = (RACINE / f"data/processed/predictions/comparatif_{espece}_h{HORIZON}{suffixe}.parquet")
-        if not (sysf.exists() and parq.exists()):
-            raise SystemExit(f"{p} : artefact manquant — {sysf.name} ou {parq.name}")
-        # ⚠️ La variante `sansmembres` n'a PAS de table de systèmes livrée. On ne devine
-        # pas une correspondance : celle-ci est **vérifiée sur les données** —
-        #   · `sys1` est identique bit à bit à CAMS brut de la variante nommée
-        #     (56 238 lignes communes, écart max < 1e-9) ;
-        #   · `sys2` (RMSE 7,201) et `sys3` (6,483) reproduisent exactement les +4,2 % et
-        #     +13,8 % que cette page affichait quand ce même jeu de 31 mois portait encore
-        #     le nom `comparatif_PM10_h2` et sa table à quatre systèmes.
-        # À remplacer par `systemes_PM10_h2_sansmembres.csv` dès qu'il sera livré.
-        if suffixe and not sysf.name.endswith(f"{suffixe}.csv"):
-            sys_ = pd.DataFrame([
-                ("sys1", "① CAMS brut — ensemble 6 modèles"),
-                ("sys2", "④ CAMS + krigeage — réglages usuels"),
-                ("sys3", "⑤ CAMS + krigeage — OPTIMISÉ ici"),
-                ("sys4", "⑥ notre modèle — toutes familles"),
-            ], columns=["code", "systeme"])
-            print(f"   ⚠️ table de systèmes absente pour {nom} — correspondance vérifiée "
-                  f"sur les données, à remplacer par un fichier livré")
-        else:
-            sys_ = pd.read_csv(sysf)
+        for f_ in (sysf, parq):
+            if not f_.exists():
+                raise SystemExit(f"{p} : artefact manquant — {f_.name}")
+        sys_ = pd.read_csv(sysf)
         c_ref = colonne(sys_, "CAMS brut", p)
         c_opt = colonne(sys_, "OPTIMISÉ ici", p)
         c_usu = colonne(sys_, "réglages usuels", p)
@@ -160,6 +176,12 @@ def main() -> int:
                  for k, c in (("cams", c_ref), ("aasqa", c_opt),
                               ("usuel", c_usu), ("nous", c_nous))}
             gains = {k: 100 * (r["cams"] - v) / r["cams"] for k, v in r.items() if k != "cams"}
+            # Les deux dénominateurs qui comptent pour le CHIFFRE DE TÊTE : la chaîne
+            # réellement en service (réglages usuels), puis la même méthode réglée au
+            # mieux. Le second est plus dur que le premier partout sauf sur l'ozone, où
+            # le krigeage dégrade — et c'est précisément pourquoi on publie les deux.
+            gains["service"] = 100 * (r["usuel"] - r["nous"]) / r["usuel"]
+            gains["service_opt"] = 100 * (r["aasqa"] - r["nous"]) / r["aasqa"]
 
             pts = {"i": [], "ga": [], "gn": [], "n": []}
             for s, gs in g.groupby("station_id"):
@@ -196,9 +218,11 @@ def main() -> int:
                                **{f"rmse_{k}": round(v, 3) for k, v in r.items()},
                                **{f"gain_{k}_pct": round(v, 2) for k, v in gains.items()},
                                "n_stations_carte": len(pts["i"])})
-            print(f"   {an:8s} n={len(g):>7,} · AASQA {gains['aasqa']:+6.1f} % "
-                  f"(usuel {gains['usuel']:+6.1f} %) · nous {gains['nous']:+6.1f} % "
-                  f"· {len(pts['i'])} stations cartographiées")
+            print(f"   {an:8s} n={len(g):>7,} · /CAMS : AASQA {gains['aasqa']:+6.1f} % "
+                  f"(usuel {gains['usuel']:+6.1f} %) nous {gains['nous']:+6.1f} % "
+                  f"│ nous /service {gains['service']:+6.2f} % "
+                  f"(/service réglé {gains['service_opt']:+6.2f} %) "
+                  f"· {len(pts['i'])} st. cartographiées")
 
         # ── La bande temporelle : moyenne sur les stations présentes ce jour-là ───
         # Les quatre séries partagent EXACTEMENT les mêmes lignes : leur comparaison est
@@ -232,7 +256,7 @@ def main() -> int:
         if not b["annees"]:
             raise SystemExit(f"{p} : aucune année retenue")
         for a in b["annees"]:
-            for k in ("aasqa", "nous", "usuel"):
+            for k in ("aasqa", "nous", "usuel", "service", "service_opt"):
                 if k not in a["gain"] or not np.isfinite(a["gain"][k]):
                     raise SystemExit(f"{p} {a['an']} : gain « {k} » absent ou non fini")
         if not b["serie"]["j"]:
@@ -242,7 +266,8 @@ def main() -> int:
     f.write_text(json.dumps(sortie, ensure_ascii=False, separators=(",", ":")),
                  encoding="utf-8")
     t = pd.DataFrame(lignes_csv)
-    for c in ("gain_aasqa_pct", "gain_nous_pct", "n"):
+    for c in ("gain_aasqa_pct", "gain_nous_pct", "gain_service_pct",
+              "gain_service_opt_pct", "n"):
         if c not in t:
             raise SystemExit(f"colonne « {c} » absente du rapport")
     t.to_csv(RACINE / "reports/comparaison_annuelle.csv", index=False)

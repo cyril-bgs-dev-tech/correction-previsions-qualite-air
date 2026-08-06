@@ -50,6 +50,15 @@ ATTENDUES = ["polluant", "systeme", "seuil", "episodes", "attrapes", "rates",
 # aurait annoncé avec ce seuil et ces stations.
 ORDRE = ["observation", "CAMS brut", "chaîne AASQA", "notre modèle"]
 
+# La signature en trois mots. Elle diffère de celle des pages 04 et 05 sur les TROIS
+# termes — région et non France, procédures préfectorales et non bandes ATMO, J0 et non
+# J+1 — et c'est précisément pourquoi elle doit être écrite sur la page. Un lecteur qui
+# reporte le « 2 sur 33 » d'ici sur le tableau de la page 04 compare deux mesures qui
+# n'ont aucun terme en commun.
+SIGNATURE = {"perimetre": "Occitanie — 9 départements portant au moins une station",
+             "epreuve": "procédures préfectorales réelles · seuil physique fixe, sans réglage",
+             "echeance": "J0 — tranche 1-24 h d'une sortie 00 UTC"}
+
 
 def inevaluables() -> dict:
     """Les épisodes qu'on ne peut pas évaluer — nommés, jamais comptés comme ratés.
@@ -120,7 +129,8 @@ def main() -> int:
         }
 
     st = (RACINE / f"data/processed/predictions/production_PM10_h{HORIZON}.parquet").stat()
-    sortie = {"horizon": HORIZON, "polluants": polluants, "inevaluables": inevaluables(),
+    sortie = {"horizon": HORIZON, "signature": SIGNATURE,
+              "polluants": polluants, "inevaluables": inevaluables(),
               # Clé distincte de « empreinte » : cette page ne lit pas les mêmes artefacts
               # que les pages 04 et 05, et le contrôle de cohérence ne doit pas les confondre.
               "empreinte_production": {"octets": st.st_size, "horodatage": int(st.st_mtime)}}

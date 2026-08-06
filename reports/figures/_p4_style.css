@@ -15,7 +15,7 @@
 .marq-faible { border-bottom: 1.5px dotted var(--ambre); color: var(--ambre); }
 
 /* ── Le tableau des gains ────────────────────────────────────────────────── */
-.tab-gains { width: 100%; border-collapse: collapse; font-size: 13.2px; min-width: 620px; }
+.tab-gains { width: 100%; border-collapse: collapse; font-size: 13.2px; min-width: 780px; }
 .tab-gains th, .tab-gains td { padding: 7px 10px; text-align: right; white-space: nowrap; }
 .tab-gains th { font-family: var(--mono); font-size: 10.2px; letter-spacing: .08em;
                 text-transform: uppercase; color: var(--encre-3); font-weight: 600;
@@ -36,6 +36,33 @@
 .tab-gains .bat { box-shadow: inset 0 0 0 1.5px var(--ambre-wash); border-radius: 3px; }
 .bat-ex { box-shadow: inset 0 0 0 1.5px var(--ambre-wash); border-radius: 3px;
           padding: 1px 5px; }
+
+/* La colonne de tête — celle qui se cite. Elle est séparée par un filet plein parce
+   qu'elle ne partage PAS le dénominateur des trois précédentes : accoler deux gains
+   mesurés contre deux références sans le dire produit deux valeurs du même chiffre. */
+.tab-gains .p4-col-tete { border-left: 2px solid var(--trait-fort);
+                          background: var(--accent-pale); }
+.tab-gains th.p4-col-tete { color: var(--accent); }
+.tab-gains .p4-surtitre th { border-bottom: none; padding-bottom: 2px;
+                             text-align: center; font-size: 9.4px;
+                             letter-spacing: .1em; color: var(--encre-3); }
+.tab-gains .p4-surtitre th b { color: var(--encre-2); }
+.tab-gains .p4-sec { display: block; font-size: 10.2px; font-weight: 400;
+                     letter-spacing: .02em; color: var(--encre-3);
+                     text-transform: none; }
+
+/* ── La signature en trois mots, sur chaque figure ───────────────────────────
+   Elle n'était posée que sur la page 00. Cinq familles de gains portent des noms
+   voisins dans ce dossier ; un lecteur qui trouve deux valeurs du même gain à deux
+   figures d'écart cesse de croire les deux. Le style est partagé par les pages 04,
+   05 et 06 — il vit ici parce que la page 04 est la première injectée. */
+.sig3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
+        margin: 10px 0 0; padding: 8px 12px; background: var(--accent-pale);
+        border-radius: var(--r); font-size: 12.2px; color: var(--encre-2); }
+.sig3 span { font-family: var(--mono); font-size: 9.4px; letter-spacing: .12em;
+             text-transform: uppercase; color: var(--accent); }
+.sig3 b { font-weight: 600; color: var(--encre); margin-right: 8px; }
+.sig3--fig { margin: 0 0 14px; }
 
 .pastille { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
             vertical-align: -1px; margin: 0 1px 0 3px;

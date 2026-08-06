@@ -41,6 +41,23 @@ Le premier mois n'a pas d'historique. Il est **retiré pour les cinq systèmes �
 jamais pour le seul qui en a besoin : cinq séries qui ne portent pas sur les mêmes lignes
 ne se comparent pas.
 
+Le § 15 — la persistance, et pourquoi elle ne nous appartient pas
+-------------------------------------------------------------------
+La dernière section de la page ne parle plus de bandes mais de **règle de décision**.
+Exiger un dépassement prédit **deux jours de suite** retire un tiers des fausses alertes
+sans perdre un seul épisode. C'est le seul gain sec du dossier.
+
+⚠️ **Et il profite à tout le monde.** L'observation elle-même passe de 412 à 254 fausses
+alertes, la chaîne AASQA de 446 à 310. Présenter ce −34 % comme un mérite de notre modèle
+serait faux : c'est un mérite de la **règle**, que n'importe quel système peut adopter. Le
+script lit donc les **quatre** systèmes et la page les affiche tous — sans quoi la première
+question du jury démonte la diapositive.
+
+⚠️ Ce bloc ne porte **ni le même périmètre, ni la même épreuve, ni la même échéance** que
+le reste de la page : Occitanie et non France, épisodes préfectoraux et non bandes ATMO,
+J0 et non J+1. Il porte donc **sa propre signature**, et c'est tout l'objet de la règle des
+trois mots.
+
 Usage  : python3 scripts/page_seuils_classes.py
 Sortie : reports/figures/p5_donnees.json + reports/seuils_classes.csv
 """
@@ -78,6 +95,75 @@ SYSTEMES = [
     ("teteB",  "Tête B · alerte",       "la même sortie, amplitude recalibrée"),
 ]
 
+SIGNATURE = {"perimetre": "PARTOUT — aucune observation passée de la station",
+             "epreuve": "double aveugle — station ET mois cachés",
+             "echeance": "J+1 — tranche 25-48 h d'une sortie 00 UTC"}
+
+# ── § 15 · la persistance ────────────────────────────────────────────────────
+# La configuration est nommée en toutes lettres et FILTRÉE sur ces valeurs : une ligne
+# choisie par son rang dans le CSV changerait de sens au prochain ajout de règle.
+PERSIST = RACINE / "reports/agregation_zone_occitanie.csv"
+PERSIST_CONF = {"polluant": "O3", "seuil": 120.0, "regle": "max (existant)",
+                "min_stations": 1}
+PERSIST_ORDRE = ["observation", "notre modèle", "chaîne AASQA", "CAMS brut"]
+PERSIST_SIGNATURE = {
+    "perimetre": "Occitanie — 9 départements portant au moins une station",
+    "epreuve": "épisodes préfectoraux réellement déclarés · seuil 120 µg/m³",
+    "echeance": "J0 — tranche 1-24 h d'une sortie 00 UTC"}
+
+
+def persistance() -> dict:
+    """Ce que la règle de persistance change, pour les QUATRE systèmes à la fois.
+
+    Le gain de notre modèle n'a de sens qu'à côté de celui des trois autres : la
+    persistance est une propriété de la **règle de décision**, pas du modèle. La lire pour
+    nous seuls produirait un chiffre juste et une affirmation fausse.
+    """
+    if not PERSIST.exists():
+        raise SystemExit(f"{PERSIST.name} absent — lancer d'abord agregation_zone.py")
+    t = pd.read_csv(PERSIST)
+    for col, val in PERSIST_CONF.items():
+        t = t[t[col] == val]
+    attendu = 2 * len(PERSIST_ORDRE)
+    if len(t) != attendu:
+        raise SystemExit(f"persistance : {len(t)} lignes pour la configuration "
+                         f"{PERSIST_CONF}, {attendu} attendues "
+                         f"({len(PERSIST_ORDRE)} systèmes × 2 états)")
+    systemes = []
+    for nom in PERSIST_ORDRE:
+        g = t[t["systeme"] == nom]
+        if len(g) != 2:
+            raise SystemExit(f"persistance : {len(g)} ligne(s) pour « {nom} »")
+        sans = g[~g["persistance"].astype(bool)].iloc[0]
+        avec = g[g["persistance"].astype(bool)].iloc[0]
+        systemes.append({
+            "nom": nom,
+            "episodes": int(sans["n_episodes"]),
+            "zones_jours": int(sans["n_zones_jours"]),
+            "sans": {"attrapes": int(sans["attrapes"]), "fausses": int(sans["fausses"]),
+                     "rappel": round(float(sans["rappel_pct"]), 1),
+                     "precision": round(float(sans["precision_pct"]), 2)},
+            "avec": {"attrapes": int(avec["attrapes"]), "fausses": int(avec["fausses"]),
+                     "rappel": round(float(avec["rappel_pct"]), 1),
+                     "precision": round(float(avec["precision_pct"]), 2)},
+            # Le seul chiffre qui décide : le rappel a-t-il bougé ? Si oui, la règle
+            # n'est pas gratuite pour ce système, et l'écrire « gratuit » serait faux.
+            "gratuite": bool(int(sans["attrapes"]) == int(avec["attrapes"])),
+            "delta_fausses_pct": round(
+                100 * (int(avec["fausses"]) - int(sans["fausses"]))
+                / int(sans["fausses"]), 1),
+        })
+    print("\n── § 15 · persistance · " + " · ".join(
+        f"{k}={v}" for k, v in PERSIST_CONF.items()))
+    for s in systemes:
+        print(f"   {s['nom']:14s} {s['sans']['attrapes']}/{s['episodes']} épisodes · "
+              f"fausses {s['sans']['fausses']:>4} → {s['avec']['fausses']:>4} "
+              f"({s['delta_fausses_pct']:+.1f} %) · rappel "
+              f"{s['sans']['rappel']:.1f} → {s['avec']['rappel']:.1f} % "
+              f"{'· GRATUITE' if s['gratuite'] else '· COÛTE un épisode'}")
+    return {"conf": {k: str(v) for k, v in PERSIST_CONF.items()},
+            "signature": PERSIST_SIGNATURE, "systemes": systemes}
+
 
 def colonne(sys_: pd.DataFrame, motif: str, p: str) -> str:
     c = sys_[sys_["systeme"].str.contains(motif, regex=False)]
@@ -108,22 +194,16 @@ def profil(o: np.ndarray, x: np.ndarray, p: str) -> dict:
 
 def main() -> int:
     sortie: dict = {"horizon": HORIZON, "distances": DISTANCES,
+                    "signature": SIGNATURE, "persistance": persistance(),
                     "systemes": [{"c": c, "n": n, "d": d} for c, n, d in SYSTEMES],
                     "polluants": {}}
     lignes: list[dict] = []
 
     for p, (nom, suffixe) in POLLUANTS.items():
-        if suffixe:
-            # Correspondance vérifiée sur les données (voir page_comparaison_annuelle)
-            sys_ = pd.DataFrame([
-                ("sys1", "① CAMS brut — ensemble 6 modèles"),
-                ("sys2", "④ CAMS + krigeage — réglages usuels"),
-                ("sys3", "⑤ CAMS + krigeage — OPTIMISÉ ici"),
-                ("sys4", "⑥ notre modèle — toutes familles"),
-            ], columns=["code", "systeme"])
-        else:
-            sys_ = pd.read_csv(
-                RACINE / f"data/processed/predictions/systemes_{p}_h{HORIZON}.csv")
+        # Chaque variante lit SA table de systèmes — la correspondance codée en dur a
+        # disparu avec la livraison de `systemes_PM10_h2_sansmembres.csv` le 06/08.
+        sys_ = pd.read_csv(
+            RACINE / f"data/processed/predictions/systemes_{p}_h{HORIZON}{suffixe}.csv")
         d = pd.read_parquet(RACINE /
             f"data/processed/predictions/comparatif_{p}_h{HORIZON}{suffixe}.parquet")
         c_ref = colonne(sys_, "CAMS brut", p)

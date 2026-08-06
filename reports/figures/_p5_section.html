@@ -16,6 +16,7 @@
       est une fausse alerte — coûteuse aussi, mais pas de la même façon. Les deux ne
       s'échangent pas à parité, et aucun score unique ne les arbitre à votre place.
     </p>
+    <p class="sig3 sig3--fig"></p>
   </div>
 
   <div class="limites limites--haut">
@@ -59,6 +60,7 @@
       <strong>bande exacte</strong>&#8239;; ce qui est à sa gauche est sous-classé, à sa droite
       sur-classé. Les cinq systèmes portent <strong>exactement les mêmes lignes</strong>.
     </p>
+    <p class="sig3 sig3--fig"></p>
     <div class="infob" id="p5-info" role="tooltip" aria-live="polite"></div>
     <div class="p5-grille" id="p5-grille"></div>
     <div class="p5-legende">
@@ -85,6 +87,7 @@
       <strong>Plus court est meilleur.</strong> C'est le seul chiffre de cette page dont dépend
       une décision de communication.
     </p>
+    <p class="sig3 sig3--fig"></p>
     <div class="infob" id="p5-info2" role="tooltip" aria-live="polite"></div>
     <div class="p5-grille" id="p5-crit"></div>
     <figcaption>
@@ -100,6 +103,45 @@
       polluants&#8239;: l'avantage ne vient donc pas du seul recalibrage. <strong>Trois années font
       exception</strong> et sont visibles ci-dessus — NO₂ 2024 (85,6 % contre 84,9 %), puis O₃ et
       PM2,5 2026, deux années à effectif faible où leur méthode passe devant.
+    </figcaption>
+  </figure>
+
+  <!-- ── § 15 · la persistance : le seul gain sec, et il n'est pas le nôtre ─── -->
+  <figure class="fig fig-int" id="p5-persist-fig">
+    <h4>§ 15 — Exiger deux jours de suite&#8239;: −34 % de fausses alertes, zéro épisode perdu</h4>
+    <p class="sous">
+      Tout ce qui précède mesure une <em>prédiction</em>. Ce bloc-ci mesure une <strong>règle
+      de décision</strong>, et il ne demande aucun réentraînement. Notre règle d'alerte est
+      <strong>instantanée</strong>&#8239;: une station au-dessus du seuil, un jour, suffit. La
+      procédure préfectorale, elle, exige persistance et superficie. Exiger un dépassement
+      prédit <strong>deux jours consécutifs</strong> tue l'alerte isolée sans toucher à
+      l'épisode installé.
+    </p>
+    <p class="sig3 sig3--fig" id="p5-persist-sig"></p>
+    <div class="fig-scroll">
+      <table class="p5-persist" id="p5-persist"><tbody></tbody></table>
+    </div>
+    <p class="p5-conf" id="p5-persist-conf"></p>
+    <figcaption>
+      <strong>⚠️ Ce gain ne nous appartient pas.</strong> Il profite à
+      <em>tout le monde</em>&#8239;: l'observation elle-même passe de <b>412</b> à <b>254</b>
+      fausses alertes (−38 %), la chaîne AASQA de <b>446</b> à <b>310</b> (−30 %). C'est un
+      mérite de la <strong>règle</strong>, pas de notre modèle — le présenter autrement
+      serait démonté par la première question.
+      <br><strong>Et elle n'est pas gratuite pour tout le monde.</strong> Sur CAMS brut la
+      persistance retire 57 % des fausses alertes mais <strong>coûte un épisode</strong>
+      (8 sur 12 attrapés, puis 7)&#8239;: elle est sans coût pour les systèmes dont le signal
+      <em>tient</em> deux jours, et seulement pour ceux-là. C'est la seule raison pour
+      laquelle elle est gratuite chez nous.
+      <br><strong>Ce que ce tableau ne dit pas.</strong> Notre précision reste
+      <b>3,7 %</b> — nous crions au loup, et c'est la page 06. Ce que la persistance change,
+      c'est le <em>volume</em> d'alertes à rappel constant, pas notre capacité à trancher.
+      Et la règle d'agrégation reste ici le <strong>maximum</strong> — celle qui est
+      réellement en service, choisie pour isoler l'effet de la seule persistance.
+      <br><strong>Ce qui n'est pas une méthode.</strong> Taire les départements de moins de
+      trois stations couperait aussi les fausses alertes. La médiane occitane est de
+      <strong>deux stations par département</strong>&#8239;: ce n'est pas une règle de
+      décision, c'est un silence de réseau. Il est mesuré, il n'est pas proposé.
     </figcaption>
   </figure>
 </section>

@@ -12,10 +12,47 @@
       station et mois cachés ensemble.
     </p>
     <p class="these">
-      Leur méthode est rejouée <em>dans son meilleur réglage</em>, pas dans sa version usuelle&#8239;:
-      fenêtre de 30 jours au lieu de 3, portée de 200 km au lieu de 50, donneurs de même
-      typologie. Sur le NO₂ ce réglage la fait passer de <strong>+3,5 %</strong> à
-      <strong>+21,4 %</strong>. Se comparer à une version bridée d'une méthode n'apprend rien.
+      Leur méthode est rejouée <em>deux fois</em>&#8239;: dans ses <strong>réglages usuels</strong>
+      — fenêtre de 7 jours, portée de 50 km, pondération en 1/d², tous donneurs — et dans son
+      <strong>meilleur réglage</strong>, 30 jours, 200 km, 1/d, donneurs de même typologie. Sur
+      le NO₂ le réglage la fait passer de <strong>+5,3 %</strong> à <strong>+22,5 %</strong>
+      contre CAMS brut. Les deux sont affichées&#8239;: se comparer à une version bridée d'une
+      méthode n'apprend rien, et n'afficher que la version réglée cacherait ce qui tourne
+      réellement.
+    </p>
+    <p class="sig3 sig3--fig"></p>
+  </div>
+
+  <!-- ── Contre quoi ces gains se mesurent — la question posée avant les chiffres ── -->
+  <div class="regle">
+    <h3>Deux dénominateurs, et pourquoi les deux sont sur la page</h3>
+    <div class="conds">
+      <div class="cond">
+        <b>Contre CAMS brut — pour <em>ordonner</em> les systèmes</b>
+        <p>
+          Un dénominateur commun aux trois systèmes&#8239;: c'est la seule façon de les ranger
+          les uns par rapport aux autres. Mais <strong>personne n'exploite CAMS brut en
+          l'état</strong> — le citer comme référence flatterait tout le monde, nous compris.
+        </p>
+      </div>
+      <div class="cond">
+        <b>Contre la chaîne en service — pour <em>citer</em> un chiffre</b>
+        <p>
+          La colonne de droite. La référence est le krigeage du biais récent dans ses
+          <strong>réglages usuels</strong>&#8239;: c'est ce qu'une AASQA fait tourner. Sous
+          chaque valeur figure le gain contre la <strong>même méthode réglée au mieux</strong>,
+          adversaire plus dur — sur les PM10 à 31 mois, <strong>+13,26 %</strong> devient
+          <strong>+3,65 %</strong>. Le montrer nous-mêmes est la seule posture tenable.
+        </p>
+      </div>
+    </div>
+    <p class="reserve">
+      <strong>La même réserve porte sur les deux.</strong> Nos deux lignes AASQA s'ancrent sur
+      des modèles en configuration <strong>européenne 0,1° sans assimilation</strong>. Leur
+      chaîne réelle tourne en version nationale, plus fine et assimilée&#8239;: elle est donc
+      <strong>meilleure</strong> que cette simulation, et tout écart affiché ici est un
+      <strong>majorant</strong> de notre avance. Le bloc ci-dessous chiffre cet écart sur les
+      six journées de PREV'AIR réel qui ont pu être captées.
     </p>
   </div>
 
@@ -46,14 +83,21 @@
       <li>
         <strong>Les PM10 sont publiés en deux variantes, et la longue vient en premier.</strong>
         Les membres d'ensemble n'existent pour ce polluant que depuis 2025-01. Deux tables
-        également légitimes en découlent, et les cacher l'une l'autre serait le défaut&#8239;:
+        également légitimes en découlent, et les cacher l'une l'autre serait le défaut. Les
+        deux chiffres ci-dessous se mesurent <strong>contre la chaîne en service</strong>, pas
+        contre CAMS brut&#8239;:
         <br>· <strong>PM10 — 31 mois</strong>, chaîne réglementaire <strong>ancrée sur
-        CAMS</strong>. C'est à la fois le plus grand corpus <em>et</em> le test le plus dur&#8239;:
-        ce substitut atteint une RMSE de <b>7,20</b>, soit un adversaire <strong>plus
-        fort</strong> que la chaîne nommée (<b>7,63</b>).
-        <br>· <strong>PM10 · chaîne nommée — 19 mois</strong>, CHIMERE+MOCAGE réel. Face à
-        l'adversaire nommé, l'écart <em>se creuse</em> — ce qui est le sens du second tableau,
-        pas une amélioration de notre modèle.
+        CAMS</strong> faute de membres. <strong>+13,26 %</strong> — et
+        <strong>+3,65 %</strong> seulement contre cette même chaîne réglée au mieux. C'est à
+        la fois le plus grand corpus <em>et</em> le test le plus dur&#8239;: ce substitut
+        atteint une RMSE de <b>7,20</b>, soit un adversaire <strong>plus fort</strong> que la
+        chaîne nommée (<b>7,63</b>).
+        <br>· <strong>PM10 · chaîne nommée — 19 mois</strong>, CHIMERE+MOCAGE réel.
+        <strong>+21,32 %</strong>, et <strong>+16,75 %</strong> contre sa version réglée. Face
+        à l'adversaire nommé l'écart <em>se creuse</em> — c'est le sens du second tableau, pas
+        une amélioration de notre modèle&#8239;: <strong>le même modèle, sur les mêmes 19 mois,
+        rend le même +20,2 % contre CAMS brut dans les deux tables.</strong> Seule la
+        référence a changé.
         <br>C'est pourtant le polluant qui déclenche <strong>40 des 52 procédures</strong> réelles.
       </li>
       <li>
@@ -77,12 +121,15 @@
 
   <!-- ── Bloc 1 : le tableau ──────────────────────────────────────────── -->
   <figure class="fig">
-    <h4>Gain de RMSE contre CAMS brut, par polluant et par année</h4>
+    <h4>Gain de RMSE, par polluant et par année — contre deux références</h4>
     <p class="sous">
-      Un gain positif signifie <em>moins d'erreur que l'ensemble européen brut</em>. La colonne
-      grise rappelle ce que vaut leur méthode <strong>non réglée</strong>&#8239;: l'écart entre les
-      deux colonnes est ce que le réglage leur apporte, pas ce que nous leur retirons.
+      À gauche, quatre colonnes contre <strong>CAMS brut</strong>&#8239;: un gain positif signifie
+      moins d'erreur que l'ensemble européen brut, et la colonne grise rappelle ce que vaut
+      leur méthode <strong>non réglée</strong>. À droite, séparée par un filet, la colonne qui
+      se cite&#8239;: notre gain contre la <strong>chaîne en service</strong>, avec en dessous le
+      même gain contre cette chaîne <em>réglée au mieux</em>.
     </p>
+    <p class="sig3 sig3--fig"></p>
     <div class="fig-scroll">
       <table class="tab-gains" id="p4-tab"><tbody></tbody></table>
     </div>
@@ -96,6 +143,10 @@
       La colonne « nous » est le périmètre <strong>PARTOUT</strong> — aucune observation passée de
       la station n'y entre, donc elle s'applique <em>là où rien ne mesure</em>. Le périmètre
       « aux stations » afficherait davantage&#8239;; il ne vaut que là où un capteur existe déjà.
+      <br>⚠️ <strong>Les deux blocs de colonnes ne se lisent pas ensemble.</strong> Sur l'ozone,
+      la chaîne AASQA <em>dégrade</em> CAMS brut&#8239;: notre <b>+11,9 %</b> contre CAMS devient
+      <b>+22,64 %</b> contre elle, sans qu'aucun modèle ait changé. C'est la référence qui a
+      bougé, et c'est exactement pourquoi un pourcentage se cite avec ses trois mots.
     </figcaption>
   </figure>
 
@@ -107,6 +158,7 @@
       meilleur que CAMS brut, <span class="pastille pastille--ref"></span> moins bon. Une station
       porte un point si elle compte au moins 30 jours dans l'année choisie.
     </p>
+    <p class="sig3 sig3--fig"></p>
     <div class="p4-filtres" role="group" aria-label="Filtres des cartes">
       <div class="seg" id="p4-pol" role="tablist" aria-label="Polluant"></div>
       <div class="seg" id="p4-an" role="tablist" aria-label="Année"></div>
@@ -146,6 +198,7 @@
       la même composition pour les quatre bandes, donc une comparaison exacte à chaque date.
       Une bande qui ne reproduit pas les traînées d'épisode de la première les rate.
     </p>
+    <p class="sig3 sig3--fig"></p>
     <div class="p4-filtres" role="group" aria-label="Filtre de la bande temporelle">
       <div class="seg" id="p4-pol2" role="tablist" aria-label="Polluant"></div>
       <p class="p4-eff" id="p4-eff2"></p>

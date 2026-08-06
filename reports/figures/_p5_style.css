@@ -62,3 +62,29 @@ i.d-ex { margin-right: 5px; }
 .p5-legende { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 12px 0 0;
               font-size: 11.8px; color: var(--encre-3); }
 .p5-faible { color: var(--ambre); font-family: var(--mono); font-size: 10.4px; }
+
+/* ── § 15 · la persistance ────────────────────────────────────────────────────
+   La ligne « notre modèle » est mise en avant, mais elle n'est PAS première : le
+   plafond — l'observation — l'est. Un tableau qui ouvre sur notre ligne laisse
+   croire que le gain nous appartient, alors qu'il appartient à la règle. */
+.p5-persist { width: 100%; border-collapse: collapse; font-size: 13.2px;
+              min-width: 660px; }
+.p5-persist th, .p5-persist td { padding: 8px 12px; text-align: right;
+                                 white-space: nowrap; }
+.p5-persist th { font-family: var(--mono); font-size: 10.2px; letter-spacing: .08em;
+                 text-transform: uppercase; color: var(--encre-3); font-weight: 600;
+                 border-bottom: 1px solid var(--trait-fort); vertical-align: bottom; }
+.p5-persist th span { display: block; font-family: var(--sans); font-size: 10.4px;
+                      letter-spacing: 0; text-transform: none; font-weight: 400;
+                      color: var(--encre-3); }
+.p5-persist th:first-child, .p5-persist td:first-child { text-align: left; }
+.p5-persist tbody tr td { border-top: 1px solid var(--trait); }
+.p5-persist .v { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.p5-persist .gris { color: var(--encre-3); }
+.p5-persist .pos { color: var(--accent); font-weight: 600; }
+.p5-persist .neg { color: var(--refute); font-weight: 600; }
+.p5-persist tr.nous td { background: var(--accent-pale); font-weight: 600; }
+.p5-persist tr.coute td { color: var(--encre-3); }
+.p5-conf { margin: 10px 0 0; font-size: 12.2px; line-height: 1.6;
+           color: var(--encre-3); max-width: 92ch; }
+.p5-conf b { color: var(--encre-2); font-family: var(--mono); font-size: 11.6px; }
