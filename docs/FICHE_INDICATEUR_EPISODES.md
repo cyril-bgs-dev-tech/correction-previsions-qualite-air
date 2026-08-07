@@ -114,14 +114,17 @@ L'échec est mécanique — 53 prédicteurs ne contiennent rien qui distingue un
 **② L'indicateur n'a pas de sens sur tous les polluants.** Le NO₂ compte **270 dépassements
 sur 161 637 jours-station (0,17 %)** au grain 120 µg/m³ en max horaire — dix fois plus rare
 que l'ozone ou les PM2,5 — et **aucun budget ≤ 40 % n'y est atteignable**. Au seuil
-d'information de 200 µg/m³, le corpus n'en compte qu'une poignée.
+d'information de 200 µg/m³, le panel unifié compte **6 dépassements sur 368 904
+jours-station** (2023-06 → 2026-08, 344 stations, règle des 75 %) : un événement tous les
+soixante mille jours-station. **À ce seuil, l'indicateur ne mesure pas une capacité de
+détection — il mesure l'absence de ce qu'on cherche.**
 
-> ⚠️ **Et ce dernier chiffre n'est pas établi.** `VERITE_DOSSIER` en donne **2** au § 8 et
-> **3** au § 10 bis, sur deux corpus différents (161 637 et 60 400 jours-station) — et
-> **aucun des deux n'est calculé** : les deux sont des chaînes écrites en dur dans
-> `verite_dossier.py`, donc des chiffres recopiés. À ce niveau la conclusion ne change pas
-> (le problème n'existe pas), mais **le compte exact reste à mesurer** avant toute citation.
-> Signalé le 06/08/2026.
+> ✅ **Chiffre mesuré le 07/08/2026, après avoir été signalé la veille comme non établi.**
+> `VERITE_DOSSIER` en donnait **2** au § 8 et **3** au § 10 bis, sur deux corpus différents
+> (161 637 et 60 400 jours-station) — et **aucun des deux n'était calculé** : deux chaînes
+> écrites en dur dans `verite_dossier.py`, donc deux chiffres recopiés. Ils sont remplacés
+> par `compte_depassements_no2()`, qui lit le panel et nomme son corpus. La conclusion ne
+> change pas ; c'était bien la contradiction qu'il fallait lever, pas le verdict.
 
 *Un seuil sans événements ne mesure pas une incapacité à détecter : il mesure l'absence de
 ce qu'on cherche.* Compter les positifs avant de conclure.

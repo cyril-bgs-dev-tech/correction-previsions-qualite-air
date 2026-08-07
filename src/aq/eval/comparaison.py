@@ -41,12 +41,20 @@ class ParametresQualite:
        remplace le `β = 2` global par un β **par polluant** et change les `RV` — passer à
        la v4.0 est une refonte de cette structure, pas un changement de constantes. Le
        guide v4.0 annonce lui-même une révision fin 2026 par CEN/WG43.
-    2. **Temps d'agrégation.** Le tableau définit ses paramètres pour une grandeur
-       précise : NO₂ **horaire**, O₃ en **maximum journalier 8 h**, PM2,5 en
-       **journalier**. Ce module applique les trois à des séries **horaires** : pour O₃ et
-       PM2,5, le MQI calculé ne correspond donc à aucune ligne du document, et la mention
-       de conformité sort de son cadre. À recalculer sur les bonnes grandeurs, ou à retirer
-       pour ces deux polluants.
+    2. ✅ **Temps d'agrégation — levé le 06/08/2026.** Le tableau définit ses paramètres
+       pour une grandeur précise : NO₂ **horaire**, O₃ en **maximum journalier 8 h**,
+       PM2,5 en **journalier**. Ce module reste **agnostique** — il applique la formule à
+       la série qu'on lui donne —, mais le dossier lui donnait des séries horaires pour
+       les trois, si bien que le MQI d'O₃ et de PM2,5 ne correspondait à aucune ligne du
+       document. C'est réparé **en amont** : `verite_dossier.GRAIN_REGLEMENTAIRE` impose
+       désormais le grain par polluant et publie `reports/mqi_bon_grain.csv`, dont le § 5
+       tire ses deux colonnes.
+
+       L'erreur était **pessimiste** : l'agrégation journalière réduit la variance de
+       l'erreur plus que celle de l'incertitude de mesure, qui dépend surtout du niveau
+       observé. Aucun produit ne changeait de côté du seuil — l'énoncé de conformité
+       tenait, seul le chiffre cité était le mauvais. ⚠️ **Appelant, à toi de fournir la
+       bonne grandeur** : ce module ne peut pas la deviner depuis une série.
     """
 
     incertitude_relative: float   # U^RV_95, incertitude relative étendue à la valeur de référence

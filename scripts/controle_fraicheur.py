@@ -31,6 +31,8 @@ qu'un lecteur voie le manque sans avoir à le deviner.
 from __future__ import annotations
 
 import glob
+import json
+import re
 import sys
 from pathlib import Path
 
@@ -112,9 +114,122 @@ def annoncer(polluant: str, c: dict) -> None:
               f"mais absents des sources — {', '.join(c['inattendus'][:6])}")
 
 
+FIGURES = RACINE / "reports/figures"
+SCRIPTS = RACINE / "scripts"
+MOTIF_JSON = re.compile(r"p(\d+)_donnees\.json")
+MOTIF_SORTIE = re.compile(r"Sortie\s*:.*?p(\d+)_donnees\.json")
+
+
+def _gouvernants() -> dict[str, dict[str, list[Path]]]:
+    """Pour chaque `p<N>_donnees.json`, ce dont il dérive — déduit, jamais codé en dur.
+
+    Chaque générateur déclare lui-même sa sortie en en-tête (`Sortie : …p<N>_donnees.json`).
+    Tout **autre** `p<N>_donnees.json` qu'il cite est une **entrée** : c'est ainsi que
+    `page_synthese.py`, qui lit p4 et p6 pour produire p0, se range de lui-même en dernier.
+    """
+    gouv: dict[str, dict[str, list[Path]]] = {}
+    for script in sorted(SCRIPTS.glob("page_*.py")):
+        texte = script.read_text(encoding="utf-8")
+        sortie = MOTIF_SORTIE.search(texte)
+        if not sortie:
+            continue
+        n = sortie.group(1)
+        cite = {m.group(1) for m in MOTIF_JSON.finditer(texte)} - {n}
+        gouv[n] = {
+            "generateur": [script],
+            "fragments": sorted(FIGURES.glob(f"_p{n}_*")),
+            "entrees": [FIGURES / f"p{m}_donnees.json" for m in sorted(cite)],
+        }
+    return gouv
+
+
+def desynchronisations() -> tuple[list[str], list[str]]:
+    """Un `p<N>_donnees.json` désaccordé d'avec ce qui le gouverne — le défaut **muet**.
+
+    Rend deux listes séparées, parce qu'elles n'ont pas le même poids : les **manques**
+    (une clé lue et absente) font échouer le contrôle, les **retards** d'horodatage ne
+    sont qu'un indice — éditer la prose d'un fragment ne périme pas ses données.
+
+    ⚠️ **Le trou par lequel la coupure du 06/08/2026 est passée.** `page_decision_reelle.py`
+    avait gagné sa signature à 02 h 18 et `_p6_section.html` avait retiré « Échéance J0 » de
+    la prose pour la laisser au script ; le générateur n'a jamais été relancé et
+    `p6_donnees.json` datait de la veille, sans la clé. Le garde `if (sg && hs)` a fait le
+    reste : **pas d'erreur de console, pas de bloc vide, juste l'échéance disparue** de la
+    seule page dont l'échéance diffère de toutes les autres.
+
+    Ce module contrôlait la couverture du corpus et **rien d'autre** : aucun contrôle ne
+    comparait un `.json` à son générateur. Trois dépendances sont vérifiées ici, et la
+    troisième est celle qui impose l'**ordre** de la chaîne :
+
+    1. le `.json` doit être plus récent que le `page_*.py` qui le produit ;
+    2. plus récent que ses **fragments** `_p<N>_{section.html,style.css,script.js}` — c'est
+       la dépendance exacte qui a manqué le 06/08 ;
+    3. plus récent que les `.json` dont il **dérive** (p0 lit p4 et p6, donc vient après).
+    """
+    manques: list[str] = []          # le défaut réel : une clé lue qui n'existe pas
+    retards: list[str] = []          # l'indice : un gouvernant plus récent que sa sortie
+    for n, dep in sorted(_gouvernants().items(), key=lambda kv: int(kv[0])):
+        cible = FIGURES / f"p{n}_donnees.json"
+        if not cible.exists():
+            manques.append(f"p{n}_donnees.json ABSENT — générateur "
+                           f"{dep['generateur'][0].name} jamais lancé")
+            continue
+
+        # ① Le contrôle exact : chaque `D.<clé>` lue par le fragment doit exister.
+        presentes = set(json.loads(cible.read_text(encoding="utf-8")))
+        for js in dep["fragments"]:
+            if js.suffix != ".js":
+                continue
+            for cle in sorted(_cles_lues(js) - presentes):
+                manques.append(f"p{n} : {js.name} lit **D.{cle}**, absente de "
+                               f"{cible.name} — relancer {dep['generateur'][0].name}")
+
+        # ② L'indice de désynchronisation, plus large et donc plus bavard.
+        age = cible.stat().st_mtime
+        for role, chemins in dep.items():
+            for source in chemins:
+                if not source.exists():
+                    manques.append(f"p{n} : {role} manquant — {source.name}")
+                elif source.stat().st_mtime > age:
+                    retards.append(
+                        f"p{n}_donnees.json est plus vieux que son {role[:-1]} "
+                        f"{source.name} ({(source.stat().st_mtime - age) / 60:.0f} min)")
+    return manques, retards
+
+
+MOTIF_OBJET = re.compile(r"(?:var|let|const)\s+(\w+)\s*=\s*JSON\.parse\(")
+
+
+def _cles_lues(js: Path) -> set[str]:
+    """Les clés que ce fragment lit réellement dans le JSON injecté.
+
+    Le fragment fait `var D = JSON.parse(n.textContent)` puis `D.<clé>` : on relève les
+    accès sur ce nom-là. C'est le contrôle qui aurait attrapé le 06/08 — `D.signature`
+    lue par `_p6_script.js`, absente de `p6_donnees.json`, et le garde `if (sg && hs)`
+    qui transformait le manque en silence au lieu d'une erreur de console.
+    """
+    texte = js.read_text(encoding="utf-8")
+    objet = MOTIF_OBJET.search(texte)
+    if not objet:
+        return set()
+    return set(re.findall(rf"\b{re.escape(objet.group(1))}\.([A-Za-z_]\w*)", texte))
+
+
 if __name__ == "__main__":
     import pyarrow.parquet as pq
     for p in ("O3", "NO2", "PM10", "PM25"):
         f = RACINE / f"data/processed/predictions/comparatif_{p}_h2.parquet"
         d = pd.read_parquet(f, columns=["mois"])
         annoncer(p, controle(p, sorted(d["mois"].unique())))
+
+    print("\n── synchronisation des pages ─────────────────────────────────────")
+    manques, retards = desynchronisations()
+    for a in manques:
+        print(f"   🔴 {a}")
+    for a in retards:
+        print(f"   ⚠️ {a}")
+    if not manques:
+        print(f"   ✓ {len(_gouvernants())} pages : aucune clé lue n'est absente de son JSON"
+              + (f" ({len(retards)} retard(s) d'horodatage, à vérifier sans urgence)"
+                 if retards else ""))
+    raise SystemExit(1 if manques else 0)

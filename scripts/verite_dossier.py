@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import sys
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -40,6 +41,35 @@ GRAIN_REGLEMENTAIRE = {"O3": "max_8h", "NO2": "max_horaire", "PM25": "moyenne_jo
 LIBELLE_GRAIN = {"horaire": "horaire", "max_8h": "max glissant 8 h",
                  "max_horaire": "max horaire", "moyenne_jour": "moyenne journalière"}
 NOM = {"O3": "O₃", "NO2": "NO₂", "PM25": "PM2,5", "PM10": "PM10"}
+
+# Seuil d'information français pour le NO₂ : 200 µg/m³ en moyenne horaire
+# (arrêté du 07/04/2016). Le seuil d'alerte est à 400.
+SEUIL_INFO_NO2 = 200.0
+
+
+@lru_cache(maxsize=None)          # le panel fait 8,8 M de lignes de NO₂ : une lecture suffit
+def compte_depassements_no2(seuil: float = SEUIL_INFO_NO2) -> dict[str, object]:
+    """Jours-station de NO₂ dont le **maximum horaire** atteint `seuil` — calculé, jamais cité.
+
+    ⚠️ **Ce chiffre figurait deux fois dans ce document, en dur et en contradiction.** Le § 8
+    annonçait « 2 dépassements », le § 10 bis « 3 », adossés à deux corpus différents
+    (161 637 et 60 400 jours-station) dont **aucun n'était celui d'une mesure** : les deux
+    étaient de la prose, dénominateurs compris. La conclusion ne bougeait pas — à ce seuil le
+    problème n'existe pas — mais deux chiffres inconciliables sur la même question sont
+    exactement ce que ce fichier existe pour empêcher.
+
+    Mesuré ici sur le **panel unifié**, celui qui sert de vérité terrain partout ailleurs,
+    avec la règle des 75 % (18 heures valides sur 24) qu'impose le référentiel LCSQA.
+    """
+    d = pd.read_parquet(RACINE / "data/processed/panel_unifie_lcsqa.parquet",
+                        columns=["station_id", "polluant", "timestamp_utc", "valeur"],
+                        filters=[("polluant", "==", "NO2")])
+    jour = d["timestamp_utc"].dt.tz_convert("UTC").dt.date
+    g = d.groupby(["station_id", jour])["valeur"].agg(["max", "count"])
+    g = g[g["count"] >= 18]
+    return {"seuil": seuil, "n_depassements": int((g["max"] >= seuil).sum()),
+            "n_jours_station": int(len(g)), "n_stations": int(d["station_id"].nunique()),
+            "debut": f"{d['timestamp_utc'].min():%Y-%m}", "fin": f"{d['timestamp_utc'].max():%Y-%m}"}
 
 
 def _pondere(sous: pd.DataFrame) -> dict[str, float]:
@@ -736,6 +766,7 @@ def bloc_detection(lignes: list[dict]) -> str:
     if not chemin.exists():
         return ""
     t = pd.read_csv(chemin)
+    no2 = compte_depassements_no2()
     texte = [
         "## 8. Détection — à budget de fausses alertes égal\n",
         "Un service ne choisit pas un seuil pour maximiser un score : il subit un **budget de "
@@ -815,11 +846,13 @@ def bloc_detection(lignes: list[dict]) -> str:
         "| **O₃** | 120 µg/m³ (max 8 h) | 2 293 sur 134 423 (1,71 %) | **0,656** — 3,6× le brut |\n"
         "| **PM2,5** | 25 µg/m³ (moyenne jour) | 1 844 sur 105 744 (1,74 %) | **0,485** — le brut n'atteint pas ce budget |\n"
         "| **NO₂** | 120 µg/m³ (max horaire) | **270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable** ; 0,044 à 40 % |\n"
-        "\n**Le NO₂ n'est pas détectable à ce grain**, et ce n'est pas un défaut de méthode : "
-        "l'événement est dix fois plus rare que pour les deux autres. Au seuil d'information "
-        "horaire de 200 µg/m³, il n'y a que **2 dépassements** dans tout le corpus — le "
-        "problème n'existe pas. Ce constat confirme, avec un protocole plus net, ce que le "
-        "projet avait déjà mesuré (POD 0,084, Brier skill +0,017).\n"
+        f"\n**Le NO₂ n'est pas détectable à ce grain**, et ce n'est pas un défaut de méthode : "
+        f"l'événement est dix fois plus rare que pour les deux autres. Au seuil d'information "
+        f"horaire de {no2['seuil']:.0f} µg/m³, le panel unifié ne compte que "
+        f"**{no2['n_depassements']} dépassements** sur {no2['n_jours_station']:,} jours-station "
+        f"({no2['debut']} → {no2['fin']}, {no2['n_stations']} stations, règle des 75 %) — le "
+        f"problème n'existe pas. Ce constat confirme, avec un protocole plus net, ce que le "
+        f"projet avait déjà mesuré (POD 0,084, Brier skill +0,017).\n"
         "\n*Un seuil sans événements ne mesure pas une incapacité à détecter : il mesure "
         "l'absence de ce qu'on cherche. Compter les positifs avant de conclure.*\n"
         "\n**Une différence entre polluants** : sur PM2,5 la perte pondérée **aide** (0,485 "
@@ -1030,7 +1063,9 @@ def bloc_generalisation() -> str:
         "⚠️ **Les seuils d'information français ne sont pas évaluables sur cette fenêtre.** "
         "À 180 µg/m³ en maximum horaire, l'ozone compte **32 dépassements sur 60 400 "
         "jours-station** : CAMS en détecte 3, notre correction 2 à J+1, et **aucun des deux "
-        "à J+3**. Le NO₂ à 200 µg/m³ n'en compte que **3**, aucun détecté. Un modèle entraîné "
+        f"à J+3**. Le NO₂ à 200 µg/m³ en compte **{compte_depassements_no2()['n_depassements']} "
+        f"sur {compte_depassements_no2()['n_jours_station']:,}** — mesurés sur le panel unifié, "
+        "et non sur la fenêtre de cette section —, aucun détecté. Un modèle entraîné "
         "**directement** sur le maximum horaire donne le même résultat qu'une transposition "
         "depuis le grain 8 h : l'échec est mécanique, pas méthodologique. **Et il n'est pas une affaire de calibration** : mesurée, la pente de régression de l'observé sur le prédit vaut **1,007** — le modèle n'est pas contracté, son échelle est juste. Une calibration isotone du score vers les bandes de l'indice, décidée au coût attendu minimal avec pénalité asymétrique, n'apporte que **+1,2 point** de rappel contre un simple abaissement de seuil à budget de fausses annonces égal — sous la barre de bruit de ±2 points. Le rang du régresseur porte déjà toute la décision disponible. Ce qui manque est de l'**information** : 53 prédicteurs qui ne contiennent rien distinguant un jour à 175 µg/m³ d'un jour à 185, et 32 événements pour l'apprendre. **Notre facteur 3,6× porte sur la valeur cible européenne (120 µg/m³, "
         "max 8 h), jamais sur le seuil de procédure.**\n\n"
