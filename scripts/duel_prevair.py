@@ -70,6 +70,23 @@ from double_aveugle_journalier import (  # noqa: E402
 # L'apprentissage s'arrête bien avant les jours testés : aucune fuite possible.
 FIN_APPRENTISSAGE = "2024-12"
 
+# **Le grain se lit dans le produit comparé, jamais dans notre convention.**
+#
+# Notre cible ozone est le **maximum glissant 8 h**, celle du seuil européen. Le produit
+# `MAXJ` de PREV'AIR est le **maximum journalier horaire** — le rapport *Performances
+# Prev'air en 2024* (INERIS/LCSQA, p. 17) le dit explicitement : « seul le maximum
+# journalier d'ozone est ainsi considéré ». Laisser les deux se rencontrer jugeait les
+# trois systèmes sur **trois grandeurs différentes**, et le défaut ne plantait pas : il
+# sortait un biais PREV'AIR de **+1,36** quand tous les autres étaient négatifs, simple
+# effet d'échelle du max horaire contre un max 8 h. Le 07/08/2026, cela donnait
+# « PREV'AIR meilleur de 2,6 % » — un artefact de convention, pas une mesure.
+#
+# On aligne donc **tout le duel** sur le grain du produit comparé : l'observation,
+# l'agrégat CAMS et notre modèle, qui est réajusté sur cette cible-là dans `main`. Les
+# trois autres polluants concordaient déjà (NO₂ max horaire ↔ `MAXJ`, particules moyenne
+# journalière ↔ `MOYJ`) et ne changent pas.
+GRAIN_DU_DUEL = {**GRANDEUR_PAR_POLLUANT, "O3": "max_horaire"}
+
 
 def scores(o, x) -> dict:
     e = x - o
@@ -101,7 +118,11 @@ def main(polluant: str, horizon: int) -> int:
     cols = colonnes_admises(jeu)
     jeu[cols] = jeu[cols].replace([np.inf, -np.inf], 30_000.0)
     jeu = jeu.dropna(subset=["valeur"])
-    j = agreger_journalier(jeu, cols, GRANDEUR_PAR_POLLUANT[polluant])
+    grain = GRAIN_DU_DUEL[polluant]
+    if grain != GRANDEUR_PAR_POLLUANT[polluant]:
+        print(f"  ⚠️ grain aligné sur le produit PREV'AIR : {grain} "
+              f"(notre cible habituelle est {GRANDEUR_PAR_POLLUANT[polluant]})", flush=True)
+    j = agreger_journalier(jeu, cols, grain)
     pred_cols = [c for c in cols if c != "cams"] + ["cams_moy_jour", "cams_jour"]
     d = j.rename(columns={"obs_jour": "valeur"}).reset_index(drop=True)
     d["jour"] = pd.to_datetime(d["jour"]).dt.tz_localize(None)
@@ -132,8 +153,9 @@ def main(polluant: str, horizon: int) -> int:
         print(f"  ⚠️ {len(m)} lignes communes — trop peu même pour un ordre de grandeur.")
         return 1
     o = m["valeur"].to_numpy()
-    print(f"\n{'═' * 76}\n{polluant} · {len(m):,} lignes communes · "
-          f"{m['jour'].nunique()} jour(s) · {m['station_id'].nunique()} stations\n"
+    print(f"\n{'═' * 76}\n{polluant} · {ech} · grain {grain} · {len(m):,} lignes communes · "
+          f"{m['jour'].nunique()} jour(s) du {str(m['jour'].min())[:10]} au "
+          f"{str(m['jour'].max())[:10]} · {m['station_id'].nunique()} stations\n"
           f"⚠️ {m['jour'].nunique()} jour(s) NE CONCLUENT RIEN — ordre de grandeur seul\n"
           f"{'═' * 76}")
     print(f"  {'système':34s} {'biais':>8s} {'RMSE':>8s} {'MAE':>8s} {'corr':>7s}")
@@ -144,7 +166,10 @@ def main(polluant: str, horizon: int) -> int:
         s = scores(o, m[col].to_numpy())
         print(f"  {nom:34s} {s['biais']:+8.2f} {s['rmse']:8.2f} {s['mae']:8.2f} "
               f"{s['correlation']:7.3f}")
-        lignes.append({"polluant": polluant, "echeance": ech, "systeme": nom, **s})
+        lignes.append({"polluant": polluant, "echeance": ech, "grain": grain,
+                       "jours": int(m["jour"].nunique()),
+                       "debut": str(m["jour"].min())[:10], "fin": str(m["jour"].max())[:10],
+                       "systeme": nom, **s})
 
     r_nous = scores(o, m["nous"].to_numpy())["rmse"]
     r_pv = scores(o, m["prevair"].to_numpy())["rmse"]

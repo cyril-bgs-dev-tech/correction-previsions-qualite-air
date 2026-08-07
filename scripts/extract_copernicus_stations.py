@@ -174,13 +174,37 @@ def main(service: str, scope: str) -> int:
         print(f"{len(partiels)} mois encore incomplet(s), reportés : "
               f"{', '.join(sorted(partiels)[:6])}", flush=True)
 
-    restants = {
-        cle: fichiers for cle, fichiers in groupes.items()
-        if cle not in partiels
-        and not (SORTIE / f"{service}_{scope}_{cle}.parquet").exists()
-    }
+    def a_refaire(cle: str, fichiers: list[Path]) -> bool:
+        """Absent, **ou mois en cours dont les sources ont grandi**.
+
+        ⚠️ Tester la seule existence suffisait tant qu'un mois était figé une fois pour
+        toutes. Le mois **en cours** gagne un fichier par jour : son parquet écrit à
+        7 jours serait sauté à jamais, et août 2026 resterait tronqué sans qu'aucune
+        métrique ne le dise. C'est la règle 4 de `CLAUDE.md` — le test de reprise porte
+        sur le contenu attendu.
+
+        ⚠️ **Et la version large de ce test est un piège, essayé puis retiré le
+        07/08/2026.** Comparer le mtime du parquet à celui de ses `.nc` pour *tous* les
+        mois a déclaré **86 mois sur 90 périmés** : les reprises de téléchargement
+        réécrivent les `.nc` sans changer leur contenu, donc leur mtime ne dit rien de la
+        fraîcheur. Le test ne porte que sur le mois courant, le seul dont l'ensemble des
+        sources puisse réellement croître.
+        """
+        cible = SORTIE / f"{service}_{scope}_{cle}.parquet"
+        if not cible.exists():
+            return True
+        mois_courant = pd.Timestamp.now(tz="UTC").strftime("%Y%m")
+        return cle.endswith(mois_courant) and cible.stat().st_mtime < max(
+            f.stat().st_mtime for f in fichiers)
+
+    restants = {cle: fichiers for cle, fichiers in groupes.items()
+                if cle not in partiels and a_refaire(cle, fichiers)}
+    perimes = [c for c in restants
+               if (SORTIE / f"{service}_{scope}_{c}.parquet").exists()]
     print(f"{service} · {len(stations)} stations · {len(groupes)} mois sur disque · "
-          f"{len(restants)} à extraire", flush=True)
+          f"{len(restants)} à extraire"
+          + (f" (dont {len(perimes)} périmé(s) : {', '.join(sorted(perimes)[:6])})"
+             if perimes else ""), flush=True)
 
     debut = time.time()
     lignes_totales = 0

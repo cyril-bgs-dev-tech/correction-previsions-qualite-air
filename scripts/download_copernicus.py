@@ -161,11 +161,25 @@ def jours_attendus(nom: str) -> int | None:
     ⚠️ **Tous** les jetons de mois, jamais le dernier seul : `..._202401_202402` en porte
     deux, et une expression ancrée à droite n'attendrait que 29 jours au lieu de 60.
     Rend `None` quand le nom ne porte aucun mois — auquel cas on ne sait pas compter.
+
+    ⚠️ **Le mois en cours ne peut pas être complet.** Son jumeau,
+    `extract_copernicus_stations.jours_attendus`, avait appris cette leçon ; celui-ci ne
+    l'avait jamais su — c'est exactement le défaut corrigé à un endroit et laissé ailleurs
+    que `CLAUDE.md` § 4 bis interdit. Constaté le 07/08/2026 : les **7** jours d'août
+    réellement publiés étaient jugés « 7/31 — repris », donc **retéléchargés à chaque
+    appel**, et `main` rendait 1 alors que tout ce qui existe était sur disque.
     """
     jetons = re.findall(r"_(\d{4})(\d{2})(?=_|$)", Path(nom).stem)
     if not jetons:
         return None
-    return sum(pd.Period(f"{a}-{m}").days_in_month for a, m in jetons)
+    # La veille comme borne : la prévision du jour même peut n'être pas encore publiée.
+    aujourdhui = pd.Timestamp.now(tz="UTC").normalize()
+    return sum(
+        max(1, aujourdhui.day - 1)
+        if pd.Period(f"{a}-{m}") == pd.Period(aujourdhui, freq="M")
+        else pd.Period(f"{a}-{m}").days_in_month
+        for a, m in jetons
+    )
 
 
 def est_complet(dossier: Path, nom: str) -> bool:
