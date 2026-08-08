@@ -31,7 +31,8 @@ fi
 
 PY=/home/cyril/miniforge3/envs/llm-agent/bin/python3   # jamais `python3` nu
 H=2
-ESSAIS_MAX=3
+ESSAIS_MAX=6         # le segfault de chargement tombe ~1 fois sur 2 et la reprise
+                     # conserve les configurations déjà mesurées : 6 essais suffisent
 PLAFOND=24G          # ~10× le besoin attendu, et très loin des 70 Go de la VM
 JOURNAL=logs/lot_maximale_tendance.log
 VEILLE="$HOME/veille_memoire_maximale.csv"   # hors /mnt/d : doit survivre à la coupure
@@ -54,11 +55,19 @@ for p in O3 PM10 PM25 NO2; do
   for (( essai = 1; essai <= ESSAIS_MAX; essai++ )); do
     echo "[$(date +%T)] $p J+$H — tentative $essai/$ESSAIS_MAX" | tee -a "$JOURNAL"
     t0=$SECONDS
-    systemd-run --user --scope --quiet \
+    # ⚠️ `>` écrasait le journal de la tentative précédente : la seule trace du segfault
+    # partait à chaque réessai, et les journaux retrouvés étaient VIDES. On ajoute, et
+    # `PYTHONFAULTHANDLER` laisse la pile Python au moment du signal — c'est elle qui a
+    # démenti « LightGBM » et désigné pandas.
+    echo "── tentative $essai · $(date '+%F %T') ──" >> "logs/maximale_${p}.log"
+    PYTHONFAULTHANDLER=1 systemd-run --user --scope --quiet \
       -p MemoryMax="$PLAFOND" -p MemorySwapMax=0 -- \
-      "$PY" scripts/methode_maximale.py --polluant "$p" --horizon "$H" \
-      > "logs/maximale_${p}.log" 2>&1
+      env PYTHONFAULTHANDLER=1 "$PY" -u scripts/methode_maximale.py \
+        --polluant "$p" --horizon "$H" \
+      >> "logs/maximale_${p}.log" 2>&1
     code=$?
+    [ "$code" -eq 139 ] && echo "  ⚠️ $p segfault (139) — pile dans logs/maximale_${p}.log, \
+reprise sur .partiel à la tentative suivante" | tee -a "$JOURNAL"
     # 137 = tué par le plafond du cgroup. C'est un DÉBORDEMENT MÉMOIRE, pas un segfault,
     # et il faut le nommer : sans cette ligne, il se confond avec les 28 segfauts du banc.
     [ "$code" -eq 137 ] && echo "  ⚠️ $p tué par le plafond $PLAFOND — débordement mémoire, \

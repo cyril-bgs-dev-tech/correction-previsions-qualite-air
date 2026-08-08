@@ -209,8 +209,43 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     print(f"  périmètre effectif : {n_prevus - len(ecartes)} plis exécutés "
           f"sur {n_prevus} prévus", flush=True)
 
+    # ── Reprise sur le `.partiel` (règle 4) ──────────────────────────────────────
+    # Le segfault de chargement mesuré le 08/08 est **intermittent** : la même commande
+    # tombe environ une fois sur deux, et les données ne sont pas en cause — le fichier
+    # d'abord accusé (`..._o3_202406.parquet`) passe cinq fois de suite quand il est lu
+    # seul. Sans reprise, chaque tentative rejoue les configurations déjà mesurées et le
+    # lot n'aboutit jamais ; avec reprise, il aboutit en quelques tentatives.
+    #
+    # La reprise porte sur le **nom** des configurations, jamais sur leur nombre : un
+    # `.partiel` écrit par une version antérieure n'a pas les mêmes étages, et un compte
+    # ne le dirait pas. Et elle est invalidée si la fenêtre du corpus a changé — sinon on
+    # recollerait des mesures faites sur deux périmètres différents.
     lignes, precedent = [], None
+    fenetre_courante = f"{mois_ok[0]}→{mois_ok[-1]}"
+    if partiel.exists():
+        deja = pd.read_csv(partiel)
+        attendues = {nom for nom, _, _ in configs}
+        fenetres = set(deja.get("fenetre", pd.Series(dtype=str)).astype(str))
+        if fenetres - {fenetre_courante}:
+            print(f"  ⚠️ .partiel écarté — fenêtre {fenetres} ≠ {fenetre_courante}",
+                  flush=True)
+        else:
+            for r in deja.to_dict("records"):
+                if r["configuration"] not in attendues:
+                    print(f"  ⚠️ .partiel : « {r['configuration']} » n'existe plus dans "
+                          f"cette version — ligne ignorée", flush=True)
+                    continue
+                lignes.append(r)
+                print(f"  {r['configuration']:38s} {r['perimetre']:14s} "
+                      f"{r['n_colonnes']:>5d} {r['gain_pct']:+7.2f}%"
+                      f"{'':>10}{'':>7}{'':>8}  ↷ repris du .partiel", flush=True)
+                if not str(r["configuration"]).startswith(("★", "plafond")):
+                    precedent = float(r["gain_pct"])
+    faites = {r["configuration"] for r in lignes}
+
     for nom, colonnes, per in configs:
+        if nom in faites:
+            continue
         t0 = time.time()
         obs, cams, pred, gains = [], [], [], []
         for _, m_te, m_tr in plis:
