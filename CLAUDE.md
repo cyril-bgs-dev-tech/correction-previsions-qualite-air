@@ -211,6 +211,72 @@ utile. C'est la règle 2 bis appliquée au réseau : *compter le reçu contre le
 
 ---
 
+## 1 quater. Un lot se borne sur la ressource qu'il partage avec sa machine
+
+### La règle
+
+Les règles 1 et 1 bis bornent le lot en **durée** et en **coût de service**. Celle-ci le
+borne sur la ressource qu'il ne possède pas : la machine elle-même. Un lot qui déborde ne
+ralentit pas — **il tue son hôte, et un hôte mort n'écrit rien.**
+
+Trois gestes, avant le lancement, jamais après :
+
+1. **Plafonner le processus plutôt qu'espérer qu'il se tienne.**
+   `systemd-run --user --scope -p MemoryMax=<plafond> -p MemorySwapMax=0 -- <commande>`.
+   Un processus qui déborde **dans un cgroup borné meurt seul**, code 137, machine
+   intacte ; le même processus non borné emporte la VM et n'explique rien. Le plafond
+   n'est pas une optimisation : c'est ce qui rend la panne **observable**.
+2. **Échantillonner pendant le lot, et écrire la trace là où elle survivra.**
+   `scripts/veille_memoire.sh` : sortie dans `$HOME`, **jamais sur `/mnt/d`**, et un
+   `sync` par ligne. Sans le `sync`, les dernières secondes — les seules qui expliquent la
+   mort — restent dans le cache et disparaissent avec la VM.
+3. **Faire la passe unitaire sur le garde-fou, pas seulement sur le lot.** Demander 2 Go
+   sous un plafond de 256 Mo et exiger le code 137. Un garde-fou non testé est une
+   croyance, et il se testera tout seul le jour où il aura échoué.
+
+### Le corollaire de diagnostic — où une coupure est écrite
+
+**Une machine qui tombe sans laisser de trace n'est pas un mystère : c'est une absence
+d'instrumentation.** Trois sources existent déjà, aucune n'est dans un script :
+
+- `/var/log/kern.log` — segfauts, OOM, paniques. **Une coupure sans trace noyau n'est pas
+  un plantage interne** : le noyau tourne encore quand la VM disparaît ;
+- les **horodatages** de `logs/` et des `.partiel` — ils datent la mort à la minute et
+  disent quel lot tournait ;
+- les **transcripts de session** (`~/.claude/projects/<projet>/*.jsonl`) — ils disent ce
+  qui était **lancé** à cette seconde-là.
+
+### L'erreur qui a produit cette règle — le 08/08, trois coupures en vingt-six minutes
+
+WSL est tombé à **19 h 23, 19 h 33 et 19 h 50**. L'hypothèse de départ — « ça coupe en
+traitant le `.md` de R17 » — était la seule disponible, et elle était **fausse** : le
+fichier fait 93 Ko. Les trois coupures suivent trois lancements de
+`lot_maximale_tendance.sh` (19 h 14, 19 h 26, 19 h 39), **8 à 11 minutes plus tard**,
+toujours à la même configuration : la 8ᵉ, `★ MAXIMALE — AUX STATIONS` d'O₃.
+
+Pourquoi la fausse piste tenait : une session Claude Code **lit d'abord, lance ensuite**.
+Les deux gestes sont toujours enchaînés, donc la corrélation ne les sépare pas. **Quand
+deux gestes sont inséparables dans le temps, seule une trace qui les distingue tranche** —
+ici l'horodatage de `logs/maximale_O3.log` (19 h 48) et l'existence de
+`reports/methode_maximale_O3_h2.csv.partiel`, qui prouvent qu'un lot tournait, ce que la
+lecture d'un `.md` ne produit jamais.
+
+**Ce qui est établi** : un lot tournait aux trois coupures ; aucune des trois n'a laissé
+de trace noyau ; l'hypothèse du fichier est réfutée. **Ce qui ne l'est pas** : le
+mécanisme. Le noyau porte par ailleurs **19 segfauts LightGBM** entre 16 h 50 et 17 h 15,
+à **deux adresses qui se répètent** malgré des bases différentes — donc un chemin de code
+reproductible, pas de la corruption aléatoire. Débordement mémoire, E/S `drvfs` et bogue
+LightGBM restent en lice ; le plafond et l'échantillonneur sont précisément ce qui
+permettra de trancher **à la prochaine occurrence**, au lieu de perdre une session de plus.
+
+### Le fil commun
+
+C'est la règle 5 appliquée à la machine plutôt qu'aux données : *si ce lot tuait son hôte,
+est-ce que je saurais pourquoi ?* Sans plafond ni échantillonnage, la réponse est non — et
+la panne se déguise alors en propriété de ce qu'on était en train de lire.
+
+---
+
 ## 2. Lecture de fichiers — charger avant d'indexer
 
 ### La règle
