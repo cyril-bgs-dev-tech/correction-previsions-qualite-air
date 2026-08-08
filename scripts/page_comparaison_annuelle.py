@@ -93,8 +93,10 @@ POLLUANTS = {
 }
 
 # La signature en trois mots — périmètre, épreuve, échéance. Cinq familles de gains
-# portent des noms voisins dans ce dossier ; sur l'ozone elles valent +22,43, +21,66,
-# +13,75, +9,2 et +3,31 %, toutes justes et aucune interchangeable. Elle est écrite ici,
+# portent des noms voisins dans ce dossier ; sur l'ozone elles valaient au 08/08/2026
+# +22,43, +22,47, +15,83, +9,24 et +3,31 % — valeurs d'illustration, datées, dont
+# VERITE_DOSSIER § 7 ter porte la version recalculée. Toutes justes, aucune
+# interchangeable. Elle est écrite ici,
 # une fois, et va dans le JSON : une page qui la recopie à la main finit par la démentir.
 SIGNATURE = {"perimetre": "PARTOUT — aucune observation passée de la station",
              "epreuve": "double aveugle — station ET mois cachés",

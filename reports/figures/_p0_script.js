@@ -21,8 +21,10 @@
 
   /* La signature en trois mots, affichée avec les chiffres et non dans une note :
      cinq familles de gains portent des noms voisins dans ce dossier, et sur l'ozone
-     elles valent +22,43 %, +21,66 %, +13,75 %, +9,2 % et +3,31 % — toutes justes,
-     aucune interchangeable. Un pourcentage sans ses trois mots n'est pas citable. */
+     elles valaient au 08/08/2026 +22,43 %, +22,47 %, +15,83 %, +9,24 % et +3,31 % —
+     toutes justes, aucune interchangeable. Un pourcentage sans ses trois mots n'est pas
+     citable. (Valeurs d'illustration, datées : la table de VERITE_DOSSIER § 7 ter est
+     recalculée à chaque exécution et fait foi.) */
   var sg = D.signature;
   document.getElementById('p0-signature').innerHTML =
     '<span>périmètre</span><b>' + sg.perimetre + '</b>' +

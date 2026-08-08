@@ -100,6 +100,17 @@ progresse. Quatre gestes, dans cet ordre :
 script. Après un `pkill`, **vérifier qu'il a pris effet** : le code de sortie ne suffit
 pas.
 
+**Et ce garde ment dans les deux sens — le motif doit désigner le processus, pas son
+nom.** Le 08/08 à 23 h 06, `pgrep -f "[m]ethode_maximale.py"` a refusé de démarrer le lot
+en annonçant un jumeau : il avait matché **le shell qui lançait ce lot**, dont la ligne de
+commande contenait le nom du script parce qu'elle enchaînait un `pgrep` de vérification.
+Aucun jumeau n'existait. Un garde en faux positif est pire qu'un garde absent — il bloque
+le travail *et* son message affirme le contraire de la réalité, ce qui envoie chercher un
+processus fantôme. Ancrer le motif sur l'**invocation réelle** —
+`pgrep -f "python3 -u scripts/[m]ethode_maximale\.py"` — et se rappeler que toute commande
+qui mentionne le motif entre elle-même dans `ps` : le contrôle et la chose contrôlée
+partagent le même espace de noms.
+
 **Si la conception du lot a changé, recalibrer.** La passe unitaire de la règle 1 vaut
 pour la granularité qu'elle a mesurée. Regrouper les requêtes, changer l'emprise ou le
 nombre de variables **invalide l'étalonnage**.
@@ -325,6 +336,48 @@ comparant deux exécutions indépendantes de la pile O₃, séparées par sept c
 chiffre. C'est exactement l'inverse des défauts que le reste de ce fichier traque — pour
 une fois, l'échec se voit. Cela ne dispense pas de réparer la machine ; cela dit seulement
 que les mesures déjà publiées ne sont pas à re-vérifier une par une.
+
+### La confirmation du 08/08 à 22 h 53 — quatrième coupure, et deux points fixés
+
+La VM est retombée à ~22 h 53, pendant la 6ᵉ tentative sur NO₂. Trois observations, toutes
+tirées de l'instrumentation, aucune d'une intuition :
+
+- **Le mécanisme « argument au mauvais endroit » a une seconde occurrence, plus explicite
+  que la première :**
+
+  ```
+  ValueError: Invalid frequency: 2023-12-15 12:00:00+00:00
+    ← levé depuis pd.PeriodIndex(pd.to_datetime(jeu["timestamp_utc"]), freq="M")
+  ```
+
+  Une **valeur du tableau de données** est arrivée dans le paramètre `freq`. Ce n'est pas
+  une donnée fausse — `freq="M"` est écrit en dur dans `fit_mos.py:132`, il n'y a aucun
+  chemin de code par lequel un horodatage puisse s'y rendre. Le `TypeError` de 22 h 17 et
+  ce `ValueError` sont **le même défaut à deux endroits différents**, ce qui retire à
+  chacun son statut d'anomalie isolée.
+
+- **La mémoire est disculpée une seconde fois, et cette fois à la seconde de la coupure.**
+  L'échantillonneur, écrit hors `/mnt/d`, a survécu : **pic à 3,6 Go sur 70**, swap à zéro,
+  aucun `code=137` en 40 exécutions. La coupure tombe pendant une *montée* de RSS
+  (5 → 2 180 Mo en 27 s), c'est-à-dire un chargement qui **démarrait**. Un plafond de 24 Go
+  jamais approché ne peut pas être la cause de ce qu'il n'a pas plafonné.
+
+- ⚠️ **`kern.log` ne dit plus rien sur le site du fault — il ne sert plus qu'à dater.**
+  Les **22 signaux 11** enregistrés depuis 22 h 11 portent tous `ORIG_RAX: 0xea`
+  (syscall 234, `tgkill`) et le **même offset libc** `…a642c` — seule la base ASLR change.
+  C'est `faulthandler` qui, après avoir imprimé la pile, ré-émet le signal : le noyau
+  journalise donc **la ré-émission**, jamais le fault. Conséquence directe : les
+  « trois binaires distincts » notés plus haut restent valides pour les signaux **antérieurs**
+  à l'instrumentation, mais **plus aucune conclusion ne doit être tirée d'un RIP postérieur**.
+  La pile Python de `logs/maximale_*.log` est désormais la seule source sur le site.
+
+  C'est le corollaire de la règle 1 ter appliqué à soi-même : *l'instrumentation change ce
+  que la mesure mesure.* Avoir rendu l'échec lisible côté Python a rendu le journal noyau
+  aveugle, et ne pas le savoir aurait produit un quatrième faux diagnostic.
+
+**Et la reprise a payé une fois de plus** : les 5 configurations de NO₂ déjà mesurées à
+22 h 51 ont été relues telles quelles après le redémarrage. La coupure a coûté le
+redémarrage, pas le travail.
 
 ### Le fil commun
 

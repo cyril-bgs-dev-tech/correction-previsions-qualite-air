@@ -23,8 +23,10 @@ Ce que le périmètre impose
 Toutes les variables construites ici se calculent **depuis CAMS, le calendrier et les
 descripteurs de site** — jamais depuis une observation. C'est délibéré : le point faible
 du dossier est le périmètre **PARTOUT** (prédire là où aucune station ne mesure, ozone
-+13,75 %), et une variable qui exigerait l'historique observé du point le quitterait pour
-le périmètre AUX STATIONS, où le gain est déjà connu et deux fois plus élevé.
++15,83 % au 08/08/2026), et une variable qui exigerait l'historique observé du point le
+quitterait pour le périmètre AUX STATIONS, où le gain est déjà connu et nettement plus
+élevé (+22,47 % sur l'ozone, soit ×1,42 — et non « deux fois », comme il était écrit ici
+avant que l'étage `tendance` ne resserre l'écart).
 
 ⚠️ `anomalie_cams` et `tendance_cams` utilisent le **passé de CAMS au point**, pas le
 passé des mesures. Une prévision passée existe partout, y compris là où rien ne mesure :

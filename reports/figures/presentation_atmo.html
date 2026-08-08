@@ -701,7 +701,7 @@ figcaption {
     tous les leviers empilés, GEOS-CF compris. Périmètre <strong>PARTOUT</strong>&#8239;: aucune
     observation passée de la station n'entre dans le modèle, donc ces chiffres valent
     <strong>là où rien ne mesure</strong>. Sur un réseau instrumenté ils montent à
-    <em>+45,85 % · +21,66 % · +23,76 % · +19,60 %</em>&#8239;; c'est le plus bas des deux qui est
+    <em>+46,20 % · +22,47 % · +24,22 % · +19,68 %</em>&#8239;; c'est le plus bas des deux qui est
     mis en avant, parce que c'est <strong>le seul que CAMS ne sait pas faire</strong> — et
     parce que l'autre exige l'historique du point, ce que la spatialisation n'a pas.
     <br>⚠️ <strong>Les fenêtres diffèrent selon le polluant</strong>&#8239;: seuls les
@@ -2317,9 +2317,9 @@ figcaption {
           aveugle. Ce qui reste à gagner est de l'information, pas du réglage.</span></li>
       </ul>
       <dl class="tete-bilan">
-        <div><dt>NO₂ · PARTOUT</dt><dd>+38,71&#8239;%<small>double aveugle · J+2 · pile complète</small></dd></div>
-        <div><dt>NO₂ · aux stations</dt><dd>+45,85&#8239;%<small>exige l'historique du point</small></dd></div>
-        <div><dt>O₃ · PARTOUT</dt><dd>+13,75&#8239;%<small>et +21,66&#8239;% aux stations</small></dd></div>
+        <div><dt>NO₂ · PARTOUT</dt><dd>+38,86&#8239;%<small>double aveugle · J+2 · pile complète</small></dd></div>
+        <div><dt>NO₂ · aux stations</dt><dd>+46,20&#8239;%<small>exige l'historique du point</small></dd></div>
+        <div><dt>O₃ · PARTOUT</dt><dd>+15,83&#8239;%<small>et +22,47&#8239;% aux stations</small></dd></div>
       </dl>
     </section>
 
@@ -4211,7 +4211,7 @@ i.d-ex { margin-right: 5px; }
 <!-- P6-SCRIPT:FIN -->
 
 <!-- P0-SCRIPT:DEBUT -->
-<script id="p0-data" type="application/json">{"signature":{"perimetre":"PARTOUT","epreuve":"double aveugle — station ET mois cachés","echeance":"J+2","source":"pile complète, tous leviers dont GEOS-CF"},"gains":[{"code":"NO2","nom":"NO₂","gain":38.71,"n_mois":29,"fenetre":["2023-08","2025-12"]},{"code":"O3","nom":"O₃","gain":13.75,"n_mois":29,"fenetre":["2023-08","2025-12"]},{"code":"PM10","nom":"PM10","gain":17.43,"n_mois":24,"fenetre":["2024-01","2025-12"]},{"code":"PM25","nom":"PM2,5","gain":9.9,"n_mois":29,"fenetre":["2023-08","2025-12"]}],"contrepoids":{"episodes":33,"declares":52,"nous":2,"aasqa":1,"plafond":21},"corpus":{"mois_min":24,"mois_max":29}}</script>
+<script id="p0-data" type="application/json">{"signature":{"perimetre":"PARTOUT","epreuve":"double aveugle — station ET mois cachés","echeance":"J+2","source":"pile complète, tous leviers dont GEOS-CF"},"gains":[{"code":"NO2","nom":"NO₂","gain":38.86,"n_mois":29,"fenetre":["2023-08","2025-12"]},{"code":"O3","nom":"O₃","gain":15.83,"n_mois":29,"fenetre":["2023-08","2025-12"]},{"code":"PM10","nom":"PM10","gain":17.88,"n_mois":24,"fenetre":["2024-01","2025-12"]},{"code":"PM25","nom":"PM2,5","gain":10.03,"n_mois":29,"fenetre":["2023-08","2025-12"]}],"contrepoids":{"episodes":33,"declares":52,"nous":2,"aasqa":1,"plafond":21},"corpus":{"mois_min":24,"mois_max":29}}</script>
 <script>
 /* ═══ Page 00 — les chiffres de tête ══════════════════════════════════════════
    Aucune valeur n'est écrite en dur : tout vient de p0_donnees.json, lui-même
@@ -4236,8 +4236,10 @@ i.d-ex { margin-right: 5px; }
 
   /* La signature en trois mots, affichée avec les chiffres et non dans une note :
      cinq familles de gains portent des noms voisins dans ce dossier, et sur l'ozone
-     elles valent +22,43 %, +21,66 %, +13,75 %, +9,2 % et +3,31 % — toutes justes,
-     aucune interchangeable. Un pourcentage sans ses trois mots n'est pas citable. */
+     elles valaient au 08/08/2026 +22,43 %, +22,47 %, +15,83 %, +9,24 % et +3,31 % —
+     toutes justes, aucune interchangeable. Un pourcentage sans ses trois mots n'est pas
+     citable. (Valeurs d'illustration, datées : la table de VERITE_DOSSIER § 7 ter est
+     recalculée à chaque exécution et fait foi.) */
   var sg = D.signature;
   document.getElementById('p0-signature').innerHTML =
     '<span>périmètre</span><b>' + sg.perimetre + '</b>' +

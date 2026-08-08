@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 08/08/2026 à 00 h 27 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 08/08/2026 à 23 h 39 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -185,7 +185,7 @@ Elle était **asymétrique dans les deux sens** : à notre avantage sur le grain
 
 ## 7 ter. Les cinq familles de gains — laquelle citer, et jamais l'une pour l'autre
 
-Ce projet produit **cinq familles de scores** qui portent des noms voisins et répondent à des questions différentes. Elles sont **toutes justes et aucune n'est interchangeable** : sur l'ozone, la même correction vaut de **+3,31 % à +22,43 %** selon l'épreuve. Confondre deux lignes de ce tableau discrédite le dossier entier plus sûrement qu'un chiffre faux — un chiffre faux se corrige, une confusion de périmètre jette le doute sur tout le reste.
+Ce projet produit **cinq familles de scores** qui portent des noms voisins et répondent à des questions différentes. Elles sont **toutes justes et aucune n'est interchangeable** : sur l'ozone, la même correction vaut de **+3,31 % à +22,47 %** selon l'épreuve. Confondre deux lignes de ce tableau discrédite le dossier entier plus sûrement qu'un chiffre faux — un chiffre faux se corrige, une confusion de périmètre jette le doute sur tout le reste.
 
 **Tout pourcentage cité hors de ce document doit venir avec trois mots : périmètre · épreuve · échéance.**
 
@@ -193,8 +193,8 @@ Ce projet produit **cinq familles de scores** qui portent des noms voisins et r�
 |---|---|---|---|---|---|---|---|
 | ①a | **production, contre la chaîne en service** ⭐ | origine glissante, station **connue** | **J0** | **+22,43 %** | **+44,16 %** | **+25,90 %** | **+19,22 %** |
 | ①b | production, contre CAMS brut | idem | J0 | +26,15 % | +51,24 % | +31,09 % | +19,22 % |
-| ② | **maximale — AUX STATIONS** | double aveugle, pile complète **+ veille** | J+2 | +21,66 % | +45,85 % | +23,76 % | +19,60 % |
-| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+2 | **+13,75 %** | **+38,71 %** | **+17,43 %** | **+9,90 %** |
+| ② | **maximale — AUX STATIONS** | double aveugle, pile complète **+ veille** | J+2 | +22,47 % | +46,20 % | +24,22 % | +19,68 % |
+| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+2 | **+15,83 %** | **+38,86 %** | **+17,88 %** | **+10,03 %** |
 | ④ | apport de la seule observation de la veille (§ 7) | usage A contre usage B | J+2 | +9,24 % | +22,76 % | — | +9,28 % |
 | ⑤ | double aveugle de référence | base seule, **aucun levier** | J+2 | +3,31 % | +25,71 % | +11,36 % | +5,14 % |
 
@@ -519,14 +519,15 @@ Double aveugle **station ET mois cachés**, J+2, fenêtre du flux GEOS-CF v1. L'
 
 | étage | NO₂ | O₃ | PM10 | PM2,5 |
 |---|---|---|---|---|
-| base (CAMS, terrain, calendrier) | +26.61 % | +7.01 % | +8.52 % | +2.08 % |
-| + typologie | +35.58 % *(+8.96)* | +6.88 % *(-0.13)* | +10.12 % *(+1.61)* | +2.24 % *(+0.16)* |
-| + membres | +36.13 % *(+0.55)* | +9.83 % *(+2.95)* | +14.20 % *(+4.07)* | +5.76 % *(+3.52)* |
-| + feux | +36.38 % *(+0.24)* | +11.93 % *(+2.10)* | +15.09 % *(+0.89)* | +7.80 % *(+2.04)* |
+| base (CAMS, terrain, calendrier) | +26.61 % | +7.01 % | +8.52 % | +2.07 % |
+| + typologie | +35.58 % *(+8.97)* | +6.87 % *(-0.13)* | +10.12 % *(+1.61)* | +2.23 % *(+0.16)* |
+| + membres | +36.12 % *(+0.54)* | +9.83 % *(+2.95)* | +14.20 % *(+4.07)* | +5.75 % *(+3.52)* |
+| + feux | +36.38 % *(+0.26)* | +11.93 % *(+2.10)* | +15.09 % *(+0.89)* | +7.80 % *(+2.05)* |
 | + geoscf | +38.71 % *(+2.33)* | +13.75 % *(+1.82)* | +17.43 % *(+2.34)* | +9.90 % *(+2.10)* |
-| ★ MAXIMALE — PARTOUT | **+38.71 %** *(+0.00)* | **+13.75 %** *(+0.01)* | **+17.43 %** *(-0.00)* | **+9.90 %** *(-0.00)* |
-| ★ MAXIMALE — AUX STATIONS (+ veille) | **+45.85 %** *(+7.14)* | **+21.66 %** *(+7.92)* | **+23.76 %** *(+6.33)* | **+19.60 %** *(+9.70)* |
-| plafond ERA5 (NON déployable) | +49.28 % *(+10.58)* | +25.41 % *(+11.67)* | +26.22 % *(+8.79)* | +23.61 % *(+13.71)* |
+| + tendance | +38.86 % *(+0.15)* | +15.83 % *(+2.08)* | +17.88 % *(+0.45)* | +10.03 % *(+0.13)* |
+| ★ MAXIMALE — PARTOUT | **+38.86 %** *(+0.00)* | **+15.83 %** *(+0.00)* | **+17.88 %** *(+0.00)* | **+10.03 %** *(-0.00)* |
+| ★ MAXIMALE — AUX STATIONS (+ veille) | **+46.20 %** *(+7.34)* | **+22.47 %** *(+6.64)* | **+24.22 %** *(+6.34)* | **+19.68 %** *(+9.65)* |
+| plafond ERA5 (NON déployable) | +49.32 % *(+10.46)* | +26.16 % *(+10.33)* | +26.42 % *(+8.55)* | +23.15 % *(+13.12)* |
 
 ⚠️ **Les fenêtres diffèrent selon le polluant** : NO₂ 29 mois (2023-08→2025-12) · O₃ 29 mois (2023-08→2025-12) · PM10 24 mois (2024-01→2025-12) · PM2,5 29 mois (2023-08→2025-12). Seuls les **écarts entre étages** se comparent d'un polluant à l'autre, jamais les niveaux.
 

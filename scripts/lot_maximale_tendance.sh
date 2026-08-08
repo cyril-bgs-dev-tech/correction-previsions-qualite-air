@@ -25,7 +25,13 @@ set -u
 cd /mnt/d/Projet_Air_Quality || exit 1
 mkdir -p logs
 
-if pgrep -f "[m]ethode_maximale.py" > /dev/null; then
+# Le motif doit désigner le PROCESSUS, pas toute ligne de commande qui le mentionne.
+# Le 08/08 à 23 h, `pgrep -f "[m]ethode_maximale.py"` a matché le shell qui LANÇAIT ce
+# lot — sa ligne de commande contenait le nom — et le lot s'est refusé à démarrer en
+# annonçant un jumeau inexistant. Un garde qui produit un faux positif est pire qu'un
+# garde absent : il bloque le travail et son message affirme le contraire de la réalité.
+# Exiger `python3 -u scripts/...` restreint le match à l'invocation réelle.
+if pgrep -f "python3 -u scripts/[m]ethode_maximale\.py" > /dev/null; then
   echo "✗ un lot methode_maximale tourne déjà — arrêt"; exit 1
 fi
 
@@ -39,7 +45,15 @@ H=2
 # ~13 min par polluant. C'est la règle 1 ter appliquée à un taux : une observation ne fait
 # pas une fréquence.
 ESSAIS_MAX=20
-PLAFOND=24G          # ~10× le besoin attendu, et très loin des 70 Go de la VM
+# ⚠️ « ~10× le besoin attendu » était FAUX, et l'échantillonneur l'a montré le 08/08 :
+# le lot NO₂ qui a abouti à 23 h 25 a atteint **18,9 Go de RSS**, soit **79 % de ce
+# plafond** — un facteur 1,27, pas 10. L'estimation venait du pic de 11,6 Go mesuré sur
+# O₃ ; NO₂ charge 29 mois de plus de jointures. Le plafond protège donc toujours la VM,
+# mais il ne laisse PAS la marge annoncée : un polluant plus lourd sortirait en code 137,
+# qu'il faudrait lire comme un débordement réel et non comme un resserrement arbitraire.
+# C'est la règle 1 ter appliquée à la mémoire : une mesure sur un polluant n'est pas une
+# propriété du lot.
+PLAFOND=24G          # mesuré : 18,9 Go de pic réel sur NO₂ · VM de 70 Go
 JOURNAL=logs/lot_maximale_tendance.log
 VEILLE="$HOME/veille_memoire_maximale.csv"   # hors /mnt/d : doit survivre à la coupure
 

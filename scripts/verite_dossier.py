@@ -528,10 +528,16 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
     """Les cinq familles de gains, rapprochées — le risque n° 1 en entretien.
 
     Le projet produit cinq familles de scores qui portent des noms voisins et mesurent des
-    choses différentes. Sur l'ozone elles valent +22,43 %, +21,66 %, +13,75 %, +9,2 % et
-    +3,31 % : **toutes justes, aucune interchangeable.** Jusqu'ici elles ne se croisaient
-    dans aucun document — seulement dans une fiche de mémoire, ce qui est exactement le
-    statut que ce fichier existe pour refuser.
+    choses différentes. Sur l'ozone elles valaient, **au 08/08/2026**, +22,43 %, +22,47 %,
+    +15,83 %, +9,24 % et +3,31 % : **toutes justes, aucune interchangeable.** Jusqu'ici
+    elles ne se croisaient dans aucun document — seulement dans une fiche de mémoire, ce
+    qui est exactement le statut que ce fichier existe pour refuser.
+
+    ⚠️ Ces cinq valeurs sont **datées à dessein** : elles illustrent l'écart, elles ne le
+    définissent pas. La table publiée est recalculée depuis les CSV à chaque exécution, et
+    l'ajout de l'étage `tendance` le 08/08 a déplacé deux d'entre elles (② +21,66 → +22,47,
+    ③ +13,75 → +15,83) — assez pour que ② passe devant ①a. Un chiffre d'illustration non
+    daté devient un chiffre faux sans prévenir.
 
     ⚠️ Tout est **recalculé depuis les CSV**. Une version antérieure de la table de
     réconciliation portait « +27,09 % O₃ » recopié d'une fiche de tableau de bord et non
@@ -584,12 +590,28 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
         # diapositive ou une phrase d'entretien. Le reste du document est mixte.
         return "—" if x is None else fmt.format(x).replace(".", ",")
 
+    # La fourchette de l'ozone était ÉCRITE EN DUR — « +3,31 % à +22,43 % ». L'étage
+    # `tendance`, ajouté le 08/08, l'a rendue fausse sans que rien ne lève : ② est passé de
+    # +21,66 à +22,47 %, donc AU-DESSUS de ①a, et la borne haute citée n'était plus la
+    # bonne famille. Un chiffre recopié dans la prose d'un générateur est exactement ce que
+    # le docstring de cette fonction interdit — on le dérive donc des mêmes valeurs que le
+    # tableau. ①b est exclu : c'est une variante de dénominateur d'①a, pas une 6ᵉ famille.
+    o = src.get("O3")
+    familles_o3 = [x for x in ((o[0][0] if o and o[0] else None),   # ①a production
+                               (o[1][0] if o and o[1] else None),   # ②  maximale + veille
+                               (o[1][1] if o and o[1] else None),   # ③  maximale PARTOUT
+                               (o[3] if o else None),               # ④  veille seule
+                               (o[2][0] if o and o[2] else None))   # ⑤  base sans levier
+                   if x is not None]
+    fourchette = (f"de **{c(min(familles_o3))} à {c(max(familles_o3))}** selon l'épreuve"
+                  if len(familles_o3) >= 2 else "beaucoup selon l'épreuve")
+
     texte = [
         "## 7 ter. Les cinq familles de gains — laquelle citer, et jamais l'une pour l'autre\n",
         "Ce projet produit **cinq familles de scores** qui portent des noms voisins et "
         "répondent à des questions différentes. Elles sont **toutes justes et aucune n'est "
-        "interchangeable** : sur l'ozone, la même correction vaut de **+3,31 % à +22,43 %** "
-        "selon l'épreuve. Confondre deux lignes de ce tableau discrédite le dossier entier "
+        f"interchangeable** : sur l'ozone, la même correction vaut {fourchette}. "
+        "Confondre deux lignes de ce tableau discrédite le dossier entier "
         "plus sûrement qu'un chiffre faux — un chiffre faux se corrige, une confusion de "
         "périmètre jette le doute sur tout le reste.\n",
         "**Tout pourcentage cité hors de ce document doit venir avec trois mots : "
