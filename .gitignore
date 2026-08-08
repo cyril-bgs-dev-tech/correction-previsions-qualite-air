@@ -97,3 +97,6 @@ docs/LETTRE_*.md
 docs/NOTE_ATMO*.md
 docs/SOUTENANCE_*.md
 ROADMAP_*.md
+
+# Sorties de nohup des lots — le journal utile est le .log
+logs/*.sortie

@@ -1,0 +1,25 @@
+[Unit]
+Description=Déclenche l'archivage PREV'AIR deux fois par jour, avec rattrapage
+
+[Timer]
+# ── Pourquoi PAS le matin ────────────────────────────────────────────────────────────
+# Mesuré le 07/08/2026 : à 8 h 15 la date DU JOUR n'est pas encore publiée — le run du
+# matin s'arrêtait à J−1. Relancé à 19 h 45, il a capté 32 fichiers neufs, soit la
+# journée entière. Le 08/08 à 16 h 23, la date du jour était disponible. Deux
+# déclenchements encadrent donc la plage où la publication est acquise.
+OnCalendar=*-*-* 14:00:00
+OnCalendar=*-*-* 20:00:00
+
+# ── Ce que le cron ne savait pas faire ───────────────────────────────────────────────
+# `Persistent=true` rejoue le déclenchement manqué au démarrage suivant. C'est l'unique
+# raison d'être de ce minuteur : machine éteinte à l'heure du cron = journée perdue, et
+# c'est exactement ce qui a coûté les dates du 03 au 05/08. Le script, lui, rattrape déjà
+# tout seul dans sa fenêtre de six jours — le défaut n'était pas sa logique, c'est qu'il
+# n'était pas appelé.
+Persistent=true
+
+# Étale les reprises simultanées après un démarrage ; sans effet sur la complétude.
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

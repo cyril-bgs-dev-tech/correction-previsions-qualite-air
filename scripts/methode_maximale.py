@@ -77,9 +77,18 @@ from leviers_36mois import (  # noqa: E402
 
 # L'ordre est **déclaré avant la mesure**. Le réordonner après coup pour flatter un étage
 # serait choisir la conclusion : l'apport marginal dépend de la place dans la pile.
-ORDRE = ["typologie", "membres", "feux", "geoscf"]
+#
+# `tendance` entre le 08/08 en DERNIÈRE position des familles PARTOUT, et c'est délibéré :
+# c'est la place la plus dure, celle où il doit ajouter quelque chose que la typologie, les
+# membres, les feux et GEOS-CF n'ont pas déjà capté. Le placer en tête l'aurait flatté.
+# Le banc de préprocessing le donne gagnant sur **trois polluants sur quatre** en double
+# aveugle, à l'écran comme en confirmation — O₃ +3,49 pt, PM10 +1,42, PM2,5 +1,63 — et
+# **perdant sur le NO₂** (−0,10 pt, non significatif ; −0,61 significatif à l'écran).
+# L'exception a un mécanisme : le résidu du NO₂ est attaché au site, pas à la dynamique.
+ORDRE = ["typologie", "membres", "feux", "geoscf", "tendance"]
 PERIMETRE = {"typologie": "PARTOUT", "membres": "PARTOUT", "feux": "PARTOUT",
-             "geoscf": "PARTOUT", "veille": "AUX STATIONS", "era5": "— (plafond)"}
+             "geoscf": "PARTOUT", "tendance": "PARTOUT",
+             "veille": "AUX STATIONS", "era5": "— (plafond)"}
 
 
 def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[str]]:
@@ -105,6 +114,19 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
     d["mois"] = d["jour"].dt.strftime("%Y-%m")
 
     familles: dict[str, list[str]] = {}
+    # ⚠️ La dynamique de CAMS se calcule **avant** toute restriction de fenêtre. Elle
+    # décale la série d'un jour par station : la calculer après le filtrage sur la
+    # couverture GEOS-CF ferait sauter le décalage par-dessus le bord de fenêtre, et la
+    # veille du premier jour retenu viendrait du dernier jour d'une autre période.
+    # Aucune observation n'entre ici — la prévision d'hier existe partout où celle
+    # d'aujourd'hui existe, donc le périmètre PARTOUT est conservé.
+    from banc_preprocessing import f_tendance_cams  # noqa: PLC0415
+    tendance = f_tendance_cams(d)
+    if collision := [c for c in tendance.columns if c in d.columns]:
+        raise SystemExit(f"colonnes de tendance déjà présentes : {collision}")
+    d = pd.concat([d, tendance], axis=1)
+    familles["tendance"] = list(tendance.columns)
+
     from optuna_mos import typologie as charger_typologie  # noqa: PLC0415
     typo, cols_typo = charger_typologie(np.sort(d["station_id"].unique()))
     d = d.merge(typo, on="station_id", how="left")

@@ -1,0 +1,19 @@
+[Unit]
+# Archive PREV'AIR — la fenêtre publique de data.gouv.fr n'est que d'environ six jours.
+# Chaque jour non archivé est perdu définitivement : l'INERIS ne rediffuse pas.
+# Au 08/08/2026 : 15 dates archivées, 472 jours déjà non rattrapables.
+Description=Archive quotidienne des prévisions PREV'AIR (fenêtre glissante de 6 jours)
+Documentation=file:///mnt/d/Projet_Air_Quality/scripts/archiver_prevair.py
+
+[Service]
+Type=oneshot
+WorkingDirectory=/mnt/d/Projet_Air_Quality
+# Chemin absolu de l'interpréteur : /usr/bin/python3 n'a pas les dépendances du projet.
+ExecStart=/home/cyril/miniforge3/envs/llm-agent/bin/python3 /mnt/d/Projet_Air_Quality/scripts/archiver_prevair.py
+# Même journal que le cron, pour que l'historique de diagnostic reste en un seul endroit.
+StandardOutput=append:/mnt/d/Projet_Air_Quality/reports/log_archivage_prevair.txt
+StandardError=append:/mnt/d/Projet_Air_Quality/reports/log_archivage_prevair.txt
+# Le téléchargement complet d'une journée manquante a été mesuré à 83 s pour 625 Mo ;
+# une reprise après plusieurs jours d'absence en demande davantage. 30 min bornent sans
+# jamais couper un rattrapage réel.
+TimeoutStartSec=1800
