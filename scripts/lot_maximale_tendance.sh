@@ -31,8 +31,14 @@ fi
 
 PY=/home/cyril/miniforge3/envs/llm-agent/bin/python3   # jamais `python3` nu
 H=2
-ESSAIS_MAX=6         # le segfault de chargement tombe ~1 fois sur 2 et la reprise
-                     # conserve les configurations déjà mesurées : 6 essais suffisent
+# Le taux d'échec a été MESURÉ, pas estimé : sur le lancement de 21 h 49, **2 tentatives
+# réussies sur 12** — soit ~17 %, et non la moitié que laissait croire une lecture isolée
+# de parquets. Le chargement complet fait bien plus que lire (jointures GEOS-CF, membres,
+# feux, veille, météo) : plus de travail, plus d'occasions de tomber. Avec la reprise,
+# 20 essais portent la probabilité d'aboutir au-delà de 98 % pour un coût plafonné à
+# ~13 min par polluant. C'est la règle 1 ter appliquée à un taux : une observation ne fait
+# pas une fréquence.
+ESSAIS_MAX=20
 PLAFOND=24G          # ~10× le besoin attendu, et très loin des 70 Go de la VM
 JOURNAL=logs/lot_maximale_tendance.log
 VEILLE="$HOME/veille_memoire_maximale.csv"   # hors /mnt/d : doit survivre à la coupure

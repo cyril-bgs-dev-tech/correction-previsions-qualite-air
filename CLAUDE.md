@@ -292,6 +292,40 @@ fallu.
 > diagnostic.** Chercher la cause est sans fin ; conserver le travail déjà fait coûte
 > trente lignes et rend le lot insensible au reste.
 
+### 🔴 Le signal qui change la nature du problème — et la vérification qui rassure
+
+À 22 h 17, une tentative n'a pas segfauté : elle a **levé**.
+
+```
+TypeError: 'UTC' object cannot be interpreted as an integer
+  pandas/_libs/tslibs/vectorized.pyx  → ints_to_pydatetime
+  pandas/_libs/tslibs/timestamps.pyx  → create_timestamp_from_ts
+```
+
+**Un objet Python parfaitement valide est arrivé dans un emplacement d'argument entier.**
+Ce n'est pas une installation mélangée — les `.so` de `pandas/_libs/tslibs` portent tous la
+même date. C'est une **valeur qui atterrit au mauvais endroit** : quand elle tombe sur un
+pointeur, ça segfaute ; quand elle tombe sur un contrôle de type, ça lève. Le même défaut,
+vu de deux côtés. Avec les segfauts dans **trois binaires distincts** (pandas, LightGBM,
+`python3.12` — dont plusieurs `ip 0000000000000000`) et des morts de VM sans trace noyau,
+le faisceau désigne l'**instabilité de la plateforme**, pas une bibliothèque.
+
+> **À faire côté machine, pas côté code** : test mémoire de l'hôte (`mdsched.exe`), et
+> vérifier si un profil XMP/EXPO est actif. Aucune ligne de Python ne corrigera cela.
+
+**Et la question qui compte davantage : les résultats sont-ils faux ?** Vérifié en
+comparant deux exécutions indépendantes de la pile O₃, séparées par sept crashs :
+
+| | 19 h 48 | 21 h 53 |
+|---|---|---|
+| base · membres · feux · geoscf · tendance · MAXIMALE | +7,01 · +9,83 · +11,93 · +13,75 · +15,83 · +15,83 | **identiques à la décimale** |
+| typologie | +6,88 | +6,87 *(écart ~1 × 10⁻⁴, ordre de réduction des 8 fils)* |
+
+**Les pannes sont bruyantes, pas silencieuses** : quand le calcul aboutit, il rend le même
+chiffre. C'est exactement l'inverse des défauts que le reste de ce fichier traque — pour
+une fois, l'échec se voit. Cela ne dispense pas de réparer la machine ; cela dit seulement
+que les mesures déjà publiées ne sont pas à re-vérifier une par une.
+
 ### Le fil commun
 
 C'est la règle 5 appliquée à la machine plutôt qu'aux données : *si ce lot tuait son hôte,
