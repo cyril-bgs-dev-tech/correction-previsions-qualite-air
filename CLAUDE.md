@@ -262,12 +262,35 @@ ici l'horodatage de `logs/maximale_O3.log` (19 h 48) et l'existence de
 lecture d'un `.md` ne produit jamais.
 
 **Ce qui est établi** : un lot tournait aux trois coupures ; aucune des trois n'a laissé
-de trace noyau ; l'hypothèse du fichier est réfutée. **Ce qui ne l'est pas** : le
-mécanisme. Le noyau porte par ailleurs **19 segfauts LightGBM** entre 16 h 50 et 17 h 15,
-à **deux adresses qui se répètent** malgré des bases différentes — donc un chemin de code
-reproductible, pas de la corruption aléatoire. Débordement mémoire, E/S `drvfs` et bogue
-LightGBM restent en lice ; le plafond et l'échantillonneur sont précisément ce qui
-permettra de trancher **à la prochaine occurrence**, au lieu de perdre une session de plus.
+de trace noyau ; l'hypothèse du fichier est réfutée.
+
+### Ce que l'instrumentation a rendu dans l'heure qui a suivi
+
+Le plafond et `PYTHONFAULTHANDLER` ont produit en une heure ce que sept heures de
+réessais n'avaient pas donné :
+
+- **le segfault n'est pas dans LightGBM.** La pile au moment du signal désigne tantôt
+  **pandas** (`PeriodIndex`, au chargement), tantôt **LightGBM** (`fit`) — deux
+  bibliothèques, deux sites, même intermittence. Le diagnostic du matin nommait la
+  seconde parce que le journal noyau ne montre que le `.so` où le compteur s'arrête ;
+- **la mémoire est hors de cause** : pic mesuré à **11,6 Go au chargement**, palier à
+  5,2 Go, sur une VM de 70 Go. Un lot qui n'utilise pas 17 % de sa machine ne l'étouffe
+  pas ;
+- **le défaut est intermittent, pas déterministe** — et je m'y suis laissé prendre une
+  seconde fois : deux échecs de suite sur la dernière configuration m'ont fait écrire
+  qu'elle était le coupable ; la tentative suivante l'a passée. **Deux essais ne font pas
+  une propriété** (règle 1 ter), y compris quand ils pointent le même endroit ;
+- et surtout : **la machine a tenu**, une heure et une douzaine de segfauts plus tard.
+
+**La bonne réponse n'était donc pas de trouver la cause, mais de rendre l'échec non
+fatal.** `methode_maximale.py` relit son `.partiel` et reprend sur le **nom** des
+configurations déjà mesurées : à ~1 échec sur 2, un lot qui repart de zéro n'aboutit
+jamais, un lot qui reprend aboutit en six tentatives — mesuré, c'est exactement ce qu'il a
+fallu.
+
+> **Quand un défaut est intermittent, l'ingénierie qui paie est la reprise, pas le
+> diagnostic.** Chercher la cause est sans fin ; conserver le travail déjà fait coûte
+> trente lignes et rend le lot insensible au reste.
 
 ### Le fil commun
 
