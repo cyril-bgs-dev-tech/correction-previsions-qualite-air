@@ -487,6 +487,7 @@ Lexique à maîtriser : **AASQA, LCSQA, PREV’AIR, PRSQA, ZAS, PPA, PCAET, ZFE-
 ### Droit et doctrine nationale
 
 - **① Gouvernance/agrément :** [code de l’environnement, art. R. 221-9 et R. 221-10](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048909791/2026-07-07).
+- **① Acte historique propre à Atmo Occitanie :** [arrêté du 15 décembre 2016, agrément limité au 31 décembre 2019](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000033702571) ; il ne documente pas à lui seul l’agrément courant.
 - **① Missions AASQA/LCSQA/PREV’AIR, modèle, inventaire et données :** [arrêté du 16 avril 2021, art. 3 à 31](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043388197).
 - **① Épisodes :** [arrêté du 7 avril 2016, notamment art. 4, 7 et 8](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000032376671/2026-05-07).
 - **① PPA :** [code de l’environnement, L. 222-4 à L. 222-7](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006176484/).
@@ -501,7 +502,8 @@ Lexique à maîtriser : **AASQA, LCSQA, PREV’AIR, PRSQA, ZAS, PPA, PCAET, ZFE-
 - **① Gouvernance, missions et équipe :** [Qui sommes-nous ?](https://www.atmo-occitanie.org/qui-sommes-nous).
 - **① Adhérents, effectifs, financement, activités et perspectives :** [bilan 2025, p. 92 et 94–97](https://www.atmo-occitanie.org/sites/default/files/publications/2026-06/A.ATMO-BILAN-ANNUEL-2025-2-BD.pdf).
 - **① Conseil d’administration :** [AG élective du 29 juin 2023](https://www.atmo-occitanie.org/actualites/assemblee-generale-elective-nouveau-conseil-dadministration-nouveau-bureau).
-- **① Présidence :** [Émilie Dalix élue le 18 décembre 2024](https://www.atmo-occitanie.org/actualites/emilie-dalix-elue-nouvelle-presidente-datmo-occitanie).
+- **① Présidence :** [Émilie Dalix élue le 18 décembre 2024](https://www.atmo-occitanie.org/actualites/emilie-dalix-elue-nouvelle-presidente-datmo-occitanie) ; [reconduction et renouvellement partiel rapportés le 8 juillet 2026](https://plurielle.info/atmo-occitanie-renouvelle-sa-gouvernance-emilie-dalix-reconduite-a-la-presidence/) par une source secondaire, sans roster nominatif complet.
+- **① Statuts, limite de source :** [PRSQA 2017–2021, p. 3](https://www.atmo-occitanie.org/sites/default/files/2020-10/PRSQA%20Projet%20Strat%C3%A9gique%20Atmo%20Occitanie%202017%202021.pdf) pour l’adoption du 12 décembre 2016 ; texte intégral courant non retrouvé.
 - **① Fusion et histoire :** [rapport d’activité 2017, p. 10](https://atmo-occitanie.org/sites/default/files/publications/2018-12/1.%20ATMO%20Rapport%202017-BD.pdf).
 - **① Open data :** [accès direct aux données](https://www.atmo-occitanie.org/pour-aller-plus-loin/comment-sinformer-comment-agir/lopen-data-de-lair-un-acces-direct-aux-donnees).
 - **① Partenariat territorial prototype :** [Grand Montauban, juillet 2025](https://www.atmo-occitanie.org/sites/default/files/publications/2025-07/ETU-2025-187%20-%20PCAET%20Montauban.pdf).
