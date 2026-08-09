@@ -109,10 +109,13 @@ de production, lien avec SIRANE ou PREV'AIR. Aucun n'a pu être retracé.
 
 1. ✅ **FAIT le 09/08** — les sept lignes du tableau page 06 sont alignées, plus le schéma
    de la page 03. Voir l'encadré en tête de fichier.
-2. **Décider du livrable § 7** : R17 recommande une **note de cadrage partenaire de deux
-   pages** sur *Grand Montauban — suivi PCAET*, adossée à un rapport public de juillet 2025,
-   avec la fiche indicateur existante en annexe technique. Aucun modèle nouveau, aucune
-   carte nouvelle. **Décision à prendre : le faire ou l'écarter explicitement.**
+2. ⬜ **ÉCARTÉ le 09/08, explicitement.** R17 recommandait une **note de cadrage partenaire
+   de deux pages** sur *Grand Montauban — suivi PCAET*, adossée à un rapport public de
+   juillet 2025, avec la fiche indicateur en annexe technique. Aucun modèle nouveau, aucune
+   carte nouvelle — donc peu coûteuse. Écartée quand même, pour deux raisons énoncées :
+   le **Pôle Partenariats est déjà couvert** depuis le 06/08 (bloc partenaires, SIREQAETE,
+   `FICHE_INDICATEUR_EPISODES.md`), et il reste **treize jours** avant le 22/08. *Finir
+   prime sur élargir.* Ce n'est pas un oubli : c'est un refus daté.
 3. **Matière d'entretien à retenir** (R17 § 2) : transposition de la directive 2024/2881 au
    **11 décembre 2026**, feuilles de route 2026-2029, décision 2026/1208 sur la modélisation
    au **30 juin 2028**, valeurs limites au **1ᵉʳ janvier 2030**. Et l'obligation de l'arrêté
