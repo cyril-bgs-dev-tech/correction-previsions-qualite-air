@@ -747,6 +747,41 @@ Et pour rendre le trou impossible à ignorer, **afficher la couverture obtenue**
 manquants. Un mois sans observation reste légitime — 2025 n'en a aucune — mais il est
 désormais dit, jamais deviné.
 
+### 🔴 Et l'outil de cette règle ment — mesuré le 09/08
+
+**`grep`, dans une session Claude Code, n'est pas GNU grep.** C'est une **fonction shell**
+qui appelle `ugrep --ignore-files` — laquelle **respecte `.gitignore`** et saute donc en
+silence tout ce que le dépôt ignore. Aucun message, aucun code d'erreur : juste zéro
+correspondance.
+
+```bash
+grep -rl --include="*.html" "" .          # 0 fichier   ← ugrep, filtré par .gitignore
+command grep -rl --include="*.html" "" .  # 139 fichiers ← le vrai grep
+type grep                                 # « grep is a function » : le tell
+```
+
+Sur ce dépôt, le filtre porte exactement sur **les pièces que le recruteur lit** :
+`.gitignore` l. 18 masque `reports/figures/*.html` — **toute la présentation et ses
+fragments** — et l. 72-98 masquent `NOTE_ATMO_OCCITANIE.md`, `SOUTENANCE_*`, `LETTRE_*`,
+`MAIL_*`. Un fichier peut même être **suivi par git *et* ignoré par ugrep** :
+`presentation_atmo.html` est commité dans `adb4637` et invisible au `grep` de session.
+
+**Ce que ça a failli coûter.** L'audit R17 § ③ — « zéro formulation proscrite dans les cinq
+pièces » — a été mené au `grep`, donc sur trois pièces jamais ouvertes. Refait au
+`command grep` : **mêmes chiffres, 0 partout et 13 « déclench… »**. La conclusion tenait,
+mais par chance, pas par contrôle : un zéro de non-lecture est indiscernable d'un zéro de
+non-occurrence. Et le même défaut a bel et bien caché un jumeau réel le même jour — la
+promesse « volume d'alertes choisi » dans le schéma de la page 03, que la recherche initiale
+depuis `.` n'a pas vue.
+
+> **Pour chercher un jumeau, `command grep` — jamais `grep`.** Et le contrôle qui l'attrape
+> en une ligne : comparer `grep -rl "" <chemin> | wc -l` à `command grep -rl "" <chemin> | wc -l`.
+> S'ils diffèrent, la recherche a filtré ce qu'elle prétendait balayer.
+
+C'est le corollaire de la règle 1 ter appliqué à l'outillage : *l'instrumentation change ce
+que la mesure mesure.* Et c'est la règle 5 sous sa forme la plus pure — **le contrôle rend
+« rien », et « rien » ne se distingue pas de « rien cherché ».**
+
 ---
 
 ## 4 ter. Un axe de données n'est pas ce que son nom annonce

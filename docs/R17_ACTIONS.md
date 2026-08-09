@@ -6,6 +6,20 @@ confirme, et ce sur quoi elle se trompe.*
 
 ---
 
+> ✅ **APPLIQUÉ le 09/08/2026.** Les **sept** lignes du tableau de la page 06 sont
+> réécrites selon le § ② ci-dessous, `injecter_pages.py` a recollé (658 → 660 ko, 7 pages),
+> `render_check` rend **0 anomalie** sur les deux thèmes et `verifier_dossier_candidature`
+> **20 vérifiés / 0 en écart**. La contradiction du § ① est levée : la page dit désormais
+> « non utilisable pour déclencher une procédure », ce que la fiche indicateur dit déjà.
+>
+> **Un huitième défaut trouvé en chemin, hors périmètre R17.** Le schéma « un tronc, deux
+> têtes » (page 03) livrait « stations classées **par risque du jour** » — le vocabulaire
+> exact que le § ② reproche à la ligne ARS, à un endroit que R17 n'avait pas regardé.
+> Corrigé en « par **rang de dépassement** », qui est aussi ce que le modèle produit
+> réellement. Les trois autres emplois de « risque » sont techniques (« classement des jours
+> à risque ») et restent. C'est la règle 4 bis : *la correction d'un motif se termine par la
+> recherche du même motif ailleurs.*
+
 ## ① Le défaut central : le dossier se contredit sur la préfecture
 
 C'est la trouvaille de la ronde, et elle est vérifiable en deux `grep`.
@@ -93,8 +107,8 @@ de production, lien avec SIRANE ou PREV'AIR. Aucun n'a pu être retracé.
 
 ## ⑤ Ce qui reste, par ordre de valeur
 
-1. **Aligner les cinq lignes du tableau page 06** (② ci-dessus) — lane présentation. C'est
-   le seul endroit du dossier qui promet plus qu'il ne tient.
+1. ✅ **FAIT le 09/08** — les sept lignes du tableau page 06 sont alignées, plus le schéma
+   de la page 03. Voir l'encadré en tête de fichier.
 2. **Décider du livrable § 7** : R17 recommande une **note de cadrage partenaire de deux
    pages** sur *Grand Montauban — suivi PCAET*, adossée à un rapport public de juillet 2025,
    avec la fiche indicateur existante en annexe technique. Aucun modèle nouveau, aucune
