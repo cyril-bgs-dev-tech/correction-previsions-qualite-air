@@ -1,20 +1,19 @@
 # Correction statistique des prévisions de qualité de l'air
 
-> **🚧 Publication en cours — 4 août 2026.** Le code et les rapports chiffrés sont
-> **visibles et à jour**. Les pages de restitution HTML — carte de France par station,
-> cartes de chaleur régionales et départementales, champs spatialisés — sont
-> **régénérables par script** et ne sont pas versionnées : elles pèsent 137 Mo et se
-> reconstruisent par `scripts/pages_soutenance.py`, `pages_regions.py` et
-> `page_champ_region.py`.
+> **État au 9 août 2026 — les mesures sont faites et le corpus est clos.** Code, tests et
+> rapports chiffrés sont à jour. Le document de synthèse en 7 pages,
+> `reports/figures/presentation_atmo.html`, est versionné : **autonome, hors ligne, aucune
+> ressource externe** — il s'ouvre par un double-clic. Les autres pages de restitution
+> (carte de France par station, cartes de chaleur régionales et départementales, champs
+> spatialisés) pèsent 137 Mo et ne sont pas versionnées : elles se **régénèrent par script**
+> — `scripts/pages_soutenance.py`, `pages_regions.py`, `page_champ_region.py`.
 >
-> **Travaux en cours :** intégration d'un second modèle de chimie indépendant
-> (**NASA GEOS-CF**, 36 mois extraits — 29 sur le flux v1, 8 sur le flux v2 qui lui a
-> succédé, et **un mois dans les deux** pour mesurer leur écart) et champs spatialisés
-> régionaux. Les deux flux n'étant pas le même prédicteur, tout apport se mesure **par
-> flux** : le corpus mixte est écarté. Les chiffres
-> ci-dessous portent sur le double aveugle et restent valides ; la comparaison à la chaîne
-> concurrente a été **corrigée trois fois le 03-04/08**, toujours à notre défaveur, et les
-> rapports en portent la trace.
+> **Le second modèle de chimie indépendant est intégré et mesuré** : NASA **GEOS-CF**,
+> 29 mois sur le flux v1. Les deux flux du fournisseur ne sont pas le même prédicteur —
+> **15,4 µg/m³ d'écart sur l'ozone** au mois de recouvrement, soit l'ordre de grandeur de
+> l'erreur des modèles eux-mêmes — donc tout apport se mesure **par flux** et le corpus
+> mixte est écarté. La comparaison à la chaîne concurrente a été **corrigée trois fois**,
+> chaque fois à notre défaveur, et les rapports en portent la trace.
 
 ---
 
