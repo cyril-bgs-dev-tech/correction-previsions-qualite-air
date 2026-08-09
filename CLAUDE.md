@@ -324,6 +324,40 @@ le faisceau désigne l'**instabilité de la plateforme**, pas une bibliothèque.
 > **À faire côté machine, pas côté code** : test mémoire de l'hôte (`mdsched.exe`), et
 > vérifier si un profil XMP/EXPO est actif. Aucune ligne de Python ne corrigera cela.
 
+#### ✅ Tranché le 09/08 — et la piste XMP/EXPO était fausse
+
+**La trace existait depuis le début. Elle était dans le journal d'événements Windows, que
+personne n'avait ouvert.** Trois jours passés dans `kern.log`, dans les piles Python et dans
+la consommation mémoire, pour un défaut journalisé par l'hôte.
+
+| source Windows | ce qu'elle rend |
+|---|---|
+| `WHEA-Logger` **ID 19** ×3 | « erreur matérielle corrigée · **cœur du processeur** · Corrected Machine Check · **Internal parity error** · APIC 33 » |
+| `Kernel-Power` **41** ×6 en 2 mois | **c'est Windows qui s'arrête**, pas WSL — dont le 08/08 à **22 h 56 49**, la « 4ᵉ coupure WSL » du journal |
+| `WER-SystemErrorReporting` **1001** | `0x00020001` **HYPERVISOR_ERROR** (08/08 et 21/06) · `0x0A` IRQL_NOT_LESS_OR_EQUAL · `0x50` PAGE_FAULT_IN_NONPAGED_AREA |
+
+**XMP/EXPO est réfuté, par la mesure** : `ConfiguredVoltage 1100` (1,1 V, JEDEC de base) et
+`ConfiguredClockSpeed == Speed`. Aucun profil n'est actif, il n'y a rien à désactiver. La
+mémoire n'est pas non plus saturée — 3,6 Go sur 70 à la seconde d'une coupure.
+
+Ce qui reste, mesuré : un **i9-13900KF** (Raptor Lake, microcode **0x12B** déjà appliqué —
+BIOS ASUS 1805 du 30/10/2024, donc la dégradation ne progresse plus mais celle déjà subie
+est permanente), et une configuration mémoire **hors spécification** : 4 DIMM issus de
+**deux kits différents** — 2 × `F5-6000J3040G32G` (32 Go, DDR5-6000 CL30) et
+2 × `F5-6800J3445G16G` (16 Go, DDR5-6800 CL34).
+
+> **La leçon de méthode, et elle vaut plus que le diagnostic : quand l'hôte tombe, la trace
+> est chez l'hôte.** Le corollaire ci-dessus listait trois sources, toutes *dans* la VM. Il
+> en manquait une, la seule qui survive à la mort de la VM. La règle 1 quater se cherchait
+> elle-même du mauvais côté de la frontière de virtualisation.
+
+**Quatrième source, à ajouter aux trois du corollaire :**
+
+```bash
+powershell.exe -NoProfile -Command "Get-WinEvent -FilterHashtable @{LogName='System';Id=41} -MaxEvents 8 | Format-Table TimeCreated"
+powershell.exe -NoProfile -Command "Get-WinEvent -FilterHashtable @{LogName='System';ProviderName='Microsoft-Windows-WHEA-Logger'} -MaxEvents 15 | Format-List TimeCreated,Id,Message"
+```
+
 **Et la question qui compte davantage : les résultats sont-ils faux ?** Vérifié en
 comparant deux exécutions indépendantes de la pile O₃, séparées par sept crashs :
 
