@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 09/08/2026 à 21 h 21 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 09/08/2026 à 23 h 57 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -616,7 +616,7 @@ Trois demandes réelles et incompatibles, servies par **la même sortie** — se
 
 ⚠️ Le réglage C **échouait** dans sa première version — visée 52,9 %, obtenue 46,7 % : un seuil posé au bord d'une contrainte sur le passé n'est pas tenu dans le futur. La marge de sécurité est déclarée dans le code, pas ajustée après coup.
 
-⚠️ Mesuré **sans l'étage `tendance`** : les artefacts de détection sont antérieurs à son introduction. Son apport en détection n'est donc **pas mesuré**, et le dossier impose de le tester avant de le revendiquer sur cet axe.
+⚠️ Mesuré **sans l'étage `tendance`** : les artefacts de détection sont antérieurs à son introduction. **Son apport en détection est désormais mesuré** (`reports/banc_tendance_detection.csv`, mêmes plis de double aveugle) : il ne gagne **que sur l'ozone** — CSI 0,3339 → 0,3589 et **+3,1 % d'épisodes à volume d'alertes constant**, la lecture invariante par transformation monotone. Sur PM10 les deux lectures divergent (CSI −0,0063, +1 épisode sur 45 alertes) : **non concluant**. Le NO₂ et les PM2,5 n'ont que **1 et 35 dépassements** dans tout le corpus — la question n'y a pas de sens. Les pages aval seront reprises **pour l'ozone seul**.
 
 ## 16. Registre — ce que ces mesures ne disent pas
 

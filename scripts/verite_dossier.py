@@ -1480,8 +1480,13 @@ def bloc_points_fonctionnement(lignes: list[dict]) -> str:
         "un seuil posé au bord d'une contrainte sur le passé n'est pas tenu dans le futur. La "
         "marge de sécurité est déclarée dans le code, pas ajustée après coup.\n",
         "⚠️ Mesuré **sans l'étage `tendance`** : les artefacts de détection sont antérieurs à "
-        "son introduction. Son apport en détection n'est donc **pas mesuré**, et le dossier "
-        "impose de le tester avant de le revendiquer sur cet axe.\n",
+        "son introduction. **Son apport en détection est désormais mesuré** "
+        "(`reports/banc_tendance_detection.csv`, mêmes plis de double aveugle) : il ne gagne "
+        "**que sur l'ozone** — CSI 0,3339 → 0,3589 et **+3,1 % d'épisodes à volume d'alertes "
+        "constant**, la lecture invariante par transformation monotone. Sur PM10 les deux "
+        "lectures divergent (CSI −0,0063, +1 épisode sur 45 alertes) : **non concluant**. Le NO₂ "
+        "et les PM2,5 n'ont que **1 et 35 dépassements** dans tout le corpus — la question n'y a "
+        "pas de sens. Les pages aval seront reprises **pour l'ozone seul**.\n",
     ]
     return "\n".join(texte)
 
