@@ -2865,6 +2865,28 @@ i.d-ex { margin-right: 5px; }
 .p5-conf { margin: 10px 0 0; font-size: 12.2px; line-height: 1.6;
            color: var(--encre-3); max-width: 92ch; }
 .p5-conf b { color: var(--encre-2); font-family: var(--mono); font-size: 11.6px; }
+
+/* ── § 15 bis · les trois points de fonctionnement ──────────────────────────
+   Le même modèle, trois seuils. La mise en forme doit dire que les trois lignes A/B/C
+   sont des VARIANTES d'une même sortie, pas trois systèmes : d'où le liseré d'accent
+   commun et le retrait des lignes de référence. */
+.p5-pf { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px; }
+.p5-pf th { font-family: var(--mono); font-size: 9.4px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--encre-3); font-weight: 600; text-align: right;
+  padding: 0 0 7px 12px; border-bottom: 1px solid var(--trait-fort); }
+.p5-pf th:first-child { text-align: left; padding-left: 0; }
+.p5-pf td { padding: 9px 0 9px 12px; text-align: right; border-bottom: 1px solid var(--trait);
+  font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--encre-2); }
+.p5-pf td:first-child { text-align: left; padding-left: 0; font-family: var(--sans);
+  color: var(--encre); width: 38%; }
+.p5-pf td span { display: block; font-family: var(--mono); font-size: 10px;
+  color: var(--encre-3); letter-spacing: .03em; }
+.p5-pf td b { font-family: var(--mono); color: var(--accent); margin-right: 4px; }
+.p5-pf tr:last-child td { border-bottom: 0; }
+.p5-pf-brut td { color: var(--encre-3); }
+.p5-pf-a td:first-child, .p5-pf-b td:first-child, .p5-pf-c td:first-child {
+  box-shadow: inset 2px 0 0 var(--accent); padding-left: 10px; }
+.p5-pf strong { color: var(--accent); }
 </style>
 <!-- P5-STYLE:FIN -->
 <!-- P5-SECTION:DEBUT -->
@@ -3012,6 +3034,52 @@ i.d-ex { margin-right: 5px; }
       trois stations couperait aussi les fausses alertes. La médiane occitane est de
       <strong>deux stations par département</strong>&#8239;: ce n'est pas une règle de
       décision, c'est un silence de réseau. Il est mesuré, il n'est pas proposé.
+    </figcaption>
+  </figure>
+
+  <!-- ── § 15 bis · le seuil est un choix de service ─────────────────────── -->
+  <figure class="fig" id="p5-pf-fig">
+    <h4>§ 15 bis — Trois demandes de service, une seule sortie&#8239;: ce que le seuil décide</h4>
+    <p class="sous">
+      Tout ce qui précède compare des <em>systèmes</em>. Ce bloc-ci compare des
+      <strong>réglages du même système</strong>. La tête B ne change ni le modèle ni les
+      données&#8239;: elle choisit un seuil — et ce choix n'appartient pas au modélisateur, il
+      appartient au service qui subira les alertes. Trois demandes réelles et
+      <strong>incompatibles entre elles</strong>, servies par la même sortie, seuil calé sur
+      les <strong>mois antérieurs</strong> puis appliqué tel quel.
+    </p>
+    <div class="fig-scroll">
+      <table class="p5-pf">
+        <tbody>
+          <tr><th>système</th><th>attrapés</th><th>manqués</th><th>fausses</th><th>rappel</th><th>précision</th><th>CSI</th></tr>
+          <tr><td>chaîne AASQA <span>seuil physique</span></td><td>4&#8239;796</td><td>4&#8239;270</td><td>1&#8239;619</td><td>52,9&#8239;%</td><td>74,8&#8239;%</td><td>0,449</td></tr>
+          <tr class="p5-pf-brut"><td>CAMS brut <span>seuil physique</span></td><td>2&#8239;493</td><td>6&#8239;573</td><td>725</td><td>27,5&#8239;%</td><td>77,5&#8239;%</td><td>0,255</td></tr>
+          <tr><td>nous <span>seuil physique, sans réglage</span></td><td>5&#8239;300</td><td>3&#8239;766</td><td>1&#8239;180</td><td>58,5&#8239;%</td><td>81,8&#8239;%</td><td>0,517</td></tr>
+          <tr class="p5-pf-a"><td><b>A</b> · « attrapez-en le plus » <span>à leur budget d'alertes</span></td><td>5&#8239;334</td><td>3&#8239;732</td><td>1&#8239;306</td><td>58,8&#8239;%</td><td>80,3&#8239;%</td><td>0,514</td></tr>
+          <tr class="p5-pf-b"><td><b>B</b> · « trompez-vous le moins » <span>CSI maximal</span></td><td><strong>7&#8239;054</strong></td><td>2&#8239;012</td><td>3&#8239;286</td><td><strong>77,8&#8239;%</strong></td><td>68,2&#8239;%</td><td><strong>0,571</strong></td></tr>
+          <tr class="p5-pf-c"><td><b>C</b> · « leur niveau, sans le bruit » <span>à leur rappel</span></td><td>4&#8239;792</td><td>4&#8239;274</td><td><strong>933</strong></td><td>52,9&#8239;%</td><td><strong>83,7&#8239;%</strong></td><td>0,479</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption>
+      Ozone, <strong>15 mois retenus sur 19</strong> — les 4 premiers sont écartés faute
+      d'historique pour caler un seuil, et ils sont nommés dans le rapport — 9&#8239;066
+      dépassements au seuil de 120&#8239;µg/m³.
+      <br><strong>Comment lire les colonnes.</strong> <em>attrapés + manqués = 9&#8239;066</em> sur chaque ligne&#8239;: c'est le nombre de dépassements réels, il ne dépend d'aucun système. Les <em>fausses alertes</em>, elles, ne sont pas prélevées là-dessus mais sur les <strong>105&#8239;558 journées sans dépassement</strong> — la chaîne en service en alerte 1,5&#8239;%. Les deux erreurs ont donc des dénominateurs différents, et c'est exactement pourquoi aucun score unique ne les arbitre.
+      <br><strong>À rappel strictement égal au leur, C retire 42&#8239;% des fausses
+      alertes</strong> (1&#8239;619 → 933). <strong>B attrape 47&#8239;% d'épisodes de
+      plus</strong>, au prix d'alertes plus nombreuses. <strong>A domine sur les deux axes à
+      la fois</strong> — plus de rappel <em>et</em> moins de fausses que la chaîne en service.
+      <br>⚠️ <strong>Aucun des trois n'est « meilleur ».</strong> Le rang de la prédiction est
+      <em>identique</em> dans les trois lignes&#8239;: déplacer un seuil ne crée aucune
+      information, il <strong>choisit où placer l'erreur</strong>. C'est une décision de
+      service, et la présenter comme une performance du modèle serait faux.
+      <br>⚠️ <strong>Le réglage C a d'abord échoué</strong> — visée 52,9&#8239;%, obtenue
+      46,7&#8239;%. Un seuil posé au <em>bord</em> d'une contrainte sur le passé n'est pas tenu
+      dans le futur. La marge de sécurité est déclarée dans le code avec la mesure qui l'a
+      rendue nécessaire, pas ajustée après coup.
+      <br>⚠️ Mesuré <strong>sans l'étage <code>tendance</code></strong>, postérieur aux
+      artefacts de détection&#8239;: son apport sur cet axe n'est pas mesuré, donc pas revendiqué.
     </figcaption>
   </figure>
 </section>

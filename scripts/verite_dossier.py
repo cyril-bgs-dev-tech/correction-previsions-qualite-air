@@ -1430,6 +1430,62 @@ def bloc_agregation_zone(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def bloc_points_fonctionnement(lignes: list[dict]) -> str:
+    """Ce que le SEUIL décide — et ce qu'il ne décide pas.
+
+    La tête B ne change ni le modèle ni les données. Trois demandes de service
+    incompatibles, appliquées à la même sortie, seuil calé **hors échantillon**. Ce bloc
+    existe parce que « nous sommes meilleurs » n'est pas une phrase publiable : le système
+    est meilleur *sur l'axe qu'on choisit*, et il faut montrer que l'axe est un choix.
+    """
+    f = RACINE / "reports/points_de_fonctionnement.csv"
+    if not f.exists():
+        return ""
+    t = pd.read_csv(f)
+    o3 = t[t["polluant"] == "O3"]
+    if o3.empty:
+        return ""
+    ref = o3[o3["systeme"].str.startswith("chaîne AASQA")]
+    c = o3[o3["systeme"].str.contains("C —")]
+    b = o3[o3["systeme"].str.contains("B —")]
+    if ref.empty or c.empty or b.empty:
+        return ""
+    ref, c, b = ref.iloc[0], c.iloc[0], b.iloc[0]
+    baisse = 100 * (1 - c["fausses"] / max(ref["fausses"], 1))
+    hausse = 100 * (b["attrapes"] / max(ref["attrapes"], 1) - 1)
+    for nom, v in (("détection O₃ — fausses alertes retirées à rappel égal (%)", baisse),
+                   ("détection O₃ — épisodes gagnés au CSI maximal (%)", hausse)):
+        lignes.append({"grandeur": nom, "valeur": round(float(v), 2)})
+    texte = [
+        "## 15 bis. Le seuil est un choix de service, pas une propriété du modèle\n",
+        "Trois demandes réelles et incompatibles, servies par **la même sortie** — seul le "
+        "seuil change, et il est calé sur les **mois antérieurs** puis appliqué tel quel. "
+        "Ozone, seuil physique 120 µg/m³.\n",
+        "| système | attrapés | manqués | fausses | rappel | précision | CSI |",
+        "|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for _, r in o3.iterrows():
+        texte.append(f"| {r['systeme']} | {r['attrapes']:,} | {r['manques']:,} | {r['fausses']:,} | "
+                     f"{r['rappel']:.1%} | {r['precision']:.1%} | {r['csi']:.3f} |")
+    texte += [
+        "",
+        f"**À rappel strictement égal au leur, nous retirons {baisse:.0f} % des fausses "
+        f"alertes** ({int(ref['fausses']):,} → {int(c['fausses']):,}). Et au CSI maximal — le "
+        f"seul score qui pénalise les deux erreurs **ensemble** — nous attrapons "
+        f"**{hausse:.0f} % d'épisodes de plus**, au prix d'alertes plus nombreuses.\n",
+        "⚠️ **Aucun de ces trois réglages n'est « meilleur ».** Le rang de la prédiction est "
+        "identique dans les trois lignes : déplacer un seuil ne crée aucune information, il "
+        "**choisit où placer l'erreur**. C'est une décision de service, pas de modélisation.\n",
+        "⚠️ Le réglage C **échouait** dans sa première version — visée 52,9 %, obtenue 46,7 % : "
+        "un seuil posé au bord d'une contrainte sur le passé n'est pas tenu dans le futur. La "
+        "marge de sécurité est déclarée dans le code, pas ajustée après coup.\n",
+        "⚠️ Mesuré **sans l'étage `tendance`** : les artefacts de détection sont antérieurs à "
+        "son introduction. Son apport en détection n'est donc **pas mesuré**, et le dossier "
+        "impose de le tester avant de le revendiquer sur cet axe.\n",
+    ]
+    return "\n".join(texte)
+
+
 def main() -> int:
     lignes: list[dict] = []
     blocs = [
@@ -1456,6 +1512,7 @@ def main() -> int:
         bloc_geoscf(lignes),
         bloc_episodes_reels(lignes),
         bloc_agregation_zone(lignes),
+        bloc_points_fonctionnement(lignes),
         "## 16. Registre — ce que ces mesures ne disent pas\n\n"
         "Ces mesures comparent des produits, pas des équipes. Le post-traitement officiel "
         "répond à des contraintes d'exploitation — couverture européenne, réentraînement "

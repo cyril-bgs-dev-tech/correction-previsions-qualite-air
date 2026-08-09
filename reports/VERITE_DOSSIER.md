@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 08/08/2026 à 23 h 39 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 09/08/2026 à 21 h 21 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -596,6 +596,27 @@ Exiger un dépassement prédit **deux jours de suite** retire un tiers des fauss
 ⚠️ **L'agrégateur de zone, lui, est un arbitrage — et à moitié un artefact.** Une règle « k parmi n » ne peut pas déclencher là où le réseau porte moins de k stations : elle l'**éteint**. Le réseau occitan a une **médiane de 2 stations par département**, et 3 départements sur 9 n'en portent qu'une. La chute des fausses alertes se décompose en deux mécanismes de taille comparable — silence sélectif des zones creuses, et vrai effet d'agrégation dans les zones denses. Ne jamais présenter le premier comme une méthode.
 
 ⚠️ **À 12 épisodes d'ozone, aucun écart entre systèmes n'est significatif** : tous les intervalles de bootstrap se recouvrent. Le seul chiffre solide de cette section est la baisse de fausses alertes, parce qu'elle est **à rappel exactement identique**.
+
+## 15 bis. Le seuil est un choix de service, pas une propriété du modèle
+
+Trois demandes réelles et incompatibles, servies par **la même sortie** — seul le seuil change, et il est calé sur les **mois antérieurs** puis appliqué tel quel. Ozone, seuil physique 120 µg/m³.
+
+| système | attrapés | manqués | fausses | rappel | précision | CSI |
+|---|---:|---:|---:|---:|---:|---:|
+| chaîne AASQA (seuil physique) | 4,796 | 4,270 | 1,619 | 52.9% | 74.8% | 0.449 |
+| CAMS brut (seuil physique) | 2,493 | 6,573 | 725 | 27.5% | 77.5% | 0.255 |
+| nous · seuil physique, sans réglage | 5,300 | 3,766 | 1,180 | 58.5% | 81.8% | 0.517 |
+| nous · A — leur budget d'alertes, rappel maximal | 5,334 | 3,732 | 1,306 | 58.8% | 80.3% | 0.514 |
+| nous · B — CSI maximal, les deux erreurs ensemble | 7,054 | 2,012 | 3,286 | 77.8% | 68.2% | 0.571 |
+| nous · C — leur rappel, fausses alertes minimales | 4,792 | 4,274 | 933 | 52.9% | 83.7% | 0.479 |
+
+**À rappel strictement égal au leur, nous retirons 42 % des fausses alertes** (1,619 → 933). Et au CSI maximal — le seul score qui pénalise les deux erreurs **ensemble** — nous attrapons **47 % d'épisodes de plus**, au prix d'alertes plus nombreuses.
+
+⚠️ **Aucun de ces trois réglages n'est « meilleur ».** Le rang de la prédiction est identique dans les trois lignes : déplacer un seuil ne crée aucune information, il **choisit où placer l'erreur**. C'est une décision de service, pas de modélisation.
+
+⚠️ Le réglage C **échouait** dans sa première version — visée 52,9 %, obtenue 46,7 % : un seuil posé au bord d'une contrainte sur le passé n'est pas tenu dans le futur. La marge de sécurité est déclarée dans le code, pas ajustée après coup.
+
+⚠️ Mesuré **sans l'étage `tendance`** : les artefacts de détection sont antérieurs à son introduction. Son apport en détection n'est donc **pas mesuré**, et le dossier impose de le tester avant de le revendiquer sur cet axe.
 
 ## 16. Registre — ce que ces mesures ne disent pas
 
