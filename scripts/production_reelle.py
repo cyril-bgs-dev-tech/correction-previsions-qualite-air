@@ -53,6 +53,7 @@ from __future__ import annotations
 
 import argparse
 import glob
+import os
 import sys
 import time
 from pathlib import Path
@@ -142,6 +143,31 @@ def main(polluant: str, horizon: int, debut: str, moyenner: bool) -> int:
         d["memb_moyenne"] = d[pres].mean(axis=1)
         familles += pres + ["memb_etendue", "memb_moyenne"]
         a_membres = all(x in pres for x in ("chimere", "mocage"))
+
+    # ── La dynamique propre de CAMS — le seul étage de la pile qui manquait ici ──
+    #
+    # Retenue dans `methode_maximale` le 08/08 (+2,08 pt sur l'ozone en plancher, +0,13 à
+    # +0,45 ailleurs), elle n'avait jamais été portée en production : la synthèse annonçait
+    # donc une architecture que les pages de résultats ne mesuraient pas.
+    #
+    # Elle **conserve le périmètre PARTOUT** — la prévision de la veille existe partout où
+    # celle du jour existe, aucune observation n'est lue. C'est ce qui la distingue de la
+    # mémoire du site, jointe plus bas et légitime seulement aux stations instrumentées.
+    #
+    # ⚠️ Réserve mesurée, à ne pas taire : en **détection**, elle ne gagne que sur l'ozone
+    # (+3,1 % d'épisodes à budget d'alertes constant). Sur PM10 le CSI recule de 0,006 —
+    # sous le bruit, mais dans le mauvais sens — et NO₂/PM2,5 n'ont que 1 et 35 dépassements
+    # dans tout le corpus. Elle entre ici sur le critère du **plancher**, qui est celui de la
+    # pile ; `reports/banc_tendance_detection.csv` porte la mesure de l'autre axe.
+    from banc_preprocessing import FAMILLES as FAMILLES_PREP  # noqa: PLC0415
+    neuves_t = FAMILLES_PREP["tendance_cams"](d)
+    a_joindre = [c for c in neuves_t.columns if c not in d.columns]
+    if not a_joindre:
+        raise SystemExit("tendance_cams n'a produit aucune colonne neuve")
+    d = pd.concat([d, neuves_t[a_joindre]], axis=1)
+    familles += a_joindre
+    print(f"  tendance CAMS : +{len(a_joindre)} colonnes ({', '.join(a_joindre[:3])}…)",
+          flush=True)
 
     dist, st = matrice_distances(ids)
     t = st["type_station"].fillna("?").to_numpy()
@@ -283,7 +309,40 @@ def main(polluant: str, horizon: int, debut: str, moyenner: bool) -> int:
     dossier = RACINE / "data/processed/predictions"
     dossier.mkdir(parents=True, exist_ok=True)
     f = dossier / f"production_{polluant}_h{horizon}.parquet"
-    sortie.to_parquet(f, index=False)
+
+    # ── L'artefact déclare ce qui l'a produit ────────────────────────────────────
+    # **Une reprise ne peut pas tester une colonne de prédicteur.** Ce parquet ne
+    # contient que les SORTIES — `nous`, `aasqa`, `cams`, la vérité — jamais les 87
+    # variables d'entrée. Le lot du 10/08 testait la présence de `cams_veille` dans le
+    # schéma pour décider si l'étage `tendance` était en place : ce nom ne peut par
+    # construction jamais y apparaître, donc le contrôle aurait annoncé « AUCUN parquet
+    # à jour » sur quatre exécutions parfaites, et relancé six fois chacune.
+    #
+    # C'est très exactement la règle 4 — *d'où vient l'attendu* : l'attendu était tiré
+    # du nom d'un prédicteur au lieu de ce que l'artefact écrit réellement. La réparation
+    # n'est pas de deviner mieux, c'est de faire **porter la provenance par l'artefact
+    # lui-même**, là où aucune convention de nommage ne peut la contredire.
+    import pyarrow as pa  # noqa: PLC0415
+    import pyarrow.parquet as pq  # noqa: PLC0415
+
+    tbl = pa.Table.from_pandas(sortie, preserve_index=False)
+    tbl = tbl.replace_schema_metadata({
+        **(tbl.schema.metadata or {}),
+        b"familles": ",".join(familles).encode(),
+        b"n_predicteurs": str(len(predicteurs)).encode(),
+        b"horizon": str(horizon).encode(),
+        b"ecrit_le": time.strftime("%Y-%m-%dT%H:%M:%S").encode(),
+    })
+
+    # ── Nom provisoire, puis renommage — règle 4 ─────────────────────────────────
+    # Un segfault sur deux à cinq exécutions, et `pq.write_table` écrit directement
+    # sous le nom définitif : une mort pendant les huit secondes d'écriture laisserait
+    # un parquet tronqué **portant le nom d'un parquet complet**, que la reprise
+    # sauterait ensuite. `os.replace` est atomique sur un même système de fichiers ;
+    # le `.partiel` reste sur disque si l'écriture meurt, et ne trompe personne.
+    prov = f.with_suffix(".parquet.partiel")
+    pq.write_table(tbl, prov)
+    os.replace(prov, f)
     pd.DataFrame(lignes).to_csv(
         RACINE / f"reports/production_reelle_{polluant}_h{horizon}.csv", index=False)
     print(f"\n  ⚠️ Ces chiffres NE sont PAS ceux du double aveugle : ici la station est")
