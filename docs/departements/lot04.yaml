@@ -1,0 +1,470 @@
+- code: "57"
+  nom: "Moselle"
+  region: "Grand Est"
+  resume: >
+    Sillon mosellan, vallees siderurgiques et A31 concentrent trafic et industrie; reliefs et inversions piegent les particules, tandis que le bois pese localement.
+  sources_dominantes:
+    - libelle: "Metallurgie, siderurgie et autres industries des vallees de la Fensch et de l'Orne"
+      polluants: ["SO2", "NO2", "PM10", "COV"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Notre accompagnement aux industries, page consultee le 10 aout 2026; DREAL Grand Est, Les emissions de polluants atmospheriques, mise a jour 2021 - https://www.atmo-grandest.eu/article/notre-accompagnement-aux-industries ; https://www.grand-est.developpement-durable.gouv.fr/les-emissions-de-polluants-atmospheriques-a12463.html"
+    - libelle: "Trafic local et transit national ou international dans le sillon mosellan, notamment sur l'A31"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Grand Est, PPA des Trois Vallees, aout 2015, p. 34-37; DREAL Grand Est, Les emissions de polluants atmospheriques, mise a jour 2021 - https://www.grand-est.developpement-durable.gouv.fr/IMG/pdf/PPA_3V_VF_aoabaa.pdf ; https://www.grand-est.developpement-durable.gouv.fr/les-emissions-de-polluants-atmospheriques-a12463.html"
+    - libelle: "Chauffage domestique au bois sur le territoire du PPA des Trois Vallees"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Grand Est, Plan d'actions pour un chauffage au bois domestique performant dans le PPA des Trois Vallees, 7 juillet 2026 - https://www.grand-est.developpement-durable.gouv.fr/approbation-du-plan-d-actions-pour-un-chauffage-au-a23950.html"
+  topographie_climat:
+    libelle: >
+      Le sillon de la Moselle et les vallees de la Fensch et de l'Orne sont bordes par la cote de Moselle; vents faibles et inversions hivernales y limitent la dispersion.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "DREAL Grand Est, PPA des Trois Vallees, aout 2015, p. 34-35 et 81 - https://www.grand-est.developpement-durable.gouv.fr/IMG/pdf/PPA_3V_VF_aoabaa.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversions, vents faibles, chauffage au bois, trafic et emissions industrielles dans les vallees"
+      confiance: "haute"
+      source: "DREAL Grand Est, Les emissions de polluants atmospheriques, mise a jour 2021; ATMO Grand Est, Episode PM10 du 23 au 27 janvier 2026, 30 janvier 2026 - https://www.grand-est.developpement-durable.gouv.fr/les-emissions-de-polluants-atmospheriques-a12463.html ; https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-23-au-27-janvier"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie sous fort rayonnement et temperatures elevees a partir des NOx et COV"
+      confiance: "haute"
+      source: "ATMO Grand Est, Episode d'ozone du 14 au 15 aout 2025, 18 aout 2025 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-lozone-dans-le-grand-est-du-14-au-15-aout-2025"
+  transport_longue_distance:
+    - origine: "Rhin_superieur"
+      polluant: "PM10"
+      regime: "conditions_stables_et_extension_vers_l_ouest"
+      confiance: "moyenne"
+      source: "ATMO Grand Est, Episode PM10 du 23 au 27 janvier 2026, 30 janvier 2026 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-23-au-27-janvier"
+  cadre_decision:
+    ppa: "PPA des Trois Vallees de 2015; revision en cours en juillet 2026"
+    zfe: "ZFE de Metz encore classee a creer dans la carte ministerielle mise a jour en aout 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Grand Est, Plan bois du PPA des Trois Vallees, 7 juillet 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.grand-est.developpement-durable.gouv.fr/approbation-du-plan-d-actions-pour-un-chauffage-au-a23950.html ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille kilometrique lisse le sillon mosellan et les vallees industrielles laterales, dont les inversions et circulations locales divergent.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les panaches metallurgiques ponctuels et les variations de procede sont mal representes par un inventaire industriel annualise.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        La proximite de l'A31 cree des gradients de NO2 que la moyenne d'une maille ne restitue pas.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "67"
+  nom: "Bas-Rhin"
+  region: "Grand Est"
+  resume: >
+    Plaine rhenane abritee par les Vosges, Strasbourg routiere et chauffage au bois favorisent l'accumulation; apports transfrontaliers et ozone estival compliquent la prevision.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, premier contributeur des particules departementales"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST du Bas-Rhin, 7 juillet 2025, p. 6 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Bas_Rhin_2025.pdf"
+    - libelle: "Trafic urbain et axes transfrontaliers de l'agglomeration strasbourgeoise"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Grand Est, 3e PPA de l'agglomeration strasbourgeoise, janvier 2024; ATMO Grand Est, Evaluation de la qualite de l'air avenue du Rhin a Strasbourg, 18 decembre 2023 - https://www.grand-est.developpement-durable.gouv.fr/IMG/pdf/c-rapport_principal_du_ppa.pdf ; https://www.atmo-grandest.eu/etude/evaluation-de-la-qualite-de-lair-au-niveau-de-avenue-du-rhin-strasbourg"
+    - libelle: "Epandages agricoles de printemps et formation de nitrate d'ammonium"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Episode PM10 du 8 au 9 mars 2026, 9 mars 2026 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-08-au-09-mars-2026"
+  topographie_climat:
+    libelle: >
+      Les Vosges abritent la plaine du Rhin des flux d'ouest; les faibles vents et inversions favorisent l'accumulation et les echanges avec le Rhin superieur.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST du Bas-Rhin, 7 juillet 2025, p. 18 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Bas_Rhin_2025.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Faibles vents, brouillards persistants, chauffage, industrie, trafic et particules secondaires"
+      confiance: "haute"
+      source: "ATMO Grand Est, Episode PM10 du 23 au 27 janvier 2026, 30 janvier 2026 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-23-au-27-janvier"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Inversion nocturne, chauffage, nitrate d'ammonium issu des epandages et apport saharien"
+      confiance: "haute"
+      source: "ATMO Grand Est, Episode PM10 du 8 au 9 mars 2026, 9 mars 2026 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-08-au-09-mars-2026"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie des NOx et COV sous chaleur et fort rayonnement solaire"
+      confiance: "haute"
+      source: "ATMO Grand Est, Episode d'ozone du 14 au 15 aout 2025, 18 aout 2025 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-lozone-dans-le-grand-est-du-14-au-15-aout-2025"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "advection_depuis_l_Afrique_du_Nord"
+      confiance: "haute"
+      source: "ATMO Grand Est, Episode PM10 du 8 au 9 mars 2026, 9 mars 2026 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-08-au-09-mars-2026"
+    - origine: "Europe_de_l_Est"
+      polluant: "PM10"
+      regime: "transport_de_particules_terrigenes"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST du Bas-Rhin, 7 juillet 2025, p. 20 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Bas_Rhin_2025.pdf"
+  cadre_decision:
+    ppa: "3e PPA de l'agglomeration strasbourgeoise approuve le 30 juillet 2024; suivi en janvier 2026"
+    zfe: "ZFE de Strasbourg active; restriction Crit'Air 3 en phase pedagogique"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Grand Est, Suivi du 3e PPA de Strasbourg, mise a jour 5 mars 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.grand-est.developpement-durable.gouv.fr/3e-ppa-de-l-agglomeration-strasbourgeoise-comites-a23228.html ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le contraste entre rues de Strasbourg, port du Rhin et fond rural de la plaine disparait rapidement dans une maille regionale.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Des conditions aux limites insuffisantes attribuent a tort au Bas-Rhin les particules transportees depuis l'Allemagne ou l'Europe orientale.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        L'arrivee de particules terrigenes d'Europe de l'Est en septembre 2024 n'avait pas ete anticipee par la modelisation.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "68"
+  nom: "Haut-Rhin"
+  region: "Grand Est"
+  resume: >
+    Rhin superieur, Vosges et vallees industrielles piegent bois, trafic et chimie; ozone alsacien, EuroAirport et incidents de SO2 ajoutent des pointes localisees.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois dans la plaine et les vallees vosgiennes"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST du Haut-Rhin, 17 septembre 2024, p. 6; m2A, Charte Air-Sante Haute-Alsace, signee le 12 juillet 2025 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-09/Bilan%20CODERST%20du%20Haut-Rhin%202023-1.pdf ; https://www.m2a.fr/air/"
+    - libelle: "Industrie chimique du Haut-Rhin et sites industriels de la vallee de la Thur"
+      polluants: ["SO2", "COV", "NO2"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Notre accompagnement aux industries, page consultee le 10 aout 2026; ATMO Grand Est, Bilan 2023 - CODERST du Haut-Rhin, 17 septembre 2024, p. 6 et 22 - https://www.atmo-grandest.eu/article/notre-accompagnement-aux-industries ; https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-09/Bilan%20CODERST%20du%20Haut-Rhin%202023-1.pdf"
+    - libelle: "Trafic routier des poles de Mulhouse et Colmar et des corridors alsaciens"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST du Haut-Rhin, 17 septembre 2024, p. 6 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-09/Bilan%20CODERST%20du%20Haut-Rhin%202023-1.pdf"
+    - libelle: "Activites de l'EuroAirport Bale-Mulhouse, avec influence tres localisee sur le NO2"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST du Haut-Rhin, 17 septembre 2024, p. 14 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-09/Bilan%20CODERST%20du%20Haut-Rhin%202023-1.pdf"
+  topographie_climat:
+    libelle: >
+      Les Vosges font obstacle aux flux d'ouest et favorisent l'accumulation des emissions humaines dans la vallee du Rhin superieur et les vallees laterales.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST du Haut-Rhin, 17 septembre 2024, p. 19 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-09/Bilan%20CODERST%20du%20Haut-Rhin%202023-1.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversion, combustion du trafic et du bois, puis formation de nitrate d'ammonium"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST du Haut-Rhin, 17 septembre 2024, p. 20 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-09/Bilan%20CODERST%20du%20Haut-Rhin%202023-1.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie sous fort rayonnement et temperatures elevees dans le Rhin superieur"
+      confiance: "haute"
+      source: "ATMO Grand Est, Episode d'ozone du 14 au 15 aout 2025, 18 aout 2025 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-lozone-dans-le-grand-est-du-14-au-15-aout-2025"
+    - saison: "toute_annee"
+      polluant: "SO2"
+      mecanisme: "Pointes breves sous le vent d'un site industriel lors d'un incident de procede"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST du Haut-Rhin, 17 septembre 2024, p. 22 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-09/Bilan%20CODERST%20du%20Haut-Rhin%202023-1.pdf"
+  transport_longue_distance:
+    - origine: "Rhin_superieur_transfrontalier"
+      polluant: "PM10"
+      regime: "faibles_vents_et_brouillards_persistants"
+      confiance: "moyenne"
+      source: "ATMO Grand Est, Episode PM10 du 23 au 27 janvier 2026, 30 janvier 2026 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-23-au-27-janvier"
+  cadre_decision:
+    ppa: null
+    zfe: "ZFE m2A programmee localement pour le 1er janvier 2026; derniere carte ministerielle disponible, aout 2025: encore a creer"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "m2A, Plan Air-Sante et dossier reglementaire ZFE, mars 2025; m2A, Charte Air-Sante Haute-Alsace, signee le 12 juillet 2025; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.m2a.fr/wp-content/uploads/2025/03/2025-plan-m2A-Air-Sante.pdf ; https://www.m2a.fr/wp-content/uploads/2025/03/2025.03.12-Dossier-reglementaire-ZFE-m2A.pdf ; https://www.m2a.fr/air/ ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille regionale lisse le contraste entre Rhin superieur, vallees vosgiennes et reliefs, pourtant soumis a des accumulations differentes.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les incidents de procede et leurs panaches de SO2 sont trop brefs pour un inventaire industriel moyen.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        La proximite de trois pays rend les conditions aux limites decisives pour les particules et l'ozone du Rhin superieur.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "33"
+  nom: "Gironde"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Metropole bordelaise et rocade dominent les NOx; bois, port et industrie completent le fond, tandis que les incendies deplacent brutalement les particules.
+  sources_dominantes:
+    - libelle: "Trafic routier de la metropole, de la rocade et des grands boulevards"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Diagnostic des emissions du PCAET de Bordeaux Metropole, 19 janvier 2026, p. 18 et 20 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2026-01/PLAN_EXT_25_191_DiagnosticPCAET_BdxMetropole_vfinale_20260119.pdf"
+    - libelle: "Chauffage residentiel au bois et appareils individuels peu performants"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Diagnostic des emissions du PCAET de Bordeaux Metropole, 19 janvier 2026, p. 18; Modelisation du Fonds Air Bois de Bordeaux Metropole, 27 mars 2026 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2026-01/PLAN_EXT_25_191_DiagnosticPCAET_BdxMetropole_vfinale_20260119.pdf ; https://www.atmo-nouvelleaquitaine.org/publications/modelisation-de-limpact-du-fonds-air-bois-sur-la-qualite-de-lair-de-la-metropole-de"
+    - libelle: "Industries, trafic maritime et activites portuaires de l'estuaire bordelais"
+      polluants: ["SO2", "COV", "NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Diagnostic des emissions du PCAET de Bordeaux Metropole, 19 janvier 2026, p. 18 et 52 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2026-01/PLAN_EXT_25_191_DiagnosticPCAET_BdxMetropole_vfinale_20260119.pdf"
+    - libelle: "Feux de foret du massif landais et du bassin d'Arcachon"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Incendies en Gironde et dans les Landes: suivi de la qualite de l'air, 24 juillet 2026 - https://www.atmo-nouvelleaquitaine.org/actualite/incendies-en-gironde-et-dans-les-landes-suivi-de-la-qualite-de-lair"
+  topographie_climat:
+    libelle: >
+      Le vaste plateau peu accidente et la Garonne n'aggravent pas la dispersion; vents et pluies ventilent, mais les situations anticycloniques stables figent ponctuellement les polluants.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Nouvelle-Aquitaine, 3e PPA de l'agglomeration bordelaise, mars 2024, p. 25 - https://www.nouvelle-aquitaine.developpement-durable.gouv.fr/IMG/pdf/rapport_ppa_bordeaux_2024-03-28.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois et accumulation lors de situations anticycloniques stables"
+      confiance: "haute"
+      source: "DREAL Nouvelle-Aquitaine, 3e PPA de l'agglomeration bordelaise, mars 2024; Atmo Nouvelle-Aquitaine, Diagnostic PCAET de Bordeaux Metropole, janvier 2026 - https://www.nouvelle-aquitaine.developpement-durable.gouv.fr/IMG/pdf/rapport_ppa_bordeaux_2024-03-28.pdf ; https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2026-01/PLAN_EXT_25_191_DiagnosticPCAET_BdxMetropole_vfinale_20260119.pdf"
+    - saison: "ete"
+      polluant: "PM10"
+      mecanisme: "Fumees de feux de foret, transportees et accumulees selon la direction du vent"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Incendies en Gironde et dans les Landes: suivi de la qualite de l'air, 24 juillet 2026 - https://www.atmo-nouvelleaquitaine.org/actualite/incendies-en-gironde-et-dans-les-landes-suivi-de-la-qualite-de-lair"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie lors des periodes chaudes et fortement ensoleillees"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Incendies en Gironde et dans les Landes: suivi de la qualite de l'air, 24 juillet 2026; DREAL Nouvelle-Aquitaine, PPA3 Bordeaux, mars 2024 - https://www.atmo-nouvelleaquitaine.org/actualite/incendies-en-gironde-et-dans-les-landes-suivi-de-la-qualite-de-lair ; https://www.nouvelle-aquitaine.developpement-durable.gouv.fr/IMG/pdf/rapport_ppa_bordeaux_2024-03-28.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "advection_de_poussieres_desertiques"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan regional des episodes de pollution 2024, fevrier 2025 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-02/RapportAtmoNA_Bilan_EP-DP_2024_VF_2025-02-05.pdf"
+  cadre_decision:
+    ppa: "3e PPA de l'agglomeration bordelaise approuve le 23 juillet 2024; 108 communes"
+    zfe: "ZFE intra-rocade active depuis le 1er janvier 2025; vehicules non classes interdits en permanence"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Nouvelle-Aquitaine, PPA de l'agglomeration bordelaise, 24 mars 2026; Bordeaux Metropole, ZFE: ce qu'il faut savoir, mise a jour 13 janvier 2026; CJUE, arret C-636/18, 2019 - https://www.nouvelle-aquitaine.developpement-durable.gouv.fr/le-ppa-de-l-agglomeration-bordelaise-a15525.html ; https://sedeplacer.bordeaux-metropole.fr/en-voiture/zfe-ce-quil-faut-savoir ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les feux de foret sont intermittents et leurs panaches changent vite avec le vent; les inventaires ordinaires ne decrivent pas ces emissions.
+      confiance: "haute"
+      speculatif: true
+    - libelle: >
+        Les circulations de l'estuaire et les brises littorales peuvent rabattre ou eloigner les panaches portuaires selon l'heure.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une maille de fond lisse les gradients de NO2 entre rocade, grands boulevards et quartiers residentiels.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "44"
+  nom: "Loire-Atlantique"
+  region: "Pays de la Loire"
+  resume: >
+    Estuaire atlantique ventile mais industrialise: raffinerie de Donges, ports, trafic nantais et chauffage au bois alternent avec particules agricoles et sahariennes.
+  sources_dominantes:
+    - libelle: "Raffinerie de Donges, zones de stockage et unites de production"
+      polluants: ["COV", "benzene"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Evaluation des COV et metaux autour de la raffinerie TotalEnergies a Donges en 2025, 24 avril 2026 - https://www.airpl.org/rapport/evaluation-des-niveaux-de-cov-de-metaux-et-d-acide-cyanhydrique-dans-l-air-l-environnement-de-la-raffinerie-totalenergies-a-donges-2025"
+    - libelle: "Grand Port Maritime Nantes-Saint-Nazaire et trafic maritime"
+      polluants: ["SO2", "NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Trafic maritime et qualite de l'air, 16 juin 2017 - https://www.airpl.org/rapport/trafic-maritime-et-qualite-de-l-air"
+    - libelle: "Trafic routier du peripherique et des principaux axes de Nantes et Saint-Nazaire"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Qualite de l'air en proximite du peripherique-est de Nantes, 3 juin 2022; PPA Nantes-Saint-Nazaire, 2015 - https://www.airpl.org/rapport/qualite-de-l-air-en-proximite-du-peripherique-est-de-nantes-etat-initial-avant-travaux ; https://www.pays-de-la-loire.developpement-durable.gouv.fr/IMG/pdf/2015_08_13_rapport_PPA_Vdefinitive_signe.pdf"
+    - libelle: "Chauffage individuel au bois et chaufferies biomasse de Nantes Sud-Loire"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Suivi de la qualite de l'air a Nantes Sud-Loire, bilan 2025, 16 mars 2026 - https://www.airpl.org/rapport/suivi-de-la-qualite-de-l-air-a-nantes-sud-loire-bilan-2025"
+    - libelle: "Epandages agricoles et emissions printanieres d'ammoniac"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Agri'Air Pays de la Loire, 21 juillet 2025 - https://www.airpl.org/actualite/agri-air-pays-de-la-loire-agir-pour-optimiser-les-epandages-agricoles-reduire-les-emissions-d-ammoniac-et-preserver-notre-sante"
+  topographie_climat:
+    libelle: >
+      L'estuaire ouvert sur l'ocean est souvent ventile par les flux de sud-ouest; les flux faibles de nord-est sont plus stables et concentrent davantage la pollution.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Pays de la Loire, PPA Nantes-Saint-Nazaire, aout 2015, p. 23-24 - https://www.pays-de-la-loire.developpement-durable.gouv.fr/IMG/pdf/2015_08_13_rapport_PPA_Vdefinitive_signe.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois sous situation anticyclonique et inversion thermique"
+      confiance: "haute"
+      source: "DREAL Pays de la Loire, PPA Nantes-Saint-Nazaire, aout 2015, p. 29 et 40; Air Pays de la Loire, Bilan Nantes Sud-Loire 2025, 16 mars 2026 - https://www.pays-de-la-loire.developpement-durable.gouv.fr/IMG/pdf/2015_08_13_rapport_PPA_Vdefinitive_signe.pdf ; https://www.airpl.org/rapport/suivi-de-la-qualite-de-l-air-a-nantes-sud-loire-bilan-2025"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Formation de nitrate d'ammonium a partir du NH3 des epandages et des NOx"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Agri'Air Pays de la Loire, 21 juillet 2025; DREAL Pays de la Loire, PPA Nantes-Saint-Nazaire, 2015, p. 40 - https://www.airpl.org/actualite/agri-air-pays-de-la-loire-agir-pour-optimiser-les-epandages-agricoles-reduire-les-emissions-d-ammoniac-et-preserver-notre-sante ; https://www.pays-de-la-loire.developpement-durable.gouv.fr/IMG/pdf/2015_08_13_rapport_PPA_Vdefinitive_signe.pdf"
+    - saison: "toute_annee"
+      polluant: "benzene"
+      mecanisme: "Pointes locales sous le vent des stockages, unites de production et appontements de Donges"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Evaluation autour de la raffinerie TotalEnergies a Donges en 2025, 24 avril 2026 - https://www.airpl.org/rapport/evaluation-des-niveaux-de-cov-de-metaux-et-d-acide-cyanhydrique-dans-l-air-l-environnement-de-la-raffinerie-totalenergies-a-donges-2025"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "panache_de_particules_desertiques"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Depassement PM10 du 23 juin 2026 en Loire-Atlantique et Vendee, 24 juin 2026 - https://www.airpl.org/actualite/depassement-du-seuil-d-information-pour-les-particules-pm10-le-23-06-26-en-loire-atlantique-et-vendee"
+  cadre_decision:
+    ppa: "PPA Nantes-Saint-Nazaire de 2015 couvrant 58 communes; revision engagee apres l'evaluation de 2021"
+    zfe: "ZFE de Nantes active depuis le 1er janvier 2025; non-classes interdits aux pointes en semaine dans le peripherique"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Pays de la Loire, PPA 2015 de Nantes-Saint-Nazaire, 21 mai 2025; Nantes Metropole, ZFE, mise a jour 3 decembre 2025; CJUE, arret C-636/18, 2019 - https://www.pays-de-la-loire.developpement-durable.gouv.fr/le-ppa-2015-de-nantes-st-nazaire-a6686.html ; https://metropole.nantes.fr/mes-services-mon-quotidien/une-vignette-crit-air-pour-circuler-dans-la-zone-a-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les panaches de la raffinerie, des stockages et des appontements sont etroits et tres dependants du vent; une moyenne annuelle lisse leurs pointes.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        La bascule entre vents dispersifs de sud-ouest et flux stables de nord-est change fortement l'influence des sources de l'estuaire.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les gradients du peripherique nantais et des axes portuaires restent sous-resolus par une maille regionale.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "63"
+  nom: "Puy-de-Dome"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Demi-cuvette clermontoise, trafic et chauffage au bois piegent les particules; Limagne agricole et reliefs volcaniques imposent de forts contrastes d'altitude.
+  sources_dominantes:
+    - libelle: "Trafic routier de Clermont-Ferrand et des axes de l'agglomeration"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 du Puy-de-Dome, 21 novembre 2025, p. 7; DREAL Auvergne-Rhone-Alpes, Changer l'air du temps ensemble, 2025 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_63-PUY-DE-DOME_v2.pdf ; https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/changer-l-air-du-temps-ensemble-a27973.html"
+    - libelle: "Chauffage residentiel au bois, notamment les appareils individuels non performants"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 du Puy-de-Dome, 21 novembre 2025, p. 7; DREAL Auvergne-Rhone-Alpes, Changer l'air du temps ensemble, 2025 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_63-PUY-DE-DOME_v2.pdf ; https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/changer-l-air-du-temps-ensemble-a27973.html"
+    - libelle: "Agriculture de la Limagne et fertilisation minerale ou organique des cultures"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 du Puy-de-Dome, 21 novembre 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_63-PUY-DE-DOME_v2.pdf"
+  topographie_climat:
+    libelle: >
+      Clermont occupe une demi-cuvette fermee par les Monts Domes, Gergovie et les cotes du nord, ouverte seulement vers la Limagne; vents faibles et inversions y piegent l'air.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhone-Alpes, PPA de l'agglomeration de Clermont-Ferrand, 2014, p. 37 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/IMG/pdf/ppa-agglomeration-clermont-ferrand-approuve_cle055ac9.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Vents faibles, inversion de cuvette, trafic et chauffage individuel au bois"
+      confiance: "haute"
+      source: "DREAL Auvergne-Rhone-Alpes, PPA de l'agglomeration de Clermont-Ferrand, 2014, p. 37; Atmo Auvergne-Rhone-Alpes, Bilan 2024 du Puy-de-Dome, 21 novembre 2025, p. 7 et 14 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/IMG/pdf/ppa-agglomeration-clermont-ferrand-approuve_cle055ac9.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_63-PUY-DE-DOME_v2.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "3e PPA de Clermont approuve; perimetre des 21 communes de Clermont Auvergne Metropole"
+    zfe: "ZFE de Clermont-Ferrand active; restriction des VUL et poids lourds non classes"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhone-Alpes, 3e PPA de Clermont, mise a jour 30 juillet 2025; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/3e-plan-de-protection-de-l-atmosphere-de-l-a23501.html ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille kilometrique ouvre artificiellement la demi-cuvette et sous-estime les inversions ainsi que les vents faibles du bassin clermontois.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une correction unique confond la plaine urbanisee de Limagne avec les stations ou territoires plus eleves des reliefs volcaniques.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le contraste trafic-bois entre centre urbain, coteaux et habitat diffus varie plus vite que les inventaires annuels.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "01"
+  nom: "Ain"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Plaines agricoles a l'ouest, cluses industrielles a l'est et influences lyonnaise et genevoise juxtaposent des regimes de dispersion tres differents.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois dans des installations individuelles non performantes"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de l'Ain, septembre 2025, p. 5 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-09/ATMO_PPT_Bilan-2024_01-AIN_vF.pdf"
+    - libelle: "Agriculture de la Bresse, de la Dombes et des plaines; fertilisation minerale et organique"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de l'Ain, septembre 2025, p. 5; Bilan qualite de l'air 2016 - Ain, 2017, p. 3 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-09/ATMO_PPT_Bilan-2024_01-AIN_vF.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom01_ain.pdf"
+    - libelle: "Trafic routier, notamment dans les zones tournees vers Lyon et Geneve"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de l'Ain, septembre 2025, p. 5; Bilan qualite de l'air 2016 - Ain, 2017, p. 3 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-09/ATMO_PPT_Bilan-2024_01-AIN_vF.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom01_ain.pdf"
+    - libelle: "Industries de la Plaine de l'Ain et des cluses de l'est"
+      polluants: ["SO2", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de l'Ain, septembre 2025, p. 5; Bilan qualite de l'air 2016 - Ain, 2017, p. 3 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-09/ATMO_PPT_Bilan-2024_01-AIN_vF.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom01_ain.pdf"
+  topographie_climat:
+    libelle: >
+      Les plaines ouvertes de Bresse, Dombes et Val de Saone contrastent avec les cluses et vallees du Bugey, du Revermont et du Pays de Gex, sujettes aux inversions.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Atmo Auvergne-Rhone-Alpes, Bilan qualite de l'air 2016 - Ain, 2017, p. 3 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom01_ain.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois et accumulation sous inversion dans les vallees et cluses orientales"
+      confiance: "moyenne"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de l'Ain, septembre 2025, p. 5 et 14; Bilan qualite de l'air 2016 - Ain, 2017, p. 3 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-09/ATMO_PPT_Bilan-2024_01-AIN_vF.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom01_ain.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie avec contrastes entre les bassins lemanique, alpin et l'ouest de l'Ain"
+      confiance: "moyenne"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de l'Ain, septembre 2025, p. 14 et 16 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-09/ATMO_PPT_Bilan-2024_01-AIN_vF.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA de l'agglomeration lyonnaise 2022-2027 applicable a 15 communes de l'Ain"
+    zfe: null
+    contentieux_no2: true
+    confiance: "haute"
+    source: "Prefecture de l'Ain, PPA de l'agglomeration lyonnaise 2022-2027, mise a jour 7 aout 2024; Legifrance, zonage de surveillance 2022, ZAG Lyon incluant des communes de l'Ain; CJUE, arret C-636/18 sur la zone Lyon, 2019; Ministere de la Transition ecologique, carte ZFE mise a jour 13 aout 2025 - https://www.ain.gouv.fr/Publications/Enquetes-publiques/Environnement/Plan-de-protection-de-l-atmosphere-PPA-de-l-agglomeration-lyonnaise-pour-la-periode-2022-2027 ; https://www.legifrance.gouv.fr/loda/id/JORFTEXT000045381589/ ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe"
+  pieges_modelisation:
+    - libelle: >
+        Une correction departementale unique melange trois bassins d'air, des plaines ouvertes a l'ouest et des cluses encaissantes a l'est.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les influences de Lyon et Geneve peuvent etre absorbees comme biais local si les conditions aux limites sont insuffisantes.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les panaches industriels de la Plaine de l'Ain et des cluses peuvent rester sous-resolus par un inventaire spatialement moyenne.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null

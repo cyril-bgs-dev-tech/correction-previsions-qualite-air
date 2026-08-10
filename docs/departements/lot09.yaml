@@ -1,0 +1,411 @@
+- code: "43"
+  nom: "Haute-Loire"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Relief volcanique, bassins abrites, bois residentiel et agriculture structurent les particules; les apports sahariens expliquent les rares vigilances recentes.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, principal contributeur aux particules fines"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Haute-Loire, 21 novembre 2025, p. 6 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_43-HTE-LOIRE_v2.pdf"
+    - libelle: "Agriculture, fertilisation et elevage, quasi exclusifs pour le NH3 et importants pour les NOx"
+      polluants: ["NH3", "NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Haute-Loire, 21 novembre 2025, p. 6 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_43-HTE-LOIRE_v2.pdf"
+    - libelle: "Trafic routier, premier secteur pour les emissions departementales de NOx"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Haute-Loire, 21 novembre 2025, p. 6 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_43-HTE-LOIRE_v2.pdf"
+  topographie_climat:
+    libelle: >
+      Hauts plateaux souvent ventiles, vallees et gorges abritees et cuvette volcanique du Puy-en-Velay produisent des contrastes marques de dispersion.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhone-Alpes, Bassin du Puy-en-Velay, 2013 - https://www.paysages.auvergne-rhone-alpes.gouv.fr/7-01-bassin-du-puy-en-velay-a516.html ; DREAL Auvergne-Rhone-Alpes, Vallee et gorges de la Haute Loire, 2013 - https://www.paysages.auvergne-rhone-alpes.gouv.fr/9-03-vallee-et-gorges-de-la-haute-loire-a525.html"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois accru et accumulation locale dans les bassins et vallees abritees"
+      confiance: "moyenne"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Haute-Loire, 21 novembre 2025, p. 6 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_43-HTE-LOIRE_v2.pdf ; DREAL Auvergne-Rhone-Alpes, Bassin du Puy-en-Velay, 2013 - https://www.paysages.auvergne-rhone-alpes.gouv.fr/7-01-bassin-du-puy-en-velay-a516.html"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "deux jours de vigilance lies aux particules desertiques en 2024"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Haute-Loire, 21 novembre 2025, p. 11-13 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2024_43-HTE-LOIRE_v2.pdf"
+  cadre_decision:
+    ppa: "aucun PPA en Haute-Loire; Loire-Semene a ete retiree du perimetre du PPA3 Saint-Etienne-Loire-Forez"
+    zfe: "aucune ZFE repertoriee en Haute-Loire sur la carte ministerielle en vigueur"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Prefecture de la Loire, Resume non technique du PPA3 Saint-Etienne-Loire-Forez, mars 2023, p. 9 - https://www.loire.gouv.fr/index.php/contenu/telechargement/8874/65187/file/ppa_self_doc_principal_resume_non_technique_du_plan.pdf ; Ministere de la Transition ecologique, Zones a faibles emissions, consulte en 2026 - https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille unique lisse les oppositions entre plateaux ventiles, gorges, petites vallees et cuvette urbaine du Puy-en-Velay.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Sans information sur l'altitude du panache, un apport saharien peut etre melange a tort aux emissions agricoles ou residentielles locales.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "45"
+  nom: "Loiret"
+  region: "Centre-Val de Loire"
+  resume: >
+    Orleans concentre trafic et chauffage au bois, la Beauce les epandages; plateau ouvert, inversions, ozone et fumee advectee changent les episodes.
+  sources_dominantes:
+    - libelle: "Trafic d'Orleans Metropole et des grands axes A10, A71 et A19"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration orleanaise horizon 2030, decembre 2023, p. 47-48 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_orleans_version_approuvee.pdf"
+    - libelle: "Chauffage residentiel au bois, majeur pour PM2.5 et cible explicite du PPA"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration orleanaise horizon 2030, decembre 2023, p. 48 et 63-64 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_orleans_version_approuvee.pdf"
+    - libelle: "Agriculture de grandes cultures et epandages, dominante pour le NH3"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration orleanaise horizon 2030, decembre 2023, p. 48 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_orleans_version_approuvee.pdf ; Lig'Air, L'ammoniac en 2024, 10 septembre 2025 - https://www.ligair.fr/actualites/rapport-detude-disponible-lammoniac-en-2024"
+  topographie_climat:
+    libelle: >
+      Le plateau traverse par la Loire est peu accidente et disperse generalement bien; calmes anticycloniques et inversions hivernales peuvent toutefois figer la pollution.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, PPA de l'agglomeration orleanaise horizon 2030, decembre 2023, p. 15 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_orleans_version_approuvee.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Inversion thermique, faible dispersion et chauffage residentiel au bois"
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration orleanaise horizon 2030, decembre 2023, p. 15 et 63-64 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_orleans_version_approuvee.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Formation photochimique sous chaleur et fort ensoleillement; depassement observe le 8 juillet 2026"
+      confiance: "haute"
+      source: "Lig'Air, Episodes de pollution - historique, consulte en 2026 - https://www.ligair.fr/prevision-et-evaluation/episodes-de-pollution ; DREAL Centre-Val de Loire, PPA de l'agglomeration orleanaise horizon 2030, decembre 2023, p. 15 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_orleans_version_approuvee.pdf"
+  transport_longue_distance:
+    - origine: "foret de Fontainebleau"
+      polluant: "PM10"
+      regime: "fumee transportee par vent de nord-est vers le Loiret le 14 juillet 2026"
+      confiance: "haute"
+      source: "Lig'Air, Bilan qualite de l'air : un double episode de pollution hier, 15 juillet 2026 - https://www.ligair.fr/actualites/bilan-qualite-de-lair-un-double-episode-de-pollution-hier-amelioration-en-cours-aujourdhui"
+  cadre_decision:
+    ppa: "PPA3 de l'agglomeration orleanaise horizon 2030, approuve le 12 decembre 2023, 22 communes"
+    zfe: "ZFE d'Orleans encore indiquee a creer sur la carte ministerielle en vigueur"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, PPA de l'agglomeration orleanaise horizon 2030, 15 janvier 2024 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/le-ppa-de-l-agglomeration-orleanaise-horizon-2030-a1723.html ; Ministere de la Transition ecologique, Zones a faibles emissions, consulte en 2026 - https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les gradients NO2 des axes A10-A71 et de la voirie orleanaise sont tres sous-mailles par rapport au fond agricole du reste du Loiret.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une assimilation sans traceur de combustion peut attribuer la fumee advectee de Fontainebleau au chauffage local ou aux travaux agricoles.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "49"
+  nom: "Maine-et-Loire"
+  region: "Pays de la Loire"
+  resume: >
+    Angers concentre trafic et bois, tandis qu'elevage et cultures emettent ammoniac et particules; confluences et saisonnalite compliquent les gradients.
+  sources_dominantes:
+    - libelle: "Trafic routier angevin, notamment vehicules essence et grands axes A11, A85 et A87"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 49 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+    - libelle: "Chauffage individuel au bois et chaufferie bois de l'agglomeration d'Angers"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 49 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+    - libelle: "Elevage et grandes cultures, sources majeures de NH3 dans les Mauges, l'Anjou Bleu et le Baugeois"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, BASEMIS V8 - inventaire 2008-2023, fevrier 2025, p. 67 - https://airpl.org/sites/default/files/reports/airpl_rapport%20basemis%20V8-f.pdf"
+  topographie_climat:
+    libelle: >
+      Angers occupe des plateaux et coteaux dominant les basses vallees de la Mayenne, Sarthe, Loir, Maine et Loire; les confluences creent des contrastes locaux.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "DREAL Pays de la Loire, Atlas de paysage - Les caracteres de l'agglomeration angevine, mise a jour 19 juin 2025 - https://www.paysages.pays-de-la-loire.developpement-durable.gouv.fr/les-caracteres-de-l-agglomeration-angevine-a521.html"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Combustion du bois domestique et accumulation des particules fines"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Agri'Air Pays de la Loire, 21 juillet 2025 - https://www.airpl.org/actualite/agri-air-pays-de-la-loire-agir-pour-optimiser-les-epandages-agricoles-reduire-les-emissions-d-ammoniac-et-preserver-notre-sante"
+    - saison: "printemps"
+      polluant: "PM2.5"
+      mecanisme: "NH3 des epandages reagissant avec les oxydes d'azote pour former des particules secondaires"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Agri'Air Pays de la Loire, 21 juillet 2025 - https://www.airpl.org/actualite/agri-air-pays-de-la-loire-agir-pour-optimiser-les-epandages-agricoles-reduire-les-emissions-d-ammoniac-et-preserver-notre-sante"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Ozone determinant frequemment l'indice regional au printemps et en ete"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2025, 29 juin 2026 - https://www.airpl.org/rapport/rapport-annuel-2025"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "aucun PPA en Maine-et-Loire; le seul PPA regional couvre Nantes-Saint-Nazaire"
+    zfe: "ZFE d'Angers active depuis le 1er janvier 2025; territoire communal, vehicules non classes interdits"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Pays de la Loire, Air et pollution atmospherique, consulte en 2026 - https://www.pays-de-la-loire.developpement-durable.gouv.fr/air-et-pollution-atmospherique-r212.html ; Angers Loire Metropole, Zone a faibles emissions mobilite, consulte en 2026 - https://www.angersloiremetropole.fr/mon-quotidien/air-et-bruit/zone-a-faibles-emissions-mobilite/index.html ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille departementale confond le gradient routier d'Angers, les emissions industrielles de Cholet et les foyers agricoles des Mauges et du Baugeois.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les plaines basses de confluence et les plateaux urbanises ne partagent pas toujours la meme hauteur de melange nocturne.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "50"
+  nom: "Manche"
+  region: "Normandie"
+  resume: >
+    Elevage, sols agricoles et bois dominent les particules; vents marins dispersent souvent, mais aerosols cotiers et poussieres sahariennes brouillent l'attribution.
+  sources_dominantes:
+    - libelle: "Elevage, engrais et travail des sols, dominants pour NH3 et PM10"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ORECAN et Atmo Normandie, Bilan 2021 des consommations d'energie, des GES et des polluants atmospheriques, 25 septembre 2024, p. 26-27 et 32-35 - https://www.orecan.fr/wp-content/uploads/2024/09/Rapport-ORECAN-2021_v4.1.0.pdf"
+    - libelle: "Chauffage residentiel, principalement au bois, premier secteur departemental pour PM2.5"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "ORECAN et Atmo Normandie, Bilan 2021 des consommations d'energie, des GES et des polluants atmospheriques, 25 septembre 2024, p. 27 - https://www.orecan.fr/wp-content/uploads/2024/09/Rapport-ORECAN-2021_v4.1.0.pdf"
+    - libelle: "Aerosols littoraux associant sels marins, particules secondaires et contributions continentales"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "moyenne"
+      source: "Atmo Normandie et Atmo Hauts-de-France, Synthese CARA littoral 2021, fevrier 2024 - https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2024-02/Synth%C3%A8se%20CARA%20littoral_VF.pdf"
+  topographie_climat:
+    libelle: >
+      La peninsule du Cotentin est soumise a un climat oceanique humide et a de forts vents marins d'ouest, generalement favorables a la dispersion.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Departement de la Manche, Commune deleguee d'Urville-Nacqueville - Etude d'amenagement, 2023, p. 7 - https://www.manche.fr/wp-content/uploads/2024/07/3_Etude-amenagement-1.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Combustion accrue du bois domestique lors des periodes froides et peu dispersees"
+      confiance: "haute"
+      source: "Atmo Normandie, Nouvel inventaire des emissions polluantes 2023, 23 avril 2026 - https://www.atmonormandie.fr/actualite/atmo-normandie-publie-son-nouvel-inventaire-des-emissions-polluantes"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Formation de particules secondaires et influence des aerosols marins sur le littoral de la Manche"
+      confiance: "moyenne"
+      source: "Atmo Normandie, Caracterisation des particules sur la zone littorale, mise a jour 27 fevrier 2024 - https://www.atmonormandie.fr/publications/caracterisation-des-particules-sur-la-zone-littorale-des-hauts-de-france-et-de-la"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux nord-africain ayant declenche une procedure dans la Manche le 7 septembre 2023"
+      confiance: "haute"
+      source: "Atmo Normandie, Des poussieres sahariennes en Normandie ?, mise a jour 7 septembre 2023 - https://www.atmonormandie.fr/actualite/des-poussieres-sahariennes-en-normandie"
+  cadre_decision:
+    ppa: "aucun PPA dans la Manche; l'unique PPA normand couvre huit EPCI de la Vallee de la Seine"
+    zfe: "aucune ZFE repertoriee dans la Manche sur la carte ministerielle en vigueur"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Normandie, Le PPA Vallee de la Seine, 7 juillet 2026 - https://www.normandie.developpement-durable.gouv.fr/le-plans-de-protection-de-l-atmosphere-ppa-vallee-a7032.html ; Ministere de la Transition ecologique, Zones a faibles emissions, consulte en 2026 - https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Sans module d'aerosol marin, le modele peut attribuer une fraction naturelle des PM10 littorales a l'agriculture ou au chauffage.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les stations et emissions du Cotentin venteux representent mal les vallees bocageres abritees de l'interieur et leurs pointes nocturnes.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "51"
+  nom: "Marne"
+  region: "Grand Est"
+  resume: >
+    Grande culture et trafic remois structurent NH3, particules et NO2; la chimie secondaire printaniere deplace les maxima loin des sources.
+  sources_dominantes:
+    - libelle: "Grandes cultures et epandages, dominants pour NH3 et PM10"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Les chiffres-cles en un clin d'oeil - Marne, edition 2025, Invent'Air v2025 du 18 septembre 2025, p. 2 - https://observatoire.atmo-grandest.eu/wp-content/uploads/publications/chiffres_cles_1_clin_oeil_2023_dep_Marne.pdf"
+    - libelle: "Chauffage residentiel, premier secteur pour les emissions de PM2.5"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Les chiffres-cles en un clin d'oeil - Marne, edition 2025, Invent'Air v2025 du 18 septembre 2025, p. 2 - https://observatoire.atmo-grandest.eu/wp-content/uploads/publications/chiffres_cles_1_clin_oeil_2023_dep_Marne.pdf"
+    - libelle: "Trafic routier de Reims, source principale de NO2 en agglomeration"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Scenarisation et evaluation d'une ZFE mobilite - PPA Reims, 2020, p. 6 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-02/Scenarisation_evaluation_ZFE_%20mobilite_PPA_Reims.pdf"
+  topographie_climat:
+    libelle: >
+      La vaste plaine crayeuse ouverte domine, mais Montagne de Reims, Tardenois, Argonne et vallees de la Vesle et de la Marne creent des ruptures locales.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Prefecture de la Marne, Atlas de la Marne 2024, 2024, p. 12 - https://www.marne.gouv.fr/contenu/telechargement/48477/348643/file/Atlas_Marne_2024%20-%20Copie.odg_compressed.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois et accumulation sous conditions froides, seches et stables"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan qualite de l'air Grand Est 2025, mars 2026, p. 9-11 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2026-03/BilanQualit%C3%A9del%27Air%202025.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Particules secondaires formees a partir de polluants agricoles et routiers; episode le 25 mars 2025"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan qualite de l'air Grand Est 2025, mars 2026, p. 20 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2026-03/BilanQualit%C3%A9del%27Air%202025.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA de Reims approuve le 4 novembre 2015; sa revision etait encore en evaluation environnementale dans le bilan 2024"
+    zfe: "ZFE de Reims active; voitures particulieres Crit'Air 4 et plus interdites selon l'etat ministeriel en vigueur"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Grand Est, PPA de l'agglomeration de Reims, 20 mai 2019 - https://www.grand-est.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-de-l-a117.html ; ATMO Grand Est, Bilan qualite de l'air Grand Est 2024, 2025, p. 26 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-05/Bilan_qualit%C3%A9_de_air_grand_est_2024.pdf ; Ministere de la Transition ecologique, Zones a faibles emissions, consulte en 2026 - https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les stations et cartes de Reims ne representent pas directement le fond agricole de la Champagne crayeuse ni les reliefs viticoles occidentaux.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les PM secondaires se forment apres transport; caler les concentrations sur les seules emissions locales peut deplacer ou sous-estimer le maximum.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "53"
+  nom: "Mayenne"
+  region: "Pays de la Loire"
+  resume: >
+    Elevage, industrie et bois dominent un territoire bocager; vallees encaissees, chimie secondaire printaniere et poussiere desertique fragmentent les concentrations.
+  sources_dominantes:
+    - libelle: "Industrie de l'agglomeration de Laval, dont la cimenterie du territoire"
+      polluants: ["PM10", "PM2.5", "NO2", "SO2"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 51 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+    - libelle: "Chauffage individuel au bois, majeur pour les particules fines de Laval"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 51 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+    - libelle: "Elevage et travail des sols, sources de NH3 et de particules dans le nord et l'est mayennais"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, BASEMIS V8 - inventaire 2008-2023, fevrier 2025, p. 67 - https://airpl.org/sites/default/files/reports/airpl_rapport%20basemis%20V8-f.pdf ; Air Pays de la Loire, Rapport annuel 2024, 2025, p. 51 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+  topographie_climat:
+    libelle: >
+      Un plateau cristallin legerement ondule est entaille par les vallees sinueuses et encaissees de la Mayenne, de la Varenne, de l'Aron et de la Colmont.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Pays de la Loire, Atlas de paysage - Les caracteres du bocage de la Haute Mayenne, mise a jour 19 juin 2025 - https://www.paysages.pays-de-la-loire.developpement-durable.gouv.fr/les-caracteres-du-bocage-de-la-haute-mayenne-a557.html"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois domestique et dispersion reduite dans les situations froides"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Agri'Air Pays de la Loire, 21 juillet 2025 - https://www.airpl.org/actualite/agri-air-pays-de-la-loire-agir-pour-optimiser-les-epandages-agricoles-reduire-les-emissions-d-ammoniac-et-preserver-notre-sante"
+    - saison: "printemps"
+      polluant: "PM2.5"
+      mecanisme: "NH3 des epandages reagissant avec les oxydes d'azote pour former des particules secondaires"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Agri'Air Pays de la Loire, 21 juillet 2025 - https://www.airpl.org/actualite/agri-air-pays-de-la-loire-agir-pour-optimiser-les-epandages-agricoles-reduire-les-emissions-d-ammoniac-et-preserver-notre-sante"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Ozone determinant frequemment l'indice regional au printemps et en ete"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2025, 29 juin 2026 - https://www.airpl.org/rapport/rapport-annuel-2025"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "panache desertique et procedure d'information en Mayenne le 24 juin 2026"
+      confiance: "haute"
+      source: "Air Pays de la Loire, Depassement PM10 du 23 juin 2026, 24 juin 2026 - https://www.airpl.org/actualite/depassement-du-seuil-d-information-pour-les-particules-pm10-le-23-06-26-en-loire-atlantique-et-vendee"
+  cadre_decision:
+    ppa: "aucun PPA en Mayenne; le seul PPA regional couvre Nantes-Saint-Nazaire"
+    zfe: "aucune ZFE repertoriee en Mayenne sur la carte ministerielle en vigueur"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Pays de la Loire, Air et pollution atmospherique, consulte en 2026 - https://www.pays-de-la-loire.developpement-durable.gouv.fr/air-et-pollution-atmospherique-r212.html ; Ministere de la Transition ecologique, Zones a faibles emissions, consulte en 2026 - https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le site rural de Saint-Denis-d'Anjou et les stations de Laval representent des regimes opposes; leur fusion masque les gradients industrie-ville-elevage.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les vallees encaissees et la trame bocagere sont sous-mailles et peuvent modifier localement vent, melange et dispersion des panaches.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "54"
+  nom: "Meurthe-et-Moselle"
+  region: "Grand Est"
+  resume: >
+    Bassin nanceien abrite, trafic, bois, agriculture et industries du sud cumulent leurs signatures; stabilite hivernale, ozone et Sahara changent les episodes.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel, premier secteur pour PM2.5 et PM10"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Les chiffres-cles en un clin d'oeil - Meurthe-et-Moselle, edition 2025, Invent'Air v2025 du 18 septembre 2025, p. 2 - https://observatoire.atmo-grandest.eu/wp-content/uploads/publications/chiffres_cles_1_clin_oeil_2023_dep_Meurthe-et-Moselle.pdf"
+    - libelle: "Trafic routier du Grand Nancy et du sillon lorrain, majeur pour les NOx"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Prefecture de Meurthe-et-Moselle, PPA de l'agglomeration de Nancy, mise a jour 4 septembre 2024 - https://www.meurthe-et-moselle.gouv.fr/Actions-de-l-Etat/Environnement/Air-climat-energie/Qualite-de-l-air/PPA-de-l-agglomeration-de-Nancy/PPA-de-l-agglomeration-de-Nancy"
+    - libelle: "Agriculture, dominante pour NH3 et importante pour les particules"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Les chiffres-cles en un clin d'oeil - Meurthe-et-Moselle, edition 2025, Invent'Air v2025 du 18 septembre 2025, p. 2 - https://observatoire.atmo-grandest.eu/wp-content/uploads/publications/chiffres_cles_1_clin_oeil_2023_dep_Meurthe-et-Moselle.pdf"
+    - libelle: "Cimenterie de Frolois et acierie de Neuves-Maisons, sources ponctuelles du sud nanceien"
+      polluants: ["PM10", "SO2"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan qualite de l'air Grand Est 2022, 2023, p. 23 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2023-07/ATMO%20rapport%202022_web.pdf"
+  topographie_climat:
+    libelle: >
+      Le plateau lorrain, ses cuestas et les vallees de la Meurthe et de la Moselle placent Nancy dans une situation topographique abritee, parfois piegeante.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Prefecture de Meurthe-et-Moselle, PPA revise de l'agglomeration de Nancy, mise a jour 4 septembre 2024, p. 8 - https://www.meurthe-et-moselle.gouv.fr/contenu/telechargement/32530/246729/file/Annexe__Plan_d%27action__%C3%A0_l%27AP_2024-0295.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Faibles vents, brouillards persistants, sources directes et formation secondaire; depassement le 25 janvier 2026"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan de l'episode PM10 du 23 au 27 janvier 2026, 30 janvier 2026 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-23-au-27-janvier"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Formation photochimique sous canicule prolongee; episodes en juin et aout 2025"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan ozone ete 2025, 2025 - https://www.atmo-grandest.eu/actualite/bilan-ozone-ete-2025-dans-la-region-grand-est"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "nuage desertique et depassements modelises ou mesures le 14 novembre 2025"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan de l'episode PM10 du 14 novembre 2025, 18 novembre 2025 - https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-14-novembre-2025"
+  cadre_decision:
+    ppa: "PPA de Nancy adopte en 2015; revision et nouveau perimetre engages en 2025"
+    zfe: "ZFE du Grand Nancy active depuis le 1er janvier 2025 pour les PL, VUL et bus/cars Crit'Air 5 ou non classes"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Grand Est, Comite local de l'air de Nancy du 2 juin 2025, 28 aout 2025 - https://www.grand-est.developpement-durable.gouv.fr/comite-local-de-l-air-no1-nancy-2-juin-2025-a23515.html ; Metropole du Grand Nancy, ZFE-m, verifie le 4 fevrier 2026 - https://mhdd.grandnancy.eu/ecogestes/critair ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille urbaine lisse simultanement le trafic nanceien, les panaches industriels de Frolois et Neuves-Maisons et le fond agricole departemental.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        La couche stable dans les vallees de la Meurthe et de la Moselle peut etre plus basse que le premier niveau vertical du modele.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null

@@ -1,14 +1,14 @@
 nom,code,gain_moyen,stations,polluants,fichier,departements
-Île-de-France,11,26.09313143498468,37,4,ile-de-france.html,8
-Centre-Val de Loire,24,23.144954753916853,18,4,centre-val-de-loire.html,6
-Bourgogne-Franche-Comté,27,22.744196157451558,20,4,bourgogne-franche-comte.html,7
-Normandie,28,23.108279025703553,25,4,normandie.html,5
-Hauts-de-France,32,19.675527658766164,32,4,hauts-de-france.html,5
-Grand Est,44,30.552255332850912,39,4,grand-est.html,9
-Pays de la Loire,52,24.384255119784513,22,4,pays-de-la-loire.html,5
-Bretagne,53,20.14409924760635,12,4,bretagne.html,4
-Nouvelle-Aquitaine,75,24.11707092833629,37,4,nouvelle-aquitaine.html,10
-Occitanie,76,32.99979050175262,23,4,occitanie.html,7
-Auvergne-Rhône-Alpes,84,31.3827478171473,55,4,auvergne-rhone-alpes.html,11
-Provence-Alpes-Côte d'Azur,93,31.975522908770362,25,4,provence-alpes-cote-d-azur.html,5
-Corse,94,30.780677052614283,8,4,corse.html,2
+Île-de-France,11,26.420345912947386,37,4,ile-de-france.html,8
+Centre-Val de Loire,24,23.255175899711862,18,4,centre-val-de-loire.html,6
+Bourgogne-Franche-Comté,27,22.960502225625362,20,4,bourgogne-franche-comte.html,7
+Normandie,28,23.29543647184036,25,4,normandie.html,5
+Hauts-de-France,32,19.650601936958623,32,4,hauts-de-france.html,5
+Grand Est,44,30.9104437226784,39,4,grand-est.html,9
+Pays de la Loire,52,24.340987460441127,22,4,pays-de-la-loire.html,5
+Bretagne,53,20.240806405362214,12,4,bretagne.html,4
+Nouvelle-Aquitaine,75,24.158078840120282,37,4,nouvelle-aquitaine.html,10
+Occitanie,76,33.10475159780141,23,4,occitanie.html,7
+Auvergne-Rhône-Alpes,84,32.026943781955865,55,4,auvergne-rhone-alpes.html,11
+Provence-Alpes-Côte d'Azur,93,32.36656793520462,25,4,provence-alpes-cote-d-azur.html,5
+Corse,94,31.851841181270522,8,4,corse.html,2

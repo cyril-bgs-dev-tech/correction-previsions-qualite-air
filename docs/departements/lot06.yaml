@@ -1,0 +1,405 @@
+- code: "16"
+  nom: "Charente"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Viticulture du Cognac et ses COV industriels, grandes cultures, chauffage au bois et trafic angoumoisin se combinent entre plaine oceanique et contreforts limousins.
+  sources_dominantes:
+    - libelle: "Production d'alcools et fabrication de verre dans le Grand Cognac"
+      polluants: ["COV", "SO2"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, PCAET du Grand Cognac - Diagnostic Air, 2018, p. 43 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/content/migrated/atoms/files/plan_ext_18_222_pcaet_grand_cognac_air_vf.pdf"
+    - libelle: "Grandes cultures, travail des sols et epandages"
+      polluants: ["PM10", "NH3"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Fiche departementale des emissions de Charente, 6 aout 2025; Fiche regionale PM10, 30 juillet 2025 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-08/fiche_dept_3.2.4_rev1_Charente_20250806_VF.pdf ; https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-08/fiche_poll_PM10_3.2.4_rev1-20250730-VF.pdf"
+    - libelle: "Chauffage residentiel au bois, dominant pour les particules fines"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Charente, 2 juin 2025, p. 6-7; Chauffage au bois: premiere source de particules, 18 fevrier 2026 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Charente_D16_2025-06-02.pdf ; https://www.atmo-nouvelleaquitaine.org/actualite/chauffage-au-bois-premiere-source-de-particules-en-nouvelle-aquitaine"
+    - libelle: "Trafic du Grand Angouleme et des axes structurants"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Charente, 2 juin 2025, p. 5 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Charente_D16_2025-06-02.pdf"
+  topographie_climat:
+    libelle: >
+      L'ouest oceanique jusqu'a Angouleme est ouvert aux flux atlantiques; vers la Charente limousine, le relief se releve et les premiers contreforts modulent davantage la dispersion.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Prefecture de la Charente, Carriere Les Fayards - Etat initial, septembre 2019, section III.B.1.1 - https://www.charente.gouv.fr/contenu/telechargement/35096/216195/file/CDMR%20-%20Les%20Fayards%20%28TdHC%20-%20Genouillac%29%20-DOC2a%20%28EI%20partie1sur2%29%20-%20Sept2019.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois et accumulation en basse couche lors des situations froides et peu dispersives"
+      confiance: "moyenne"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Charente, 2 juin 2025, p. 7; Hiver: mieux comprendre les episodes de pollution atmospherique, 4 fevrier 2026 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Charente_D16_2025-06-02.pdf ; https://www.atmo-nouvelleaquitaine.org/actualite/hiver-mieux-comprendre-les-episodes-de-pollution-atmospherique"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Un inventaire annualise lisse les campagnes de distillation et les pointes industrielles de COV du Cognacais.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les gradients de NO2 le long des axes du Grand Angouleme disparaissent rapidement dans une maille rurale environnante.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une correction apprise dans la plaine oceanique se transfere mal aux secteurs plus hauts et boises de la Charente limousine.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "17"
+  nom: "Charente-Maritime"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Port de La Pallice, grandes cultures et chauffage au bois se superposent aux embruns atlantiques, aux brises cotieres et aux apports sahariens.
+  sources_dominantes:
+    - libelle: "Grandes cultures, travail intensif des sols et epandages"
+      polluants: ["PM10", "NH3"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Fiche departementale des emissions de Charente-Maritime, 6 aout 2025; Fiche regionale PM10, 30 juillet 2025 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-08/fiche_dept_3.2.4_rev1_Charente_Maritime_20250806_VF.pdf ; https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-08/fiche_poll_PM10_3.2.4_rev1-20250730-VF.pdf"
+    - libelle: "Chauffage residentiel au bois, dominant pour les particules fines"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Charente-Maritime, 2 juin 2025, p. 6-7; Etude comparative des stations de La Pallice, 2 juin 2025 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_CharenteMaritime_D17_2025-06-02.pdf ; https://www.atmo-nouvelleaquitaine.org/publications/etude-comparative-des-stations-de-mesure-du-quartier-la-pallice-et-temporaire-de-saint"
+    - libelle: "Manutention, stockage et trafic du port de La Pallice"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan 2025 de l'impact portuaire a La Pallice, 24 mars 2026 - https://www.atmo-nouvelleaquitaine.org/publications/bilan-2025-impact-de-lactivite-portuaire-sur-la-qualite-de-lair-du-quartier-la-pallice"
+  topographie_climat:
+    libelle: >
+      Le littoral oceanique est souvent ventile par les flux d'ouest et les brises de mer; ces circulations peuvent toutefois diriger les panaches portuaires vers La Rochelle.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Prefecture de la Charente-Maritime, Regularisation du confortement des berges de la Charente a Rochefort, 2016, resume non technique; Atmo Nouvelle-Aquitaine, Bilan portuaire 2025, 24 mars 2026 - https://www.charente-maritime.gouv.fr/content/download/21796/151131/file/Berges_Charentes_Rochefort%2520Demande.pdf ; https://www.atmo-nouvelleaquitaine.org/publications/bilan-2025-impact-de-lactivite-portuaire-sur-la-qualite-de-lair-du-quartier-la-pallice"
+  regime_episodes:
+    - saison: "toute_annee"
+      polluant: "PM10"
+      mecanisme: "Manutentions portuaires et remise en suspension lorsque La Pallice est sous vent d'ouest-sud-ouest"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan 2025 de l'impact portuaire a La Pallice, 24 mars 2026 - https://www.atmo-nouvelleaquitaine.org/publications/bilan-2025-impact-de-lactivite-portuaire-sur-la-qualite-de-lair-du-quartier-la-pallice"
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois et accumulation lors des conditions froides et peu dispersives"
+      confiance: "moyenne"
+      source: "Atmo Nouvelle-Aquitaine, Etude comparative des stations de La Pallice, 2 juin 2025; Hiver: mieux comprendre les episodes de pollution, 4 fevrier 2026 - https://www.atmo-nouvelleaquitaine.org/publications/etude-comparative-des-stations-de-mesure-du-quartier-la-pallice-et-temporaire-de-saint ; https://www.atmo-nouvelleaquitaine.org/actualite/hiver-mieux-comprendre-les-episodes-de-pollution-atmospherique"
+  transport_longue_distance:
+    - origine: "Atlantique_et_Sahara"
+      polluant: "PM10"
+      regime: "tempetes_atlantiques_et_flux_de_sud"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2021 - extrait Charente-Maritime, 2022, p. 31 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2022-09/AtmoNA_BAQA-2021_extrait_17charentemarit_2022-08-02.pdf"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        L'impact portuaire varie fortement avec le secteur de vent et les horaires de manutention; une moyenne journaliere masque ces pointes.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les brises de mer, les iles et le trait de cote sont sous-resolus et peuvent deplacer un panache d'une maille a l'autre.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Embruns, poussiere saharienne, travail du sol et manutentions peuvent produire une hausse de PM10 dont l'origine est mal attribuee.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "18"
+  nom: "Cher"
+  region: "Centre-Val de Loire"
+  resume: >
+    Grandes cultures berrichonnes, bois residentiel, trafic de Bourges et cimenterie de Beffes se combinent; les stagnations hivernales et apports sahariens structurent les PM10.
+  sources_dominantes:
+    - libelle: "Grandes cultures, elevage et epandages du Berry"
+      polluants: ["NH3", "PM10"]
+      confiance: "haute"
+      source: "Prefecture du Cher, Diagnostic territorialise du changement climatique, juin 2022, mise a jour janvier 2024, p. 36 - https://www.cher.gouv.fr/contenu/telechargement/32916/217784/file/Etude_IA_CC_Part3_Diagnostic_Territorialise_VF_240129.pdf"
+    - libelle: "Chauffage residentiel au bois, premier contributeur aux particules fines"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Prefecture du Cher, Diagnostic territorialise du changement climatique, juin 2022, mise a jour janvier 2024, p. 36 - https://www.cher.gouv.fr/contenu/telechargement/32916/217784/file/Etude_IA_CC_Part3_Diagnostic_Territorialise_VF_240129.pdf"
+    - libelle: "Trafic routier de Bourges Plus et des axes structurants"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Prefecture du Cher, Diagnostic territorialise du changement climatique, juin 2022, mise a jour janvier 2024, p. 36 - https://www.cher.gouv.fr/contenu/telechargement/32916/217784/file/Etude_IA_CC_Part3_Diagnostic_Territorialise_VF_240129.pdf"
+    - libelle: "Cimenterie Calcia de Beffes, source ponctuelle departementale de dioxyde de soufre"
+      polluants: ["SO2"]
+      confiance: "haute"
+      source: "Prefecture du Cher, Changement climatique - Partie 4 Enjeux, mars 2023, p. 18 - https://www.cher.gouv.fr/contenu/telechargement/35290/274955/file/Etudes_IA_CC_Part4_Enjeux_VF-1.pdf"
+  topographie_climat:
+    libelle: >
+      Les plateaux ouverts de Champagne berrichonne sont exposes aux vents d'ouest et de sud-ouest; les modestes vallees du Cher, de l'Yevre et de l'Arnon creent des contrastes locaux.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Prefecture du Cher, Portraits du Cher - Milieu physique, janvier 2015 - https://www.cher.gouv.fr/content/download/8146/50456/file/Milieu_physique_janvier%2B2015.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois et accumulation en basse atmosphere sous conditions meteorologiques peu dispersives"
+      confiance: "haute"
+      source: "Lig'Air, Rapport d'activite 2024, 2025, p. 22 - https://www.ligair.fr/storage/ligair_ra_2024_vf.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud_charge_de_poussieres_desertiques"
+      confiance: "haute"
+      source: "Lig'Air, Une tempete de poussieres sahariennes entraine un pic de PM10 dans la region, mars 2026 - https://www.ligair.fr/actualites/une-tempete-de-poussieres-sahariennes-entraine-un-pic-de-particules-fines-pm10-dans-notre-region-1"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille departementale confond l'agglomeration de Bourges, Vierzon, les plaines cerealieres et les secteurs plus boises du sud.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le calendrier des epandages et la conversion de l'ammoniac en particules secondaires sont mal representes par des emissions moyennes.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le panache ponctuel de SO2 de Beffes peut etre dilue ou deplace dans une maille trop large.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "19"
+  nom: "Correze"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Bassin de Brive et vallees contrastent avec Millevaches; chauffage au bois domine les particules fines et le trafic concentre les oxydes d'azote urbains.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, dominant pour les particules"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Correze, 13 octobre 2025, p. 6 et 8; Chauffage au bois: premiere source de particules, 18 fevrier 2026 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-10/BAQA_DEPT_Correze_D19_2025-10-13.pdf ; https://www.atmo-nouvelleaquitaine.org/actualite/chauffage-au-bois-premiere-source-de-particules-en-nouvelle-aquitaine"
+    - libelle: "Trafic routier du bassin de Brive, de Tulle et des axes de vallee"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Correze, 13 octobre 2025, p. 5-6 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-10/BAQA_DEPT_Correze_D19_2025-10-13.pdf"
+  topographie_climat:
+    libelle: >
+      Le departement descend par paliers du plateau de Millevaches vers la depression de Brive; vallees, plateaux exposes et bassin bas ont des regimes de dispersion distincts.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Prefecture de la Correze, La Correze: un paysage contraste, mise a jour 2 decembre 2020 - https://www.correze.gouv.fr/Publications/La-Correze/Geographie/La-Correze-un-paysage-contraste"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Combustion du bois et accumulation dans les bassins et vallees lors des basses couches peu dispersives"
+      confiance: "moyenne"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Correze, 13 octobre 2025, p. 6 et 8; Hiver: mieux comprendre les episodes de pollution, 4 fevrier 2026; Prefecture de la Correze, La Correze: un paysage contraste, mise a jour 2 decembre 2020 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-10/BAQA_DEPT_Correze_D19_2025-10-13.pdf ; https://www.atmo-nouvelleaquitaine.org/actualite/hiver-mieux-comprendre-les-episodes-de-pollution-atmospherique ; https://www.correze.gouv.fr/Publications/La-Correze/Geographie/La-Correze-un-paysage-contraste"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une seule maille moyenne la depression de Brive, les vallees de Tulle et les hauts plateaux beaucoup plus froids et exposes.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les emissions de chauffage au bois sont tres dependantes de la temperature et de l'heure, donc mal restituees par un profil moyen.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une correction calibree dans le bassin de Brive se transfere mal aux stations ou communes situees sur les plateaux d'altitude.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "21"
+  nom: "Cote-d'Or"
+  region: "Bourgogne-Franche-Comte"
+  resume: >
+    Dijon routiere sous PPA et ZFE contraste avec plaines agricoles et reliefs occidentaux; inversions hivernales, epandages et Sahara pilotent les PM10.
+  sources_dominantes:
+    - libelle: "Trafic routier et grands axes de l'unite urbaine de Dijon"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Bourgogne-Franche-Comte, Plan de protection de l'atmosphere de Dijon, approuve le 6 mai 2014, p. 56 et 61, page mise a jour le 2 juin 2026 - https://www.bourgogne-franche-comte.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-de-dijon-a5647.html"
+    - libelle: "Industries, chaufferies et sources ponctuelles de l'agglomeration dijonnaise"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "moyenne"
+      source: "DREAL Bourgogne-Franche-Comte, Plan de protection de l'atmosphere de Dijon, approuve le 6 mai 2014, p. 56 et 61, page mise a jour le 2 juin 2026 - https://www.bourgogne-franche-comte.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-de-dijon-a5647.html"
+    - libelle: "Grandes cultures et epandages de la plaine orientale"
+      polluants: ["NH3", "PM10"]
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, L'ammoniac atmospherique, 2023, p. 91; Bilan de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/2024-06/l_ammoniac_atmospherique_de_la_caracterisation_des_sources_aux_leviers_d_actions_pour_reduire_les_em.pdf ; https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  topographie_climat:
+    libelle: >
+      Les vallonnements occidentaux de Dijon contrastent avec l'amorce plate de la plaine de Saone; vents souvent faibles et bise hivernale modulent stagnation et ventilation.
+    effet: "mixte"
+    vents_nommes: ["bise"]
+    confiance: "haute"
+    source: "Prefecture de la Cote-d'Or, Etude d'impact du quartier du Pont des Tanneries a Dijon, juillet 2020, p. 84 - https://www.cote-dor.gouv.fr/contenu/telechargement/14520/115164/file/volet_b_etude_d_impact_1_.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Temps froid, ensoleille et stable favorisant l'accumulation de particules locales et importees"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Formation de nitrate d'ammonium a partir de l'ammoniac agricole et des oxydes d'azote pendant les epandages"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "remontee_de_poussieres_desertiques_par_flux_de_sud"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  cadre_decision:
+    ppa: "PPA de l'agglomeration dijonnaise approuve le 6 mai 2014; page DREAL mise a jour le 2 juin 2026"
+    zfe: "ZFE-m de Dijon Metropole creee le 1er janvier 2025; la page locale publie une derogation generale revisable annuellement, l'Etat indique une phase pedagogique"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Bourgogne-Franche-Comte, PPA de Dijon, mise a jour 2 juin 2026; Dijon Metropole, ZFE-m, mise a jour 9 janvier 2025; Ministere de la Transition ecologique, ZFE, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.bourgogne-franche-comte.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-de-dijon-a5647.html ; https://www.dijon-metropole.fr/dijon-metropole-a-votre-service/qualite-de-lair/zone-a-faibles-emissions-mobilite/ ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        L'episode saharien du 30 mars 2024 peut etre attribue a tort aux emissions agricoles locales si le transport mineral est absent.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les gradients routiers, chaufferies et sources industrielles ponctuelles de Dijon sont lisses par une maille kilometrique.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une maille melange vallonnements occidentaux, combes urbaines et plaine de Saone, avec des regimes de vent et de brouillard differents.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "22"
+  nom: "Cotes-d'Armor"
+  region: "Bretagne"
+  resume: >
+    Elevage intensif et epandages placent ammoniac et PM10 au premier plan; vents maritimes dispersent souvent, mais les flux de nord-est provoquent des pointes.
+  sources_dominantes:
+    - libelle: "Elevage intensif, stockage des effluents et epandages agricoles"
+      polluants: ["NH3", "PM10"]
+      confiance: "haute"
+      source: "Air Breizh, Rapport annuel 2025, 29 juin 2026, p. 72; Bilan des emissions 2020, edition 16 novembre 2023, p. 10; DRAAF Bretagne, Recensement agricole 2020 - Cotes-d'Armor, 2022 - https://www.airbreizh.asso.fr/voy_content/uploads/2026/06/moins-lourd-rapport-air-breizh-2025-complet.pdf ; https://www.airbreizh.asso.fr/voy_content/uploads/2023/11/bilan_emissions_2020_161123_vf.pdf ; https://draaf.bretagne.agriculture.gouv.fr/IMG/html/fts_ra2020_cotes_d_armor.html"
+    - libelle: "Chauffage residentiel au bois"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "moyenne"
+      source: "Air Breizh, Bilan des emissions 2020, edition 16 novembre 2023, p. 10; Rapport annuel 2024, 19 juin 2025, p. 46 - https://www.airbreizh.asso.fr/voy_content/uploads/2023/11/bilan_emissions_2020_161123_vf.pdf ; https://www.airbreizh.asso.fr/voy_content/uploads/2025/06/rapport_air-breizh_bilan_regional_2024_monte-bd.pdf"
+  topographie_climat:
+    libelle: >
+      Le climat oceanique et les vents d'ouest ventilent surtout le littoral; l'exposition diminue vers l'interieur, ou le relief augmente les contrastes de pluie et de vent.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Prefecture des Cotes-d'Armor, Carriere de Coatmen - Etude d'impact, septembre 2019, p. 42, document publie en 2025 - https://www.cotes-darmor.gouv.fr/index.php/contenu/telechargement/46172/323384/file/3-R077-Rault-Coatmen_volethumain.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage residentiel lors de temperatures negatives et d'une atmosphere stable"
+      confiance: "haute"
+      source: "Air Breizh, Rapport annuel 2024, 19 juin 2025, p. 44 - https://www.airbreizh.asso.fr/voy_content/uploads/2025/06/rapport_air-breizh_bilan_regional_2024_monte-bd.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Epandages et formation de nitrate d'ammonium sous vents faibles, avec possible transport continental"
+      confiance: "haute"
+      source: "Air Breizh, Episode PM10 sur le nord de la Bretagne, 27 mars 2020 - https://www.airbreizh.asso.fr/episode-de-pollution-aux-particules-fines-pm10-en-cours-sur-le-nord-de-la-bretagne/"
+  transport_longue_distance:
+    - origine: "Europe_du_Nord_Est"
+      polluant: "PM10"
+      regime: "flux_de_nord_est_et_panache_transfrontalier"
+      confiance: "haute"
+      source: "Air Breizh, Rapport annuel 2024, 19 juin 2025, p. 44 - https://www.airbreizh.asso.fr/voy_content/uploads/2025/06/rapport_air-breizh_bilan_regional_2024_monte-bd.pdf"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le panache de particules venu du nord-est de l'Europe en septembre 2024 peut etre confondu avec le signal agricole local.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le calendrier des epandages, la volatilisation de l'ammoniac et sa conversion secondaire sont mal restitues par un profil annuel uniforme.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le basculement entre vents maritimes dispersifs et flux continentaux faibles change brutalement la representativite des stations rurales et cotieres.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "23"
+  nom: "Creuse"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Chauffage au bois et agriculture dominent ce departement de plateaux et vallees; faible densite, inversions locales et panache de Genouillac compliquent l'echelle.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, dominant pour les particules"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Creuse, 13 octobre 2025, p. 6-7; Chauffage au bois: premiere source de particules, 18 fevrier 2026 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-10/BAQA_DEPT_Creuse_D23_2025-10-13.pdf ; https://www.atmo-nouvelleaquitaine.org/actualite/chauffage-au-bois-premiere-source-de-particules-en-nouvelle-aquitaine"
+    - libelle: "Elevage, fertilisation et engins agricoles"
+      polluants: ["NH3", "NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Fiche departementale des emissions de Creuse, 6 aout 2025; Bilan annuel 2024 en Creuse, 13 octobre 2025, p. 5-7 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-08/fiche_dept_3.2.4_rev1_Creuse_20250806_VF.pdf ; https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-10/BAQA_DEPT_Creuse_D23_2025-10-13.pdf"
+    - libelle: "Usine de laine de roche Eurocoustic a Genouillac, source ponctuelle surveillee"
+      polluants: ["SO2", "NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Plan de surveillance 2025 de Saint-Gobain Eurocoustic a Genouillac, 25 mars 2026 - https://www.atmo-nouvelleaquitaine.org/publications/plan-de-surveillance-de-la-qualite-de-lair-2025-saint-gobain-eurocoustic-genouillac-23"
+  topographie_climat:
+    libelle: >
+      Des plateaux atlantiques exposes alternent avec cuvettes et vallees encaissees; l'altitude et les premiers reliefs du Massif central creent plusieurs regimes climatiques locaux.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Prefecture de la Creuse, DDRM 23, edition 2021, p. 70; DREAL Nouvelle-Aquitaine, Vallee de la Creuse, page consultee le 10 aout 2026 - https://www.creuse.gouv.fr/index.php/contenu/telechargement/22260/164281/file/DDRM_23_2021-2.pdf ; https://www.nouvelle-aquitaine.developpement-durable.gouv.fr/creuse-a12449.html"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois et accumulation locale dans les cuvettes et vallees lors des situations peu dispersives"
+      confiance: "moyenne"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 en Creuse, 13 octobre 2025, p. 7; Hiver: mieux comprendre les episodes de pollution, 4 fevrier 2026; Prefecture de la Creuse, DDRM 23, edition 2021, p. 70 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-10/BAQA_DEPT_Creuse_D23_2025-10-13.pdf ; https://www.atmo-nouvelleaquitaine.org/actualite/hiver-mieux-comprendre-les-episodes-de-pollution-atmospherique ; https://www.creuse.gouv.fr/index.php/contenu/telechargement/22260/164281/file/DDRM_23_2021-2.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les pointes autour de Genouillac dependent du vent et de phases particulieres de fonctionnement que l'inventaire moyen ne reproduit pas.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une maille grossiere lisse l'opposition entre plateaux ventiles, cuvettes froides et vallees encaissees.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une calibration sur le fond rural de MERA se transfere mal au Grand Gueret ou au voisinage industriel de Genouillac.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null

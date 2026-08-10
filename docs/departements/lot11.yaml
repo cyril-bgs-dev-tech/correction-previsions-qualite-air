@@ -1,0 +1,248 @@
+- code: "72"
+  nom: "Sarthe"
+  region: "Pays de la Loire"
+  resume: >
+    Le Mans concentre 12 % des emissions de PM10 du departement ; comme a Nantes et
+    Angers, le chauffage au bois individuel domine les emissions.
+  sources_dominantes:
+    - libelle: "Chauffage au bois individuel et secteur residentiel, moteur principal des emissions de l'agglomeration mancelle, comme a Nantes et Angers"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 53 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+    - libelle: "L'agglomeration du Mans concentre 12 % des emissions de PM10 de la Sarthe : le reste du departement est un fond diffus"
+      polluants: ["PM10"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 53 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+    - libelle: "Trafic routier, suivi par une station dediee au Mans (Guedou) distincte du fond urbain (Sources) et du fond periurbain (Spay)"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 52 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+  topographie_climat: null
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Aucun PPA en Sarthe ; le PPA des Pays de la Loire couvre Nantes - Saint-Nazaire"
+    zfe: "Aucune ZFE-m documentee en Sarthe ; celles de la region sont portees par Nantes Metropole et Angers Loire Metropole"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DREAL Pays de la Loire, Le PPA 2015 de Nantes - Saint-Nazaire, consulte en 2026 - https://www.pays-de-la-loire.developpement-durable.gouv.fr/le-ppa-2015-de-nantes-st-nazaire-a6686.html ; Air Pays de la Loire, Rapport annuel 2024, 2025, p. 52 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Trois stations mancelles decrivent trois environnements distincts - trafic, fond
+        urbain, fond periurbain - dans un rayon de quelques kilometres : le gradient
+        qu'elles mesurent est entierement sous la maille d'un modele regional.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le chauffage au bois individuel domine les emissions : elles suivent la
+        temperature ressentie du soir et non le trafic, donc un cycle journalier
+        different de celui qu'un modele cale sur les NOx apprend.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "77"
+  nom: "Seine-et-Marne"
+  region: "Ile-de-France"
+  resume: >
+    Aucune publication departementale n'a pu etre trouvee : Airparif ne publie de bilan
+    departemental que pour une partie des departements franciliens.
+  sources_dominantes: null
+  topographie_climat: null
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA d'Ile-de-France 2025-2030, entre en vigueur le 30 janvier 2025, applicable a l'ensemble de la region donc a la Seine-et-Marne"
+    zfe: "Aucune ZFE-m en Seine-et-Marne ; celle de la Metropole du Grand Paris ne couvre pas le departement"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 - https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le departement est le plus etendu et le plus rural d'Ile-de-France mais releve
+        du meme PPA que Paris : un modele qui apprend le regime francilien sur des
+        stations urbaines denses appliquera un biais urbain a un territoire de grandes
+        cultures.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source:
+    - "Aucun bilan departemental Seine-et-Marne n'a ete localise chez Airparif : seuls les bilans 75, 91 et 93 existent sous le motif Bilan_QA_<code>_2024, les autres codes rendant une erreur 404. Le bilan regional 2024 d'Airparif ne contient aucun contenu departemental."
+
+- code: "78"
+  nom: "Yvelines"
+  region: "Ile-de-France"
+  resume: >
+    Valeur limite annuelle de NO2 respectee, mais recommandation journaliere de l'OMS
+    depassee sur la totalite du territoire de Grand Paris Seine et Oise.
+  sources_dominantes:
+    - libelle: "Autoroute A13 et departementale D983 : les concentrations les plus elevees du territoire sont relevees a leur droit"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2024 de la qualite de l'air - Grand Paris Seine & Oise, juillet 2025, p. 3 - https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_Grand_Paris_Seine_et_Oise_2024.pdf"
+    - libelle: "Trafic routier, dont la baisse tendancielle des emissions explique l'essentiel de l'amelioration constatee en 2024"
+      polluants: ["NO2", "PM2.5"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2024 de la qualite de l'air - Grand Paris Seine & Oise, juillet 2025, p. 2 - https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_Grand_Paris_Seine_et_Oise_2024.pdf"
+  topographie_climat: null
+  regime_episodes:
+    - saison: "toute_annee"
+      polluant: "O3"
+      mecanisme: "Seul polluant dont les niveaux n'ont pas baisse en 2024 sur le territoire, alors que les autres profitaient d'une pluviometrie record et d'un hiver doux"
+      confiance: "haute"
+      source: "Airparif, Bilan 2024 de la qualite de l'air - Grand Paris Seine & Oise, juillet 2025, p. 2 - https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_Grand_Paris_Seine_et_Oise_2024.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA d'Ile-de-France 2025-2030, entre en vigueur le 30 janvier 2025"
+    zfe: "Aucune ZFE-m dans les Yvelines ; celle de la Metropole du Grand Paris ne couvre pas le departement"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 - https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le fond varie de 7 a 13 µg/m3 sur le seul territoire de Grand Paris Seine et
+        Oise, alors que 300 residents seulement depassent la valeur limite : l'enjeu
+        n'est pas le pic mais un fond legerement trop haut partout, que le RMSE global
+        ne fait pas ressortir.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        La valeur limite annuelle est respectee mais la recommandation journaliere de
+        l'OMS est depassee sur tout le territoire : selon le seuil retenu, le meme
+        departement est conforme ou entierement en depassement.
+      confiance: "haute"
+      speculatif: false
+  sans_source:
+    - "Le bilan disponible porte sur l'intercommunalite de Grand Paris Seine et Oise, pas sur l'ensemble des Yvelines : l'extrapolation au departement n'est pas etayee."
+
+- code: "79"
+  nom: "Deux-Sevres"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Departement sans influence industrielle repertoriee dans le reseau : le NO2 y est
+    tres majoritairement routier et concentre le long des axes.
+  sources_dominantes:
+    - libelle: "Trafic routier, source tres majoritaire du dioxyde d'azote, dont les concentrations les plus elevees se rencontrent le long des axes a fort trafic"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Deux-Sevres, juin 2025, p. 5 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_DeuxSevres_D79_2025-06-02.pdf"
+    - libelle: "Sources multiples et melangees pour les particules - chauffage des logements, trafic, industries, agriculture - ce qui attenue le contraste entre axes routiers et zones d'habitation"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Deux-Sevres, juin 2025, p. 6 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_DeuxSevres_D79_2025-06-02.pdf"
+  topographie_climat: null
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Non documente dans le bilan departemental 2024 consulte"
+    zfe: "Non documentee dans le bilan departemental 2024 consulte"
+    contentieux_no2: false
+    confiance: "basse"
+    source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Deux-Sevres, juin 2025, p. 3 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_DeuxSevres_D79_2025-06-02.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Atmo Nouvelle-Aquitaine note que pour les PM10 les differences entre axes
+        routiers et zones d'habitation sont moins marquees que pour le NO2 : un modele
+        qui utilise la proximite d'un axe comme predicteur unique gagnera sur le NO2 et
+        rien sur les particules.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "80"
+  nom: "Somme"
+  region: "Hauts-de-France"
+  resume: >
+    Aucune publication departementale n'a pu etre trouvee pour la Somme : le bilan
+    territorial 2024 d'Atmo Hauts-de-France est regional.
+  sources_dominantes: null
+  topographie_climat: null
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Non documente pour la Somme dans les sources consultees ; les PPA des Hauts-de-France couvrent les agglomerations de Lille et le bassin minier"
+    zfe: "Aucune ZFE-m documentee dans la Somme"
+    contentieux_no2: false
+    confiance: "basse"
+    source: "Atmo Hauts-de-France, Bilan territorial 2024 - Hauts-de-France, 2025, p. 6 - https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2025-06/BT_HDF_2024_0.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Departement littoral de la Manche : les particules y comportent une fraction
+        marine que les inventaires d'emissions anthropiques ne portent pas, mecanisme
+        etudie par Atmo Normandie et Atmo Hauts-de-France sur la zone littorale mais
+        non quantifie ici.
+      confiance: "basse"
+      speculatif: true
+  sans_source:
+    - "Aucun bilan departemental de la Somme n'a ete localise chez Atmo Hauts-de-France ; les URL derivees du motif BT_<departement>_2024 rendent une erreur 404."
+
+- code: "85"
+  nom: "Vendee"
+  region: "Pays de la Loire"
+  resume: >
+    Quatre journees d'indice mauvais en 2024 contre quatorze en 2023, et aucune
+    procedure d'information : une annee sans evenement a detecter.
+  sources_dominantes:
+    - libelle: "Quatre sources retenues a parts non hierarchisees par Air Pays de la Loire : trafic routier, chauffage au bois individuel, agriculture et industrie"
+      polluants: ["NO2", "PM10", "PM2.5", "NH3"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 55 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+    - libelle: "Deux environnements suivis seulement : le fond urbain de La Roche-sur-Yon (Delacroix) et le site rural de La Tardiere"
+      polluants: ["NO2", "PM10", "O3"]
+      confiance: "haute"
+      source: "Air Pays de la Loire, Rapport annuel 2024, 2025, p. 54 et p. 55 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf"
+  topographie_climat: null
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Aucun PPA en Vendee ; le PPA des Pays de la Loire couvre Nantes - Saint-Nazaire"
+    zfe: "Aucune ZFE-m documentee en Vendee"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DREAL Pays de la Loire, Le PPA 2015 de Nantes - Saint-Nazaire, consulte en 2026 - https://www.pays-de-la-loire.developpement-durable.gouv.fr/le-ppa-2015-de-nantes-st-nazaire-a6686.html ; Air Pays de la Loire, Rapport annuel 2024, 2025, p. 55 - https://airpl.org/sites/default/files/reports/APL_RapportAnnuel-2024_BD.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        En 2024 aucune procedure d'information n'a ete mise en oeuvre et aucun
+        depassement du seuil d'information n'a ete mesure : sur cette annee-la, tout
+        score de detection calcule sur la Vendee est indefini faute d'evenement positif.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le nombre de journees d'indice mauvais passe de 14 a 4 d'une annee sur l'autre,
+        pour des emissions comparables : comparer deux annees revient a comparer deux
+        meteorologies, pas deux qualites de prevision.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "86"
+  nom: "Vienne"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Seul departement de son groupe a cumuler la surveillance des pesticides, des
+    pollens et des particules ultrafines, autour du domaine de Grand Poitiers.
+  sources_dominantes:
+    - libelle: "Trafic routier, source tres majoritaire du dioxyde d'azote, concentre le long des axes du domaine modelise de Grand Poitiers"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Vienne, juin 2025, p. 5 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Vienne_D86_2025-06-02.pdf"
+    - libelle: "Surveillance elargie aux pesticides et aux particules fines et ultrafines, en plus des pollens : les autres departements voisins ne suivent que les pollens"
+      polluants: ["PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Vienne, juin 2025, p. 3 et p. 8 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Vienne_D86_2025-06-02.pdf"
+  topographie_climat: null
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Non documente dans le bilan departemental 2024 consulte"
+    zfe: "Non documentee dans le bilan departemental 2024 consulte"
+    contentieux_no2: false
+    confiance: "basse"
+    source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Vienne, juin 2025, p. 3 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Vienne_D86_2025-06-02.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        La modelisation d'Atmo Nouvelle-Aquitaine se fait sur un domaine urbain nomme -
+        Grand Poitiers - et non sur le departement : le reste de la Vienne est decrit
+        par un fond regional bidimensionnel, d'une resolution tout autre.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null

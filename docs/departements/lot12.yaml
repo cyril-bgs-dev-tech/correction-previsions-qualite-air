@@ -1,0 +1,338 @@
+- code: "87"
+  nom: "Haute-Vienne"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Le NO2 a recule de 44 % en dix ans quand le SO2 n'a pas bouge : Saillat-sur-Vienne
+    ne suit aucune tendance.
+  sources_dominantes:
+    - libelle: "Site industriel de Saillat-sur-Vienne, seule station du departement sous influence industrielle, suivie pour le SO2 depuis 2008"
+      polluants: ["SO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Haute-Vienne, juin 2025, p. 4 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_HauteVienne_D87_2025-06-02.pdf"
+    - libelle: "Trafic routier de l'agglomeration de Limoges, suivi par deux stations - Aine depuis 2003 et Berland depuis 2019"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Haute-Vienne, juin 2025, p. 4 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_HauteVienne_D87_2025-06-02.pdf"
+  topographie_climat: null
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Non documente dans le bilan departemental 2024 consulte"
+    zfe: "Non documentee dans le bilan departemental 2024 consulte"
+    contentieux_no2: false
+    confiance: "basse"
+    source: "Atmo Nouvelle-Aquitaine, Bilan annuel 2024 de la qualite de l'air en Haute-Vienne, juin 2025, p. 3 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_HauteVienne_D87_2025-06-02.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Sur dix ans, le NO2 recule de 44 % et le CO de 33 % pendant que le SO2 reste
+        stable a 0 % : un modele qui apprend une tendance commune a tous les polluants
+        se trompera sur la station industrielle, qui n'en suit aucune.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Cinq stations seulement, dont trois hors des zones urbaines : l'evaluation
+        departementale repose sur un echantillon dont deux points sont sous influence
+        d'un seul site industriel.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "88"
+  nom: "Vosges"
+  region: "Grand Est"
+  resume: >
+    Le massif vosgien abrite l'Alsace et lui vaut tous les episodes d'ozone ; la facade
+    ouest, ou se trouve le departement, reste relativement epargnee.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, principal emetteur de benzo[a]pyrene et de particules dans les departements ruraux du sud du Grand Est"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "moyenne"
+      source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST de la Meuse, 2024, p. 6 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-10/Bilan_CODERST_Meuse_2023.pdf"
+  topographie_climat:
+    libelle: >
+      Le massif des Vosges cree un effet d'abri qui reduit les precipitations et
+      stabilise l'atmosphere dans le fosse rhenan, a l'est. Le departement est sur la
+      facade ouest du massif, celle que les episodes d'ozone epargnent le plus souvent.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "haute"
+    source: "ATMO Grand Est, Bilan qualite de l'air Grand Est 2025, 2026, p. 16 et p. 21 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2026-03/BilanQualit%C3%A9del'Air%202025.pdf"
+  regime_episodes:
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Les episodes d'ozone du Grand Est surviennent systematiquement lors de fortes chaleurs sans vent pendant plusieurs jours ; ils touchent l'Alsace abritee derriere les Vosges et epargnent relativement la facade ouest"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan qualite de l'air Grand Est 2025, 2026, p. 21 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2026-03/BilanQualit%C3%A9del'Air%202025.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Aucun PPA dans les Vosges ; le declenchement des procedures y obeit a un critere de 50 000 habitants exposes, comme dans les Ardennes, l'Aube, la Haute-Marne et la Meuse, et non au critere de 10 % de la population applique aux departements plus peuples de la region"
+    zfe: "Aucune ZFE-m documentee dans les Vosges"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "ATMO Grand Est, Bilan 2023 de la qualite de l'air - CODERST de la Meuse, 2024, p. 17 (criteres de declenchement, arrete du 7 avril 2016 repris par l'AIP du 24 mai 2017) - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2024-10/Bilan_CODERST_Meuse_2023.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le relief separe deux regimes d'ozone opposes a moins de cinquante kilometres :
+        l'Alsace abritee accumule, la facade vosgienne est balayee. Une maille qui
+        chevauche la crete moyenne les deux et ne decrit ni l'un ni l'autre.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le seuil de declenchement est un nombre absolu d'habitants exposes - 50 000 -
+        et non une part de la population : a concentration identique, un episode
+        declenche dans un departement peuple et pas ici.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "89"
+  nom: "Yonne"
+  region: "Bourgogne-Franche-Comte"
+  resume: >
+    Departement de la Zone Regionale, decrit par les seules stations d'Auxerre et de
+    Sens, et touche par les quatre episodes regionaux de 2024.
+  sources_dominantes:
+    - libelle: "Combustion de biomasse, source primaire identifiee dans les episodes hivernaux de particules de la region"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "moyenne"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  topographie_climat: null
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Episode des 13 et 14 janvier 2024 : conditions fraiches, ensoleillees et stables depuis plusieurs jours, avec une forte contribution de particules importees"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "L'ammoniac agricole est au printemps le principal precurseur de particules secondaires de nitrate d'ammonium, avec des pics lors des periodes d'epandage"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  transport_longue_distance:
+    - origine: "Europe"
+      polluant: "PM10"
+      regime: "forte contribution de particules importees lors de l'episode hivernal des 13 et 14 janvier 2024"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  cadre_decision:
+    ppa: "Aucun PPA ; l'Yonne releve de la Zone Regionale, hors des quatre Zones A Risque de Bourgogne-Franche-Comte"
+    zfe: "Aucune ZFE-m documentee dans l'Yonne"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 19 et p. 47 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Deux stations, Auxerre et Sens, portent seules la representativite d'un
+        departement etendu classe en Zone Regionale : une erreur locale sur l'une d'elles
+        se propage a tout le score departemental.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        L'episode de janvier tient pour une part importante a des particules importees :
+        un correctif ancre sur les emissions locales ne peut pas le reproduire, et
+        l'attribuera au chauffage.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "90"
+  nom: "Territoire de Belfort"
+  region: "Bourgogne-Franche-Comte"
+  resume: >
+    Zone A Risque de l'aire Belfort-Montbeliard, et theatre du seul episode manque de
+    2024 : des sources primaires de combustion de biomasse.
+  sources_dominantes:
+    - libelle: "Combustion de biomasse en sources primaires, cause identifiee de l'episode du 24 novembre 2024"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+    - libelle: "Aire urbaine dense Belfort-Montbeliard, l'une des quatre Zones A Risque de la region, suivie par deux stations belfortaines - Centre, rouverte en 2024, et Octroi"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 8, p. 19 et p. 51 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  topographie_climat:
+    libelle: >
+      Le piemont vosgien qui borde le departement figure, avec le Morvan et l'arc
+      jurassien, parmi les zones aux niveaux de PM10 les moins eleves de la region :
+      le contraste entre l'aire urbaine et son pourtour est donc marque.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 47 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Episode du 24 novembre 2024, non prevu, aux sources principalement primaires issues de la combustion de biomasse"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Episode regional des 13 et 14 janvier 2024, conditions stables et forte contribution de particules importees"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  transport_longue_distance:
+    - origine: "Europe"
+      polluant: "PM10"
+      regime: "forte contribution de particules importees lors de l'episode hivernal des 13 et 14 janvier 2024"
+      confiance: "haute"
+      source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  cadre_decision:
+    ppa: "Aucun PPA ; le secteur de l'aire urbaine Belfort-Montbeliard est l'une des quatre Zones A Risque de Bourgogne-Franche-Comte"
+    zfe: "Aucune ZFE-m documentee dans le Territoire de Belfort"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Atmo Bourgogne-Franche-Comte, Bilan annuel 2024, 2025, p. 19 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le seul episode manque de l'annee dans la region s'est produit ici, avec des
+        sources primaires de combustion de biomasse : ce sont les episodes locaux et
+        primaires, sans signature regionale, que la chaine ne voit pas venir.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le departement est le plus petit de France et sa Zone A Risque deborde sur le
+        Doubs : une maille departementale n'a pas de sens ici, l'objet pertinent est
+        l'aire urbaine Belfort-Montbeliard.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "91"
+  nom: "Essonne"
+  region: "Ile-de-France"
+  resume: >
+    Tout a baisse en 2024 sauf l'ozone ; les depassements se relevent au droit des
+    grands axes A6, A10, N20 et N104 et autour de Paris-Orly.
+  sources_dominantes:
+    - libelle: "Grands axes routiers A6, A10, N20 et N104 : les depassements de la valeur limite annuelle de NO2 y sont ponctuellement releves, au droit et au voisinage de la voirie"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Airparif, Bilan de la qualite de l'air 2024 - Essonne, 2025, p. 3 - https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_91_2024.pdf"
+    - libelle: "Plateforme aeroportuaire de Paris-Orly, qui fait l'objet d'une surveillance distincte de celle du departement"
+      polluants: ["NO2", "PM2.5"]
+      confiance: "haute"
+      source: "Airparif, Bilan de la qualite de l'air 2024 - Essonne, 2025, p. 3 - https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_91_2024.pdf"
+    - libelle: "Chauffage residentiel, dont le recours a ete limite en 2024 par des temperatures hivernales douces"
+      polluants: ["PM2.5", "PM10"]
+      confiance: "haute"
+      source: "Airparif, Bilan de la qualite de l'air 2024 - Essonne, 2025, p. 2 - https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_91_2024.pdf"
+  topographie_climat: null
+  regime_episodes:
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Seul polluant a ne pas avoir baisse en 2024, alors que la pluviometrie record et l'hiver doux faisaient reculer tous les autres"
+      confiance: "haute"
+      source: "Airparif, Bilan de la qualite de l'air 2024 - Essonne, 2025, p. 2 - https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_91_2024.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA d'Ile-de-France 2025-2030, entre en vigueur le 30 janvier 2025"
+    zfe: "Aucune ZFE-m en Essonne ; celle de la Metropole du Grand Paris ne couvre pas le departement"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 - https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une annee de pluviometrie record fait baisser toutes les concentrations sauf
+        l'ozone : comparer deux annees revient a comparer deux meteorologies, et un
+        modele credite a tort les politiques publiques d'une amelioration climatique.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les depassements sont ponctuels et strictement au droit des axes : la population
+        exposee depend de la distance a la voirie, une echelle que ne restitue aucune
+        maille kilometrique.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "94"
+  nom: "Val-de-Marne"
+  region: "Ile-de-France"
+  resume: >
+    NO2 encore en depassement recurrent pour 10 000 habitants, aux abords de l'A4, l'A6
+    et l'A86, malgre 60 % d'emissions de NOx en moins depuis 2005.
+  sources_dominantes:
+    - libelle: "Autoroutes A4, A6 et A86 : les depassements de valeur limite en NO2 comme en PM10 se relevent a leur droit et a leur voisinage"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2021 de la qualite de l'air - Val-de-Marne, septembre 2022, p. 3 et p. 5 - https://www.airparif.fr/sites/default/files/pdf/Bilan_94_2021.pdf"
+    - libelle: "Trafic routier, contributeur principal a la baisse des emissions : pres de 60 % de NOx en moins entre 2005 et 2018 et pres de 70 % pour les particules du transport"
+      polluants: ["NO2", "PM2.5", "PM10"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2021 de la qualite de l'air - Val-de-Marne, septembre 2022, p. 4 et p. 8 - https://www.airparif.fr/sites/default/files/pdf/Bilan_94_2021.pdf"
+    - libelle: "Plateforme aeroportuaire de Paris-Orly, qui borde le departement et fait l'objet d'une surveillance distincte"
+      polluants: ["NO2", "PM2.5"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2021 de la qualite de l'air - Val-de-Marne, septembre 2022, p. 3 - https://www.airparif.fr/sites/default/files/pdf/Bilan_94_2021.pdf"
+  topographie_climat: null
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Deux hivers consecutifs peu rigoureux et dispersifs ont accelere la baisse des niveaux : la meteorologie explique une part de l'evolution recente au moins aussi grande que les emissions"
+      confiance: "haute"
+      source: "Airparif, Bilan 2021 de la qualite de l'air - Val-de-Marne, septembre 2022, p. 4 - https://www.airparif.fr/sites/default/files/pdf/Bilan_94_2021.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA d'Ile-de-France 2025-2030, entre en vigueur le 30 janvier 2025"
+    zfe: "ZFE-m de la Metropole du Grand Paris, dont le Val-de-Marne fait partie"
+    contentieux_no2: true
+    confiance: "moyenne"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 - https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; CJUE, arret C-636/18 du 24 octobre 2019, zone agglomeration parisienne - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Departement de petite couronne traverse par l'A86 et l'A4 et borde par
+        Paris-Orly : les gradients y sont ceux d'un tissu continu et dense, sans fond
+        rural de reference a l'interieur de ses limites.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source:
+    - "Le bilan disponible porte sur 2021 et non sur 2024 : Airparif publie les bilans recents sous document_publication/Bilan_QA_<code>_2024 pour 75, 91 et 93 seulement, et les millesimes anterieurs sous pdf/Bilan_<code>_<annee>."
+    - "Le contentieux europeen porte sur la zone agglomeration parisienne et non sur des departements : le rattachement du Val-de-Marne a cette zone est deduit de sa position en petite couronne, pas lu dans l'arret."
+
+- code: "95"
+  nom: "Val-d'Oise"
+  region: "Ile-de-France"
+  resume: >
+    Les plateformes aeroportuaires y pesent 23 % des NOx et l'agriculture 71 % du NH3 :
+    un departement rural contraste par Paris-Charles-de-Gaulle.
+  sources_dominantes:
+    - libelle: "Plateformes aeroportuaires, dont Paris-Charles-de-Gaulle : 23 % des emissions de NOx du departement, 15 % du SO2 et 7 % des GES"
+      polluants: ["NO2", "SO2"]
+      confiance: "haute"
+      source: "Airparif, Bilan des emissions 2019 - Val-d'Oise, 2021, p. 7 et p. 11 - https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_95_2019.pdf"
+    - libelle: "Agriculture cerealiere : 71 % des emissions de NH3 et 15 % des PM10, sur un territoire essentiellement rural a l'ouest, dans le Vexin francais"
+      polluants: ["NH3", "PM10"]
+      confiance: "haute"
+      source: "Airparif, Bilan des emissions 2019 - Val-d'Oise, 2021, p. 7 et p. 8 - https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_95_2019.pdf"
+    - libelle: "Transport routier, 43 % des NOx, et chantiers, 16 % des PM10 et 11 % des PM2.5"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Airparif, Bilan des emissions 2019 - Val-d'Oise, 2021, p. 7 et p. 11 - https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_95_2019.pdf"
+  topographie_climat:
+    libelle: >
+      Territoire essentiellement rural, contraste par la presence de Paris-Charles-de-Gaulle
+      a l'est et densement peuple au sud ; 21 300 hectares de forets, dont Montmorency,
+      L'Isle-Adam et Carnelle.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Airparif, Bilan des emissions 2019 - Val-d'Oise, 2021, p. 8 - https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_95_2019.pdf"
+  regime_episodes: null
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA d'Ile-de-France 2025-2030, entre en vigueur le 30 janvier 2025"
+    zfe: "Aucune ZFE-m dans le Val-d'Oise ; celle de la Metropole du Grand Paris ne couvre pas le departement"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 - https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        La plateforme de Paris-Charles-de-Gaulle occupe le departement : un aeroport
+        est une source surfacique intense a cycle propre, que ni un inventaire routier
+        ni un cycle hebdomadaire urbain ne reproduisent. Non documente ici faute de
+        publication departementale.
+      confiance: "basse"
+      speculatif: true
+  sans_source:
+    - "La source est un bilan d'EMISSIONS 2019, pas un bilan de concentrations : elle dit ce qui est rejete dans le departement, jamais ce qui y est respire."
+    - "Airparif publie des donnees par zone aeroportuaire, non consultees ici : la contribution de Paris-Charles-de-Gaulle aux concentrations locales reste non quantifiee."

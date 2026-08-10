@@ -1,0 +1,445 @@
+- code: "13"
+  nom: "Bouches-du-Rhone"
+  region: "Provence-Alpes-Cote d'Azur"
+  resume: >
+    Pétrochimie, sidérurgie, grands ports et trafic métropolitain alimentent des panaches complexes, fortement modulés par mistral, brises et photochimie estivale.
+  sources_dominantes:
+    - libelle: "Complexe industriel, pétrochimique et énergétique de Fos-Berre"
+      polluants: ["SO2", "PM10", "PM2.5", "COV", "benzene"]
+      confiance: "haute"
+      source: "AtmoSud, Bouches-du-Rhône - inventaire 2019, page consultée en 2026 — https://www.atmosud.org/article/bouches-du-rhone"
+    - libelle: "Ports de Marseille et Fos-sur-Mer, ferries et transport maritime"
+      polluants: ["NO2", "SO2", "PM10"]
+      confiance: "haute"
+      source: "AtmoSud, Bilan 2024 - Dioxyde de soufre, 2025 — https://bilan.atmosud.org/pac/bilan-par-polluant/dioxyde-de-soufre-so2 ; AtmoSud, Projet CROISI'AIR, 2024 — https://www.atmosud.org/etude/projet-croisiair"
+    - libelle: "Trafic dense de l'ensemble urbain Aix-Marseille et des corridors autoroutiers"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "AtmoSud, Bouches-du-Rhône - inventaire 2019, page consultée en 2026 — https://www.atmosud.org/article/bouches-du-rhone"
+  topographie_climat:
+    libelle: >
+      Le mistral disperse rapidement les panaches, tandis que les brises de mer et de terre autour de l'étang de Berre peuvent les recycler et les rabattre.
+    effet: "mixte"
+    vents_nommes: ["mistral", "brise_de_mer", "brise_de_terre"]
+    confiance: "haute"
+    source: "AIRFOBEP, Mesure des métaux lourds sur l'Ouest des Bouches-du-Rhône, 2001 — https://www.atmosud.org/sites/sud/files/content/migrated/publications_import/files/011200_AirPACA_campagne_mesure_metaux_etang_berre_net.pdf"
+  regime_episodes:
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie à partir des NOx et COV du trafic et de l'industrie, favorisée par chaleur, soleil, vent faible et brises"
+      confiance: "haute"
+      source: "AtmoSud, Vigilance pollution Ozone le 20/06/2026, 2026 — https://www.atmosud.org/episodes-de-pollution/vigilance-pollution-ozone-le-20062026"
+    - saison: "toute_annee"
+      polluant: "SO2"
+      mecanisme: "Pointes brèves sous le vent des installations industrielles, énergétiques ou maritimes de Fos-Berre et Marseille"
+      confiance: "haute"
+      source: "AtmoSud, Bilan 2024 - Dioxyde de soufre, 2025 — https://bilan.atmosud.org/pac/bilan-par-polluant/dioxyde-de-soufre-so2"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud"
+      confiance: "haute"
+      source: "AtmoSud, Procédures préfectorales - particules désertiques des 30 et 31 mars 2024, 2024 — https://daliaprod.atmosud.org/index.php?cont=sendProcedure&event=getPdf&file=pdf_349_MLTSRC_20240330_122231.pdf&saved=true"
+  cadre_decision:
+    ppa: "PPA des Bouches-du-Rhone - Objectif 2025, approuve le 2 mai 2022 et encore suivi en 2025"
+    zfe: "ZFE-m Aix-Marseille en vigueur; voitures particulieres Crit'Air 4 interdites en 2026"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL PACA, PPA des Bouches-du-Rhône - Objectif 2025, 2022 — https://www.paca.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-des-bouches-du-r2794.html ; Ministère de la Transition écologique, Zones à faibles émissions, mise à jour 2026 — https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, arrêt C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les panaches ponctuels de Fos-Berre et des navires à quai sont dilués par un inventaire moyenné et peuvent manquer une station placée sous le vent.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une brise qui bascule peut recirculer un panache industriel ou maritime et inverser en quelques heures le gradient côtier-intérieur.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Un maillage départemental confondrait facilement les régimes très différents de Marseille, de l'étang de Berre, de la Crau et de l'arrière-pays.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "59"
+  nom: "Nord"
+  region: "Hauts-de-France"
+  resume: >
+    Conurbation lilloise, complexe industrialo-portuaire dunkerquois et agriculture ammoniacale se combinent sous forte influence des masses d'air transfrontalières.
+  sources_dominantes:
+    - libelle: "Trafic routier de la métropole lilloise et des corridors de transit"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP territorial 2024 - Département du Nord, 2025, p. 8 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2025-06/BT_Nord_2024_0.pdf"
+    - libelle: "Industrie lourde, énergie et activités portuaires du Dunkerquois"
+      polluants: ["SO2", "PM10", "PM2.5", "NO2"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP territorial 2024 - Département du Nord, 2025, p. 8 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2025-06/BT_Nord_2024_0.pdf ; Atmo Hauts-de-France, CAP territorial - Communauté urbaine de Dunkerque, 2025 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-05/CAP_Communaut%C3%A9%20Urbaine%20de%20Dunkerque.pdf"
+    - libelle: "Agriculture, élevage et fertilisation des cultures"
+      polluants: ["NH3", "PM10"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP territorial 2024 - Département du Nord, 2025, p. 8 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2025-06/BT_Nord_2024_0.pdf"
+  topographie_climat:
+    libelle: >
+      Le relief faible du Plat-Pays flamand favorise souvent la ventilation; lors de vents faibles, la plaine dense et les vallées peu marquées accumulent néanmoins les polluants.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Hauts-de-France, Évaluation environnementale du PPA des agglomérations de Lille et du bassin minier, 2024 — https://www.hauts-de-france.developpement-durable.gouv.fr/IMG/pdf/annexe2-1_evaluation_environnementale_eie_vf_compressed.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Combustion du chauffage au bois, trafic et remise en suspension sous atmosphère stable et peu ventilée"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Bilan de la qualité de l'air 2025, 2026 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-03/AtmoHDF_Bilan_qualite_de_lair_2025_1.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Formation de particules secondaires à partir de NH3 agricole et de NOx, renforcée par l'ensoleillement et les imports orientaux"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Bilan qualité de l'air de mars 2025, 2025 — https://www.atmo-hdf.fr/actualite/bilan-qualite-de-lair-de-mars-2025-dans-les-hauts-de-france"
+    - saison: "toute_annee"
+      polluant: "SO2"
+      mecanisme: "Pointes localisées sous le vent des sources industrielles du Dunkerquois"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Bilan qualité de l'air de mars 2025, 2025 — https://www.atmo-hdf.fr/actualite/bilan-qualite-de-lair-de-mars-2025-dans-les-hauts-de-france"
+  transport_longue_distance:
+    - origine: "Belgique_et_nord_est_de_l_Europe"
+      polluant: "PM10"
+      regime: "masses_d_air_de_nord_est_a_est"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Bilan qualité de l'air de janvier 2026, 2026 — https://www.atmo-hdf.fr/actualite/bilan-qualite-de-lair-de-janvier-dans-les-hauts-de-france"
+  cadre_decision:
+    ppa: "PPA des agglomerations de Lille et du bassin minier, approuve le 1er aout 2025; 436 communes et 13 intercommunalites"
+    zfe: "ZFE-m de la Metropole Europeenne de Lille en vigueur depuis le 1er janvier 2025; vehicules non classes interdits"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Préfecture du Nord, PPA des agglomérations de Lille et du bassin minier, 2025 — https://www.nord.gouv.fr/Actions-de-l-Etat/Environnement/Air-climat-energie/Plan-de-protection-de-l-atmosphere-des-agglomerations-de-Lille-et-du-bassin-minier ; Métropole Européenne de Lille, Zone à faibles émissions, mise à jour 2026 — https://lillemetropole.fr/zfe ; CJUE, arrêt C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les panaches de SO2 du Dunkerquois sont brefs, directionnels et difficiles à représenter avec des émissions industrielles moyennées.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Un biais de frontière peut attribuer aux émissions locales l'import particulaire de Belgique et du nord-est de l'Europe.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les rues denses de Lille et les abords immédiats des grands axes créent des gradients de NO2 sous la maille régionale.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "62"
+  nom: "Pas-de-Calais"
+  region: "Hauts-de-France"
+  resume: >
+    Agriculture et chauffage structurent les particules; trafic et industrie du bassin minier s'ajoutent aux apports transfrontaliers.
+  sources_dominantes:
+    - libelle: "Agriculture, élevage et fertilisation des cultures"
+      polluants: ["NH3", "PM10"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP territorial 2024 - Département du Pas-de-Calais, 2025, p. 8 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2025-06/BT_PasdeCalais_2024_0.pdf"
+    - libelle: "Chauffage résidentiel, notamment combustion de bois"
+      polluants: ["PM2.5", "PM10"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP territorial 2024 - Département du Pas-de-Calais, 2025, p. 8 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2025-06/BT_PasdeCalais_2024_0.pdf"
+    - libelle: "Trafic routier et activités industrielles"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP territorial 2024 - Département du Pas-de-Calais, 2025, p. 8 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2025-06/BT_PasdeCalais_2024_0.pdf"
+  topographie_climat:
+    libelle: >
+      Le relief bas et ouvert facilite la ventilation, surtout sur le littoral; les périodes de vent faible permettent toutefois l'accumulation dans l'intérieur et le bassin minier.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "DREAL Hauts-de-France, Évaluation environnementale du PPA des agglomérations de Lille et du bassin minier, 2024 — https://www.hauts-de-france.developpement-durable.gouv.fr/IMG/pdf/annexe2-1_evaluation_environnementale_eie_vf_compressed.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois, trafic et remise en suspension sous atmosphère stable et peu ventilée"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Bilan de la qualité de l'air 2025, 2026 — https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-03/AtmoHDF_Bilan_qualite_de_lair_2025_1.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Aérosols secondaires formés à partir du NH3 agricole et des NOx, avec apport de masses d'air orientales"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Bilan qualité de l'air de mars 2025, 2025 — https://www.atmo-hdf.fr/actualite/bilan-qualite-de-lair-de-mars-2025-dans-les-hauts-de-france"
+  transport_longue_distance:
+    - origine: "Belgique_et_nord_est_de_l_Europe"
+      polluant: "PM10"
+      regime: "masses_d_air_de_nord_est_a_est"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Bilan qualité de l'air de janvier 2026, 2026 — https://www.atmo-hdf.fr/actualite/bilan-qualite-de-lair-de-janvier-dans-les-hauts-de-france"
+  cadre_decision:
+    ppa: "PPA des agglomerations de Lille et du bassin minier, approuve le 1er aout 2025; il ne couvre qu'une partie du departement"
+    zfe: "Aucune ZFE-m active documentee dans le departement en 2026; Bethune figure parmi les ZFE a creer"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Préfecture du Pas-de-Calais, PPA des agglomérations de Lille et du bassin minier, mise à jour 2026 — https://www.pas-de-calais.gouv.fr/Actions-de-l-Etat/Environnement-developpement-durable/Qualite-de-l-air/Plan-de-protection-de-l-atmosphere-PPA-des-agglomerations-de-Lille-et-du-bassin-minier ; Ministère de la Transition écologique, Zones à faibles émissions, mise à jour 2026 — https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, arrêt C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille unique lisse le contraste entre littoral ventilé, agglomérations portuaires, bassin minier et campagnes agricoles.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les émissions de NH3 dépendent fortement du calendrier d'épandage; un profil mensuel moyen décale la formation printanière de nitrate d'ammonium.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les apports transfrontaliers peuvent être compensés à tort par la correction statistique comme s'ils provenaient des sources locales.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "69"
+  nom: "Rhone"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Bassin lyonnais dense, axes routiers et vallée de la Chimie conjuguent NO2, chauffage au bois et panaches industriels dans un relief parfois piégeant.
+  sources_dominantes:
+    - libelle: "Trafic routier urbain, rocades et axes de transit du bassin lyonnais"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air du Rhône, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT_Bilan-2024_69-RHONE.pdf"
+    - libelle: "Chauffage résidentiel au bois, surtout appareils individuels non performants"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air du Rhône, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT_Bilan-2024_69-RHONE.pdf"
+    - libelle: "Plateforme industrielle de la vallée de la Chimie au sud de Lyon"
+      polluants: ["SO2", "COV", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan de la qualité de l'air 2024 sur le territoire Vallée de la Chimie, 2025 — https://www.atmo-auvergnerhonealpes.fr/publications/bilan-qualite-de-lair-2024-sur-le-territoire-vallee-de-la-chimie-69"
+  topographie_climat:
+    libelle: >
+      Rhône, Saône et reliefs canalisent les vents nord-sud; ces vents dispersent, mais les inversions hivernales du bassin lyonnais retiennent les polluants près du sol.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Air Rhône-Alpes, Air et santé - Les particularités de l'air de l'agglomération lyonnaise, 2012 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/publications_import/files/120426_livret_air_et_sante.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois et autres combustions accumulés sous inversion dans le bassin lyonnais"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air du Rhône, 2025, p. 7 et 14 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT_Bilan-2024_69-RHONE.pdf ; Air Rhône-Alpes, Air et santé, 2012 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/publications_import/files/120426_livret_air_et_sante.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie régionale pendant les périodes chaudes et ensoleillées, alimentée par les précurseurs du bassin lyonnais"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air du Rhône, 2025, p. 12-14 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT_Bilan-2024_69-RHONE.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "depression_sur_l_Afrique_du_Nord_et_flux_de_sud"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Retour sur le phénomène des poussières sahariennes, 2024 — https://www.atmo-auvergnerhonealpes.fr/actualite/retour-sur-le-phenomene-des-poussieres-sahariennes"
+  cadre_decision:
+    ppa: "PPA3 de l'agglomeration lyonnaise 2022-2027, approuve le 24 novembre 2022; 167 communes dans le Rhone, l'Ain et l'Isere"
+    zfe: "ZFE-m de Lyon toujours en vigueur en 2026; vehicules particuliers Crit'Air 3, 4, 5 et non classes interdits"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhône-Alpes, Approbation du PPA3 lyonnais, 2022 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/approbation-du-ppa-de-l-agglomeration-lyonnaise-a22816.html ; Métropole de Lyon, Point d'étape - la ZFE toujours en vigueur, 2026 — https://zfe.grandlyon.com/la-zfe-toujours-en-vigueur/ ; CJUE, arrêt C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les rues-canyons, rocades et échangeurs produisent des gradients de NO2 que la maille de fond ne résout pas.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les panaches de la vallée de la Chimie sont directionnels et peuvent toucher une station sans modifier la moyenne de la maille.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une mauvaise hauteur de couche limite lors d'une inversion hivernale entraîne un biais commun sur PM10 et PM2.5 dans tout le bassin.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "74"
+  nom: "Haute-Savoie"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    La vallée de l'Arve piège les particules du chauffage au bois; trafic transalpin et décolletage ajoutent des signaux très localisés.
+  sources_dominantes:
+    - libelle: "Chauffage résidentiel au bois non performant dans la vallée de l'Arve"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Auvergne-Rhône-Alpes, Vallée de l'Arve - interdiction des foyers ouverts, 2021 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/vallee-de-l-arve-une-nouvelle-mesure-forte-pour-la-a20781.html"
+    - libelle: "Industrie du décolletage de la vallée de l'Arve"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Évaluation quantitative des Fonds Air de la vallée de l'Arve, 2024, p. 15 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-02/Rapport_2024_Vall%C3%A9e_de_l%27Arve_vfinale.pdf"
+    - libelle: "Trafic routier de vallée et transit transalpin"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "DREAL Auvergne-Rhône-Alpes, Plan de protection de l'atmosphère de la vallée de l'Arve, 2019 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/IMG/pdf/20190429-ppa-valleedelarve_hd.pdf"
+  topographie_climat:
+    libelle: >
+      La vallée de l'Arve, encaissée, concentre les activités en fond de vallée; les nuits hivernales claires et sans vent y installent fréquemment une inversion.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhône-Alpes, Rapport d'évaluation quantitative du PPA de la vallée de l'Arve, 2024 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/IMG/pdf/2024_rapport_evaluation_ppa_arve.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Combustion du bois domestique piégée sous inversion thermique dans la vallée de l'Arve"
+      confiance: "haute"
+      source: "DREAL Auvergne-Rhône-Alpes, Vallée de l'Arve - interdiction des foyers ouverts, 2021 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/vallee-de-l-arve-une-nouvelle-mesure-forte-pour-la-a20781.html ; DREAL Auvergne-Rhône-Alpes, Évaluation du PPA2, 2025 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/evaluation-du-ppa-2-et-modification-du-ppa-2-pour-a28126.html"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie estivale, avec niveaux de fond élevés dans les zones alpines et de vallée"
+      confiance: "haute"
+      source: "DREAL Auvergne-Rhône-Alpes, Plan de protection de l'atmosphère de la vallée de l'Arve, mise à jour 2023 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-de-la-vallee-de-a12373.html"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "depression_sur_l_Afrique_du_Nord_et_flux_de_sud"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Retour sur le phénomène des poussières sahariennes, 2024 — https://www.atmo-auvergnerhonealpes.fr/actualite/retour-sur-le-phenomene-des-poussieres-sahariennes"
+  cadre_decision:
+    ppa: "PPA2 de la vallee de l'Arve approuve en 2019, evalue puis modifie pour 2025-2026; perimetre de 41 communes"
+    zfe: "ZFE-m du Grand Annecy et d'Annemasse Agglo en vigueur depuis le 1er janvier 2025; vehicules non classes interdits"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhône-Alpes, Évaluation du PPA2 et modification pour 2025-2026, 2025 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/evaluation-du-ppa-2-et-modification-du-ppa-2-pour-a28126.html ; Grand Annecy, La ZFE-m en pratique, mise à jour 2026 — https://www.grandannecy.fr/zfem/la-zfe-m-en-pratique ; Annemasse Agglo, ZFE-m déployée, 2025 — https://www.annemasse-agglo.fr/infos-et-loisirs/actualites/la-zone-faibles-emissions-mobilite-zfe-m-desormais-deployee-sur-lagglo ; CJUE, arrêt C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Un relief à maille kilométrique élargit artificiellement la vallée de l'Arve et ventile trop vite la couche d'inversion.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les émissions du chauffage au bois dépendent des usages réels, de l'humidité du combustible et de démarrages que les profils moyens représentent mal.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les ateliers de décolletage et le trafic de fond de vallée créent des gradients locaux invisibles dans un inventaire spatialement lissé.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "73"
+  nom: "Savoie"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Bassin chambérien et vallées alpines cloisonnées concentrent les émissions hivernales; chauffage au bois, A43 et industrie mauriennaise créent des contrastes locaux.
+  sources_dominantes:
+    - libelle: "Chauffage résidentiel au bois"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de la Savoie, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_73-SAVOIE_v0.pdf"
+    - libelle: "Trafic routier, notamment transit de l'A43 en Maurienne"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de la Savoie, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_73-SAVOIE_v0.pdf ; Atmo Auvergne-Rhône-Alpes, Suivi de l'A43 en Maurienne 2023-2024, 2025 — https://www.atmo-auvergnerhonealpes.fr/publications/bulletins-mensuels-lies-au-suivi-de-la-qualite-de-lair-en-proximite-de-la43-en"
+    - libelle: "Industries de la vallée de la Maurienne"
+      polluants: ["SO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de la Savoie, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_73-SAVOIE_v0.pdf"
+  topographie_climat:
+    libelle: >
+      Bassin chambérien, Maurienne et Tarentaise fonctionnent comme des bassins d'air distincts; faible vent et inversions y limitent fortement le brassage.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Préfecture de la Savoie, Pollution de l'air - activation du niveau information-recommandation, 2025 — https://www.savoie.gouv.fr/Actualites/Actualites/Fin-de-la-vigilance-jaune-pollution-atmospherique ; Préfecture de la Savoie, Les bassins d'air, 2024 — https://www.savoie.gouv.fr/Actions-de-l-Etat/Paysages-environnement-risques-naturels-et-technologiques/Environnement/Qualite-de-l-air/Dispositif-de-gestion-des-episodes-de-pollution2/Les-bassins-d-air-relatifs-a-la-pollution-atmospherique"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois et autres combustions accumulés sous inversion dans les bassins chambérien, mauriennais et tarentais"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de la Savoie, 2025, p. 14-16 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_73-SAVOIE_v0.pdf ; Préfecture de la Savoie, Pollution de l'air, 2025 — https://www.savoie.gouv.fr/Actualites/Actualites/Fin-de-la-vigilance-jaune-pollution-atmospherique"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "depression_sur_l_Afrique_du_Nord_et_flux_de_sud"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Retour sur le phénomène des poussières sahariennes, 2024 — https://www.atmo-auvergnerhonealpes.fr/actualite/retour-sur-le-phenomene-des-poussieres-sahariennes"
+    - origine: "Feux_de_foret_du_Canada"
+      polluant: "PM10"
+      regime: "transport_intercontinental_en_altitude_puis_rabattement"
+      confiance: "haute"
+      source: "Préfecture de la Savoie, Pollution de l'air - épisode de juin 2025, 2025 — https://www.savoie.gouv.fr/Actualites/Actualites/Fin-de-la-vigilance-jaune-pollution-atmospherique"
+  cadre_decision:
+    ppa: "Aucun PPA actif recense en Savoie en 2026"
+    zfe: "ZCR de l'hypercentre de Chambery activable lors d'une alerte de niveau 2; aucune extension permanente n'a de calendrier defini"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DREAL Auvergne-Rhône-Alpes, Appel à projets Mission Air 2026 - liste des PPA régionaux, 2026 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/appel-a-projets-mission-air-2026-a28639.html ; Grand Chambéry, PCAET 2026-2031 - programme d'actions, 2025 — https://www.grandchambery.fr/fileadmin/mediatheque/grand-chambery/action-agglo/dev_durable/3.2-Programme-d-actions-territoriales-les-fiches-actions.pdf ; CJUE, arrêt C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Un département réunit trois bassins d'air peu couplés; une correction unique mélange Chambéry, Maurienne-Tarentaise et haute montagne.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une maille trop grossière lisse les fonds de vallée et surestime la hauteur de mélange lors des inversions hivernales.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Fermetures de tunnels, reports sur l'A43 et chantiers alpins modifient brutalement le trafic; un inventaire annuel devient vite obsolète.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "38"
+  nom: "Isere"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    La cuvette grenobloise amplifie inversions et pollution routière; chauffage au bois et industrie s'ajoutent aux contrastes entre vallées alpines et plaine.
+  sources_dominantes:
+    - libelle: "Chauffage résidentiel au bois"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de l'Isère, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_38-ISERE.pdf"
+    - libelle: "Trafic routier du bassin grenoblois et des grands axes"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de l'Isère, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_38-ISERE.pdf"
+    - libelle: "Industrie, dominante pour le SO2 et importante pour les COV"
+      polluants: ["SO2", "COV", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de l'Isère, 2025, p. 7 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_38-ISERE.pdf"
+  topographie_climat:
+    libelle: >
+      Les massifs ferment la cuvette grenobloise; en hiver, l'air froid reste au fond sous une inversion qui bloque les polluants sous un couvercle.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Atmo Auvergne-Rhône-Alpes, Quand la météo locale dégrade la qualité de l'air - cuvette grenobloise, 2022 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2022-06/atmo_expogrenoble_Jardin%20de%20ville.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois et trafic piégés sous inversion dans la cuvette grenobloise et les vallées alpines"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de l'Isère, 2025, p. 13-15 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_38-ISERE.pdf ; Atmo Auvergne-Rhône-Alpes, Cuvette grenobloise et inversion, 2022 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2022-06/atmo_expogrenoble_Jardin%20de%20ville.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie régionale lors de périodes chaudes et ensoleillées, avec niveaux élevés jusque dans les zones alpines"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Bilan 2024 de la qualité de l'air de l'Isère, 2025, p. 13-15 — https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/ATMO_PPT_Bilan-2024_38-ISERE.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "depression_sur_l_Afrique_du_Nord_et_flux_de_sud"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhône-Alpes, Retour sur le phénomène des poussières sahariennes, 2024 — https://www.atmo-auvergnerhonealpes.fr/actualite/retour-sur-le-phenomene-des-poussieres-sahariennes"
+  cadre_decision:
+    ppa: "PPA3 Grenoble Alpes Dauphine adopte le 16 decembre 2022; une partie du nord-ouest iserois releve aussi du PPA lyonnais"
+    zfe: "ZFE-m de Grenoble sur 13 communes; Crit'Air 3 interdits depuis 2025, periode pedagogique prolongee jusqu'au 30 juin 2027"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhône-Alpes, PPA de l'agglomération grenobloise, mise à jour 2025 — https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/le-plan-de-protection-de-l-atmosphere-de-l-a22941.html ; Grenoble Alpes Métropole, ZFE - évolutions 2026, 2026 — https://zfe.grenoblealpesmetropole.fr/ ; CJUE, arrêt C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille grossière ouvre artificiellement la cuvette grenobloise et ventile trop la couche froide pendant les inversions.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les stations trafic de fond de vallée et celles d'altitude n'échantillonnent pas la même masse d'air; une correction départementale unique devient instable.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les panaches industriels et les axes encaissés produisent des maxima locaux que l'inventaire et la topographie lissés sous-estiment.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null

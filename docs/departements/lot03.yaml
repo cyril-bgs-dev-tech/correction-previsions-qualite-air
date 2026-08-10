@@ -1,0 +1,500 @@
+- code: "75"
+  nom: "Paris"
+  region: "Ile-de-France"
+  resume: >
+    Densite d'emissions, rues-canyons et boulevard peripherique creent des gradients extremes; chauffage au bois et chantiers alimentent aussi les particules.
+  sources_dominantes:
+    - libelle: "Trafic routier dense, grands axes et boulevard peripherique"
+      polluants: ["NO2", "PM10", "PM2.5", "NH3"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Paris, octobre 2022, p. 1 et 4 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_Emissions_2019_Paris.pdf ; Airparif, Bilan de la qualite de l'air a Paris en 2024, juillet 2025 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_75_2024_BP.pdf"
+    - libelle: "Chauffage residentiel, surtout combustion de bois"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Paris, octobre 2022, p. 1, 7, 10 et 13 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_Emissions_2019_Paris.pdf"
+    - libelle: "Chantiers, construction et demolition"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Paris, octobre 2022, p. 1, 7, 10 et 13 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_Emissions_2019_Paris.pdf"
+  topographie_climat:
+    libelle: >
+      La plaine parisienne est souvent ventilee par les vents d'ouest, mais inversions anticycloniques et rues-canyons piegent localement les emissions au niveau des pietons.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Airparif, Pollution de l'air et meteo, page consultee en 2026 — https://www.airparif.fr/comprendre-la-pollution/pollution-de-lair-et-meteo ; Airparif, Etude des particules ultrafines a Paris, hiver-printemps 2022, 2024 — https://www.airparif.fr/sites/default/files/document_publication/Rapport_PUF_Paris_hiver_printemps_2022.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversion anticyclonique, vent faible, trafic et chauffage au bois"
+      confiance: "haute"
+      source: "Airparif, Pollution de l'air et meteo, page consultee en 2026 — https://www.airparif.fr/comprendre-la-pollution/pollution-de-lair-et-meteo"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Formation de nitrate d'ammonium a partir du NH3 agricole regional et des NOx, puis import de particules secondaires"
+      confiance: "haute"
+      source: "Airparif, Nitrates et sulfates d'ammonium, page consultee en 2026 — https://www.airparif.fr/nitrates-et-sulfates-dammonium"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie des NOx et COV sous chaleur, fort ensoleillement et vent faible"
+      confiance: "haute"
+      source: "Airparif, Episode de pollution a l'ozone du 18 au 27 juin 2026, 2026 — https://www.airparif.fr/actualite/2026/retour-sur-lepisode-de-pollution-lozone-du-18-au-27-juin-2026"
+  transport_longue_distance:
+    - origine: "Agriculture_regionale_et_nord_est_de_l_Europe"
+      polluant: "PM10"
+      regime: "situation_anticyclonique_et_flux_continentaux_au_printemps"
+      confiance: "haute"
+      source: "Airparif, Les particules - comprendre la pollution de l'air, 2012 — https://www.airparif.fr/sites/default/files/pdf/AirparifDossier2_particules.pdf ; Airparif, Nitrates et sulfates d'ammonium, page consultee en 2026 — https://www.airparif.fr/nitrates-et-sulfates-dammonium"
+  cadre_decision:
+    ppa: "PPA Ile-de-France 2025-2030 entre en vigueur le 30 janvier 2025; revision engagee en juillet 2026"
+    zfe: "ZFE de la Metropole du Grand Paris en vigueur dans le perimetre A86; restriction Crit'Air 3 depuis le 1er janvier 2025"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; DRIEAT Ile-de-France, Lancement de la revision du PPA, 9 juillet 2026 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/lancement-de-la-revision-du-plan-de-protection-de-a13509.html ; DRIEAT Ile-de-France, Mobilite et qualite de l'air, mise a jour juin 2026 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/la-mobilite-levier-essentiel-de-la-qualite-de-l-a13200.html ; CJUE, arret C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les rues-canyons et la proximite immediate du boulevard peripherique produisent des gradients de NO2 que la maille de fond ne resout pas.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les variations rapides de trafic, de chantiers et de voirie rendent vite obsolete un inventaire annuel moyen.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une correction purement locale peut attribuer a Paris une fraction printaniere de PM10 formee ou transportee hors du departement.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "92"
+  nom: "Hauts-de-Seine"
+  region: "Ile-de-France"
+  resume: >
+    Urbanisation dense, peripherique et A86 dominent les gradients; chauffage au bois et chantiers renforcent les particules, avec de forts contrastes infradepartementaux.
+  sources_dominantes:
+    - libelle: "Grands axes routiers, boulevard peripherique, A86 et echangeurs"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Metropole du Grand Paris, octobre 2022 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_Emissions_2019_MGP.pdf ; Airparif, Bilan 2019 des emissions atmospheriques - Nanterre, juin 2023, p. 3 et 19 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_Nanterre_2019.pdf ; Airparif, Campagne de mesure autour du Duplex A86, 2015 — https://www.airparif.fr/actualite/2015/nouvelle-campagne-de-mesure-autour-du-duplex-a86"
+    - libelle: "Chauffage residentiel au bois dans le tissu urbain dense"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Metropole du Grand Paris, octobre 2022 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_Emissions_2019_MGP.pdf ; Airparif, Bilan 2019 des emissions atmospheriques - Nanterre, juin 2023, p. 3, 6 et 9 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_Nanterre_2019.pdf"
+    - libelle: "Chantiers de construction et demolition"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Metropole du Grand Paris, octobre 2022 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_Emissions_2019_MGP.pdf ; Airparif, Bilan 2019 des emissions atmospheriques - Nanterre, juin 2023, p. 3, 6 et 12 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_Nanterre_2019.pdf"
+  topographie_climat:
+    libelle: >
+      Les vents d'ouest ventilent la petite couronne, mais les inversions hivernales et la morphologie urbaine dense maintiennent des contrastes locaux pres des axes.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Airparif, Pollution de l'air et meteo, page consultee en 2026 — https://www.airparif.fr/comprendre-la-pollution/pollution-de-lair-et-meteo ; Airparif, La modelisation, page consultee en 2026 — https://www.airparif.fr/la-modelisation"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversion, vent faible, trafic routier et chauffage residentiel au bois"
+      confiance: "haute"
+      source: "Airparif, Pollution de l'air et meteo, page consultee en 2026 — https://www.airparif.fr/comprendre-la-pollution/pollution-de-lair-et-meteo"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Nitrate d'ammonium secondaire forme avec le NH3 agricole regional et les NOx urbains"
+      confiance: "haute"
+      source: "Airparif, Nitrates et sulfates d'ammonium, page consultee en 2026 — https://www.airparif.fr/nitrates-et-sulfates-dammonium"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Production photochimique lors des periodes chaudes, ensoleillees et peu ventees"
+      confiance: "haute"
+      source: "Airparif, Episode de pollution a l'ozone du 18 au 27 juin 2026, 2026 — https://www.airparif.fr/actualite/2026/retour-sur-lepisode-de-pollution-lozone-du-18-au-27-juin-2026"
+  transport_longue_distance:
+    - origine: "Agriculture_regionale_et_nord_est_de_l_Europe"
+      polluant: "PM10"
+      regime: "situation_anticyclonique_et_flux_continentaux_au_printemps"
+      confiance: "haute"
+      source: "Airparif, Les particules - comprendre la pollution de l'air, 2012 — https://www.airparif.fr/sites/default/files/pdf/AirparifDossier2_particules.pdf ; Airparif, Nitrates et sulfates d'ammonium, page consultee en 2026 — https://www.airparif.fr/nitrates-et-sulfates-dammonium"
+  cadre_decision:
+    ppa: "PPA Ile-de-France 2025-2030 entre en vigueur le 30 janvier 2025; revision engagee en juillet 2026"
+    zfe: "ZFE de la Metropole du Grand Paris en vigueur dans le perimetre A86; restriction Crit'Air 3 depuis le 1er janvier 2025"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; DRIEAT Ile-de-France, Lancement de la revision du PPA, 9 juillet 2026 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/lancement-de-la-revision-du-plan-de-protection-de-a13509.html ; DRIEAT Ile-de-France, Mobilite et qualite de l'air, mise a jour juin 2026 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/la-mobilite-levier-essentiel-de-la-qualite-de-l-a13200.html ; CJUE, arret C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les echangeurs, entrees de tunnel et tranchées de l'A86 creent des gradients directionnels plus fins que la maille regionale.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        La morphologie verticale de La Defense modifie localement l'ecoulement et la dispersion, sans etre reproduite par un modele de fond.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les contrastes entre axes, quartiers residentiels et grands chantiers sont lisses par un inventaire communal annuel.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "93"
+  nom: "Seine-Saint-Denis"
+  region: "Ile-de-France"
+  resume: >
+    A1, A3 et A86, chantiers, chaufferies et plateformes aeroportuaires superposent des panaches locaux au fond pollue de la petite couronne.
+  sources_dominantes:
+    - libelle: "Corridors A1, A3 et A86 et grands echangeurs routiers"
+      polluants: ["NO2", "PM10", "PM2.5", "NH3"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Seine-Saint-Denis, avril 2023, p. 1 et 2 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_93_2019.pdf"
+    - libelle: "Chantiers de construction et demolition"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Seine-Saint-Denis, avril 2023, p. 1 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_93_2019.pdf ; Airparif, Amenagements routiers a Saint-Denis - campagne de mesure, 2021 — https://www.airparif.fr/actualite/2021/amenagements-routiers-saint-denis-lancement-dune-campagne-de-mesure-de-la-pollution"
+    - libelle: "Branche energie, chaufferies, incineration et activites industrielles"
+      polluants: ["SO2", "COV", "NH3", "PM10"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Seine-Saint-Denis, avril 2023, p. 1 et 2 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_93_2019.pdf"
+    - libelle: "Plateformes aeroportuaires de Paris-Charles-de-Gaulle et Paris-Le Bourget"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Airparif, Bilan 2019 des emissions atmospheriques - Seine-Saint-Denis, avril 2023, p. 1 et 2 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_93_2019.pdf ; Airparif, Surveillance autour des plateformes aeroportuaires, bilan 2019 — https://www.airparif.fr/sites/default/files/publications/rapport-survol-cdg-lebourget-bilan_2019.pdf"
+  topographie_climat:
+    libelle: >
+      La plaine urbanisee est normalement ventilee par l'ouest; vent faible, inversion hivernale et forte densite d'emissions favorisent toutefois l'accumulation pres des axes.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Airparif, Pollution de l'air et meteo, page consultee en 2026 — https://www.airparif.fr/comprendre-la-pollution/pollution-de-lair-et-meteo ; Airparif, Bilan qualite de l'air 2024 - Seine-Saint-Denis, juillet 2025 — https://www.airparif.fr/sites/default/files/document_publication/Bilan_QA_93_2024.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversion anticyclonique et vent faible sur trafic, chauffage et emissions de chantier"
+      confiance: "haute"
+      source: "Airparif, Pollution de l'air et meteo, page consultee en 2026 — https://www.airparif.fr/comprendre-la-pollution/pollution-de-lair-et-meteo ; Airparif, Bilan emissions Seine-Saint-Denis 2019, avril 2023 — https://www.airparif.fr/sites/default/files/document_publication/bilan_emissions_93_2019.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Formation et import de nitrate d'ammonium avec NH3 agricole et NOx urbains"
+      confiance: "haute"
+      source: "Airparif, Nitrates et sulfates d'ammonium, page consultee en 2026 — https://www.airparif.fr/nitrates-et-sulfates-dammonium"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie regionale sous chaleur, soleil et vent faible"
+      confiance: "haute"
+      source: "Airparif, Episode de pollution a l'ozone du 18 au 27 juin 2026, 2026 — https://www.airparif.fr/actualite/2026/retour-sur-lepisode-de-pollution-lozone-du-18-au-27-juin-2026"
+  transport_longue_distance:
+    - origine: "Agriculture_regionale_et_nord_est_de_l_Europe"
+      polluant: "PM10"
+      regime: "situation_anticyclonique_et_flux_continentaux_au_printemps"
+      confiance: "haute"
+      source: "Airparif, Les particules - comprendre la pollution de l'air, 2012 — https://www.airparif.fr/sites/default/files/pdf/AirparifDossier2_particules.pdf ; Airparif, Nitrates et sulfates d'ammonium, page consultee en 2026 — https://www.airparif.fr/nitrates-et-sulfates-dammonium"
+  cadre_decision:
+    ppa: "PPA Ile-de-France 2025-2030 entre en vigueur le 30 janvier 2025; revision engagee en juillet 2026"
+    zfe: "ZFE de la Metropole du Grand Paris en vigueur dans le perimetre A86; restriction Crit'Air 3 depuis le 1er janvier 2025"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DRIEAT Ile-de-France, Entree en vigueur du quatrieme PPA, 30 janvier 2025 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/entree-en-vigueur-du-4e-plan-de-protection-de-l-a13173.html ; DRIEAT Ile-de-France, Lancement de la revision du PPA, 9 juillet 2026 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/lancement-de-la-revision-du-plan-de-protection-de-a13509.html ; DRIEAT Ile-de-France, Mobilite et qualite de l'air, mise a jour juin 2026 — https://www.drieat.ile-de-france.developpement-durable.gouv.fr/la-mobilite-levier-essentiel-de-la-qualite-de-l-a13200.html ; CJUE, arret C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les echangeurs A1-A86, les travaux et les voies nouvellement reconfigurees creent des gradients tres mobiles sous la maille regionale.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les panaches des chaufferies, installations energetiques et incinerateurs sont directionnels et mal representes par des emissions spatialement moyennees.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Pres des plateformes aeroportuaires, separer les contributions des avions, des operations au sol et de l'A1 exige une resolution et des traceurs adaptes.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "06"
+  nom: "Alpes-Maritimes"
+  region: "Provence-Alpes-Cote d'Azur"
+  resume: >
+    Littoral dense entre mer et Alpes, trafic, aeroport et ports concentrent les emissions; arriere-pays et vallees restent fortement soumis a l'ozone.
+  sources_dominantes:
+    - libelle: "Trafic routier concentre sur l'etroite bande littorale"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "AtmoSud, Alpes-Maritimes - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/alpes-maritimes"
+    - libelle: "Chauffage residentiel, combustion de bois et brulage de vegetaux"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "AtmoSud, Alpes-Maritimes - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/alpes-maritimes"
+    - libelle: "Industries et carrieres des vallees des Paillons et du bassin grassois"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "AtmoSud, Alpes-Maritimes - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/alpes-maritimes"
+    - libelle: "Aeroport de Nice et activites portuaires du littoral"
+      polluants: ["NO2", "SO2", "PM10"]
+      confiance: "haute"
+      source: "AtmoSud, Alpes-Maritimes - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/alpes-maritimes ; AtmoSud, Etat des lieux 2024 de la qualite de l'air sur le port de Nice, 2025 — https://www.atmosud.org/publications/etat-des-lieux-de-la-qualite-de-lair-2024-sur-le-port-de-nice"
+  topographie_climat:
+    libelle: >
+      Entre Mediterranee et Alpes, la bande urbaine littorale et les vallees etroites canalisent les flux; le relief separe fortement littoral dense et arriere-pays d'altitude.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "AtmoSud, Alpes-Maritimes - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/alpes-maritimes ; AtmoSud, Impact de la creation des trames vertes a Nice, 2023 — https://www.atmosud.org/publications/impact-de-la-creation-des-trames-vertes-nice"
+  regime_episodes:
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie regionale; concentrations souvent plus fortes dans le moyen et l'arriere-pays que sur le littoral"
+      confiance: "haute"
+      source: "AtmoSud, Alpes-Maritimes - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/alpes-maritimes"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud"
+      confiance: "haute"
+      source: "AtmoSud, Procedures prefectorales - particules desertiques des 30 et 31 mars 2024, 2024 — https://daliaprod.atmosud.org/index.php?cont=sendProcedure&event=getPdf&file=pdf_349_MLTSRC_20240330_122231.pdf&saved=true"
+    - origine: "Est_de_la_region_Sud_et_flux_transfrontaliers"
+      polluant: "O3"
+      regime: "circulations_regionales_et_transfrontalieres_est_ouest"
+      confiance: "moyenne"
+      source: "AtmoSud, Enjeu ozone et COV en region Sud, 2021 — https://www.atmosud.org/sites/sud/files/medias/documents/2024-05/210709_O3_COV_regionSud_emissions_enjeu.pdf ; AtmoSud, Alpes-Maritimes - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/alpes-maritimes"
+  cadre_decision:
+    ppa: "PPA des Alpes-Maritimes - Objectif 2025, approuve en 2022 et suivi au moins jusqu'en avril 2025"
+    zfe: "ZFE de Nice active; depuis avril 2025, restrictions limitees aux poids lourds, autobus et autocars Crit'Air 4, 5 ou non classes"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL PACA, Plans de protection de l'atmosphere approuves, mise a jour 2026 — https://www.paca.developpement-durable.gouv.fr/les-plans-de-protection-de-l-atmosphere-approuves-r3504.html ; DREAL PACA, Suivi du PPA 06, mise a jour 2026 — https://www.paca.developpement-durable.gouv.fr/supports-des-copils-de-suivi-du-ppa-06-a16419.html ; Metropole Nice Cote d'Azur, Zone a faibles emissions, mise a jour 2026 — https://www.nicecotedazur.org/services/environnement/air/zone-a-faibles-emissions-zfe/ ; CJUE, arret C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Un maillage kilometrique lisse l'etroite bande littorale, les vallees encaissees et les ruptures rapides d'altitude vers l'arriere-pays.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les panaches du port et de l'aeroport changent rapidement de direction avec les circulations cotieres et restent sous-resolus.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le gradient d'ozone peut s'inverser entre littoral riche en NOx et arriere-pays, notamment par titration locale de l'ozone.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "83"
+  nom: "Var"
+  region: "Provence-Alpes-Cote d'Azur"
+  resume: >
+    Rade de Toulon, littoral routier et brises produisent des gradients maritimes; arriere-pays boise cumule ozone estival, chauffage et fumees d'incendies.
+  sources_dominantes:
+    - libelle: "Trafic routier des agglomerations et axes du littoral"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "AtmoSud, Var - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/var"
+    - libelle: "Chauffage residentiel au bois et brulage de vegetaux dans l'arriere-pays"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "AtmoSud, Var - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/var"
+    - libelle: "Navires, ferries et activites portuaires de la rade de Toulon"
+      polluants: ["NO2", "SO2", "PM10"]
+      confiance: "haute"
+      source: "AtmoSud, Suivi de la qualite de l'air autour de la rade de Toulon, 8 aout 2025 — https://www.atmosud.org/etude/suivi-de-la-qualite-de-lair-autour-de-la-rade-de-toulon"
+    - libelle: "Feux de foret et incendies de vegetation"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "AtmoSud, Var - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/var"
+  topographie_climat:
+    libelle: >
+      Le mistral ventile fortement le littoral occidental; autour de la rade, relief et alternance des brises marines deplacent les panaches entre ville, mer et collines.
+    effet: "mixte"
+    vents_nommes: ["mistral", "brise_de_mer"]
+    confiance: "haute"
+    source: "Meteo-France, Le mistral, 23 juillet 2026 — https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/le-mistral-vent-regional ; AtmoSud, Suivi de la qualite de l'air autour de la rade de Toulon, 8 aout 2025 — https://www.atmosud.org/etude/suivi-de-la-qualite-de-lair-autour-de-la-rade-de-toulon"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois et brulages sous conditions stables et peu ventees"
+      confiance: "haute"
+      source: "AtmoSud, Episode de pollution aux particules fines des 6 et 7 fevrier 2024, 2024 — https://www.atmosud.org/actualite/episode-de-pollution-aux-particules-fines-prevu-les-6-et-7-fevrier"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie plus marquee dans l'arriere-pays que sur le littoral"
+      confiance: "haute"
+      source: "AtmoSud, Var - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/var"
+    - saison: "ete"
+      polluant: "PM10"
+      mecanisme: "Fumees episodiques de feux de foret et d'incendies de vegetation"
+      confiance: "haute"
+      source: "AtmoSud, Var - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/var"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud"
+      confiance: "haute"
+      source: "AtmoSud, Procedures prefectorales - particules desertiques des 30 et 31 mars 2024, 2024 — https://daliaprod.atmosud.org/index.php?cont=sendProcedure&event=getPdf&file=pdf_349_MLTSRC_20240330_122231.pdf&saved=true"
+    - origine: "Marseille_Berre"
+      polluant: "O3"
+      regime: "brises_et_circulations_regionales_vers_l_est"
+      confiance: "haute"
+      source: "AtmoSud, Enjeu ozone et COV en region Sud, 2021 — https://www.atmosud.org/sites/sud/files/medias/documents/2024-05/210709_O3_COV_regionSud_emissions_enjeu.pdf"
+  cadre_decision:
+    ppa: "PPA du Var - Objectif 2025 approuve; perimetre de 32 communes autour de Toulon et du SCoT Provence Mediterranee"
+    zfe: "ZFE de Toulon annoncee mais non encore active selon la liste ministerielle consultee en 2026"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL PACA, Plans de protection de l'atmosphere approuves, mise a jour 2026 — https://www.paca.developpement-durable.gouv.fr/les-plans-de-protection-de-l-atmosphere-approuves-r3504.html ; DREAL PACA, PPA du Var - Objectif 2025, 2022 — https://www.paca.developpement-durable.gouv.fr/IMG/pdf/ppa_83_objectifs_2025.pdf ; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 2026 — https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, arret C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        La bascule quotidienne des brises de rade deplace les panaches maritimes; une moyenne journaliere masque leur direction et leurs pointes horaires.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les feux de foret sont intermittents, mobiles et absents des inventaires ordinaires; ils peuvent dominer ponctuellement les particules.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une maille departementale confondrait littoral dense, rade semi-fermee et arriere-pays boise, dont les regimes d'ozone et de particules divergent.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "84"
+  nom: "Vaucluse"
+  region: "Provence-Alpes-Cote d'Azur"
+  resume: >
+    Couloir rhodanien tres ventile mais charge en trafic, agriculture et habitat; l'ouest urbanise recoit aussi l'ozone photochimique de Marseille-Berre.
+  sources_dominantes:
+    - libelle: "Trafic routier du couloir rhodanien et du bassin d'Avignon"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "AtmoSud, Vaucluse - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/vaucluse ; AtmoSud, Evaluation du PPA de Vaucluse, 10 decembre 2025 — https://www.atmosud.org/sites/sud/files/medias/documents/2026-02/251008_evaluation_pp84_atmosud.pdf"
+    - libelle: "Chauffage residentiel au bois et brulage de vegetaux"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "AtmoSud, Vaucluse - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/vaucluse ; AtmoSud, Evaluation du PPA de Vaucluse, 10 decembre 2025 — https://www.atmosud.org/sites/sud/files/medias/documents/2026-02/251008_evaluation_pp84_atmosud.pdf"
+    - libelle: "Agriculture, fertilisation des cultures et travail du sol"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "AtmoSud, Vaucluse - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/vaucluse ; AtmoSud, Evaluation du PPA de Vaucluse, 10 decembre 2025 — https://www.atmosud.org/sites/sud/files/medias/documents/2026-02/251008_evaluation_pp84_atmosud.pdf"
+    - libelle: "Industries et production d'energie concentrees dans l'ouest rhodanien"
+      polluants: ["SO2", "COV", "PM10"]
+      confiance: "haute"
+      source: "AtmoSud, Vaucluse - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/vaucluse ; AtmoSud, Evaluation du PPA de Vaucluse, 10 decembre 2025 — https://www.atmosud.org/sites/sud/files/medias/documents/2026-02/251008_evaluation_pp84_atmosud.pdf"
+  topographie_climat:
+    libelle: >
+      Le couloir du Rhone canalise le mistral, particulierement rapide vers Orange et Avignon; par temps chaud, des flux meridionaux transportent au contraire l'ozone vers le nord.
+    effet: "mixte"
+    vents_nommes: ["mistral"]
+    confiance: "haute"
+    source: "Meteo-France, Le mistral, 23 juillet 2026 — https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/le-mistral-vent-regional ; AtmoSud, Vigilance pollution ozone du 20 juin 2026, 2026 — https://www.atmosud.org/episodes-de-pollution/vigilance-pollution-ozone-le-20062026"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Combustion residentielle et brulages lors des periodes froides et peu ventees"
+      confiance: "haute"
+      source: "AtmoSud, Vaucluse - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/vaucluse"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Emissions agricoles de NH3 et de poussieres, favorisant les particules secondaires"
+      confiance: "moyenne"
+      source: "AtmoSud, Evaluation du PPA de Vaucluse, 10 decembre 2025 — https://www.atmosud.org/sites/sud/files/medias/documents/2026-02/251008_evaluation_pp84_atmosud.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie locale et transport de masses d'air polluees depuis Marseille-Berre"
+      confiance: "haute"
+      source: "AtmoSud, Vaucluse - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/vaucluse ; AtmoSud, Vigilance pollution ozone du 20 juin 2026, 2026 — https://www.atmosud.org/episodes-de-pollution/vigilance-pollution-ozone-le-20062026"
+  transport_longue_distance:
+    - origine: "Marseille_Berre"
+      polluant: "O3"
+      regime: "flux_de_sud_et_brises_remontant_le_Rhone"
+      confiance: "haute"
+      source: "AtmoSud, Enjeu ozone et COV en region Sud, 2021 — https://www.atmosud.org/sites/sud/files/medias/documents/2024-05/210709_O3_COV_regionSud_emissions_enjeu.pdf ; AtmoSud, Vaucluse - sources de pollution et exposition, page consultee en 2026 — https://www.atmosud.org/article/vaucluse"
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud"
+      confiance: "haute"
+      source: "AtmoSud, Procedures prefectorales - particules desertiques des 30 et 31 mars 2024, 2024 — https://daliaprod.atmosud.org/index.php?cont=sendProcedure&event=getPdf&file=pdf_349_MLTSRC_20240330_122231.pdf&saved=true"
+  cadre_decision:
+    ppa: "PPA de Vaucluse - Objectif 2030 approuve le 29 janvier 2026; tout le departement et bassin de vie d'Avignon"
+    zfe: "ZFE d'Avignon annoncee mais non encore active selon la liste ministerielle consultee en 2026"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL PACA, PPA 84 approuve, 29 janvier 2026 — https://www.paca.developpement-durable.gouv.fr/apres-3-ans-de-revision-le-ppa84-est-approuve-a16432.html ; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 2026 — https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, arret C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le mistral et les flux de sud produisent des regimes opposes; une climatologie moyenne attenue leur impact directionnel sur trafic, industrie et ozone.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une maille unique lisse le contraste entre ouest rhodanien urbanise et industriel, bassin d'Avignon et est agricole ou montagneux.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        L'ozone importe de Marseille-Berre peut etre corrige comme un biais local si les conditions aux limites ne representent pas son transport photochimique.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "76"
+  nom: "Seine-Maritime"
+  region: "Normandie"
+  resume: >
+    Raffinage, petrochimie et ports du Havre a Rouen creent des panaches industriels et maritimes, superposes au trafic et aux particules agricoles regionales.
+  sources_dominantes:
+    - libelle: "Raffinage, petrochimie, energie et industries de l'estuaire de la Seine"
+      polluants: ["SO2", "COV", "benzene", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Normandie, Bilan annuel 2024, octobre 2025, p. 18 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf ; DREAL Normandie, PPA Vallee de la Seine 2023-2027 - etat des lieux, 2023 — https://www.normandie.developpement-durable.gouv.fr/IMG/pdf/20231011_tome1_etat-lieux_ppa_v11.pdf"
+    - libelle: "Ports du Havre et de Rouen, transport maritime et logistique"
+      polluants: ["NO2", "SO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Normandie, Le transport maritime, page consultee en 2026 — https://www.normandie.developpement-durable.gouv.fr/le-transport-maritime-a3477.html ; DREAL Normandie, PPA Vallee de la Seine 2023-2027, 2023 — https://www.normandie.developpement-durable.gouv.fr/le-plan-de-protection-de-l-atmosphere-ppa-vallee-a5593.html"
+    - libelle: "Trafic routier des agglomerations du Havre et de Rouen et de l'axe Seine"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Normandie, Bilan annuel 2024, octobre 2025, p. 9 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf ; DREAL Normandie, PPA Vallee de la Seine 2023-2027, 2023 — https://www.normandie.developpement-durable.gouv.fr/le-plan-de-protection-de-l-atmosphere-ppa-vallee-a5593.html"
+    - libelle: "Agriculture et travail du sol dans l'arriere-pays"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Normandie, Bilan annuel 2024, octobre 2025, p. 11 et 13 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf ; Atmo Normandie, Nouvel inventaire des emissions polluantes, 23 avril 2026 — https://www.atmonormandie.fr/actualite/atmo-normandie-publie-son-nouvel-inventaire-des-emissions-polluantes"
+  topographie_climat:
+    libelle: >
+      Les vents dominants de sud-ouest a ouest ventilent souvent le littoral et l'axe Seine; ils orientent cependant les panaches ponctuels industriels et maritimes.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Atmo Normandie, Bilan annuel 2024, octobre 2025, p. 21 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf ; DREAL Normandie, PPA Vallee de la Seine - etat des lieux, 2023 — https://www.normandie.developpement-durable.gouv.fr/IMG/pdf/20231011_tome1_etat-lieux_ppa_v11.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Combustion residentielle, trafic, industrie et activites maritimes lors des periodes froides et stables"
+      confiance: "haute"
+      source: "Atmo Normandie, Chauffage au bois et qualite de l'air - Risachabois, 2021 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2021-11/Rapport%20risachabois-vf24112021.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Nitrate et sulfate d'ammonium secondaires issus du NH3 agricole et transportes a longue distance"
+      confiance: "haute"
+      source: "Atmo Normandie, Quelles particules sur le littoral des Hauts-de-France et de Normandie, 27 fevrier 2024 — https://www.atmonormandie.fr/actualite/quelles-particules-sur-le-littoral-des-hauts-de-france-et-de-la-normandie"
+    - saison: "toute_annee"
+      polluant: "SO2"
+      mecanisme: "Pointes breves sous le vent des installations de raffinage, d'energie et des zones industrielles"
+      confiance: "haute"
+      source: "Atmo Normandie, Bilan annuel 2024, octobre 2025, p. 18 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf"
+  transport_longue_distance:
+    - origine: "Nord_est_de_l_Europe"
+      polluant: "PM10"
+      regime: "flux_continentaux_de_nord_est_au_printemps"
+      confiance: "haute"
+      source: "Atmo Normandie, Chauffage au bois et qualite de l'air - Risachabois, 2021 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2021-11/Rapport%20risachabois-vf24112021.pdf ; Atmo Normandie, Synthese CARA littoral, 2024 — https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2024-02/Synth%C3%A8se%20CARA%20littoral_VF.pdf"
+  cadre_decision:
+    ppa: "PPA Vallee de la Seine 2023-2027 couvrant huit EPCI dont Rouen et Le Havre; suivi publie en juillet 2026"
+    zfe: "ZFE de Rouen active pour Crit'Air 4, 5 et non classes; ZFE du Havre active pour vehicules non classes"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Normandie, PPA Vallee de la Seine, approuve en 2023 — https://www.normandie.developpement-durable.gouv.fr/le-plan-de-protection-de-l-atmosphere-ppa-vallee-a5593.html ; DREAL Normandie, Avancement du PPA, juillet 2026 — https://www.normandie.developpement-durable.gouv.fr/le-plans-de-protection-de-l-atmosphere-ppa-vallee-a7032.html ; Metropole Rouen Normandie, Qui est concerne par la ZFE, page consultee en 2026 — https://zfe.metropole-rouen-normandie.fr/quel-vehicule-quand-et-ou/qui-est-concerne ; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 2026 — https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, arret C-636/18, 2019 — https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les panaches de cheminee sont etroits, eleves et tres dependants du vent; des emissions moyennees ratent les pointes mesurees sous leur trajectoire.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        L'inventaire territorial exclut le transport maritime international; sans inventaire portuaire separe, le modele sous-estime les zones du Havre et de Rouen.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le contraste entre littoral, estuaire industriel, agglomeration rouennaise et plateaux agricoles est lisse par une correction departementale unique.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null

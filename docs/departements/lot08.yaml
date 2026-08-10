@@ -1,0 +1,408 @@
+- code: "35"
+  nom: "Ille-et-Vilaine"
+  region: "Bretagne"
+  resume: >
+    Rennes concentre trafic et decisions, tandis que chauffage au bois et agriculture alimentent les particules; les imports aggravent les episodes hivernaux.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, source dominante des PM2.5 departementales"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Air Breizh, Bilan territorial Ille-et-Vilaine 2025, juin 2026, p. 7 - https://www.airbreizh.asso.fr/voy_content/uploads/2026/06/bilan-territorial-ille-et-vilaine-2025.pdf"
+    - libelle: "Agriculture et elevage, tres majoritaires dans les emissions de NH3"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Air Breizh, Bilan territorial Ille-et-Vilaine 2025, juin 2026, p. 6 - https://www.airbreizh.asso.fr/voy_content/uploads/2026/06/bilan-territorial-ille-et-vilaine-2025.pdf"
+    - libelle: "Trafic routier de Rennes Metropole et de ses grands axes"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Bretagne, Evaluation environnementale du PPA3 de Rennes Metropole, mars 2022, p. 27-31 - https://www.bretagne.developpement-durable.gouv.fr/IMG/pdf/2022_03_evaluation_environnementale_ppa_3_allegee-2.pdf"
+  topographie_climat:
+    libelle: >
+      Rennes occupe une faible depression topographique; vents et pluies oceaniques dispersent souvent, mais les calmes anticycloniques et inversions hivernales favorisent l'accumulation.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Bretagne, Evaluation environnementale du PPA3 de Rennes Metropole, mars 2022, p. 43 - https://www.bretagne.developpement-durable.gouv.fr/IMG/pdf/2022_03_evaluation_environnementale_ppa_3_allegee-2.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Froid, atmosphere stable, chauffage accru et cumul de particules locales et importees"
+      confiance: "haute"
+      source: "Air Breizh, Rapport d'activite et bilan de la qualite de l'air 2025, juin 2026, p. 50 et 68-69 - https://www.airbreizh.asso.fr/voy_content/uploads/2026/06/moins-lourd-rapport-air-breizh-2025-complet.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Production photochimique sous fort ensoleillement, avec maxima frequents dans l'est breton et sur le littoral malouin"
+      confiance: "haute"
+      source: "Air Breizh, Rapport d'activite et bilan de la qualite de l'air 2025, juin 2026, p. 60-61 - https://www.airbreizh.asso.fr/voy_content/uploads/2026/06/moins-lourd-rapport-air-breizh-2025-complet.pdf"
+  transport_longue_distance:
+    - origine: "hors Bretagne et transfrontalier"
+      polluant: "PM2.5"
+      regime: "advection regionale lors de situations froides et stables"
+      confiance: "haute"
+      source: "Air Breizh, Rapport d'activite et bilan de la qualite de l'air 2025, juin 2026, p. 50 - https://www.airbreizh.asso.fr/voy_content/uploads/2026/06/moins-lourd-rapport-air-breizh-2025-complet.pdf"
+  cadre_decision:
+    ppa: "PPA3 de Rennes Metropole 2022-2027, approuve le 20 decembre 2022"
+    zfe: "ZFE de Rennes Metropole active depuis janvier 2025, interieur de la rocade hors rocade"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Bretagne, PPA de Rennes Metropole, mise a jour 2026 - https://www.bretagne.developpement-durable.gouv.fr/les-ppa-de-rennes-metropole-r1810.html ; Rennes Metropole, La ZFE, 2025 - https://transport.metropole.rennes.fr/la-zone-a-faible-emission-de-rennes-metropole/ ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le contraste entre proximite trafic rennaise, chauffage periurbain et fond agricole rural peut etre lisse par une maille regionale.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le seuil prefectural PM2.5 applique en Ille-et-Vilaine cree une serie d'episodes difficile a comparer directement aux autres departements bretons.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "36"
+  nom: "Indre"
+  region: "Centre-Val de Loire"
+  resume: >
+    Fond agricole, chauffage hivernal et vastes paysages ouverts dominent; poussiere saharienne et particules secondaires imposent de separer production locale et import.
+  sources_dominantes:
+    - libelle: "Agriculture de grandes cultures et epandages, dominante pour le NH3 regional"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Lig'Air, L'ammoniac en 2024, 10 septembre 2025 - https://www.ligair.fr/actualites/rapport-detude-disponible-lammoniac-en-2024"
+    - libelle: "Chauffage residentiel lors des situations froides dans l'Indre"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Lig'Air, La Lettre no 108 - Bilan 2025, 2026, p. 2 et 4 - https://www.ligair.fr/publications-download/3309"
+  topographie_climat:
+    libelle: >
+      Les plateaux ouverts de Champagne berrichonne contrastent avec les bocages, etangs et vallees de la Brenne et du Boischaut, plus heterogenes localement.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "DREAL Centre-Val de Loire, La diversite des paysages regionaux, mise a jour 2026 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/la-diversite-des-paysages-regionaux-a1803.html"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage renforce par le froid et accumulation sous conditions anticycloniques"
+      confiance: "haute"
+      source: "Lig'Air, La Lettre no 108 - Bilan 2025, 2026, p. 2 - https://www.ligair.fr/publications-download/3309"
+    - saison: "printemps"
+      polluant: "PM2.5"
+      mecanisme: "Epandages agricoles, emissions de NH3 et formation de particules secondaires"
+      confiance: "moyenne"
+      source: "Lig'Air, Projet AgriAir Centre-Val de Loire, 2025 - https://www.ligair.fr/actualites/projet-agriair-centre-val-de-loire ; Lig'Air, L'ammoniac en 2024, 10 septembre 2025 - https://www.ligair.fr/actualites/rapport-detude-disponible-lammoniac-en-2024"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "remontee de poussieres observee le 14 novembre 2025"
+      confiance: "haute"
+      source: "Lig'Air, La Lettre no 108 - Bilan 2025, 2026, p. 2 - https://www.ligair.fr/publications-download/3309"
+  cadre_decision:
+    ppa: "aucun PPA; la region compte seulement les PPA d'Orleans et de Tours"
+    zfe: "aucune ZFE repertoriee dans l'Indre sur la carte ministerielle au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, Plans de protection de l'atmosphere, mise a jour 2026 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/plans-de-protection-de-l-atmosphere-ppa-r1748.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le supersite rural de Saint-Michel-en-Brenne suit le fond longue distance et la chimie secondaire, pas l'exposition de proximite dans Chateauroux.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Sans traceur mineral ou composition chimique, une correction statistique peut attribuer a tort un apport saharien aux emissions agricoles locales.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "37"
+  nom: "Indre-et-Loire"
+  region: "Centre-Val de Loire"
+  resume: >
+    Tours combine trafic, chauffage au bois et agriculture sur un plateau ouvert; inversions hivernales, ozone estival et Sahara changent le regime.
+  sources_dominantes:
+    - libelle: "Trafic de l'agglomeration tourangelle et des grands axes, dont l'A10"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration tourangelle horizon 2030, approuve en 2024, p. 50-61 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_tours_version_approuvee.pdf"
+    - libelle: "Chauffage residentiel au bois explicitement cible par le PPA"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration tourangelle horizon 2030, 15 janvier 2024 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/le-ppa-de-l-agglomeration-tourangelle-horizon-2030-a1727.html"
+    - libelle: "Epandages agricoles et emissions d'ammoniac hors coeur urbain"
+      polluants: ["NH3", "PM2.5"]
+      confiance: "haute"
+      source: "Lig'Air, L'ammoniac en 2024, 10 septembre 2025 - https://www.ligair.fr/actualites/rapport-detude-disponible-lammoniac-en-2024"
+  topographie_climat:
+    libelle: >
+      Un plateau peu accidente traverse par la Loire favorise la ventilation; les calmes anticycloniques et inversions hivernales piegent cependant les polluants pres du sol.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, PPA de l'agglomeration tourangelle horizon 2030, approuve en 2024, p. 16-17 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_tours_version_approuvee.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Inversion thermique, faible dispersion et chauffage residentiel au bois"
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration tourangelle horizon 2030, approuve en 2024, p. 16 et 100-103 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_tours_version_approuvee.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Formation photochimique favorisee par chaleur, canicule et fort ensoleillement"
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, PPA de l'agglomeration tourangelle horizon 2030, approuve en 2024, p. 16 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/IMG/pdf/annexe_1_rapport_ppa_tours_version_approuvee.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "remontee de poussieres observee le 14 novembre 2025"
+      confiance: "haute"
+      source: "Lig'Air, La Lettre no 108 - Bilan 2025, 2026, p. 2 - https://www.ligair.fr/publications-download/3309"
+  cadre_decision:
+    ppa: "PPA3 de l'agglomeration tourangelle horizon 2030, approuve le 4 janvier 2024, 54 communes"
+    zfe: "ZFE de Tours encore indiquee a creer sur la carte ministerielle au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, PPA de l'agglomeration tourangelle, 15 janvier 2024 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/le-ppa-de-l-agglomeration-tourangelle-horizon-2030-a1727.html ; Ministere de la Transition ecologique, deploiement des ZFE, consulte en 2026 - https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        La station trafic Tours-Pompidou voit un gradient de proximite que la maille regionale lisse fortement par rapport au fond rural tourangeau.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une couche d'inversion peu profonde dans les vallees de la Loire ou du Cher peut rester sous la resolution verticale du modele.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "39"
+  nom: "Jura"
+  region: "Bourgogne-Franche-Comte"
+  resume: >
+    Plaine, Revermont et haut Jura fragmentent dispersion et chauffage au bois; epandages, bise et apports sahariens rendent les PM tres variables.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois dans un departement rural et froid"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "moyenne"
+      source: "Atmo BFC, Fin de la periode de chauffe, place au ramonage, 2025 - https://www.atmo-bfc.org/fin-de-la-periode-de-chauffe-place-au-ramonage"
+    - libelle: "Agriculture et epandages, precurseurs de nitrate d'ammonium printanier"
+      polluants: ["NH3", "PM2.5", "PM10"]
+      confiance: "haute"
+      source: "Atmo BFC, Agriculture et qualite de l'air - Parten'Air, 2024 - https://www.atmo-bfc.org/sites/default/files/2024-06/Agriculture%20et%20QA.pdf"
+    - libelle: "Trafic des axes A36, A39, A391, RN5 et RN83"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "moyenne"
+      source: "Prefecture du Jura, Cartes de bruit et PPBE du reseau routier national, 2017 - https://www.jura.gouv.fr/Actions-de-l-Etat/Environnement/Bruit-et-Publicite/Bruit/Les-plans-de-prevention-du-bruit-dans-l-environnement-et-cartes-de-bruit-1ere-et-2eme-generation/2-PPBE-et-cartes-de-bruit-2eme-generation-2012-2017 ; Atmo BFC, Bilan des activites et de l'air 2024, 2025, p. 49-51 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  topographie_climat:
+    libelle: >
+      La plaine de Dole et de Bresse, le Revermont, les plateaux et le haut Jura creent des regimes opposes; la bise ventile certains secteurs.
+    effet: "mixte"
+    vents_nommes: ["bise"]
+    confiance: "moyenne"
+    source: "Prefecture du Jura, Schema departemental d'analyse et de couverture des risques, 2023 - https://www.jura.gouv.fr/contenu/telechargement/6965/52224/file/SDACR%2B23.pdf ; Meteo-France, Les vents regionaux, 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Temps froid, ensoleille et stable, accumulation d'emissions de combustion et de particules importees"
+      confiance: "haute"
+      source: "Atmo BFC, Bilan des activites et de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Epandages et formation secondaire d'ammonium, auxquels peuvent s'ajouter des poussieres desertiques"
+      confiance: "haute"
+      source: "Atmo BFC, Bilan des activites et de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "remontee de poussieres observee les 29 et 30 mars 2024"
+      confiance: "haute"
+      source: "Atmo BFC, Bilan des activites et de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  cadre_decision:
+    ppa: "aucun PPA dans le Jura; les trois PPA regionaux couvrent d'autres territoires"
+    zfe: "aucune ZFE repertoriee dans le Jura sur la carte ministerielle au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Bourgogne-Franche-Comte, Les PPA, mise a jour 2026 - https://www.bourgogne-franche-comte.developpement-durable.gouv.fr/les-plans-de-protection-de-l-atmosphere-ppa-r2289.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille unique peut confondre plaine de Bresse, versant du Revermont, combes froides et plateaux ventiles, avec des biais de signe oppose.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une erreur sur la bise ou sur l'altitude de la couche melangee decale rapidement un panache entre plaine, versant et plateau.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "40"
+  nom: "Landes"
+  region: "Nouvelle-Aquitaine"
+  resume: >
+    Plaine forestiere oceanique, bois residentiel, agriculture et route structurent le fond; feux, COV forestiers, brise marine et Sahara creent des anomalies.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, premier contributeur aux PM2.5"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan 2024 de la qualite de l'air dans les Landes, juin 2025, p. 6-7 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Landes_D40_2025-06-02.pdf"
+    - libelle: "Agriculture, travail du sol, elevage et epandages"
+      polluants: ["PM10", "NH3", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Fiche emissions Landes - inventaire 2022, 6 aout 2025 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-08/fiche_dept_3.2.4_rev1_Landes_20250806_VF.pdf"
+    - libelle: "Trafic routier et combustion industrielle, notamment au sud-ouest"
+      polluants: ["NO2", "PM10", "PM2.5", "SO2"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan 2024 de la qualite de l'air dans les Landes, juin 2025, p. 5-7 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Landes_D40_2025-06-02.pdf"
+    - libelle: "Foret landaise, source biogenique de COV et source episodique de particules lors des incendies"
+      polluants: ["COV", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Fiche emissions Landes - inventaire 2022, 6 aout 2025 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-08/fiche_dept_3.2.4_rev1_Landes_20250806_VF.pdf"
+  topographie_climat:
+    libelle: >
+      L'immense plateau sableux et forestier borde l'ocean; sur le littoral, la brise marine peut transporter et accumuler l'ozone forme au large vers l'interieur.
+    effet: "mixte"
+    vents_nommes: ["brise_marine"]
+    confiance: "moyenne"
+    source: "Departement des Landes, Paysages landais, consulte en 2026 - https://www.landes.fr/agit-au-quotidien/environnement-et-nature-agriculture-et-foret/nature-et-littoral/paysages-landais ; Atmo Nouvelle-Aquitaine, Influence de la meteo sur la qualite de l'air, consulte en 2026 - https://www.atmo-nouvelleaquitaine.org/article/influence-de-la-meteo-sur-la-qualite-de-lair"
+  regime_episodes:
+    - saison: "ete"
+      polluant: "PM10"
+      mecanisme: "Panaches d'incendies forestiers, dont ceux de Gironde et du nord des Landes en juillet 2026"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Incendies en Gironde et dans les Landes, 24 juillet 2026 - https://www.atmo-nouvelleaquitaine.org/actualite/incendies-en-gironde-et-dans-les-landes-suivi-de-la-qualite-de-lair"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Formation photochimique; l'objectif de long terme reste un enjeu chronique dans le bilan departemental"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan 2024 de la qualite de l'air dans les Landes, juin 2025, p. 8 - https://www.atmo-nouvelleaquitaine.org/sites/nouvelleaquitaine/files/medias/documents/2025-06/BAQA_DEPT_Landes_D40_2025-06-02.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "remontee desertique touchant toute la region le 14 novembre 2025"
+      confiance: "haute"
+      source: "Atmo Nouvelle-Aquitaine, Bilan regional des episodes de pollution 2025, 2026 - https://www.atmo-nouvelleaquitaine.org/publications/bilan-2025-bilan-regional-des-episodes-de-pollution-et-des-procedures-prefectorales"
+  cadre_decision:
+    ppa: "PPA de Bayonne 2013 toujours applicable sur un perimetre incluant Ondres et Tarnos, en revision en 2026"
+    zfe: "aucune ZFE active dans les Landes sur la carte ministerielle consultee en 2026"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Nouvelle-Aquitaine, PPA de l'agglomeration de Bayonne, 24 mars 2026 - https://www.nouvelle-aquitaine.developpement-durable.gouv.fr/le-ppa-de-l-agglomeration-de-bayonne-a15526.html ; Ministere de la Transition ecologique, deploiement des ZFE, consulte en 2026 - https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les fortes emissions biogeniques de COV de l'inventaire ne se traduisent pas directement en concentration locale; leur effet depend de la chimie et du transport.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le front de brise marine, les panaches industriels de Tarnos et les fumees d'incendie sont trop mobiles et fins pour une maille regionale moyenne.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "41"
+  nom: "Loir-et-Cher"
+  region: "Centre-Val de Loire"
+  resume: >
+    Beauce agricole, Sologne boisee et vallees produisent des regimes contrastes; chauffage, ozone et panaches de feux compliquent un fond largement rural.
+  sources_dominantes:
+    - libelle: "Grandes cultures et epandages de Beauce et Petite Beauce"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Lig'Air, ODACE - inventaire communal et departemental 2022, consulte en 2026 - https://odace.ligair.fr/atlas-transversal-climat-air-energie ; Lig'Air, L'ammoniac en 2024, 10 septembre 2025 - https://www.ligair.fr/actualites/rapport-detude-disponible-lammoniac-en-2024"
+    - libelle: "Chauffage residentiel au bois, surtout sensible lors des periodes froides"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "moyenne"
+      source: "Lig'Air, La Lettre no 108 - Bilan 2025, 2026, p. 4 - https://www.ligair.fr/publications-download/3309 ; Lig'Air, ODACE - inventaire departemental 2022, consulte en 2026 - https://odace.ligair.fr/atlas-transversal-climat-air-energie"
+  topographie_climat:
+    libelle: >
+      Les plateaux agricoles ouverts du nord contrastent avec la Sologne boisee et les vallees de la Loire, du Loir et du Cher, localement moins ventilees.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "DREAL Centre-Val de Loire, La diversite des paysages regionaux, mise a jour 2026 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/la-diversite-des-paysages-regionaux-a1803.html"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage residentiel et accumulation lors de situations froides peu dispersives"
+      confiance: "moyenne"
+      source: "Lig'Air, La Lettre no 108 - Bilan 2025, 2026, p. 2 et 4 - https://www.ligair.fr/publications-download/3309"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Formation photochimique regionale sous chaleur et fort ensoleillement"
+      confiance: "haute"
+      source: "Lig'Air, Bilan annuel de la qualite de l'air 2025, 2026 - https://www.ligair.fr/bilan-annuel-qualite-de-lair-2025-en-centre-val-de-loire"
+  transport_longue_distance:
+    - origine: "incendie de la foret de Fontainebleau"
+      polluant: "PM2.5"
+      regime: "panache de fumees gagne le nord du Loir-et-Cher le 13 juillet 2026"
+      confiance: "haute"
+      source: "Lig'Air, Incendie en foret de Fontainebleau, 13 juillet 2026 - https://www.ligair.fr/actualites/incendie-en-foret-de-fontainebleau-ligair-suit-levolution-de-la-situation"
+  cadre_decision:
+    ppa: "aucun PPA; la region compte seulement les PPA d'Orleans et de Tours"
+    zfe: "aucune ZFE repertoriee dans le Loir-et-Cher sur la carte ministerielle au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, Plans de protection de l'atmosphere, mise a jour 2026 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/plans-de-protection-de-l-atmosphere-ppa-r1748.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille departementale lisse le contraste entre fond agricole de Beauce, tissu urbain de Blois et Sologne forestiere.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Un panache de feu advecte peut produire une hausse breve absente d'une climatologie locale et tres sensible a une petite erreur de vent.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "42"
+  nom: "Loire"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Bassins de Saint-Etienne et du Forez piegent trafic et chauffage; reliefs et couloir du Gier favorisent ozone et imports lyonnais.
+  sources_dominantes:
+    - libelle: "Trafic routier de l'agglomeration stephanoise et des axes du Gier"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Loire, 21 novembre 2025, p. 7 et 19 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2023_42-LOIRE%20v2.pdf"
+    - libelle: "Chauffage residentiel, largement dominant dans les emissions de particules"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Loire, 21 novembre 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2023_42-LOIRE%20v2.pdf"
+    - libelle: "Agriculture, source quasi exclusive des emissions departementales de NH3"
+      polluants: ["NH3", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Loire, 21 novembre 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2023_42-LOIRE%20v2.pdf"
+  topographie_climat:
+    libelle: >
+      Bassins et plaines du Forez, reliefs du Pilat et monts du Lyonnais, puis vallee du Gier creent des circulations contrastees et des inversions hivernales.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhone-Alpes, PPA3 Saint-Etienne Loire Forez - diagnostic, juin 2021, p. 34-42 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/IMG/pdf/202106-entier-ppastetienne_.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversions dans les bassins, chauffage residentiel et faible dispersion"
+      confiance: "haute"
+      source: "DREAL Auvergne-Rhone-Alpes, PPA3 Saint-Etienne Loire Forez - diagnostic, juin 2021, p. 41-42 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/IMG/pdf/202106-entier-ppastetienne_.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Production photochimique sous chaleur et ensoleillement, plus marquee hors coeur urbain"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Loire, 21 novembre 2025, p. 10-14 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-11/ATMO_PPT-Bilan-2023_42-LOIRE%20v2.pdf"
+  transport_longue_distance:
+    - origine: "agglomeration lyonnaise et vallee du Rhone"
+      polluant: "O3"
+      regime: "advection par le couloir du Gier lors de situations estivales"
+      confiance: "haute"
+      source: "DREAL Auvergne-Rhone-Alpes, PPA3 Saint-Etienne Loire Forez - diagnostic, juin 2021, p. 39-42 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/IMG/pdf/202106-entier-ppastetienne_.pdf"
+  cadre_decision:
+    ppa: "PPA3 Saint-Etienne Loire Forez, 140 communes, approuve le 4 avril 2023"
+    zfe: "ZFE-m de Saint-Etienne active; Crit'Air 4 et 5 interdits aux VUL et poids lourds depuis janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhone-Alpes, Approbation du PPA3 Saint-Etienne Loire Forez, 4 avril 2023 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/approbation-du-ppa3-de-saint-etienne-loire-forez-a23546.html ; Saint-Etienne Metropole, Zone a faibles emissions mobilite, mise a jour 2025 - https://www.saint-etienne-metropole.fr/preserver-recycler/qualite-de-lair/zone-faibles-emissions-mobilite ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le bassin stephanois et la plaine du Forez ont des regimes meteorologiques distincts; une correction departementale unique peut masquer leurs biais opposes.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        L'ozone culmine souvent loin des emissions de precurseurs; une station rurale ou d'altitude ne doit pas etre corrigee comme une station trafic.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null

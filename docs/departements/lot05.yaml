@@ -1,0 +1,403 @@
+- code: "02"
+  nom: "Aisne"
+  region: "Hauts-de-France"
+  resume: >
+    Grandes cultures, chauffage residentiel et trafic structurent les particules et le NO2; les epandages printaniers et les poussieres sahariennes compliquent les previsions.
+  sources_dominantes:
+    - libelle: "Grandes cultures et elevage, avec epandages et travail du sol"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP Territorial 2026 - Conseil departemental de l'Aisne, mai 2026, p. 11 - https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-05/CAP_Conseil%20d%C3%A9partemental%20de%20l%27Aisne.pdf"
+    - libelle: "Chauffage residentiel, principal secteur emetteur de PM2.5"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP Territorial 2026 - Conseil departemental de l'Aisne, mai 2026, p. 11 - https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-05/CAP_Conseil%20d%C3%A9partemental%20de%20l%27Aisne.pdf"
+    - libelle: "Trafic routier, premier secteur emetteur d'oxydes d'azote"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP Territorial 2026 - Conseil departemental de l'Aisne, mai 2026, p. 11 - https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-05/CAP_Conseil%20d%C3%A9partemental%20de%20l%27Aisne.pdf"
+  topographie_climat:
+    libelle: >
+      Le climat atlantique humide et les vents dominants d'ouest ventilent les plaines ouvertes; l'influence continentale augmente vers l'est et la Thierache est plus accidentee.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Prefecture de l'Aisne, Etude de dangers du parc eolien du Vilpion, document consulte le 10 aout 2026, p. 16 - https://www.aisne.gouv.fr/content/download/27168/179109/file/02-Vilpion-Etude%20de%20dangers.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage et trafic lors de conditions meteorologiques peu dispersives"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP Territorial 2026 - Conseil departemental de l'Aisne, mai 2026, p. 9 - https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-05/CAP_Conseil%20d%C3%A9partemental%20de%20l%27Aisne.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Epandages d'engrais et de lisiers favorisant la formation de particules secondaires"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, CAP Territorial 2026 - Conseil departemental de l'Aisne, mai 2026, p. 9 - https://www.atmo-hdf.fr/sites/hdf/files/medias/documents/2026-05/CAP_Conseil%20d%C3%A9partemental%20de%20l%27Aisne.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud_et_retombees_de_poussieres"
+      confiance: "haute"
+      source: "Atmo Hauts-de-France, Des poussieres sahariennes dans les Hauts-de-France, mars 2026 - https://www.atmo-hdf.fr/actualite/des-poussieres-sahariennes-dans-les-hauts-de-france"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille departementale lisse le contraste entre les plaines agricoles ouvertes et la Thierache plus boisee et accidentee.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Un inventaire annualise reproduit mal le calendrier des epandages et la formation meteorodependante de nitrate d'ammonium.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les apports mineraux sahariens peuvent etre attribues a tort aux emissions agricoles locales si le transport externe est mal represente.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "03"
+  nom: "Allier"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Agriculture et chauffage residentiel dominent les particules, tandis que la N7 et les trois poles urbains creent des gradients locaux dans un territoire contraste.
+  sources_dominantes:
+    - libelle: "Agriculture, notamment fertilisation et travail des terres"
+      polluants: ["NH3", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air dans l'Allier, 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_03-ALLIER.pdf"
+    - libelle: "Chauffage residentiel, avec une contribution majeure aux particules fines"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air dans l'Allier, 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_03-ALLIER.pdf"
+    - libelle: "Trafic de la N7 et des poles de Moulins, Montlucon et Vichy"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air dans l'Allier, 2025, p. 7; Atmo Auvergne-Rhone-Alpes, Vigilance pollution: les territoires peuvent agir contre les particules, 2016 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_03-ALLIER.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp_conf_hivernales_bat5.pdf"
+  topographie_climat:
+    libelle: >
+      Les plaines du Cher et de l'Allier et les vents d'ouest favorisent la ventilation, mais les collines centrales et le relief du sud creent des regimes distincts.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Prefecture de l'Allier, Etat initial de l'environnement, document consulte le 10 aout 2026, partie III - https://www.allier.gouv.fr/contenu/telechargement/13956/96818/file/Partie%20III%20Etat%20initial%20de%20l%27environnement3.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Combustion residentielle lors des situations froides et peu dispersives"
+      confiance: "moyenne"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air dans l'Allier, 2025, p. 7 et 14; Atmo Auvergne-Rhone-Alpes, Vigilance pollution: les territoires peuvent agir contre les particules, 2016 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_03-ALLIER.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp_conf_hivernales_bat5.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une seule maille peut confondre les trois bassins urbains, les plaines fluviales et le relief plus marque du sud.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le calendrier des travaux agricoles et la formation secondaire des particules ne sont pas restitues par des emissions annuelles moyennes.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les gradients de NO2 au voisinage de la N7 peuvent disparaitre dans une moyenne de maille rurale.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "05"
+  nom: "Hautes-Alpes"
+  region: "Provence-Alpes-Cote d'Azur"
+  resume: >
+    Les vallees alpines piegent les fumees de bois en hiver; pollution importee, poussieres sahariennes et feux lointains rendent les pointes difficiles a attribuer.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois dans les vallees de la Durance, de Gap et de Briancon"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "AtmoSud, Surveillance de la qualite de l'air dans les vallees alpines de la region Sud, 30 octobre 2024, p. 2 et 15-17; AtmoSud, Hautes-Alpes, page consultee le 10 aout 2026 - https://www.atmosud.org/sites/sud/files/medias/documents/2024-10/Surveillance_vallee_haute_durance_2023_2024.pdf ; https://www.atmosud.org/article/hautes-alpes"
+    - libelle: "Trafic routier concentre dans les fonds de vallee et autour de Gap"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "AtmoSud, Surveillance de la qualite de l'air dans les vallees alpines de la region Sud, 30 octobre 2024, p. 8-9; AtmoSud, Hautes-Alpes, page consultee le 10 aout 2026 - https://www.atmosud.org/sites/sud/files/medias/documents/2024-10/Surveillance_vallee_haute_durance_2023_2024.pdf ; https://www.atmosud.org/article/hautes-alpes"
+    - libelle: "Agriculture et sources biogeniques, quasi-totalite des emissions locales d'ammoniac"
+      polluants: ["NH3", "COV"]
+      confiance: "haute"
+      source: "AtmoSud, Hautes-Alpes, page consultee le 10 aout 2026 - https://www.atmosud.org/article/hautes-alpes"
+  topographie_climat:
+    libelle: >
+      Les fonds des vallees alpines subissent les inversions thermiques hivernales, tandis que leurs flancs et les sites en hauteur sont mieux ventiles.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "AtmoSud, Surveillance de la qualite de l'air dans les vallees alpines de la region Sud, 30 octobre 2024, p. 2 et 8-9 - https://www.atmosud.org/sites/sud/files/medias/documents/2024-10/Surveillance_vallee_haute_durance_2023_2024.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversions de fond de vallee et combustion de biomasse pour le chauffage"
+      confiance: "haute"
+      source: "AtmoSud, Surveillance de la qualite de l'air dans les vallees alpines de la region Sud, 30 octobre 2024, p. 2, 15-17 et 26 - https://www.atmosud.org/sites/sud/files/medias/documents/2024-10/Surveillance_vallee_haute_durance_2023_2024.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud_a_sud_est"
+      confiance: "haute"
+      source: "AtmoSud, Episode de particules desertiques en region Sud, 5 mars 2026; AtmoSud, Surveillance des vallees alpines, 30 octobre 2024, p. 21-22 - https://www.atmosud.org/actualite/episode-de-particules-desertiques-en-region-sud ; https://www.atmosud.org/sites/sud/files/medias/documents/2024-10/Surveillance_vallee_haute_durance_2023_2024.pdf"
+    - origine: "Feux_du_Canada"
+      polluant: "PM2.5"
+      regime: "transport_transatlantique_en_altitude_puis_rabattement_sur_les_Alpes"
+      confiance: "haute"
+      source: "AtmoSud, Des fumees des incendies canadiens arrivent dans la region Sud, 11 aout 2025; AtmoSud, Surveillance des vallees alpines, 30 octobre 2024, p. 2 et 21 - https://www.atmosud.org/node/331061 ; https://www.atmosud.org/sites/sud/files/medias/documents/2024-10/Surveillance_vallee_haute_durance_2023_2024.pdf"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le maillage vertical et horizontal peut confondre un fond de vallee sous inversion avec un flanc situe au-dessus de la couche froide.
+      confiance: "haute"
+      speculatif: true
+    - libelle: >
+        Les pics horaires de combustion du bois et leur forte saisonnalite sont lisses par des profils d'emissions trop moyens.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Un episode peut combiner poussiere saharienne, fumee lointaine et aerosol local, rendant l'attribution de la correction instable.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "08"
+  nom: "Ardennes"
+  region: "Grand Est"
+  resume: >
+    Bois residentiel, agriculture et industrie composent des profils distincts entre plateau champenois et vallees ardennaises; les particules d'Europe orientale surprennent les modeles.
+  sources_dominantes:
+    - libelle: "Travail des champs et autres activites agricoles, premier secteur emetteur de PM10"
+      polluants: ["PM10", "NO2"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST des Ardennes, 2025, p. 6 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Ardennes_2025_0.pdf"
+    - libelle: "Chauffage residentiel au bois, dominant pour les particules fines et le benzene"
+      polluants: ["PM10", "PM2.5", "benzene"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST des Ardennes, 2025, p. 6 et 13 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Ardennes_2025_0.pdf"
+    - libelle: "Industrie et traitement des dechets, contribution departementale elevee aux oxydes d'azote"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST des Ardennes, 2025, p. 6 et 13 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Ardennes_2025_0.pdf"
+  topographie_climat:
+    libelle: >
+      Le plateau ouvert du sud contraste avec le massif boise et les vallees de la Meuse et de la Semoy au nord; les vents dominants viennent du sud-ouest.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Prefecture des Ardennes, Projet de PPI 2025 soumis a consultation, 2025 - https://www.ardennes.gouv.fr/contenu/telechargement/14270/101329/file/PPI2025%20pour%20consultation%20de%20la%20population.pdf"
+  regime_episodes: null
+  transport_longue_distance:
+    - origine: "Europe_de_l_Est"
+      polluant: "PM10"
+      regime: "masses_d_air_d_est_chargees_en_particules_terrigenes"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST des Ardennes, 2025, p. 19 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Ardennes_2025_0.pdf"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        L'apport de particules terrigenes d'Europe orientale observe en septembre 2024 n'avait pas ete anticipe par la plateforme de modelisation.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une maille unique lisse l'opposition entre la Champagne ouverte au sud et les vallees boisees du massif ardennais.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les panaches ponctuels des fonderies autour de Vivier-au-Court et leurs composes traces sont mal representes par un inventaire annualise.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "10"
+  nom: "Aube"
+  region: "Grand Est"
+  resume: >
+    La grande culture domine les PM10 dans la plaine crayeuse; chauffage au bois, nitrate d'ammonium printanier et apports d'Europe orientale ajoutent des signaux temporels.
+  sources_dominantes:
+    - libelle: "Grandes cultures de la plaine champenoise et travail des champs"
+      polluants: ["PM10", "PM2.5", "NO2"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST de l'Aube, juillet 2025, p. 6 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Aube_2025.pdf"
+    - libelle: "Chauffage residentiel au bois, premier secteur emetteur de particules fines"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST de l'Aube, juillet 2025, p. 6 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Aube_2025.pdf"
+  topographie_climat:
+    libelle: >
+      La Champagne crayeuse forme une plaine ouverte et doucement ondulee, globalement ventilable; le Pays d'Othe et les secteurs boises du sud-est introduisent des contrastes locaux.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Prefecture de l'Aube, Referentiel des paysages de l'Aube, 2011, page consultee le 10 aout 2026 - https://www.aube.gouv.fr/Actions-de-l-Etat/Amenagement-du-territoire-urbanisme-construction-logement/Amenagement-du-territoire/Paysages/Referentiel-des-paysages-de-l-Aube"
+  regime_episodes:
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Formation de nitrate d'ammonium a partir des epandages, renforcee sous inversion et vents faibles"
+      confiance: "moyenne"
+      source: "ATMO Grand Est, Bilan 2024 - CODERST de l'Aube, juillet 2025, p. 6; ATMO Grand Est, Episode PM10 du 8 au 9 mars 2026, 9 mars 2026 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Aube_2025.pdf ; https://www.atmo-grandest.eu/publications/bilan-episode-de-pollution-aux-particules-pm10-dans-le-grand-est-du-08-au-09-mars-2026"
+  transport_longue_distance:
+    - origine: "Europe_de_l_Est"
+      polluant: "PM10"
+      regime: "masses_d_air_d_est_chargees_en_particules_terrigenes"
+      confiance: "haute"
+      source: "ATMO Grand Est, Bilan 2024 de la qualite de l'air - CODERST de l'Aube, juillet 2025, p. 20 - https://www.atmo-grandest.eu/sites/grandest/files/medias/documents/2025-07/Bilan_CODERST_Aube_2025.pdf"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        L'apport terrigene d'Europe orientale observe en septembre 2024 n'avait pas ete prevu par la plateforme de modelisation.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Le calendrier des travaux agricoles et la conversion de l'ammoniac en particules secondaires echappent a un profil d'emissions uniforme.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une maille departementale melange l'agglomeration troyenne, la plaine de grandes cultures et les reliefs boises peripheriques.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "14"
+  nom: "Calvados"
+  region: "Normandie"
+  resume: >
+    Trafic caennais et cimenterie de Ranville se combinent sur un littoral ventile, avec ZFE active, ozone estival et apports sahariens.
+  sources_dominantes:
+    - libelle: "Trafic de Caen la Mer et des grands axes de l'agglomeration"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Caen la Mer, Dossier de consultation reglementaire de la ZFE-m, septembre 2024, p. 10-12; Atmo Normandie, Bilan 2024, octobre 2025, p. 5 et 28 - https://caenlamer.fr/sites/caenlamer/files/2024-09/ZFE-CLM-Dossier%20de%20consultation%20r%C3%A9glementaire.pdf ; https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf"
+    - libelle: "Cimenterie Heidelberg Materials de Ranville, source industrielle de dioxyde de soufre surveillee"
+      polluants: ["SO2"]
+      confiance: "haute"
+      source: "Atmo Normandie, Cimenterie Heidelberg: concentrations faibles de dioxyde de soufre en 2024, 17 mars 2026 - https://www.atmonormandie.fr/actualite/cimenterie-heidelberg-concentrations-faibles-de-dioxyde-de-soufre-en-2024"
+  topographie_climat:
+    libelle: >
+      Le littoral et la plaine de Caen sont exposes aux vents d'ouest a sud-ouest, mais les collines normandes abritent localement l'interieur et modulent les circulations cotieres.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Normandie, Les caracteristiques du climat en Normandie, mise a jour 11 mars 2025 - https://www.normandie.developpement-durable.gouv.fr/les-caracteristiques-du-climat-en-normandie-a3329.html"
+  regime_episodes:
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Aerosol secondaire riche en nitrate d'ammonium lors des periodes d'epandage et de transport continental"
+      confiance: "moyenne"
+      source: "Atmo Normandie, Etude CARA sur les particules du littoral, fevrier 2024, p. 51-61; Atmo Normandie, Historique des episodes de pollution, page consultee le 10 aout 2026 - https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2024-02/Rapport_CARA_littoral_PMF_VF.pdf ; https://www.atmonormandie.fr/episodes-de-pollution/historique"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie sous temperatures elevees et fort ensoleillement a partir des oxydes d'azote et des COV"
+      confiance: "haute"
+      source: "Atmo Normandie, Bilan 2024, octobre 2025, p. 5 et 32; Atmo Normandie, Historique des episodes de pollution, page consultee le 10 aout 2026 - https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf ; https://www.atmonormandie.fr/episodes-de-pollution/historique"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud_et_retombees_sur_le_littoral_normand"
+      confiance: "haute"
+      source: "Atmo Normandie, Des poussieres sahariennes en Normandie, 5 septembre 2023, mise a jour 7 septembre 2023 - https://www.atmonormandie.fr/actualite/des-poussieres-sahariennes-en-normandie"
+  cadre_decision:
+    ppa: null
+    zfe: "ZFE-m de Caen la Mer active depuis le 1er janvier 2025; seuls les vehicules non classes sont interdits"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Caen la Mer, Zone a faibles emissions, page consultee le 10 aout 2026; Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; CJUE, arret C-636/18, 2019 - https://caenlamer.fr/zone-faibles-emissions ; https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les gradients routiers de Caen et les stations proches des axes sont sous-resolus par une maille kilometrique.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les vents cotiers et brises locales peuvent inverser l'influence des sources de l'estuaire, du port et du plateau industriel.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Sel marin, nitrate d'ammonium et poussiere saharienne peuvent produire des PM10 semblables en masse mais exigeant des corrections differentes.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "15"
+  nom: "Cantal"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Massif volcanique contraste: bois residentiel et ammoniac agricole dominent localement; inversions de vallee et poussieres desertiques pilotent les pointes de particules.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel, principalement responsable des emissions de particules fines"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air dans le Cantal, 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_15-CANTAL.pdf"
+    - libelle: "Agriculture et fertilisation organique ou minerale, quasi-totalite des emissions d'ammoniac"
+      polluants: ["NH3", "NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air dans le Cantal, 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_15-CANTAL.pdf"
+  topographie_climat:
+    libelle: >
+      Les hauts plateaux et reliefs volcaniques sont ventiles, mais les inversions hivernales accumulent chauffage et trafic dans les vallees et bassins habites.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Atmo Auvergne-Rhone-Alpes, Bilan de la qualite de l'air 2016 - Cantal, 2017, p. 3 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom15_cantal.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Inversion thermique en vallee, basses temperatures et chauffage residentiel au bois"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan de la qualite de l'air 2016 - Cantal, 2017, p. 3; Bilan 2024 de la qualite de l'air dans le Cantal, 2025, p. 7 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom15_cantal.pdf ; https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_15-CANTAL.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie estivale avec concentrations de fond favorisees sur les sites d'altitude"
+      confiance: "moyenne"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan de la qualite de l'air 2016 - Cantal, 2017, p. 3 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/content/migrated/atoms/files/dp2017_bilanqa2016_zoom15_cantal.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "flux_de_sud_et_retombees_de_poussieres_desertiques"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air dans le Cantal, 2025, p. 13 et 16 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-10/ATMO_PPT-Bilan-2024_15-CANTAL.pdf"
+  cadre_decision:
+    ppa: null
+    zfe: null
+    contentieux_no2: false
+    confiance: "haute"
+    source: "Ministere de la Transition ecologique, Agir pour reduire la pollution de l'air, mise a jour 29 juin 2026; Ministere de la Transition ecologique, Zones a faibles emissions, mise a jour 13 aout 2025; CJUE, arret C-636/18, 2019 - https://www.ecologie.gouv.fr/politiques-publiques/agir-reduire-pollution-lair ; https://www.ecologie.gouv.fr/politiques-publiques/zones-faibles-emissions-zfe ; https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une maille grossiere moyenne les massifs volcaniques, les plateaux ventiles, le bassin d'Aurillac et les vallees sous inversion.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une correction calibree a une altitude se transfere mal a une station situee au-dessus ou au-dessous de l'inversion.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Le survol des poussieres desertiques peut etre prevu, mais leur zone et leur intensite de retombee restent difficiles a anticiper.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null

@@ -1,0 +1,391 @@
+- code: "25"
+  nom: "Doubs"
+  region: "Bourgogne-Franche-Comte"
+  resume: >
+    Reliefs jurassiens, bassins froids et chauffage au bois rendent les PM hivernales tres locales; Montbeliard ajoute trafic, industrie et A36.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois dans le bassin du Val de Morteau"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo BFC, Projet ESPAIRE, consulte en 2026 - https://www.atmo-bfc.org/projet-ESPAIRE"
+    - libelle: "Reseau routier dense, A36 et activites industrielles dans l'aire de Montbeliard"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "moyenne"
+      source: "Atmo BFC, Biosurveillance autour de l'UVE de Montbeliard, bilan 2024 - https://www.atmo-bfc.org/publications/biosurveillance-evaluation-de-la-qualite-de-lair-autour-de-lunite-de-valorisation-energetique-de"
+  topographie_climat:
+    libelle: >
+      Le relief jurassien forme dans le Val de Morteau des bassins d'accumulation tres localises; le climat semi-continental renforce les situations froides stables.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Atmo BFC, Projet ESPAIRE, consulte en 2026 - https://www.atmo-bfc.org/projet-ESPAIRE ; Meteo-France, Le climat en France hexagonale et Corse, 2026 - https://meteofrance.com/changement-climatique/le-climat-en-france-hexagonale-et-corse"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Froid, atmosphere stable, chauffage au bois et contribution de particules importees"
+      confiance: "haute"
+      source: "Atmo BFC, Bilan des activites et de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+    - saison: "automne"
+      polluant: "PM10"
+      mecanisme: "Combustion primaire de biomasse lors de conditions peu dispersives"
+      confiance: "haute"
+      source: "Atmo BFC, Bilan des activites et de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "remontees de poussieres au printemps, affectant aussi les reliefs"
+      confiance: "haute"
+      source: "Atmo BFC, Bilan des activites et de l'air 2024, 2025, p. 80 - https://www.atmo-bfc.org/sites/default/files/atmo/documents2025-05/2024_Bilan-annuel_Basse-def.pdf"
+  cadre_decision:
+    ppa: "PPA Belfort-Montbeliard-Hericourt-Delle approuve en 2013, couvrant une partie du Doubs"
+    zfe: "aucune ZFE-m repertoriee dans le Doubs au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Bourgogne-Franche-Comte, Les PPA, consulte en 2026 - https://www.bourgogne-franche-comte.developpement-durable.gouv.fr/les-plans-de-protection-de-l-atmosphere-ppa-r2289.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les bassins d'accumulation du Val de Morteau sont plus petits que la maille CAMS; leur signal de chauffage au bois peut etre fortement lisse.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Une remontee saharienne touchant d'abord l'altitude peut produire un decalage entre le modele regional, les reliefs et les stations de vallee.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "26"
+  nom: "Drome"
+  region: "Auvergne-Rhone-Alpes"
+  resume: >
+    Le couloir rhodanien ventile par mistral mais concentre trafic et activites; l'est montagneux et l'ensoleillement maintiennent un enjeu ozone estival.
+  sources_dominantes:
+    - libelle: "Trafic routier du couloir rhodanien et des principaux axes"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Drome, 4 juillet 2025, p. 8 et 21 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/Bilan%202024%20de%20la%20qualit%C3%A9%20de%20l%27air%20de%20la%20Drome.pdf"
+    - libelle: "Chauffage au bois individuel non performant"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Drome, 4 juillet 2025, p. 8 et 31 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/Bilan%202024%20de%20la%20qualit%C3%A9%20de%20l%27air%20de%20la%20Drome.pdf"
+    - libelle: "Fertilisation minerale et organique des cultures"
+      polluants: ["NH3", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan 2024 de la qualite de l'air de la Drome, 4 juillet 2025, p. 8 et 31 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/Bilan%202024%20de%20la%20qualit%C3%A9%20de%20l%27air%20de%20la%20Drome.pdf"
+  topographie_climat:
+    libelle: >
+      La vallee du Rhone canalise et accelere le mistral entre Valence et Donzere, tandis que les reliefs de l'est creent des circulations et expositions differentes.
+    effet: "mixte"
+    vents_nommes: ["mistral"]
+    confiance: "haute"
+    source: "Meteo-France, Le mistral, vent regional, 23 juillet 2026 - https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/le-mistral-vent-regional ; Atmo Auvergne-Rhone-Alpes, Bilan Drome 2024, 2025, p. 14-15 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/Bilan%202024%20de%20la%20qualit%C3%A9%20de%20l%27air%20de%20la%20Drome.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Accumulation de particules fines, surtout dans le nord du departement et hors periodes de mistral"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan Drome 2024, 4 juillet 2025, p. 15 et 31 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/Bilan%202024%20de%20la%20qualit%C3%A9%20de%20l%27air%20de%20la%20Drome.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Formation photochimique sous chaleur et ensoleillement; la vallee du Rhone est le bassin le plus sensible"
+      confiance: "haute"
+      source: "Atmo Auvergne-Rhone-Alpes, Bilan Drome 2024, 4 juillet 2025, p. 14-15 et 23 - https://www.atmo-auvergnerhonealpes.fr/sites/aura/files/medias/documents/2025-07/Bilan%202024%20de%20la%20qualit%C3%A9%20de%20l%27air%20de%20la%20Drome.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "pas de PPA; feuille de route qualite de l'air de Valence Romans Agglo toujours identifiee comme cadre local"
+    zfe: "aucune ZFE-m repertoriee dans la Drome au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Auvergne-Rhone-Alpes, Feuille de route qualite de l'air de Valence, mise a jour 29 juin 2023 - https://www.auvergne-rhone-alpes.developpement-durable.gouv.fr/feuille-de-route-pour-la-qualite-de-l-air-de-a13972.html?lang=fr ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Une meme maille peut melanger le couloir rhodanien fortement ventile et un vallon lateral stable; le signe du biais peut donc changer sur peu de distance.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les jours de mistral, une petite erreur de vitesse ou de canalisation du vent deplace fortement les gradients le long de l'A7 et de Valence.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "27"
+  nom: "Eure"
+  region: "Normandie"
+  resume: >
+    Plateaux agricoles ouverts et vallee de Seine industrielle opposent fond rural, axes logistiques et ozone plus eleve dans l'est normand.
+  sources_dominantes:
+    - libelle: "Transports, industrie et logistique dans le perimetre eureois de la vallee de Seine"
+      polluants: ["NO2", "PM10", "PM2.5", "SO2"]
+      confiance: "haute"
+      source: "DREAL Normandie, Etat des lieux du PPA Vallee de Seine 2023-2027, 2023 - https://www.normandie.developpement-durable.gouv.fr/IMG/pdf/20231011_tome1_etat-lieux_ppa_v11.pdf"
+    - libelle: "Agriculture, travail du sol et epandages sur les plateaux ruraux"
+      polluants: ["PM10", "NH3"]
+      confiance: "moyenne"
+      source: "Atmo Normandie, Inventaire des emissions 2023, 23 avril 2026 - https://www.atmonormandie.fr/actualite/atmo-normandie-publie-son-nouvel-inventaire-des-emissions-polluantes ; DREAL Normandie, Leviers agricoles du PPA, 2026 - https://www.normandie.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-vallee-de-a6841.html"
+  topographie_climat:
+    libelle: >
+      Les plateaux sous influence oceanique sont souvent ventiles, mais les meandres de la Seine structurent des corridors industriels et des dispersions plus locales.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "moyenne"
+    source: "Meteo-France, Le climat en France hexagonale et Corse, 2026 - https://meteofrance.com/changement-climatique/le-climat-en-france-hexagonale-et-corse ; DREAL Normandie, Etat des lieux du PPA Vallee de Seine, 2023 - https://www.normandie.developpement-durable.gouv.fr/IMG/pdf/20231011_tome1_etat-lieux_ppa_v11.pdf"
+  regime_episodes:
+    - saison: "printemps"
+      polluant: "NH3"
+      mecanisme: "Volatilisation lors de la fertilisation et des epandages agricoles"
+      confiance: "haute"
+      source: "DREAL Normandie, Leviers agricoles du PPA Vallee de Seine, 2026 - https://www.normandie.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-vallee-de-a6841.html"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Production photochimique; l'objectif de qualite est moins souvent respecte dans l'est de la Normandie"
+      confiance: "haute"
+      source: "Atmo Normandie, Bilan annuel 2024, 27 octobre 2025, p. 16 - https://www.atmonormandie.fr/sites/normandie/files/medias/documents/2025-10/Bilan%202024_0.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "PPA Vallee de Seine 2023-2027, couvrant notamment Seine-Eure, Roumois Seine et Lyons Andelle"
+    zfe: "aucune ZFE-m repertoriee dans l'Eure au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Normandie, PPA Vallee de Seine, mise a jour 8 juillet 2026 - https://www.normandie.developpement-durable.gouv.fr/le-plans-de-protection-de-l-atmosphere-ppa-vallee-a7032.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les totaux du PPA agregent le corridor Seine et les plateaux ruraux; une correction departementale unique risque de confondre deux regimes d'emission.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les panaches industriels et logistiques de la vallee de Seine sont directionnels et plus etroits qu'une maille CAMS.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "28"
+  nom: "Eure-et-Loir"
+  region: "Centre-Val de Loire"
+  resume: >
+    La Beauce agricole ouverte favorise poussieres et ammoniac; les faibles vents chauds peuvent cumuler ozone, trafic et apports de poussieres desertiques.
+  sources_dominantes:
+    - libelle: "Grandes cultures de Beauce, travail du sol et fertilisation"
+      polluants: ["PM10", "NH3"]
+      confiance: "haute"
+      source: "DREAL Centre-Val de Loire, Profil environnemental regional, consulte en 2026 - https://statistiques.centre-val-de-loire.developpement-durable.gouv.fr/Book_PER_ext/paysages-et-patrimoine.html ; Lig'Air, Rapport d'activite 2019, p. 48 - https://ligair.fr/storage/publications/LIGAIR_RA_2019.pdf"
+    - libelle: "Trafic sur la frange francilienne et l'axe de Saint-Remy-sur-Avre"
+      polluants: ["NO2", "PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Lig'Air, Bilan 2025 - La Lettre no 108, 2026, p. 1 - https://www.ligair.fr/publications-download/3309"
+  topographie_climat:
+    libelle: >
+      La plaine ouverte de Beauce favorise ordinairement la dispersion; en situation chaude a vent tres faible, elle ne protege pas de l'accumulation photochimique.
+    effet: "mixte"
+    vents_nommes: null
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, Directive paysagere de Chartres, mise a jour 2 juin 2026 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/le-dossier-de-la-directive-paysagere-de-chartres-a3490.html ; Lig'Air, episode ozone du 14 juillet 2026 - https://www.ligair.fr/actualites/bilan-qualite-de-lair-un-double-episode-de-pollution-hier-amelioration-en-cours-aujourdhui"
+  regime_episodes:
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Fort ensoleillement, chaleur, vent de nord-est tres faible et apport de precurseurs routiers"
+      confiance: "haute"
+      source: "Lig'Air, Bilan de l'episode du 14 juillet 2026, publie le 15 juillet 2026 - https://www.ligair.fr/actualites/bilan-qualite-de-lair-un-double-episode-de-pollution-hier-amelioration-en-cours-aujourdhui"
+    - saison: "automne"
+      polluant: "PM10"
+      mecanisme: "Remontee de poussieres sahariennes pouvant franchir le seuil d'information"
+      confiance: "haute"
+      source: "Lig'Air, Bilan 2025 - La Lettre no 108, 2026, p. 2 - https://www.ligair.fr/publications-download/3309"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "remontees de poussieres desertiques, possibles hors du seul printemps"
+      confiance: "haute"
+      source: "Lig'Air, Bilan 2025 - La Lettre no 108, 2026, p. 2 - https://www.ligair.fr/publications-download/3309 ; Lig'Air, episode PM10 du 24 juin 2026 - https://www.ligair.fr/14062026-depassement-du-seuil-dinformation-et-derecommandation-pour-les-pm10-1"
+  cadre_decision:
+    ppa: "aucun PPA; la region ne compte que les PPA d'Orleans et de Tours"
+    zfe: "aucune ZFE-m repertoriee en Eure-et-Loir au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Centre-Val de Loire, Plans de protection de l'atmosphere, consulte en 2026 - https://www.centre-val-de-loire.developpement-durable.gouv.fr/plans-de-protection-de-l-atmosphere-ppa-r1748.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        L'episode d'ozone du 14 juillet 2026 n'a pas ete anticipe a son intensite; vent faible, trafic ponctuel et photochimie ont cumule leurs erreurs.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les emissions agricoles varient fortement avec les dates de travail du sol et d'epandage, que les inventaires annuels repartissent imparfaitement dans le temps.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "29"
+  nom: "Finistere"
+  region: "Bretagne"
+  resume: >
+    L'ocean ventile fortement le Finistere, mais elevage, chauffage, trafic portuaire brestois et panaches lointains imposent des gradients tres locaux.
+  sources_dominantes:
+    - libelle: "Agriculture et elevage, dominants pour l'ammoniac et une large part des PM10"
+      polluants: ["NH3", "PM10"]
+      confiance: "haute"
+      source: "Air Breizh, Bilan des emissions atmospheriques 2020, novembre 2023, p. 10 - https://www.airbreizh.asso.fr/voy_content/uploads/2023/11/bilan_emissions_2020_161123_vf.pdf ; Air Breizh, Rapport annuel 2024, 19 juin 2025, p. 46-47 - https://www.airbreizh.asso.fr/voy_content/uploads/2025/06/rapport_air-breizh_bilan_regional_2024_monte-bd.pdf"
+    - libelle: "Chauffage residentiel, surtout au bois"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Air Breizh, Bilan des emissions atmospheriques 2020, novembre 2023, p. 10 - https://www.airbreizh.asso.fr/voy_content/uploads/2023/11/bilan_emissions_2020_161123_vf.pdf ; Air Breizh, Rapport annuel 2024, 19 juin 2025, p. 46-47 - https://www.airbreizh.asso.fr/voy_content/uploads/2025/06/rapport_air-breizh_bilan_regional_2024_monte-bd.pdf"
+    - libelle: "Sources portuaires localisees a Brest"
+      polluants: ["SO2", "NO2", "PM10", "COV"]
+      confiance: "haute"
+      source: "Air Breizh, Impact des emissions du port de Brest - phase II, 10 fevrier 2025 - https://www.airbreizh.asso.fr/publication/brest-une-etude-sur-limpact-des-activites-du-port-sur-la-qualite-de-lair/"
+  topographie_climat:
+    libelle: >
+      Le climat oceanique, les perturbations atlantiques et les vents dominants d'ouest a sud-ouest assurent une ventilation frequente, sauf abris littoraux tres locaux.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Meteo-France, Le climat en France hexagonale et Corse, 2026 - https://meteofrance.com/changement-climatique/le-climat-en-france-hexagonale-et-corse ; Air Breizh, Impact du port de Brest - phase I, 25 octobre 2022 - https://www.airbreizh.asso.fr/publication/brest-impact-des-emissions-du-port-sur-la-qualite-de-lair-phase-i-analyse-des-donnees-existantes/"
+  regime_episodes:
+    - saison: "automne"
+      polluant: "PM10"
+      mecanisme: "Panache regional de particules PM10 et PM2.5 transporte depuis le nord-est de l'Europe"
+      confiance: "haute"
+      source: "Air Breizh, Rapport annuel 2024, 19 juin 2025, p. 44-45 - https://www.airbreizh.asso.fr/voy_content/uploads/2025/06/rapport_air-breizh_bilan_regional_2024_monte-bd.pdf"
+  transport_longue_distance:
+    - origine: "nord-est de l'Europe"
+      polluant: "PM10"
+      regime: "flux de nord-est observe du 18 au 20 septembre 2024"
+      confiance: "haute"
+      source: "Air Breizh, Rapport annuel 2024, 19 juin 2025, p. 44-45 - https://www.airbreizh.asso.fr/voy_content/uploads/2025/06/rapport_air-breizh_bilan_regional_2024_monte-bd.pdf"
+  cadre_decision:
+    ppa: "aucun PPA; en Bretagne seul Rennes Metropole dispose d'un PPA"
+    zfe: "ZFE-m de Brest Metropole mise en place en 2025, ciblant les vehicules non classes"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Bretagne, Les PPA, 15 fevrier 2023 - https://www.bretagne.developpement-durable.gouv.fr/les-plans-de-protection-de-l-atmosphere-ppa-a5369.html ; Brest Metropole, Synthese de presentation de la ZFE-m, 2025 - https://brest.fr/sites/default/files/medias/brestfr/documents/gerer_mon_quotidien/transports/creation-d-une-zone-a-faibles-emissions-mobilite_1.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les signaux portuaires sont courts et directionnels; une moyenne de maille peut masquer un panache a quai tout en surestimant les quartiers non sous le vent.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Un panache transfrontalier uniforme sur le nord breton peut etre attribue a tort aux emissions locales par une correction apprise station par station.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "2A"
+  nom: "Corse-du-Sud"
+  region: "Corse"
+  resume: >
+    Ajaccio concentre trafic routier, portuaire et production electrique dans un relief littoral complexe; les poussieres sahariennes dominent les episodes de PM10.
+  sources_dominantes:
+    - libelle: "Trafic routier d'Ajaccio, renforce par les flux portuaires"
+      polluants: ["NO2", "PM10", "PM2.5", "SO2"]
+      confiance: "haute"
+      source: "Qualitair Corse, Bilan et tendances, mise a jour 13 decembre 2024 - https://qualitair.corsica/bilans-et-tendances/ ; DREAL Corse, Impact du confinement sur les emissions du bassin ajaccien, mai 2021 - https://www.corse.developpement-durable.gouv.fr/IMG/pdf/note_relative_aux_emissions_atmospheriques-bassin_ajaccien-02-06-2021.pdf"
+    - libelle: "Production electrique du bassin ajaccien"
+      polluants: ["NO2", "PM10", "PM2.5", "SO2"]
+      confiance: "haute"
+      source: "Qualitair Corse, Bilan et tendances, mise a jour 13 decembre 2024 - https://qualitair.corsica/bilans-et-tendances/ ; DREAL Corse, Impact du confinement sur les emissions du bassin ajaccien, mai 2021 - https://www.corse.developpement-durable.gouv.fr/IMG/pdf/note_relative_aux_emissions_atmospheriques-bassin_ajaccien-02-06-2021.pdf"
+  topographie_climat:
+    libelle: >
+      Relief montagneux, golfes et brises littorales creent des circulations locales; le libecciu d'ouest ventile fortement mais peut rabattre ou deplacer rapidement les panaches.
+    effet: "mixte"
+    vents_nommes: ["libecciu", "sirocco"]
+    confiance: "moyenne"
+    source: "Meteo-France, Les vents regionaux, 30 mars 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux ; Meteo-France, La brise, 23 juin 2026 - https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-brise"
+  regime_episodes:
+    - saison: "toute_annee"
+      polluant: "PM10"
+      mecanisme: "Nuages de poussieres desertiques; frequence maximale observee en mars et septembre"
+      confiance: "haute"
+      source: "Qualitair Corse, Rapport annuel 2024, publie le 16 juillet 2025, p. 56-58 - https://qualitair.corsica/wp-content/uploads/2025/09/RA2024-VF-Page-a-page-Interactif.pdf"
+    - saison: "ete"
+      polluant: "PM10"
+      mecanisme: "Cumul possible de poussieres desertiques et fumees d'incendies locaux"
+      confiance: "haute"
+      source: "Qualitair Corse, Episode de pollution du 19 juillet 2026 - https://qualitair.corsica/episode-de-pollution-un-retour-a-une-qualite-de-lair-plus-satisfaisante-attendu-en-corse/"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "sirocco ou flux de sud"
+      confiance: "haute"
+      source: "Qualitair Corse, Rapport annuel 2024, 2025, p. 57 - https://qualitair.corsica/wp-content/uploads/2025/09/RA2024-VF-Page-a-page-Interactif.pdf ; Meteo-France, Les vents regionaux, 30 mars 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux"
+    - origine: "vallee du Rhone et etang de Berre"
+      polluant: "O3"
+      regime: "transport mediterraneen de fond en periode estivale"
+      confiance: "moyenne"
+      source: "Qualitair Corse, Bilan et tendances, mise a jour 13 decembre 2024 - https://qualitair.corsica/bilans-et-tendances/"
+  cadre_decision:
+    ppa: "projet PPA de la region ajaccienne requalifie en PLQA lors de l'enquete publique de 2019"
+    zfe: "aucune ZFE-m repertoriee en Corse-du-Sud au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "moyenne"
+    source: "DREAL Corse, Enquete publique du plan ajaccien, mise a jour 3 octobre 2019 - https://www.corse.developpement-durable.gouv.fr/enquete-publique-a1616.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Les brises, le relief et les phases d'escale rendent les panaches routiers, portuaires et electriques tres variables a l'interieur d'une maille.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        La descente au sol des poussieres sahariennes depend du profil vertical; un episode conjoint aux deux departements a deja echappe a l'anticipation.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null
+
+- code: "2B"
+  nom: "Haute-Corse"
+  region: "Corse"
+  resume: >
+    Bastia, serree entre mer et relief, cumule trafic routier, port et centrale; ozone continental et poussieres sahariennes ajoutent un fond regional.
+  sources_dominantes:
+    - libelle: "Trafic routier et maritime de l'agglomeration bastiaise"
+      polluants: ["NO2", "PM10", "PM2.5", "SO2"]
+      confiance: "haute"
+      source: "Qualitair Corse, Bilan et tendances, mise a jour 13 decembre 2024 - https://qualitair.corsica/bilans-et-tendances/ ; DREAL Corse, PPA de la region bastiaise, mise a jour 14 decembre 2022 - https://www.corse.developpement-durable.gouv.fr/elaboration-du-ppa-de-la-region-bastiaise-a878.html"
+    - libelle: "Production electrique de la region bastiaise"
+      polluants: ["NO2", "PM10", "PM2.5", "SO2"]
+      confiance: "haute"
+      source: "Qualitair Corse, Bilan et tendances, mise a jour 13 decembre 2024 - https://qualitair.corsica/bilans-et-tendances/"
+  topographie_climat:
+    libelle: >
+      Bastia est resserree entre le rivage et les pentes du Cap Corse; le libecciu y devient violent par effet de foehn, alternant ventilation et gradients abrupts.
+    effet: "mixte"
+    vents_nommes: ["libecciu", "gregale", "sirocco"]
+    confiance: "haute"
+    source: "Meteo-France, Les vents regionaux, 30 mars 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux ; DREAL Corse, Atlas des paysages - Bastia Marana, 2022 - https://www.corse.developpement-durable.gouv.fr/IMG/pdf/51_pdfsam_k_k-brandizi-vdp-20221111.pdf"
+  regime_episodes:
+    - saison: "toute_annee"
+      polluant: "PM10"
+      mecanisme: "Nuages de poussieres desertiques, avec une frequence maximale observee en mars et septembre"
+      confiance: "haute"
+      source: "Qualitair Corse, Rapport annuel 2024, publie le 16 juillet 2025, p. 56-58 - https://qualitair.corsica/wp-content/uploads/2025/09/RA2024-VF-Page-a-page-Interactif.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie regionale et import continental; niveaux generalement plus eleves qu'en Corse-du-Sud"
+      confiance: "haute"
+      source: "Qualitair Corse, Bilan et tendances, mise a jour 13 decembre 2024 - https://qualitair.corsica/bilans-et-tendances/"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "sirocco ou flux de sud"
+      confiance: "haute"
+      source: "Qualitair Corse, Bilan de l'episode de Paques 2024, 22 aout 2024 - https://qualitair.corsica/wp-content/uploads/2025/06/Bilan-episode-de-pollution-Particules-desertiques-Week-end-de-Paques-2024.pdf ; Meteo-France, Les vents regionaux, 30 mars 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux"
+    - origine: "plaine du Po et etang de Berre"
+      polluant: "O3"
+      regime: "transport mediterraneen de fond en periode estivale"
+      confiance: "haute"
+      source: "Qualitair Corse, Bilan et tendances, mise a jour 13 decembre 2024 - https://qualitair.corsica/bilans-et-tendances/"
+  cadre_decision:
+    ppa: "PPA de la region bastiaise approuve le 29 decembre 2015; mise en oeuvre encore suivie en 2026"
+    zfe: "aucune ZFE-m repertoriee en Haute-Corse au 1er janvier 2025"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Corse, PPA bastiais, mise a jour 14 decembre 2022 - https://www.corse.developpement-durable.gouv.fr/elaboration-du-ppa-de-la-region-bastiaise-a878.html ; DREAL Corse, Mise en oeuvre du PPA, mise a jour 29 juin 2026 - https://www.corse.developpement-durable.gouv.fr/mise-en-oeuvre-du-ppa-de-la-region-bastiaise-a1296.html ; Ministere de la Transition ecologique, carte ZFE au 1er janvier 2025 - https://www.ecologie.gouv.fr/sites/default/files/documents/21055-carte%20ZFE-2025_02.pdf ; CJUE, affaire C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le corridor urbain de Bastia, entre pente et rivage, et les bascules rapides du libecciu creent des gradients que la maille CAMS ne resout pas.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Une correction locale peut attribuer a Bastia un biais d'ozone qui provient en realite du transport depuis la plaine du Po ou l'etang de Berre.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        La descente au sol des poussieres sahariennes depend du profil vertical; un episode conjoint aux deux departements a deja echappe a l'anticipation.
+      confiance: "haute"
+      speculatif: false
+  sans_source: null

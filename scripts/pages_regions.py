@@ -51,6 +51,10 @@ sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
 from contour_france import METROPOLE, douglas_peucker  # noqa: E402
+from contexte_departements import (  # noqa: E402
+    CSS as CSS_CONTEXTE, charger as charger_contexte, rapport_couverture,
+    rendre as rendre_contexte,
+)
 from pages_soutenance import (  # noqa: E402
     BANDE_COULEUR, COURT, ISSUE, MIN_JOURS_STATION, NOM_BANDE, POLLUANTS, SEUIL,
     couverture_membres,
@@ -407,28 +411,40 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
                 dep_de_region[code_d] = maj.iloc[0]
 
     # ── Les pages départementales, d'abord : la région les référencera ──────────
+    #
+    # Chaque page reçoit son **contexte territorial** : ce que les sources publiées disent
+    # du territoire, quand nos mesures ne disent que de combien on l'améliore. Le
+    # chargement est non strict à dessein — un département sans fiche reste une page
+    # valide, et faire échouer toute la restitution sur un trou du corpus documentaire
+    # serait faire décider à une condition de disponibilité ce qui est publié (§ 2 quater).
+    # Ce qui manque est donc *nommé* après la boucle, jamais tu.
+    contextes = charger_contexte(strict=False)
     (dossier / "dep").mkdir(parents=True, exist_ok=True)
     fiches_dep: dict[str, list[dict]] = {}
-    n_dep = 0
+    n_dep, codes_pages = 0, []
     for dp in deps:
         res = page_territoire(
             f'{dp["nom"]} ({dp["code"]})', dp["code"], jeux, compositions, "dep",
             "Maille départementale · protocole d'exploitation · J0",
             f'<a href="../{ardoise(prochain_nom(regions, dep_de_region.get(dp["code"])))}'
             f'.html">← la région</a> · <a href="../index.html">toutes les régions</a>',
-            MIN_STATIONS_DEP)
+            MIN_STATIONS_DEP,
+            rendre_contexte(contextes[dp["code"]]) if dp["code"] in contextes else "")
         if res is None:
             continue
         corps, r = res
         f = dossier / "dep" / f'{dp["code"]}-{dp["ardoise"]}.html'
         f.write_text(enveloppe(f'{dp["nom"]} — cartes de chaleur départementales',
                                corps, "maille départementale")
-                     .replace("</style>", CSS_SUP + "</style>"), encoding="utf-8")
+                     .replace("</style>", CSS_SUP + CSS_CONTEXTE + "</style>"),
+                     encoding="utf-8")
         r["fichier"] = f"dep/{dp['code']}-{dp['ardoise']}.html"
         fiches_dep.setdefault(dep_de_region.get(dp["code"], ""), []).append(r)
         n_dep += 1
+        codes_pages.append(dp["code"])
     if deps:
         print(f"  {n_dep} pages départementales", flush=True)
+        rapport_couverture(contextes, codes_pages)
 
     # ── Les pages régionales ───────────────────────────────────────────────────
     gains, resume, faits = {}, [], 0

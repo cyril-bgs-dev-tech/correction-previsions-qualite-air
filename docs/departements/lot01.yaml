@@ -1,0 +1,502 @@
+- code: "30"
+  nom: "Gard"
+  region: "Occitanie"
+  resume: >
+    Ozone nourri par les COV industriels du Gard et des Bouches-du-Rhone, particules
+    d'hiver au bois, epandages au printemps : trois regimes distincts.
+  sources_dominantes:
+    - libelle: "Trafic routier, deux tiers des oxydes d'azote du departement"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gard 2024 - Bilan de la qualite de l'air, 2025, p. 30 (transports 66 % des NOx) - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GARD-BD.pdf"
+    - libelle: "Industrie, 21 % des NOx et 25 % des PM10 : la part industrielle la plus elevee des sept departements occitans du panel"
+      polluants: ["NO2", "PM10", "SO2"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gard 2024 - Bilan de la qualite de l'air, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GARD-BD.pdf"
+    - libelle: "Chauffage residentiel au bois, 66 % des PM2.5 et 51 % des PM10 du departement"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gard 2024 - Bilan de la qualite de l'air, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GARD-BD.pdf"
+    - libelle: "Sites industriels ponctuels sous surveillance dediee : FerroGlobe et la zone industrielle de Salindres, avec son observatoire des odeurs"
+      polluants: ["PM10", "SO2"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gard 2024 - Bilan de la qualite de l'air, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GARD-BD.pdf"
+  topographie_climat:
+    libelle: >
+      Bordure rhodanienne balayee par le mistral de secteur nord, mais l'hiver les
+      situations anticycloniques a inversion thermique et vent faible bloquent la
+      dispersion dans les bassins.
+    effet: "mixte"
+    vents_nommes: ["mistral"]
+    confiance: "moyenne"
+    source: "Meteo-France, Les vents regionaux, consulte en 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux ; DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 58 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Anticyclone, inversion thermique, temperatures faibles et peu de vent : les particules du chauffage au bois emises localement s'accumulent"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 58 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "L'ammoniac des epandages azotes se recombine avec les NOx du transport et les COV en particules secondaires ; episodes de grande etendue"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 58 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Fort ensoleillement, chaleur et stabilite des masses d'air sur les NOx du trafic et les COVNM des grandes sources industrielles ; ampleur maximale en canicule"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 63 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+  transport_longue_distance:
+    - origine: "Bouches-du-Rhone"
+      polluant: "O3"
+      regime: "COVNM des grandes sources industrielles voisines, precurseurs de l'ozone forme sur le Gard"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 63 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "depressions sahariennes mettant le sable en suspension, transporte jusqu'a l'Occitanie"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 58 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+  cadre_decision:
+    ppa: "PPA de la zone urbaine de Nimes 2025-2030, revision approuvee le 22 decembre 2025 ; perimetre du SCoT Sud Gard, 80 communes, 23 actions"
+    zfe: "Aucune ZFE-m en vigueur ; etudes de prefiguration engagees a Nimes et a Ales Agglomeration"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Occitanie, Le Plan de protection de l'atmosphere de la zone urbaine de Nimes, consulte en 2026 - https://www.occitanie.developpement-durable.gouv.fr/le-plan-de-protection-de-l-atmosphere-a27140.html ; DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, p. 2 et p. 7 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf ; Atmo Occitanie, L'air dans le Gard 2024, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GARD-BD.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        L'ozone gardois est nourri par les COVNM d'installations industrielles du Gard
+        et des Bouches-du-Rhone : un modele qui ne voit que les NOx locaux manque la
+        formation en aval du panache, a des dizaines de kilometres de la source.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les episodes printaniers sont des particules secondaires formees loin des
+        emissions et sur de larges territoires : un correctif ancre sur les emissions
+        locales attribuera au chauffage ce qui vient des epandages.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        FerroGlobe et la plateforme de Salindres sont des sources ponctuelles :
+        invisibles a un inventaire moyenne sur la maille, elles dominent pourtant les
+        stations qui les entourent quand le vent porte.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "31"
+  nom: "Haute-Garonne"
+  region: "Occitanie"
+  resume: >
+    Premier emetteur regional sur les quatre polluants ; le bois pese 6 % de l'energie
+    mais fait l'hiver, et l'autan gouverne la dispersion.
+  sources_dominantes:
+    - libelle: "Trafic routier, 65 % des NOx ; le departement porte a lui seul 22 % des emissions regionales de NOx et 20 % de celles de particules"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air en Haute-Garonne 2024 - Bilan de la qualite de l'air, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HG-BD.pdf"
+    - libelle: "Chauffage au bois : environ 6 % du mix energetique du territoire du PPA, mais 59 % des PM2.5 departementales et des pics chaque hiver"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de l'agglomeration toulousaine 2026-2030, approuve le 18 fevrier 2026, p. 14 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_final.pdf ; Atmo Occitanie, L'air en Haute-Garonne 2024, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HG-BD.pdf"
+    - libelle: "Agriculture de grandes cultures sur les deux tiers des surfaces, 19 % des PM10 et 10 % des NOx"
+      polluants: ["NH3", "PM10", "NO2"]
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de l'agglomeration toulousaine 2026-2030, approuve le 18 fevrier 2026, p. 74 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_final.pdf ; Atmo Occitanie, L'air en Haute-Garonne 2024, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HG-BD.pdf"
+    - libelle: "Aeroport de Toulouse-Blagnac et enceintes ferroviaires souterraines du metro, tous deux sous dispositif de surveillance dedie"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air en Haute-Garonne 2024 - Bilan de la qualite de l'air, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HG-BD.pdf"
+  topographie_climat:
+    libelle: >
+      Coteaux, collines et vallee de la Garonne, sans relief structurant - le PPA
+      qualifie lui-meme l'enjeu topographique de faible. Deux vents dominants : l'ouest
+      pluvieux et l'autan de sud-est, remarquable par sa violence et ses rafales.
+    effet: "dispersif"
+    vents_nommes: ["autan"]
+    confiance: "haute"
+    source: "DREAL Occitanie, PPA de l'agglomeration toulousaine 2026-2030, approuve le 18 fevrier 2026, p. 46 et p. 47-48 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_final.pdf ; Meteo-France, Les vents regionaux, consulte en 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois par temps stable : les chaufferies et appareils individuels emettent 95 % des particules des secteurs residentiel et tertiaire"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de l'agglomeration toulousaine 2026-2030, approuve le 18 fevrier 2026, p. 14 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_final.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie sur les NOx du trafic et les COV des batiments et industries ; le PPA attend des etes plus longs et plus chauds"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de l'agglomeration toulousaine 2026-2030, approuve le 18 fevrier 2026, p. 8 et p. 20 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_final.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "depressions sur le desert, particules transportees en altitude jusqu'a l'Occitanie"
+      confiance: "haute"
+      source: "DREAL Occitanie, PPA de l'agglomeration toulousaine 2026-2030, approuve le 18 fevrier 2026, p. 71 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_final.pdf"
+  cadre_decision:
+    ppa: "PPA de l'agglomeration toulousaine 2026-2030, revision approuvee le 18 fevrier 2026 ; 113 communes de 5 intercommunalites"
+    zfe: "ZFE-m de Toulouse Metropole depuis le 1er mars 2022 : toute la ville dans la rocade interieure plus une partie de Colomiers et de Tournefeuille, 72 km2"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Occitanie, PPA de l'agglomeration toulousaine 2026-2030, p. 1, p. 13 et p. 19 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_final.pdf ; CJUE, arret C-636/18 du 24 octobre 2019, zone Toulouse Midi-Pyrenees - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Sans relief pour organiser la dispersion, ce sont les axes routiers qui creent
+        les gradients : le contraste entre une rue de la rocade et le fond periurbain
+        est tres inferieur a la maille d'un modele regional.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        L'autan est violent et rafaleux, et il alterne avec des regimes d'ouest : un
+        modele qui lisse le vent horaire confondra une journee balayee et une journee
+        d'accumulation aux memes emissions.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "32"
+  nom: "Gers"
+  region: "Occitanie"
+  resume: >
+    Departement agricole sans agglomeration : 57 % des NOx et 59 % des PM10 viennent
+    des champs, et le bois fait 60 % des particules fines.
+  sources_dominantes:
+    - libelle: "Agriculture : 57 % des NOx et 59 % des PM10 du departement, de tres loin le premier secteur"
+      polluants: ["NH3", "NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gers 2024 - Bilan de la qualite de l'air, 2025, p. 28 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GERS-BD.pdf"
+    - libelle: "Chauffage residentiel au bois, source de 60 % des particules fines du departement"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gers 2024 - Bilan de la qualite de l'air, 2025, p. 26 et p. 28 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GERS-BD.pdf"
+    - libelle: "Emissions par habitant tres elevees pour une population faible : 14 kg de NOx et 13 kg de PM10 par habitant en 2022"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gers 2024 - Bilan de la qualite de l'air, 2025, p. 28 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GERS-BD.pdf"
+  topographie_climat:
+    libelle: >
+      Coteaux gascons ouverts, sans agglomeration ni vallee encaissee : le site de
+      Peyrusse-Vieille y sert de super-site europeen de fond, eloigne des principales
+      sources, et les particules mesurees y sont les plus faibles de la region.
+    effet: "dispersif"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Atmo Occitanie, L'air dans le Gers 2024 - Bilan de la qualite de l'air, 2025, p. 26 et p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GERS-BD.pdf"
+  regime_episodes:
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Epandages d'engrais azotes : l'ammoniac se recombine en particules secondaires sur de larges territoires, mecanisme etabli a l'echelle regionale"
+      confiance: "moyenne"
+      source: "DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 58 (etudes de caracterisation sur le territoire regional) - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Ozone de fond photochimique : seul seuil reglementaire non respecte dans le Gers, suivi depuis 1998 a la station rurale de Gaudonville"
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Gers 2024 - Bilan de la qualite de l'air, 2025, p. 26 et p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GERS-BD.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Aucun : l'Occitanie ne compte que trois PPA, pour les agglomerations de Montpellier, Nimes et Toulouse"
+    zfe: "Aucune ZFE-m ni etude de prefiguration mentionnee dans le bilan departemental 2024"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Occitanie, Plan de protection de l'atmosphere (PPA), consulte en 2026 - https://www.occitanie.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-a27236.html ; Atmo Occitanie, L'air dans le Gers 2024, 2025, p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-GERS-BD.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Le departement est vu par des stations de fond rural, dont un super-site
+        europeen : une correction calee sur un gradient urbain-rural n'a ici rien a
+        corriger, et peut degrader un signal deja propre.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Les emissions dominantes suivent le calendrier des epandages et des travaux du
+        sol, pas le cycle hebdomadaire du trafic : un modele qui apprend une saisonnalite
+        urbaine se trompera de rythme.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "34"
+  nom: "Herault"
+  region: "Occitanie"
+  resume: >
+    Le transport y pese 85 % des NOx, part la plus forte du panel occitan ; littoral,
+    A9, port de Sete et aeroport concentrent les enjeux.
+  sources_dominantes:
+    - libelle: "Trafic routier : 85 % des NOx du departement, la part la plus elevee des sept departements occitans du panel"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans l'Herault 2024 - Bilan de la qualite de l'air, 2025, p. 30 du PDF - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HERAULT-BD.pdf"
+    - libelle: "Chauffage residentiel au bois, 65 % des PM2.5 - mais a Montpellier un quart seulement des PM10 vient de cette combustion, contre la moitie dans les agglomerations de l'ouest de la region"
+      polluants: ["PM2.5", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans l'Herault 2024 - Bilan de la qualite de l'air, 2025, p. 16 et p. 30 du PDF - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HERAULT-BD.pdf"
+    - libelle: "Infrastructures et industries littorales sous convention de surveillance : Port Sud de France a Sete, aeroport de Montpellier, UVE de Lunel-Viel, ancienne raffinerie de Frontignan en rehabilitation"
+      polluants: ["NO2", "PM10", "SO2"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans l'Herault 2024 - Bilan de la qualite de l'air, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HERAULT-BD.pdf"
+  topographie_climat:
+    libelle: >
+      Plaine littorale mediterraneenne prise entre deux regimes opposes : la tramontane
+      d'ouest a nord-ouest, violente et sechante, et le marin de sud-est, humide et
+      pluvieux, plus frequent au printemps et en automne.
+    effet: "mixte"
+    vents_nommes: ["tramontane", "marin"]
+    confiance: "haute"
+    source: "Meteo-France, Les vents regionaux, consulte en 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux"
+  regime_episodes:
+    - saison: "ete"
+      polluant: "O3"
+      mecanisme: "Photochimie mediterraneenne sous fort ensoleillement, sur les NOx d'un departement ou 85 % d'entre eux viennent du trafic"
+      confiance: "moyenne"
+      source: "Atmo Occitanie, L'air dans l'Herault 2024 - Bilan de la qualite de l'air, 2025, p. 26 et p. 30 du PDF - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HERAULT-BD.pdf"
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois par temps peu dispersif, avec une part de combustion de biomasse plus faible qu'ailleurs en Occitanie"
+      confiance: "moyenne"
+      source: "Atmo Occitanie, L'air dans l'Herault 2024 - Bilan de la qualite de l'air, 2025, p. 16 et p. 30 du PDF - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HERAULT-BD.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "particules desertiques transportees jusqu'a l'Occitanie lors de depressions sahariennes"
+      confiance: "moyenne"
+      source: "DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, approuve le 22 decembre 2025, p. 58 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+  cadre_decision:
+    ppa: "PPA de l'aire urbaine de Montpellier, l'un des trois PPA d'Occitanie, en revision : concertation prealable annoncee par la DREAL le 3 janvier 2023"
+    zfe: "ZFE-m de Montpellier Mediterranee Metropole en vigueur depuis le 1er juillet 2022, 11 communes jusqu'au 30 juin 2026, extension a toute la metropole au 1er juillet 2026"
+    contentieux_no2: true
+    confiance: "haute"
+    source: "DREAL Occitanie, Plan de protection de l'atmosphere (PPA), consulte en 2026 - https://www.occitanie.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-a27236.html ; DREAL Occitanie, Revision du PPA de l'agglomeration de Montpellier, 3 janvier 2023 - https://www.occitanie.developpement-durable.gouv.fr/revision-du-plan-de-protection-de-l-atmosphere-ppa-a26290.html ; Montpellier Mediterranee Metropole, Zone a faibles emissions, consulte en 2026 - https://www.montpellier.fr/en/daily-life/living-here/moving-around/I'm-moving-around-in-my-car/turning-around-in-the-low-emissions-zone ; CJUE, arret C-636/18 du 24 octobre 2019, zone Montpellier - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        La composition des particules n'est pas celle du reste de la region : a
+        Montpellier un quart des PM10 vient de la combustion de biomasse, contre la
+        moitie a Toulouse ou Tarbes. Un modele cale sur la region se trompera de source
+        dominante ici.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Alternance tramontane / marin : deux journees aux memes emissions n'ont pas la
+        meme concentration, et le basculement se fait en quelques heures - sous la
+        resolution temporelle d'une prevision journaliere.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Brise de mer et recirculation littorale peuvent ramener en apres-midi le panache
+        urbain vers l'interieur : mecanisme classique en zone mediterraneenne, non
+        documente ici par une source departementale.
+      confiance: "basse"
+      speculatif: true
+  sans_source: null
+
+- code: "65"
+  nom: "Hautes-Pyrenees"
+  region: "Occitanie"
+  resume: >
+    Vallees pyreneennes, bois de chauffage et feux pastoraux autorises d'octobre a
+    avril : 1 % des emissions annuelles, mais des journees entieres gouvernees par eux.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois, premier emetteur de particules : 52 % des PM10 et 66 % des PM2.5 du departement"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Hautes-Pyrenees 2024 - Bilan de la qualite de l'air, 2025, p. 28 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HP-BD.pdf"
+    - libelle: "Feux pastoraux, autorises du 1er octobre au 30 avril : 1 % des emissions annuelles de particules en 2019, mais 26,7 km2 brules sur les deux saisons etudiees, plus que sur aucune des cinq annees precedentes"
+      polluants: ["PM10", "PM2.5", "COV"]
+      confiance: "haute"
+      source: "Atmo Occitanie, Dossier de presse - D'ou proviennent les particules presentes dans l'air des Hautes-Pyrenees, 9 janvier 2025, p. 3 et p. 9 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-01/DP_pollution%20particules_Hautes_Pyrenees_Atmo_Occitanie.pdf"
+    - libelle: "Trafic routier, 53 % des NOx, avec un pic de carbone suie de carburant le matin et le soir a Tarbes comme a Lourdes"
+      polluants: ["NO2", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Hautes-Pyrenees 2024, 2025, p. 28 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HP-BD.pdf ; Atmo Occitanie, Dossier de presse particules Hautes-Pyrenees, 9 janvier 2025, p. 6 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-01/DP_pollution%20particules_Hautes_Pyrenees_Atmo_Occitanie.pdf"
+    - libelle: "Industrie, 21 % des PM2.5 et 23 % des PM10 ; retombees de poussieres suivies autour de l'usine de Beyrede"
+      polluants: ["PM10", "PM2.5"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Hautes-Pyrenees 2024 - Bilan de la qualite de l'air, 2025, p. 28 et p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HP-BD.pdf"
+  topographie_climat:
+    libelle: >
+      Pied de montagne et vallees pyreneennes : Atmo Occitanie constate que ses mesures
+      perennes ne suffisent pas a determiner ce que les brulages apportent aux niveaux
+      de particules dans les vallees, ou l'accumulation se joue a petite echelle.
+    effet: "piegeant"
+    vents_nommes: null
+    confiance: "haute"
+    source: "Atmo Occitanie, Dossier de presse - D'ou proviennent les particules presentes dans l'air des Hautes-Pyrenees, 9 janvier 2025, p. 2 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-01/DP_pollution%20particules_Hautes_Pyrenees_Atmo_Occitanie.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM10"
+      mecanisme: "Chauffage au bois par conditions peu dispersives ; le carbone suie de biomasse atteint son maximum en soiree a Tarbes comme a Lourdes"
+      confiance: "haute"
+      source: "Atmo Occitanie, Dossier de presse particules Hautes-Pyrenees, 9 janvier 2025, p. 3, p. 5 et p. 8 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-01/DP_pollution%20particules_Hautes_Pyrenees_Atmo_Occitanie.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Feux pastoraux : le 1er mars 2022, un brulage de 110 hectares au sud-ouest de Lourdes a produit le seul profil atypique des deux campagnes de mesure"
+      confiance: "haute"
+      source: "Atmo Occitanie, Dossier de presse particules Hautes-Pyrenees, 9 janvier 2025, p. 10 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-01/DP_pollution%20particules_Hautes_Pyrenees_Atmo_Occitanie.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "particules de sable desertique, citees comme origine naturelle des particules du departement"
+      confiance: "moyenne"
+      source: "Atmo Occitanie, Dossier de presse particules Hautes-Pyrenees, 9 janvier 2025, p. 2 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-01/DP_pollution%20particules_Hautes_Pyrenees_Atmo_Occitanie.pdf"
+  cadre_decision:
+    ppa: "Aucun : l'Occitanie ne compte que trois PPA, pour les agglomerations de Montpellier, Nimes et Toulouse"
+    zfe: "Aucune ZFE-m ; l'agglomeration Tarbes-Lourdes-Pyrenees agit par une Prime Air-Bois, evaluee par Atmo Occitanie"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Occitanie, Plan de protection de l'atmosphere (PPA), consulte en 2026 - https://www.occitanie.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-a27236.html ; Atmo Occitanie, L'air dans les Hautes-Pyrenees 2024, 2025, p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-HP-BD.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Un inventaire annuel porte les feux pastoraux a 1 % des emissions ; a l'echelle
+        d'une journee, un seul brulage de 110 hectares suffit a dominer le signal. La
+        moyenne annuelle ne peut pas reproduire cet evenement.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        L'etude d'Atmo Occitanie exclut explicitement les ecobuages des departements
+        limitrophes : un modele cale sur le seul inventaire departemental ignore une
+        source reelle et transfrontaliere a l'echelle du massif.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        Les episodes se jouent a l'echelle de la vallee, sous la maille d'un modele
+        regional : une station de fond en fond de vallee et un point de maille moyenne
+        sur le relief ne decrivent pas le meme air.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "66"
+  nom: "Pyrenees-Orientales"
+  region: "Occitanie"
+  resume: >
+    78 % des PM2.5 viennent du bois de chauffage, la tramontane balaie, et les sables
+    sahariens remontent par l'Espagne - detectes en altitude a Bolquere.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois : 78 % des PM2.5 et 66 % des PM10, la part la plus elevee des sept departements occitans du panel"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Pyrenees-Orientales 2024 - Bilan de la qualite de l'air, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-PO-BD.pdf"
+    - libelle: "Trafic routier, 79 % des NOx du departement"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Pyrenees-Orientales 2024 - Bilan de la qualite de l'air, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-PO-BD.pdf"
+    - libelle: "Unite de traitement et de valorisation energetique de Calce, et 16 exploitations industrielles suivies pour leurs retombees de poussieres, principalement des carrieres et gravieres"
+      polluants: ["PM10", "SO2"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Pyrenees-Orientales 2024 - Bilan de la qualite de l'air, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-PO-BD.pdf"
+  topographie_climat:
+    libelle: >
+      Plaine du Roussillon adossee aux contreforts des Pyrenees, parcourue par la
+      tramontane, vent violent et froid de secteur ouest a nord-ouest, plus vigoureux
+      en hiver et au printemps, avec des rafales pouvant depasser 100 km/h.
+    effet: "dispersif"
+    vents_nommes: ["tramontane"]
+    confiance: "haute"
+    source: "Meteo-France, Les vents regionaux, consulte en 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois par temps calme, dans un departement ou il pese 78 % des emissions de particules fines"
+      confiance: "moyenne"
+      source: "Atmo Occitanie, L'air dans les Pyrenees-Orientales 2024 - Bilan de la qualite de l'air, 2025, p. 30 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-PO-BD.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Transport de sables desertiques sahariens remontant par l'Espagne, detecte precocement par la station d'altitude de Bolquere"
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Pyrenees-Orientales 2024 - Bilan de la qualite de l'air, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-PO-BD.pdf"
+  transport_longue_distance:
+    - origine: "Sahara"
+      polluant: "PM10"
+      regime: "sables desertiques remontant par l'Espagne, suivis depuis la station d'altitude de Bolquere dans le PNR des Pyrenees Catalanes"
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans les Pyrenees-Orientales 2024 - Bilan de la qualite de l'air, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-PO-BD.pdf"
+  cadre_decision:
+    ppa: "Aucun : l'Occitanie ne compte que trois PPA, pour les agglomerations de Montpellier, Nimes et Toulouse"
+    zfe: "Aucune ZFE-m en vigueur ; etude de prefiguration lancee sur Perpignan Mediterranee Metropole, avec diagnostic et evaluation par vignette Crit'Air"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Occitanie, Plan de protection de l'atmosphere (PPA), consulte en 2026 - https://www.occitanie.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-a27236.html ; Atmo Occitanie, L'air dans les Pyrenees-Orientales 2024, 2025, p. 31 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-PO-BD.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        L'apport saharien arrive par l'Espagne et en altitude, ce qui lui donne une
+        signature spatiale sans rapport avec les emissions locales : sans traceur de
+        poussiere, il sera attribue au chauffage ou aux carrieres.
+      confiance: "haute"
+      speculatif: false
+    - libelle: >
+        La tramontane balaie 100 km/h en rafales puis retombe : la dispersion change
+        d'un jour a l'autre sans qu'aucune emission ne bouge, et un modele qui explique
+        les concentrations par les sources se trompe de variable.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Bolquere est une station de haute altitude en parc naturel : elle ne represente
+        aucune maille de plaine, et la melanger au reste du departement lisserait
+        justement le signal qu'elle sert a detecter.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
+
+- code: "81"
+  nom: "Tarn"
+  region: "Occitanie"
+  resume: >
+    Bois, agriculture et industrie a parts comparables ; le Tarn est le couloir de
+    l'autan, et la viticulture s'ajoute aux grandes cultures.
+  sources_dominantes:
+    - libelle: "Chauffage residentiel au bois : 66 % des PM2.5 et 48 % des PM10 ; le benzo[a]pyrene, marqueur de cette combustion, est mesure a Aussillon"
+      polluants: ["PM2.5", "PM10", "COV"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Tarn 2024 - Bilan de la qualite de l'air, 2025, p. 28 et p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf"
+    - libelle: "Agriculture, 29 % des NOx et 24 % des PM10, partagee entre grandes cultures et viticulture - deux calendriers d'emission differents sur le meme departement"
+      polluants: ["NH3", "NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Tarn 2024 - Bilan de la qualite de l'air, 2025, p. 28 et p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf"
+    - libelle: "Industrie, 13 % des NOx et 21 % des PM10, avec un observatoire des odeurs et des nuisances suivi a Lescout"
+      polluants: ["NO2", "PM10"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Tarn 2024 - Bilan de la qualite de l'air, 2025, p. 28 et p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf"
+    - libelle: "Trafic routier, 44 % des NOx - la part la plus faible du panel occitan hors Gers"
+      polluants: ["NO2"]
+      confiance: "haute"
+      source: "Atmo Occitanie, L'air dans le Tarn 2024 - Bilan de la qualite de l'air, 2025, p. 28 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf"
+  topographie_climat:
+    libelle: >
+      Le Tarn est, avec le Midi toulousain, le territoire que touche le vent d'autan -
+      autan blanc sec ou autan noir chaud et annonciateur de pluie - entre des bassins
+      urbains separes, Albi au nord et Castres-Mazamet au sud-est.
+    effet: "mixte"
+    vents_nommes: ["autan"]
+    confiance: "moyenne"
+    source: "Meteo-France, Les vents regionaux, consulte en 2026 - https://meteofrance.com/comprendre-la-meteo/le-vent/les-vents-regionaux ; Atmo Occitanie, L'air dans le Tarn 2024, 2025, p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf"
+  regime_episodes:
+    - saison: "hiver"
+      polluant: "PM2.5"
+      mecanisme: "Chauffage au bois par temps stable, suivi par des mesures de benzo[a]pyrene a Aussillon puis a Labruguiere"
+      confiance: "moyenne"
+      source: "Atmo Occitanie, L'air dans le Tarn 2024 - Bilan de la qualite de l'air, 2025, p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf"
+    - saison: "printemps"
+      polluant: "PM10"
+      mecanisme: "Epandages et travaux du sol des grandes cultures et de la viticulture, dont les produits phytosanitaires sont suivis a Gaillac"
+      confiance: "moyenne"
+      source: "Atmo Occitanie, L'air dans le Tarn 2024 - Bilan de la qualite de l'air, 2025, p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf ; DREAL Occitanie, PPA de la zone urbaine de Nimes 2025-2030, p. 58 - https://www.occitanie.developpement-durable.gouv.fr/IMG/pdf/ppa_nimes-4.pdf"
+  transport_longue_distance: null
+  cadre_decision:
+    ppa: "Aucun : l'Occitanie ne compte que trois PPA, pour les agglomerations de Montpellier, Nimes et Toulouse"
+    zfe: "Aucune ZFE-m ; l'action publique passe par les PCAET de Castres-Mazamet, du Grand Albigeois et de Tarn-Agout"
+    contentieux_no2: false
+    confiance: "haute"
+    source: "DREAL Occitanie, Plan de protection de l'atmosphere (PPA), consulte en 2026 - https://www.occitanie.developpement-durable.gouv.fr/plan-de-protection-de-l-atmosphere-ppa-a27236.html ; Atmo Occitanie, L'air dans le Tarn 2024, 2025, p. 29 - https://www.atmo-occitanie.org/sites/default/files/publications/2025-09/250526-ATMO-BILAN-ANNUEL-2024-DPT-TARN-BD.pdf ; CJUE, arret C-636/18, 2019 - https://curia.europa.eu/juris/liste.jsf?num=C-636/18&language=fr"
+  pieges_modelisation:
+    - libelle: >
+        Deux bassins urbains sans continuite, Albi et Castres-Mazamet, separes par du
+        rural : une maille regionale les moyenne avec un fond qui n'est representatif
+        d'aucun des deux.
+      confiance: "moyenne"
+      speculatif: true
+    - libelle: >
+        Viticulture et grandes cultures coexistent : le calendrier d'emission agricole
+        est double, et un modele qui apprend une seule saison d'epandage manquera l'une
+        des deux.
+      confiance: "moyenne"
+      speculatif: true
+  sans_source: null
