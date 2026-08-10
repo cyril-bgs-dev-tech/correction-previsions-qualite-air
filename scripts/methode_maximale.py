@@ -101,7 +101,7 @@ def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[s
     return _fusion(d, g, "geoscf"), cols
 
 
-def main(polluant: str, horizon: int, n_spa: int) -> int:
+def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int:
     depart = time.time()
     jeu = charger(polluant, horizon)
     base_cols = colonnes_admises(jeu)
@@ -165,6 +165,32 @@ def main(polluant: str, horizon: int, n_spa: int) -> int:
         configs.append((f"+ {nom}", list(cumul), PERIMETRE[nom]))
     partout = list(cumul)
     configs.append(("★ MAXIMALE — PARTOUT", list(partout), "PARTOUT"))
+
+    # ── Ablation : ce que chaque famille apporte VRAIMENT, à la fin ──────────────────
+    #
+    # Les configurations cumulatives ci-dessus mesurent un apport *sachant les
+    # précédents*, dans un ordre fixé une fois pour toutes. C'est une mesure honnête mais
+    # elle ne répond pas à la question « faut-il garder cette famille pour CE polluant ? » :
+    # un étage arrivé tôt s'attribue ce qu'un étage plus tardif aurait apporté seul, et un
+    # étage arrivé dernier hérite de la place la plus dure. L'ablation retire une famille
+    # de la pile COMPLÈTE et laisse toutes les autres en place — c'est la seule lecture qui
+    # ne dépende pas de l'ordre.
+    #
+    # ⚠️ C'est une MESURE, pas une sélection. Élaguer ensuite les familles dont l'ablation
+    # ne coûte rien, puis publier le score de la pile élaguée sur ces mêmes plis, serait le
+    # biais de criblage que ce dépôt a mesuré à ×2 à ×4
+    # ([[balayage-des-variables-inexploitees]]). Le score d'une pile choisie ici se
+    # re-mesure sur des plis qui n'ont pas servi à la choisir, ou se publie en déclarant
+    # qu'il est dans l'échantillon.
+    if ablation:
+        for nom in ORDRE:
+            if nom not in familles:
+                continue
+            sans = [c for c in partout if c not in set(familles[nom])]
+            if len(sans) == len(partout):
+                raise SystemExit(f"ablation de {nom} : aucune colonne retirée — "
+                                 f"les familles ne partitionnent pas la pile")
+            configs.append((f"− {nom} (ablation)", sans, "PARTOUT"))
     if "veille" in familles:
         configs.append(("★ MAXIMALE — AUX STATIONS (+ veille)",
                         partout + familles["veille"], "AUX STATIONS"))
@@ -292,5 +318,8 @@ if __name__ == "__main__":
     a.add_argument("--polluant", default="NO2")
     a.add_argument("--horizon", type=int, default=2)
     a.add_argument("--plis-spatiaux", type=int, default=3)
+    a.add_argument("--ablation", action="store_true",
+                   help="ajouter les 5 configurations « pile complète MOINS une famille » "
+                        "— ce que chaque famille apporte pour CE polluant, hors effet d'ordre")
     n = a.parse_args()
-    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux))
+    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.ablation))
