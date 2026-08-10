@@ -421,6 +421,110 @@ la panne se déguise alors en propriété de ce qu'on était en train de lire.
 
 ---
 
+## 1 quinquies. Un lot vivant n'est pas un lot qui avance
+
+### La règle
+
+La règle 1 bis dit de surveiller l'**arrêt** du lot. Insuffisant : un lot peut rester
+vivant et ne plus rien produire, et c'est le cas contre lequel aucun contrôle n'existait.
+Trois gestes.
+
+**① Surveiller l'ARTEFACT, jamais le processus.** Un moniteur qui teste `kill -0` remonte
+la mort et rien d'autre. **Mesurer l'intervalle naturel entre deux écritures pendant la
+passe unitaire**, puis alerter à ~5 × cet intervalle. Le seuil se calcule sur une cadence
+observée, jamais sur une intuition.
+
+```bash
+# ✗  surveille la mort ; muet pendant un gel, et le silence se lit comme une bonne nouvelle
+kill -0 "$PID" || { echo "arrêté"; break; }
+
+# ✓  surveille la PRODUCTION, avec un seuil dérivé de la cadence mesurée
+age=$(( $(date +%s) - $(stat -c %Y "$artefact") ))
+[ "$age" -gt "$((5 * INTERVALLE_MESURE))" ] && echo "⚠️ GEL : rien écrit depuis ${age}s"
+```
+
+**② L'instrument ne doit pas peser plus que ce qu'il mesure.** Une veille échantillonne à
+la période de ce qui change, et **ne force jamais de barrière de durabilité à haute
+fréquence**. Un `sync` par ligne toutes les 2 s, c'est ~30 barrières par minute imposées à
+un système de fichiers que le lot utilise aussi.
+
+**③ Séparer « le disque peine » de « le noyau est figé ».** Deux lignes, avant toute
+hypothèse sur le matériel ou l'espace disque :
+
+```bash
+cat /sys/block/<dev>/inflight     # 0 0  →  RIEN n'attend le périphérique
+awk '$3=="<dev>"' /proc/diskstats # figé →  rien ne circule
+```
+
+Des tâches en `D` **avec un périphérique au repos** désignent un blocage **noyau**, pas un
+disque. L'inverse — `inflight` non nul qui ne décroît pas — désigne le stockage.
+
+### L'erreur qui a produit cette règle — le 10/08, et je l'ai annoncée moi-même
+
+Lot lancé à **15:15:18**. Dernière ligne écrite à **15:20:32**. À **16:16**, soit
+**61 minutes de temps réel pour 5,2 minutes de travail**, le processus était toujours
+vivant, en état `R`, et **n'avait rien produit depuis une heure**.
+
+**Le moniteur est resté muet 56 minutes**, parce qu'il surveillait le pid — qui existait.
+J'avais annoncé « ~30 min si tout passe, ~1 h dans le cas défavorable » en présentant cette
+estimation comme *réfutable* : elle ne l'était pas, puisque le seul contrôle installé ne
+pouvait pas la contredire. Et la cadence normale était connue — **un mois toutes les 30 à
+36 s**, dans les deux exécutions précédentes. Cinq minutes de silence valaient déjà **10 ×**
+l'intervalle attendu.
+
+### L'instrument comme cause — une occurrence, pas une propriété
+
+`veille_memoire.sh` fait un `sync` après **chaque** ligne, toutes les 2 s. Le gel apparaît
+à 15:20:32, **cinq minutes après l'avoir armé pour la première fois à côté d'un lot** :
+
+- `sync` (pid 6861) bloqué en `jbd2_log_wait_commit` pendant **61 minutes** ;
+- **huit `systemd-journald`** en `D`, relancés toutes les ~7,5 min, tous bloqués ;
+- ~170 barrières forcées en 5,5 min, sur le même système de fichiers que le lot.
+
+**Une occurrence ne fait pas une cause** (§ 1 ter), et je ne la présente pas autrement.
+Mais le correctif ne coûte rien : suivre un RSS **n'exige aucune durabilité**. Et la leçon
+dépasse ce script —
+
+> **Le corollaire de la § 1 ter va plus loin qu'on ne l'avait écrit : l'instrumentation ne
+> change pas seulement ce que la mesure mesure, elle peut CAUSER la panne qu'elle observe.**
+
+### La mesure qui a renversé le diagnostic
+
+`inflight = 0 0`, et `/proc/diskstats` **strictement identique sur 10 s**. Le périphérique
+était **au repos**, pas en souffrance. Sans cette ligne je partais sur l'espace disque de
+l'hôte — et j'y aurais trouvé un leurre parfait : `E:` à **3,3 Go libres sur 233,9**, alors
+que la distribution vit sur `C:` (88,4 Go libres). Un chiffre alarmant, vrai, et sans
+aucun rapport.
+
+### Ce que le garde-fou posé le matin même a rendu
+
+La veille hôte a réfuté, en une lecture, l'hypothèse que je portais depuis midi :
+**pic `vmmemWSL` à 21,70 Go**, minimum de mémoire libre **51,71 Go sur 95,8**, et
+`vm_vivante=1` **sur tout l'échantillon**. La charge d'engagement n'est donc pour rien
+dans cet épisode — et surtout, **la VM n'a pas disparu cette fois : elle a gelé.** Deux
+modes de panne distincts dans la même journée, qu'aucun instrument ne séparait la veille.
+
+### Le corollaire d'arrêt — quand rien en espace utilisateur ne peut plus aider
+
+`kill` puis `kill -9` sur le processus Python : **survécu**, toujours en `R` après
+**68 minutes**. Un processus que SIGKILL ne fauche pas signale un noyau qui ne traite plus
+ses signaux ; aucune commande ne le récupérera, seul un redémarrage de la VM le fera.
+
+Et dans le même geste, **§ 1 bis rejouée à la lettre** : `pkill -f "veille_memoire.sh"` a
+tué **le shell qui exécutait la commande**, dont la ligne de commande contenait le motif.
+
+> **On ne tue jamais par motif. Pid explicites, puis vérification que le kill a pris.**
+
+### Le fil commun
+
+C'est la règle 5 appliquée **au contrôle lui-même** : *si mon moniteur ne remontait rien,
+est-ce que je saurais que c'est parce qu'il n'y a rien à voir ?* Un moniteur qui ne
+surveille que la mort est muet pendant un gel — et son silence se lit comme une bonne
+nouvelle. C'est exactement le « zéro de non-lecture indiscernable d'un zéro de
+non-occurrence » de la § 4 bis, déplacé de la recherche vers la surveillance.
+
+---
+
 ## 2. Lecture de fichiers — charger avant d'indexer
 
 ### La règle

@@ -28,6 +28,21 @@ nohup.out
 *.partiel
 *.parquet.partiel
 
+# ── Sauvegardes de sécurité avant un lot destructif ─────────────────────────────
+#
+# `lot_ablation.sh` réécrit `methode_maximale_<P>_h2.csv` en place ; la copie `.avant_ablation`
+# est le filet local, sur un disque qui a déjà perdu des écritures en silence. Elle n'a rien
+# à faire dans git : son contenu EST le fichier suivi, à l'octet près — vérifié sur les
+# quatre polluants. Versionner une copie identique de ce que git porte déjà ne sauve rien
+# et rend le diff illisible.
+*.avant_ablation
+
+# ── Brouillons de lot ───────────────────────────────────────────────────────────
+#
+# Les YAML intermédiaires des 9 lots départementaux et leurs valideurs jetables. Le résultat
+# consolidé vit dans `docs/departements/`, qui est suivi ; `tmp/` est l'atelier, pas l'œuvre.
+tmp/
+
 # ── Python ──────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
