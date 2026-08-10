@@ -22,6 +22,7 @@ RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 
 from aq.eval import comparaison as cmp  # noqa: E402
+from aq.harmonize.timegrid import mois_couverts  # noqa: E402
 from aq.models import mos  # noqa: E402
 
 ESPECES = {"o3": ("O3", "o3_conc"), "no2": ("NO2", "no2_conc"),
@@ -112,8 +113,7 @@ def paires_cams_observations(polluant: str, horizon: int) -> pd.DataFrame:
         # leurs propres bornes sont la seule source exacte.
         debut = prev["timestamp_utc"].min()
         fin = prev["timestamp_utc"].max() + pd.Timedelta(hours=1)
-        mois_prevus.update(
-            pd.PeriodIndex(pd.to_datetime(prev["timestamp_utc"]), freq="M").unique())
+        mois_prevus.update(mois_couverts(prev["timestamp_utc"]))
 
         obs = pd.read_parquet(
             RACINE / PANEL_PAR_POLLUANT.get(polluant, PANEL_DEFAUT),
@@ -129,7 +129,7 @@ def paires_cams_observations(polluant: str, horizon: int) -> pd.DataFrame:
     # disparaît du jeu sans lever d'erreur ; c'est légitime pour 2025, dont les
     # observations n'existent pas, et c'était un défaut pour les mois groupés. Dans les
     # deux cas la seule protection est de l'afficher.
-    obtenus = set(pd.PeriodIndex(pd.to_datetime(jeu["timestamp_utc"]), freq="M"))
+    obtenus = mois_couverts(jeu["timestamp_utc"])
     manquants = sorted(mois_prevus - obtenus)
     print(f"couverture · {len(obtenus)} mois appariés sur {len(mois_prevus)} prévus"
           + (f" · sans observation : {', '.join(str(m) for m in manquants)}"

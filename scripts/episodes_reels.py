@@ -50,6 +50,7 @@ RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
+from appariement import presence  # noqa: E402
 from pages_soutenance import charger, classe, recaler  # noqa: E402
 
 EPISODES = RACINE / "data/raw/atmo_occitanie/episodes_occitanie.parquet"
@@ -155,8 +156,7 @@ def main(horizon: int) -> int:
         g = d.groupby(["dep", "jour"]).agg(
             obs=("valeur", "max"), **{k: (c, "max") for k, c in systemes.items()}
         ).reset_index()
-        reels = set(zip(vrais["dep"], vrais["jour"]))
-        g["reel"] = [(a, b) in reels for a, b in zip(g["dep"], g["jour"])]
+        g["reel"] = presence(g, vrais, ("dep", "jour"))
 
         n_couvert = int(g["reel"].sum())
         # Le dénominateur affiché est **le nombre d'épisodes évaluables**, et l'on exige

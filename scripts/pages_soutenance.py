@@ -60,6 +60,8 @@ RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
+from appariement import presence  # noqa: E402
+from aq.harmonize.timegrid import en_mois  # noqa: E402
 from decomposition_information import moments_anterieurs  # noqa: E402
 from heatmap_annuelle import couleur_continue  # noqa: E402
 from tableau_comparatif import BANDES, NOM_BANDE, NOM_POLLUANT, SEUIL, classe  # noqa: E402
@@ -191,13 +193,18 @@ def couverture_membres(polluant: str, d: pd.DataFrame) -> dict:
     if m.empty:
         return vide
     m["jour"] = pd.to_datetime(m["timestamp_utc"]).dt.floor("D").dt.tz_localize(None)
-    dispo = set(zip(m["station_id"], m["jour"]))
-    couvert = np.fromiter((k in dispo for k in zip(d["station_id"],
-                                                   pd.to_datetime(d["jour"]))),
-                          dtype=bool, count=len(d))
+    # ⚠️ Ne jamais apparier en itérant une colonne de dates : `set(zip(...))` matérialisait
+    # ici chaque valeur en `Timestamp`, et ce chemin échoue **6 fois sur 6** sur cette
+    # machine (10/08/2026). Le pourquoi, et les cinq autres sites du même motif, sont dans
+    # `scripts/appariement.py` — le correctif n'existe qu'à un endroit (§ 4 bis).
+    couvert = presence(d, m, ("station_id", "jour"))
     part = 100 * float(couvert.mean())
-    dernier = (pd.PeriodIndex(m["timestamp_utc"], freq="M").astype(str).max()
-               if len(m) else None)
+    # Le maximum se prend AVANT la mise en texte : `.astype(str)` convertissait les onze
+    # millions de `Period` de la colonne en autant de chaînes Python pour n'en garder
+    # qu'une — c'est le même chemin de matérialisation que ci-dessus, et il a segfauté ici
+    # le 10/08 après que la ligne 200 eut été corrigée. Un maximum sur des périodes est
+    # déjà bien ordonné : rien n'oblige à passer par le texte pour le calculer.
+    dernier = str(en_mois(m["timestamp_utc"]).max()) if len(m) else None
     nom = ("CHIMERE+MOCAGE + krigeage du biais récent" if part >= 99 else
            f"CHIMERE+MOCAGE quand disponible ({part:.0f} % des lignes), "
            f"médiane CAMS sinon, + krigeage du biais récent")

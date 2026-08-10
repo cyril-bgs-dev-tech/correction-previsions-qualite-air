@@ -68,6 +68,7 @@ import pandas as pd
 RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 
+from aq.harmonize.timegrid import en_mois  # noqa: E402
 from aq.ingest.controle import ControleEchec, exiger_lignes, exiger_variation  # noqa: E402
 
 POLLUANTS = ("O3", "NO2", "PM25", "PM10")
@@ -204,7 +205,7 @@ def main() -> int:
             t = t[~ab]
 
         t = t.dropna(subset=["valeur"])
-        cv = (t.assign(mois=pd.PeriodIndex(t["timestamp_utc"], freq="M"))
+        cv = (t.assign(mois=en_mois(t["timestamp_utc"]))
                .groupby("mois").agg(n=("valeur", "size"),
                                     stations=("station_id", "nunique")))
 

@@ -60,6 +60,7 @@ RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
+from appariement import presence, valeur_associee  # noqa: E402
 from episodes_reels import EPISODES, POLLUANT_DE, SEUILS, sans_accent  # noqa: E402
 from episodes_reels import stations_par_departement  # noqa: E402
 from pages_soutenance import charger, recaler  # noqa: E402
@@ -169,9 +170,12 @@ def appliquer(g: pd.DataFrame, systeme: str, regle: str, seuil: float,
     # Persistance : la règle doit tenir aujourd'hui **et** la veille, dans la même zone.
     # Le décalage se fait par (zone, jour−1) explicitement — jamais par `shift()` sur un
     # tableau dont l'ordre est supposé (`CLAUDE.md` § 4 bis).
-    cle = {(dep, j): b for dep, j, b in zip(g["dep"], g["jour"], vu)}
-    veille = np.array([cle.get((dep, j - pd.Timedelta(days=1)), False)
-                       for dep, j in zip(g["dep"], g["jour"])])
+    # L'appariement passe par `appariement.valeur_associee` et non par un dictionnaire de
+    # tuples : itérer une colonne de dates matérialise chaque valeur en `Timestamp`, et ce
+    # chemin échoue systématiquement sur cette machine (10/08/2026, six tentatives sur six).
+    # Le décalage reste explicite — c'est bien (zone, jour−1) qui est cherché.
+    veille = valeur_associee(g, g, ("dep", "jour"), vu,
+                             decalage=-pd.Timedelta(days=1), defaut=False)
     return vu & veille
 
 
@@ -242,8 +246,7 @@ def main(horizon: int, min_stations: int) -> int:
                 continue
 
         g = table_zone_jour(d, set(ep["dep"]))
-        reels = set(zip(vrais["dep"], vrais["jour"]))
-        g["reel"] = np.array([(a, b) in reels for a, b in zip(g["dep"], g["jour"])])
+        g["reel"] = presence(g, vrais, ("dep", "jour"))
         reel = g["reel"].to_numpy()
         n_ep = int(reel.sum())
 

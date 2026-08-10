@@ -40,6 +40,9 @@ import pandas as pd
 
 RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "scripts"))
+sys.path.insert(0, str(RACINE / "src"))
+
+from aq.harmonize.timegrid import mois_couverts  # noqa: E402
 
 PANEL = RACINE / "data/processed/panel_unifie_lcsqa.parquet"
 
@@ -73,7 +76,7 @@ def controle(polluant: str, mois_artefact: list[str]) -> dict:
     p0, p1 = _bornes_previsions(court)
     obs = pd.read_parquet(PANEL, columns=["timestamp_utc"],
                           filters=[("polluant", "==", polluant)])
-    mois_obs = set(pd.PeriodIndex(pd.to_datetime(obs["timestamp_utc"]), freq="M").unique())
+    mois_obs = mois_couverts(obs["timestamp_utc"])
     dispo = {str(m) for m in mois_obs if p0 <= m <= p1}
     presents = set(mois_artefact)
     manquants = sorted(dispo - presents)

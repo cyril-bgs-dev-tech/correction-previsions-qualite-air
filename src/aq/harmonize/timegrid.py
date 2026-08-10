@@ -116,6 +116,43 @@ def ajouter_temps_local(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def en_mois(ts: pd.Series) -> pd.Series:
+    """Le mois calendaire de chaque horodatage — en vectorisé, jamais objet par objet.
+
+    **Ce n'est pas une optimisation de confort.** `pd.PeriodIndex(série, freq="M")`
+    n'a aucun chemin vectorisé pour une série *tz-aware* : `period_array` appelle
+    `np.asarray`, qui retombe sur `DatetimeArray.__iter__` et **boxe une `Timestamp`
+    puis une `Period` par ligne**. Or tout `timestamp_utc` de ce projet est stocké en
+    `timestamp[ns, tz=UTC]` — le chemin lent est donc le chemin par défaut.
+
+    Sur les 23 fichiers de prévision d'un polluant cela fait de l'ordre de plusieurs
+    dizaines de millions d'allocations d'objets Python, et c'est exactement là que le
+    lot du 10/08 00 h 09 est mort : **12 des 14 segfauts** de ses 18 tentatives portent
+    ce site en tête de pile (`logs/production_tendance_*.log`). Les quatre exceptions
+    levées au même endroit sont la même corruption vue de l'autre côté — une valeur qui
+    atterrit dans le mauvais emplacement d'argument : `'UTC' object cannot be
+    interpreted as an integer`, `Invalid frequency: 2024-10-23 00:00:00+00:00`,
+    `'Timestamp' object has no attribute 'ordinal'`, `… no attribute 'minute'`.
+
+    `.dt.to_period()` emprunte `dt64arr_to_periodarr`, une boucle Cython sur int64 qui
+    ne crée aucun objet intermédiaire. **Mesuré sur 1,8 M de lignes de prévision O₃ :
+    2 260 ms → 49 ms (×46)**, et les ensembles de mois obtenus sont *identiques* sur les
+    six fichiers testés — vérifié, pas supposé.
+
+    Le `tz_convert(None)` est écrit à dessein plutôt que tu par un filtre de warnings :
+    `to_period` prévient qu'il perd le fuseau. Ici les horodatages sont en UTC, donc
+    l'heure murale *est* l'heure UTC et la perte est nulle — mais elle est dite.
+    """
+    if ts.dt.tz is not None:
+        ts = ts.dt.tz_convert(None)
+    return ts.dt.to_period("M")
+
+
+def mois_couverts(ts: pd.Series) -> set[pd.Period]:
+    """Les mois calendaires touchés par une série d'horodatages. Voir `en_mois`."""
+    return set(en_mois(ts).unique())
+
+
 def couverture_temporelle(serie: pd.Series, par: str = "jour_local") -> pd.Series:
     """Taux de données valides par période — critère de validité réglementaire.
 

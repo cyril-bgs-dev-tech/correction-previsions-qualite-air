@@ -42,6 +42,7 @@ import pandas as pd
 RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 
+from aq.harmonize.timegrid import en_mois  # noqa: E402
 from aq.ingest.controle import (  # noqa: E402
     ControleEchec,
     exiger_colonnes,
@@ -131,7 +132,7 @@ def main() -> int:
     exiger_variation(t, ["valeur"], "PM10")
     exiger_lignes(t, 1_000_000, "PM10 final")
 
-    couverture = (t.assign(mois=pd.PeriodIndex(t["timestamp_utc"], freq="M"))
+    couverture = (t.assign(mois=en_mois(t["timestamp_utc"]))
                    .groupby("mois").agg(n=("valeur", "size"),
                                         stations=("station_id", "nunique")))
     print(f"\n{len(t):,} lignes retenues · {t['station_id'].nunique()} stations · "
