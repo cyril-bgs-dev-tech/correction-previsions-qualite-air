@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 09/08/2026 à 23 h 57 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 10/08/2026 à 23 h 26 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -185,20 +185,20 @@ Elle était **asymétrique dans les deux sens** : à notre avantage sur le grain
 
 ## 7 ter. Les cinq familles de gains — laquelle citer, et jamais l'une pour l'autre
 
-Ce projet produit **cinq familles de scores** qui portent des noms voisins et répondent à des questions différentes. Elles sont **toutes justes et aucune n'est interchangeable** : sur l'ozone, la même correction vaut de **+3,31 % à +22,47 %** selon l'épreuve. Confondre deux lignes de ce tableau discrédite le dossier entier plus sûrement qu'un chiffre faux — un chiffre faux se corrige, une confusion de périmètre jette le doute sur tout le reste.
+Ce projet produit **cinq familles de scores** qui portent des noms voisins et répondent à des questions différentes. Elles sont **toutes justes et aucune n'est interchangeable** : sur l'ozone, la même correction vaut de **+3,31 % à +22,94 %** selon l'épreuve. Confondre deux lignes de ce tableau discrédite le dossier entier plus sûrement qu'un chiffre faux — un chiffre faux se corrige, une confusion de périmètre jette le doute sur tout le reste.
 
 **Tout pourcentage cité hors de ce document doit venir avec trois mots : périmètre · épreuve · échéance.**
 
 | # | famille | épreuve | échéance | O₃ | NO₂ | PM10 | PM2,5 |
 |---|---|---|---|---|---|---|---|
-| ①a | **production, contre la chaîne en service** ⭐ | origine glissante, station **connue** | **J0** | **+22,43 %** | **+44,16 %** | **+25,90 %** | **+19,22 %** |
-| ①b | production, contre CAMS brut | idem | J0 | +26,15 % | +51,24 % | +31,09 % | +19,22 % |
+| ①a | **production, contre la chaîne en service** ⭐ | origine glissante, station **connue** | **J0** | **+22,94 %** | **+44,31 %** | **+26,12 %** | **+19,51 %** |
+| ①b | production, contre CAMS brut | idem | J0 | +27,19 % | +51,32 % | +31,33 % | +19,51 % |
 | ② | **maximale — AUX STATIONS** | double aveugle, pile complète **+ veille** | J+2 | +22,47 % | +46,20 % | +24,22 % | +19,68 % |
 | ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+2 | **+15,83 %** | **+38,86 %** | **+17,88 %** | **+10,03 %** |
 | ④ | apport de la seule observation de la veille (§ 7) | usage A contre usage B | J+2 | +9,24 % | +22,76 % | — | +9,28 % |
 | ⑤ | double aveugle de référence | base seule, **aucun levier** | J+2 | +3,31 % | +25,71 % | +11,36 % | +5,14 % |
 
-**Les corpus ne coïncident pas** — **O₃** : ① 2025-01→2026-07, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis · **NO₂** : ① 2025-01→2026-07, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis · **PM10** : ① 2025-01→2026-07, ②③ 2024-01→2025-12 (24 mois), ⑤ 30 plis · **PM2,5** : ① 2025-01→2026-07, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis. Les niveaux ne se comparent donc pas d'une ligne à l'autre ; seuls les écarts **internes à une même ligne** le peuvent.
+**Les corpus ne coïncident pas** — **O₃** : ① 2025-01→2026-08, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis · **NO₂** : ① 2025-01→2026-08, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis · **PM10** : ① 2025-01→2026-08, ②③ 2024-01→2025-12 (24 mois), ⑤ 30 plis · **PM2,5** : ① 2025-01→2026-08, ②③ 2023-08→2025-12 (29 mois), ⑤ 17 plis. Les niveaux ne se comparent donc pas d'une ligne à l'autre ; seuls les écarts **internes à une même ligne** le peuvent.
 
 ### Comment les lire sans se tromper
 
@@ -554,23 +554,23 @@ Modèle de chimie-transport de la NASA, inventaire d'émissions et assimilation 
 Tout le reste de ce document compte des « épisodes » au sens **journée-station en classe ATMO ≥ 3** — des milliers d'occurrences. Un déclenchement réel est une **zone-jour sous procédure préfectorale**, et il y en a **52 en quatorze mois** en Occitanie (PM10 40 · O₃ 12 · NO₂ **0**). Vérité terrain publiée par l'AASQA elle-même. **Les deux comptes ne se comparent pas.**
 
 
-**O₃** — 12 épisodes évalués, 5,161 zones-jours
+**O₃** — 12 épisodes évalués, 5,224 zones-jours
 
 | système | attrapés | rappel | fausses | précision |
 |---|---|---|---|---|
-| observation | 12/12 | 100.0 % | 412 | 2.8 % |
-| CAMS brut | 8/12 | 66.7 % | 102 | 7.3 % |
-| chaîne AASQA | 11/12 | 91.7 % | 446 | 2.4 % |
-| **notre modèle** | 12/12 | 100.0 % | 473 | 2.5 % |
+| observation | 12/12 | 100.0 % | 424 | 2.8 % |
+| CAMS brut | 8/12 | 66.7 % | 103 | 7.2 % |
+| chaîne AASQA | 11/12 | 91.7 % | 447 | 2.4 % |
+| **notre modèle** | 11/12 | 91.7 % | 487 | 2.2 % |
 
-**PM10** — 33 épisodes évalués, 5,174 zones-jours
+**PM10** — 33 épisodes évalués, 5,237 zones-jours
 
 | système | attrapés | rappel | fausses | précision |
 |---|---|---|---|---|
 | observation | 21/33 | 63.6 % | 18 | 53.8 % |
 | CAMS brut | 1/33 | 3.0 % | 3 | 25.0 % |
 | chaîne AASQA | 1/33 | 3.0 % | 9 | 10.0 % |
-| **notre modèle** | 2/33 | 6.1 % | 11 | 15.4 % |
+| **notre modèle** | 3/33 | 9.1 % | 13 | 18.8 % |
 
 ⚠️ **Trois lectures, dans l'ordre.** (1) Le plafond n'est pas le nombre d'épisodes déclarés mais la ligne « observation » : sur PM10, douze épisodes n'ont **aucune station** au-dessus du seuil en moyenne journalière — la procédure se déclenche sur autre chose que la grandeur prédite. (2) Tous les systèmes sont quasi aveugles sur PM10, nous très légèrement moins. (3) Sur O₃ nous attrapons tout et crions au loup ~9 % des zones-jours ; CAMS brut, qui en rate le tiers, est trois fois plus précis. **À seuil physique fixé, le recalage d'amplitude joue contre nous.**
 
@@ -584,12 +584,12 @@ Exiger un dépassement prédit **deux jours de suite** retire un tiers des fauss
 
 | système | épisodes | fausses sans | fausses avec | écart | rappel |
 |---|---|---|---|---|---|
-| observation | 12/12 | 412 | 254 | -38.3 % | 100.0 % *(inchangé)* |
-| **notre modèle** | 12/12 | 473 | 312 | -34.0 % | 100.0 % *(inchangé)* |
-| chaîne AASQA | 11/12 | 446 | 310 | -30.5 % | 91.7 % *(inchangé)* |
-| CAMS brut | 8/12 | 102 | 44 | -56.9 % | **66.7 → 58.3 %** |
+| observation | 12/12 | 424 | 256 | -39.6 % | 100.0 % *(inchangé)* |
+| **notre modèle** | 11/12 | 487 | 326 | -33.1 % | 91.7 % *(inchangé)* |
+| chaîne AASQA | 11/12 | 447 | 310 | -30.6 % | 91.7 % *(inchangé)* |
+| CAMS brut | 8/12 | 103 | 44 | -57.3 % | **66.7 → 58.3 %** |
 
-**−34 % de fausses alertes, zéro épisode perdu.** Ce n'est pas un arbitrage, c'est un gain sec : une fausse alerte est un accident isolé, un épisode réel est **installé**, et la procédure préfectorale exige elle-même la persistance. Notre règle était instantanée alors que la décision qu'elle imite ne l'est pas.
+**−33 % de fausses alertes, zéro épisode perdu.** Ce n'est pas un arbitrage, c'est un gain sec : une fausse alerte est un accident isolé, un épisode réel est **installé**, et la procédure préfectorale exige elle-même la persistance. Notre règle était instantanée alors que la décision qu'elle imite ne l'est pas.
 
 ⚠️ **Mais elle profite à tout le monde, et davantage à l'observation qu'à nous.** La règle est gratuite pour trois systèmes sur quatre — rappel strictement inchangé — et **coûte un épisode à CAMS brut**, dont le rappel tombe. Le seul énoncé défendable est donc : *« la règle de décision vaut un tiers des fausses alertes, quel que soit le système qui l'alimente »*. Se l'attribuer serait faux.
 
