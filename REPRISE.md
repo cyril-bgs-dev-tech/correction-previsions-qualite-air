@@ -1,6 +1,6 @@
 # Reprise — l'état du projet
 
-> **Écrit le 11/08/2026 à 14 h 30, mis à jour à 17 h 45.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
+> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 12/08 à 00 h 30.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
 > fichier** : sur ce projet il a déjà été périmé de dix jours tout en s'annonçant comme l'état
 > courant. Vérifie par `git log --oneline -5` et `ls -lt reports/` avant de croire ce qui suit.
 
@@ -19,11 +19,20 @@
 |---|---|
 | **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **11 jours** |
 | **Dossier** | ✅ **déposable**. HTML autonome **9 pages**, PDF **58 p.**, dépôt public **à jour et poussé**, artefact **republié le 11/08 à 23 h 55** |
-| **Git** | ✅ arbre propre, HEAD `7980654` — **synchronisé avec `origin/main`** |
+| **Git** | ✅ arbre propre, HEAD `287385a` — **synchronisé et POUSSÉ** vers `origin/main` |
 | **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ — dernière chute le 11/08 à **18 h 10** (16ᵉ panic, pendant le duel) |
 | **Ce qui tourne** | rien · `prevair-archive.timer` (automatique, ne rien faire) |
 | **Chiffres** | `VERITE_DOSSIER.md` — **189 lignes de chiffres**, régénéré le 11/08 à 22 h 20 (**§ 10 quinquies** et **§ 11 bis** ajoutées) |
 | **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 23 h 55, après publication) |
+
+🟢 **Reprise après extinction** — la session du 11/08 est intégralement poussée. Le récit
+complet (résultats, décisions, suite) est dans la mémoire, fiche « Journée du 11 août ».
+**Rien n'est à recalculer ni à revérifier.**
+
+**Les pages territoriales ont gagné 7 figures** : contexte publié (calendrier d'épisodes,
+régime de dispersion, apports extérieurs) et nos mesures (matrice territoire × polluant,
+profil par polluant, rang des départements, position parmi les 84). Régénérables par
+`python3 scripts/pages_regions.py` — ~6 min, aucune dépendance à un lot.
 
 **Le geste à faire en arrivant** : `git status` doit être vide. `/mnt/d` a déjà perdu des
 écritures **sans erreur** ; si des fichiers manquent, `git checkout` les restaure.
