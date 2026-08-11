@@ -55,6 +55,9 @@ from contexte_departements import (  # noqa: E402
     CSS as CSS_CONTEXTE, charger as charger_contexte, rapport_couverture,
     rendre as rendre_contexte,
 )
+from figures_territoire import (  # noqa: E402
+    CSS as CSS_TERR, bloc_departement as fig_departement, bloc_region as fig_region,
+)
 from pages_soutenance import (  # noqa: E402
     BANDE_COULEUR, COURT, ISSUE, MIN_JOURS_STATION, NOM_BANDE, POLLUANTS, SEUIL,
     couverture_membres,
@@ -369,6 +372,18 @@ details.dep .grille-reg{margin:0;padding:0 14px 15px}
 @media(prefers-reduced-motion:reduce){details.dep>summary::before{transition:none}}
 """
 
+# La section de contexte régional reprend l'encadré du contexte départemental — même filet
+# ambre, même promesse : ce qui est là-dedans vient de tiers, pas de nos mesures. Deux
+# apparences différentes pour la même garantie la rendraient moins crédible, pas plus.
+CSS_REGION_TERR = """
+section.terr{margin:26px 0 4px;padding:18px 20px;border:1px solid var(--trait);
+ border-radius:10px;background:var(--sur)}
+section.terr>h2{margin:0 0 8px;font-size:1rem;font-weight:640}
+.terr-garde{margin:0 0 14px;padding-left:11px;border-left:3px solid var(--or,#c98a1e);
+ font-size:.79rem;line-height:1.5;color:var(--doux)}
+.terr-garde b{color:var(--texte)}
+"""
+
 
 def main(horizon: int, sortie: str, departements: bool) -> int:
     dossier = RACINE / sortie
@@ -429,14 +444,18 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
             f'<a href="../{ardoise(prochain_nom(regions, dep_de_region.get(dp["code"])))}'
             f'.html">← la région</a> · <a href="../index.html">toutes les régions</a>',
             MIN_STATIONS_DEP,
-            rendre_contexte(contextes[dp["code"]]) if dp["code"] in contextes else "")
+            # Le contexte en prose, puis SA FIGURE. Les deux viennent du même bloc sourcé :
+            # la figure ne dit rien de plus, elle rend comparable ce que les puces ne
+            # permettaient que de lire un département à la fois.
+            (rendre_contexte(contextes[dp["code"]]) + fig_departement(contextes[dp["code"]])
+             if dp["code"] in contextes else ""))
         if res is None:
             continue
         corps, r = res
         f = dossier / "dep" / f'{dp["code"]}-{dp["ardoise"]}.html'
         f.write_text(enveloppe(f'{dp["nom"]} — cartes de chaleur départementales',
                                corps, "maille départementale")
-                     .replace("</style>", CSS_SUP + CSS_CONTEXTE + "</style>"),
+                     .replace("</style>", CSS_SUP + CSS_CONTEXTE + CSS_TERR + "</style>"),
                      encoding="utf-8")
         r["fichier"] = f"dep/{dp['code']}-{dp['ardoise']}.html"
         fiches_dep.setdefault(dep_de_region.get(dp["code"], ""), []).append(r)
@@ -462,6 +481,20 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
                    f'— {len(liste)} disponibles, moins de stations par page donc des '
                    f'cartes de chaleur plus lisibles</summary>'
                    f'<div class="grille-reg">{cases}</div></details>')
+        # ── Ce que les bilans publiés disent de CE territoire ────────────────────
+        # Le rattachement passe par les CODES (`dep_de_region`), jamais par les noms : les
+        # blocs écrivent « Auvergne-Rhone-Alpes » en ASCII quand la région s'appelle
+        # « Auvergne-Rhône-Alpes », et un regroupement par nom perdrait la région entière.
+        blocs_r = [contextes[c] for c, rc in dep_de_region.items()
+                   if rc == r0["code"] and c in contextes]
+        if blocs_r:
+            sup += (
+                '<section class="terr"><h2>Ce que les bilans disent de ce territoire</h2>'
+                '<p class="terr-garde">Sources publiées par des tiers — Atmo régionales, '
+                'DREAL, préfectures. <b>Aucun élément de cette section ne sort de notre '
+                'modèle</b> : nos mesures sont dans les onglets. Chaque case et chaque '
+                'pastille renvoie au texte source en infobulle.</p>'
+                f'{fig_region(sorted(blocs_r, key=lambda b: str(b.get("code"))))}</section>')
         res = page_territoire(
             r0["nom"], r0["code"], jeux, compositions, "region",
             "Maille régionale · protocole d'exploitation · J0",
@@ -473,7 +506,8 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
         f = dossier / f'{r0["ardoise"]}.html'
         f.write_text(enveloppe(f'{r0["nom"]} — cartes de chaleur régionales', corps,
                                "maille régionale")
-                     .replace("</style>", CSS_SUP + "</style>"), encoding="utf-8")
+                     .replace("</style>", CSS_SUP + CSS_TERR + CSS_REGION_TERR
+                              + "</style>"), encoding="utf-8")
         gains[r0["code"]] = x["gain_moyen"]
         x["fichier"] = f'{r0["ardoise"]}.html'
         x["departements"] = len(liste)
