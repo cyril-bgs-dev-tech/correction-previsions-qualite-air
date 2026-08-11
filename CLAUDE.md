@@ -760,6 +760,49 @@ apercevrais ?* Sans affichage du périmètre effectif, la réponse est non.
 
 ---
 
+## 2 quinquies. Un seuil doit regarder du côté où le défaut pousse
+
+### La règle
+
+Un contrôle de sortie ne suffit pas : encore faut-il qu'il porte sur une grandeur qui
+**empire quand le défaut s'aggrave**. Un plancher — « au moins N pages », « au moins N
+lignes » — ne voit rien d'une dégradation qui **diminue** la quantité mesurée : le défaut
+s'installe *en s'éloignant* du seuil.
+
+Deux gestes, à écrire en même temps que le seuil :
+
+1. **Se demander dans quel sens le défaut pousse le chiffre.** S'il le pousse du côté
+   confortable, le seuil est décoratif. Il en faut un autre, sur une autre grandeur.
+2. **Comparer à la version précédente, pas à une constante.** Un artefact régénéré se
+   compare d'abord à lui-même : « 54 pages hier, 49 aujourd'hui, +1 page de contenu » est
+   une alerte que nul plancher ne produira.
+
+### L'erreur qui a produit cette règle — le 11/08, sur la pièce jointe du dossier
+
+L'ajout de la page 07 a fait passer `presentation_atmo.pdf` de **54 à 49 pages**. Rien
+n'était perdu : Chromium avait mis **tout le document à l'échelle 0,90** — corps de texte
+de 9,75 pt tombé à 8,75. Cause, trouvée par bissection du DOM et non par intuition : la
+**8ᵉ entrée du sommaire** portait la largeur de mise en page à 772 px pour **718 px
+imprimables**, et le navigateur réduit le document entier plutôt que de couper. Une ligne
+— `.somm { flex-wrap: wrap }` — et le PDF est revenu à 56 pages à l'échelle 1:1.
+
+`exporter_pdf.py` contrôlait pourtant sa sortie, et son commentaire annonçait « un PDF
+d'une page est un échec de rendu ». Mais il testait `pages >= 40`. **Le défaut produit
+moins de pages : 49 passait le contrôle exactement comme 54, et l'aurait passé à 41.**
+
+> **Le contrôle qui l'attrape est en amont de l'artefact** : mesurer la largeur de mise en
+> page à la largeur imprimable, refuser tout débordement, et **nommer l'élément fautif** —
+> un contrôle qui dit « ça déborde » sans dire « où » envoie chercher au hasard.
+
+### Le fil commun
+
+C'est la règle 5 posée au contrôle plutôt qu'au traitement : *si mon seuil était franchi
+du mauvais côté, est-ce que je m'en apercevrais ?* Et c'est le même défaut que « ne jamais
+comparer un compte à un compte » (§ 4), déplacé du contenu vers la **forme** : ici le
+contenu était complet, c'est sa mise à l'échelle qui avait changé.
+
+---
+
 ## 3. Volume — ne télécharger que la fenêtre utile
 
 ### La règle

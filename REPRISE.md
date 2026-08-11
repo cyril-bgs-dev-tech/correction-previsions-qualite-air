@@ -1,6 +1,6 @@
 # Reprise — l'état du projet
 
-> **Écrit le 11/08/2026 à 14 h 30.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
+> **Écrit le 11/08/2026 à 14 h 30, mis à jour à 17 h 45.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
 > fichier** : sur ce projet il a déjà été périmé de dix jours tout en s'annonçant comme l'état
 > courant. Vérifie par `git log --oneline -5` et `ls -lt reports/` avant de croire ce qui suit.
 
@@ -18,12 +18,12 @@
 | | |
 |---|---|
 | **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **11 jours** |
-| **Dossier** | ✅ **déposable**. HTML autonome, PDF ~54 p., dépôt public à jour, artefact publié |
-| **Git** | ✅ arbre **propre**, `origin/main` **à jour**, HEAD `2e47872` |
-| **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ |
-| **Ce qui tourne** | rien, sauf `prevair-archive.timer` (automatique, ne rien faire) |
-| **Chiffres** | `VERITE_DOSSIER.md` — **165 lignes**, régénéré le 11/08 à 14 h 20 |
-| **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** |
+| **Dossier** | ✅ **déposable**. HTML autonome **8 pages**, PDF **56 p.**, dépôt public à jour, artefact **republié le 11/08 à 17 h 35** |
+| **Git** | ✅ arbre propre hors lot en cours, HEAD `65a01d1` |
+| **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ — la VM est tombée le 11/08 à ~16 h 58 |
+| **Ce qui tourne** | `lot_duel_chimere.sh O3` (lancé 17 h 39) · `prevair-archive.timer` (automatique, ne rien faire) |
+| **Chiffres** | `VERITE_DOSSIER.md` — **165 lignes**, régénéré le 11/08 à 16 h 50 |
+| **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 17 h 20) |
 
 **Le geste à faire en arrivant** : `git status` doit être vide. `/mnt/d` a déjà perdu des
 écritures **sans erreur** ; si des fichiers manquent, `git checkout` les restaure.
@@ -73,9 +73,9 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 | pièce | état | date |
 |---|---|---|
 | **`reports/figures/vue_territoires.html`** — vue navigable France → rég. → dép. | ✅ **publiée** `90a78c8f-…` | 11/08 |
-| `reports/figures/presentation_atmo.html` — 10 pages, autonome | ✅ | 10/08 23:41 |
-| PDF ~54 pages | ✅ | 10/08 23:41 |
-| **Artefact publié** `6ff4908f-bdb3-4a6b-8499-65aa7a688e98` | ✅ **privé** | 10/08 |
+| `reports/figures/presentation_atmo.html` — **8 pages** (07 = duel PREV'AIR), autonome | ✅ | 11/08 17:30 |
+| PDF **56 pages** — régénéré par `exporter_pdf.py`, échelle 1:1 vérifiée | ✅ | 11/08 17:30 |
+| **Artefact publié** `6ff4908f-bdb3-4a6b-8499-65aa7a688e98` | ✅ **privé**, à jour | 11/08 17:35 |
 | 106 pages territoriales (84 dép. + 13 rég. + index + champs) | ✅ | 10/08 |
 | `docs/NOTE_ATMO_OCCITANIE.md` · `SOUTENANCE_*` · `LETTRE_*` | ✅ **gitignorés** | 10/08 |
 | Démo Streamlit `app.py` | 🟠 **la pièce la moins à jour** | 02/08 |
@@ -95,8 +95,9 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 |---|---|---|---|
 | ~~1~~ | ✅ **FAIT le 11/08** — le seuil 2030 est chiffré : `scripts/seuils_2030.py` → `VERITE_DOSSIER` **§ 5 bis**. **France : 6 stations en dépassement aujourd'hui → 109 en 2030, × 18,2.** Occitanie 2 → 5, et **4 départements sur 13 sans aucune station** : leur conformité 2030 ne peut pas être posée depuis la mesure | — | — |
 | ~~2~~ | ✅ **FAIT le 11/08** — duel étendu à **10-11 jours** (28/07 → 08/08), **gagnant sur les 4 polluants** : O₃ +6,3 %, NO₂ **+48,1 %**, PM10 +38,9 %, PM2,5 **+59,9 %** de RMSE. ⚠️ **10 jours ne concluent rien** — ordre de grandeur, la fenêtre se cite toujours. Butée nommée : PREV'AIR n'a pas archivé le 08-09, notre CAMS s'arrête au 08-10 | — | — |
-| **2 bis** | 🔴 **Porter les 4 familles dans `duel_prevair.py`** | moyen | **Le duel tourne sur la configuration `base`** — 53 colonnes, **sans** GEOS-CF, tendance, membres ni feux (vérifié le 11/08). Sur l'ozone c'est **+7,01 %** au lieu de **+15,83 %**. Les chiffres ci-dessus sont donc un **MINORANT** : on bat PREV'AIR avec notre pile la plus faible. Demandé par Cyril — « lancer les prédictions avec la meilleure version ». |
-| **3** | **PREV'AIR en fin de présentation** | ~1 h | Demandé par Cyril. À présenter avec sa fenêtre, jamais sans. |
+| ~~2 bis~~ | ✅ **FAIT le 11/08** — `duel_prevair.py` porte désormais `tendance` + `typologie` : O₃ **+6,0 %**, NO₂ **+51,0 %**, PM10 **+45,5 %**, PM2,5 **+60,9 %**. Les trois autres familles **ne peuvent pas** y entrer — GEOS-CF et les membres s'arrêtent au 01/08/2026, les feux à juin 2025. Limite de **fraîcheur**, pas de conception : ces écarts restent des **minorants** | — | — |
+| ~~3~~ | ✅ **FAIT le 11/08** — **page 07 « La barre réelle »** dans la présentation (commit `c24c322`), PDF 56 p., artefact republié. Chiffres relus depuis `duel_prevair_<P>.csv`, jamais saisis ; la fenêtre est affichée dans le chapeau ET dans la règle finale, toutes deux dérivées de la donnée | — | — |
+| **3 bis** | 🟠 **Duel contre LEUR MÉTHODE** — `lot_duel_chimere.sh`, en cours sur O₃ depuis 17 h 39 | moyen | AS-CHI est un **krigeage** du résidu, pas un apprentissage. CHIMERE étant un membre de CAMS archivé ici, on rejoue leur chaîne depuis **leur** point de départ, sur nos lignes et sur trois ans — ce que les onze jours du duel direct ne permettent pas. ⚠️ **Ce n'est pas PREV'AIR** : leur CHIMERE est national et assimilé, le nôtre est le membre européen à 10 km |
 | ~~4~~ | ✅ **FAIT le 11/08** — `reports/figures/vue_territoires.html`, **publiée** : https://claude.ai/code/artifact/90a78c8f-b714-4b61-adf8-5cb292a6a0e5 (**privée**, à partager). Carte cliquable France → 13 régions → 96 départements, 4 polluants, échéance 2030, et le contexte **sourcé item par item** sur 84 départements. Régénérable : `python3 scripts/vue_territoires.py` puis réinjecter le JSON dans `_vue_template.html` | — | — |
 | **5** | Rafraîchir `app.py` (02/08) | moyen | Antérieur à GEOS-CF en production, à `tendance` et aux PM10. Pas faux — le contrôle des 20 chiffres passe — mais le moins à jour. |
 | **6** | 🔴 **Re-mesurer la part de stations dégradées** (NO₂ et les autres) | faible | L'ancien `REPRISE.md` annonçait « 23 % » ; **ce chiffre ne trace nulle part** (vérifié le 11/08). La réserve est réelle, le chiffre est perdu. **Le re-mesurer ou cesser de la chiffrer.** |
