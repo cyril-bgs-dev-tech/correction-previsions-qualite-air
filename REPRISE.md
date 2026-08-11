@@ -18,12 +18,12 @@
 | | |
 |---|---|
 | **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **11 jours** |
-| **Dossier** | ✅ **déposable**. HTML autonome **8 pages**, PDF **56 p.**, dépôt public à jour, artefact **republié le 11/08 à 17 h 35** |
-| **Git** | ✅ arbre propre, HEAD `a987280` — ⚠️ **8 commits non poussés** vers `origin/main` |
+| **Dossier** | ✅ **déposable**. HTML autonome **9 pages**, PDF **58 p.**, dépôt public **à jour et poussé**, artefact **republié le 11/08 à 23 h 55** |
+| **Git** | ✅ arbre propre, HEAD `7980654` — **synchronisé avec `origin/main`** |
 | **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ — dernière chute le 11/08 à **18 h 10** (16ᵉ panic, pendant le duel) |
 | **Ce qui tourne** | rien · `prevair-archive.timer` (automatique, ne rien faire) |
 | **Chiffres** | `VERITE_DOSSIER.md` — **189 lignes de chiffres**, régénéré le 11/08 à 22 h 20 (**§ 10 quinquies** et **§ 11 bis** ajoutées) |
-| **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 17 h 20) |
+| **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 23 h 55, après publication) |
 
 **Le geste à faire en arrivant** : `git status` doit être vide. `/mnt/d` a déjà perdu des
 écritures **sans erreur** ; si des fichiers manquent, `git checkout` les restaure.
@@ -73,9 +73,9 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 | pièce | état | date |
 |---|---|---|
 | **`reports/figures/vue_territoires.html`** — vue navigable France → rég. → dép. | ✅ **publiée** `90a78c8f-…` | 11/08 |
-| `reports/figures/presentation_atmo.html` — **8 pages** (07 = duel PREV'AIR), autonome | ✅ | 11/08 17:30 |
-| PDF **56 pages** — régénéré par `exporter_pdf.py`, échelle 1:1 vérifiée | ✅ | 11/08 17:30 |
-| **Artefact publié** `6ff4908f-bdb3-4a6b-8499-65aa7a688e98` | ✅ **privé**, à jour | 11/08 17:35 |
+| `reports/figures/presentation_atmo.html` — **9 pages** (07 = duel PREV'AIR, 08 = la limite), autonome | ✅ | 11/08 23:50 |
+| PDF **58 pages** — régénéré par `exporter_pdf.py`, échelle 1:1 vérifiée | ✅ | 11/08 23:50 |
+| **Artefact publié** `6ff4908f-bdb3-4a6b-8499-65aa7a688e98` | ✅ **privé**, à jour (page 08) | 11/08 23:55 |
 | 106 pages territoriales (84 dép. + 13 rég. + index + champs) | ✅ | 10/08 |
 | `docs/NOTE_ATMO_OCCITANIE.md` · `SOUTENANCE_*` · `LETTRE_*` | ✅ **gitignorés** | 10/08 |
 | Démo Streamlit `app.py` | ✅ **4 polluants, échéance J0 affichée**, piloté et vérifié | 11/08 |
@@ -101,6 +101,9 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 | ~~4~~ | ✅ **FAIT le 11/08** — `reports/figures/vue_territoires.html`, **publiée** : https://claude.ai/code/artifact/90a78c8f-b714-4b61-adf8-5cb292a6a0e5 (**privée**, à partager). Carte cliquable France → 13 régions → 96 départements, 4 polluants, échéance 2030, et le contexte **sourcé item par item** sur 84 départements. Régénérable : `python3 scripts/vue_territoires.py` puis réinjecter le JSON dans `_vue_template.html` | — | — |
 | ~~5~~ | ✅ **FAIT le 11/08** — démo rafraîchie, **PM10 ajouté**, et l'échéance **J0 enfin affichée** (elle n'était affirmée nulle part). ⚠️ **Deux des trois retards annoncés n'existaient pas** : `fit_mos.py` ne contient aucune occurrence de `tendance`, et pour cause — `tendance` et GEOS-CF vivent dans la chaîne **journalière**, la démo montre le MOS **horaire**. Les y attendre confondait deux piles. Le seul retard réel était PM10, et le blocage tenait en un mot : `choices=["O3","NO2","PM25"]` dans l'`argparse` de `fit_mos.py`, alors que panel, bandes ATMO et table des espèces le portaient tous. Ajusté en **5 min**. Vérifié en pilotant l'app (Playwright) : 4 polluants proposés, **6 pages sans exception** sous PM10 | — | — |
 | ~~6~~ | ✅ **FAIT le 11/08** — part des stations dégradées re-mesurée → `VERITE_DOSSIER` **§ 11 bis**. Le « 23 % » est **retrouvé** : c'était l'épreuve *temporelle*, citée sans son épreuve. **La part va de 2,1 % à 42,5 % selon l'ÉPREUVE**, pas selon le polluant. Deux lectures qui n'étaient pas dans la réserve d'origine : le **NO₂ est à l'inverse des trois autres** (le plus dégradé station cachée, le moins station vue — son gain est un biais de *site*) ; et **une part élevée n'est pas une part grave** — 42,5 % sur PM2,5 s'adosse à un gain médian de **+2,5 %**, contre 7,8 % / **+35,6 %** sur NO₂ spatial. ⚠️ Mesuré sur une pile **sans l'étage `tendance`**, sens de l'écart non mesuré. Régénérable : `bash scripts/lot_oof_typo.sh` puis `python3 scripts/stations_degradees.py --variante typo` | — | — |
+| ~~7~~ | ✅ **FAIT le 11/08** — **page 08 « La limite »** dans la présentation (commit `7980654`), PDF **58 p.** à l'échelle 1:1, artefact republié. C'est la seule page qui dise où la correction ÉCHOUE. Chiffres relus depuis `stations_degradees_h2.csv`, bornes de la thèse dérivées en JS ; le script **lève** si le CSV croise deux variantes | — | — |
+| **8** | Faire entrer **§ 10 quinquies** dans la présentation | faible | Le duel contre LEUR MÉTHODE n'est que dans `VERITE_DOSSIER` (`AS-CHI` : **0 occurrence** dans la présentation, vérifié). ⚠️ **À fondre dans la page 07**, pas à ajouter en page 09 : elle traite déjà un duel, deux pages de duel se répéteraient. Le résultat à porter n'est pas notre gain mais que **CHIMERE brut est moins bon que la médiane de l'ensemble dont il est membre sur 3/4** |
+| **9** | Préparer la **soutenance** | moyen | Le dossier est fini ; ce qui reste risqué est de le défendre. La matière existe et n'a jamais été mise en forme d'oral : quel chiffre pour quel protocole, les objections attendues (périmètre, antériorité, 2 épisodes sur 33), et les réponses aux questions dures. **Le plus gros risque résiduel du projet à 11 jours de l'échéance.** |
 
 ---
 
