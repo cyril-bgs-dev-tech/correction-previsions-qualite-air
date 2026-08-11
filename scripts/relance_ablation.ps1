@@ -62,11 +62,12 @@ for ($i = 1; $i -le $passes; $i++) {
   # `lot_ablation.sh` écrivant le même `.partiel`, c'est-à-dire la collision de § 1 bis qui
   # avait déjà coûté deux mois de parquets le 31/07. Le garde porte donc sur la COQUILLE du
   # lot, pas sur sa charge.
-  #   Les crochets de `[l]ot_ablation` empêchent le motif de matcher la commande qui le porte
-  # — le `bash -lc` ci-dessous contient le motif AVEC ses crochets, que la regex ne matche pas.
-  & wsl.exe -d $distro -- bash -lc 'pgrep -f "bash scripts/[l]ot_ablation\.sh" >/dev/null' | Out-Null
+  #   ⚠️ Le motif est dans un FICHIER, pas en ligne : écrit ici, ses guillemets se perdaient
+  # en traversant PowerShell → wsl.exe → bash -lc, `pgrep` recevait « bash » comme motif et
+  # matchait TOUS les bash de la machine. Faux positif permanent, mesuré le 11/08 à 13 h 59.
+  $vu = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/lot_en_cours.sh"
   if ($LASTEXITCODE -eq 0) {
-    Note "passe $i : un lot tourne déjà (coquille vivante) — attente 90 s"
+    Note "passe $i : un lot tourne déjà — $vu"
     Start-Sleep -Seconds 90
     continue
   }
