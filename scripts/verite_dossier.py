@@ -399,6 +399,76 @@ def bloc_mqi(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def bloc_duel_prevair(lignes: list[dict]) -> str:
+    """Le duel DIRECT — nos sorties contre les leurs, mêmes stations, mêmes jours.
+
+    La § 10 ter compare via le rapport LCSQA : deux publications, deux protocoles, et il
+    faut neutraliser le confondant d'amont. Ici, rien à neutraliser — les trois systèmes
+    sont évalués sur **exactement les mêmes lignes**.
+
+    ⚠️ Et c'est payé d'une fenêtre minuscule. PREV'AIR n'expose que ~6 jours glissants ;
+    l'archivage quotidien n'a démarré que fin juillet 2026, donc **le passé n'est pas
+    récupérable**. Dix jours ne concluent rien : c'est un ordre de grandeur, et toute
+    citation qui omet la fenêtre est fausse.
+
+    Régénéré par `scripts/duel_prevair.py --polluant <P>`.
+    """
+    fs = {p: RACINE / f"reports/duel_prevair_{p}.csv" for p in ("O3", "NO2", "PM10", "PM25")}
+    tables = {p: pd.read_csv(f) for p, f in fs.items() if f.exists()}
+    if not tables:
+        return ""
+
+    texte = [
+        "## 10 quater. Le duel DIRECT — nos sorties contre PREV'AIR, mêmes stations, "
+        "mêmes jours\n",
+        "Aucun confondant d'amont à neutraliser ici : les trois systèmes sont évalués sur "
+        "**exactement les mêmes lignes**. Grain aligné sur le produit PREV'AIR "
+        "(`MAXJ1` pour O₃ et NO₂, `MOYJ1` pour les particules), échéance **J+1**.\n",
+        "| polluant | fenêtre | lignes | CAMS brut | **nous** | PREV'AIR | écart PREV'AIR / nous |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for p, t in tables.items():
+        r = {str(x["systeme"]): x for _, x in t.iterrows()}
+        nous = next((v for k, v in r.items() if k.startswith("notre")), None)
+        pv = next((v for k, v in r.items() if k.startswith("PREV")), None)
+        brut = next((v for k, v in r.items() if k.startswith("CAMS")), None)
+        if nous is None or pv is None or brut is None:
+            continue
+        ecart = 100 * (float(pv["rmse"]) / float(nous["rmse"]) - 1)
+        # L'espace des milliers s'applique au NOMBRE seul : un `.replace(",", " ")` sur la
+        # ligne entière avalait aussi la virgule de « PM2,5 », qui devenait « PM2 5 ».
+        n_fmt = f"{int(nous['n']):,}".replace(",", " ")
+        texte.append(
+            f"| {NOM.get(p, p)} | {int(nous['jours'])} j · {nous['debut']}→{nous['fin']} "
+            f"| {n_fmt} | {float(brut['rmse']):.2f} | "
+            f"**{float(nous['rmse']):.2f}** | {float(pv['rmse']):.2f} | "
+            f"**+{ecart:.1f} %** |")
+        lignes.append({"bloc": "duel PREV'AIR", "polluant": p,
+                       "grain": str(nous["grain"]), "n": int(nous["n"]),
+                       "gain": round(ecart, 2), "relatif_pct": float(nous["rmse"])})
+
+    jmax = max(int(t["jours"].iloc[0]) for t in tables.values())
+    texte.append(
+        f"\n🔴 **{jmax} jours NE CONCLUENT RIEN.** C'est un ordre de grandeur, et le script "
+        f"le réaffirme à chaque exécution. PREV'AIR n'expose qu'une fenêtre glissante "
+        f"d'environ six jours et notre archivage quotidien n'a démarré que fin juillet "
+        f"2026 : **le passé n'est pas récupérable**, cette fenêtre ne grandira que d'un "
+        f"jour par jour.\n")
+    texte.append(
+        "⚠️ **Deux réserves qui jouent dans des sens opposés, et il faut les dire ensemble.** "
+        "*Contre nous* : PREV'AIR tourne à 1,7 km **avec assimilation et krigeage**, nous "
+        "corrigeons un ensemble à 10 km. *Pour nous* : nos stations sont connues de notre "
+        "modèle — mais les leurs le sont aussi de leur krigeage, donc l'avantage n'est pas "
+        "unilatéral.\n")
+    texte.append(
+        "⚠️ **Ce duel n'utilise PAS la pile complète** — seulement `base + tendance + "
+        "typologie`. GEOS-CF, les membres d'ensemble et les feux sont **hors d'atteinte sur "
+        "cette fenêtre** : leurs flux s'arrêtent au 01/08/2026 pour les deux premiers et à "
+        "juin 2025 pour les feux. C'est une limite de **fraîcheur**, pas de conception — et "
+        "elle rend ces écarts **minorants**.\n")
+    return "\n".join(texte)
+
+
 def bloc_seuils_2030(lignes: list[dict]) -> str:
     """Le mur réglementaire, chiffré localement — et le calcul que personne n'avait fait.
 
@@ -1667,6 +1737,7 @@ def main() -> int:
         bloc_perimetres(lignes),
         bloc_reconciliation(lignes),
         bloc_comparaison_annuelle(lignes),
+        bloc_duel_prevair(lignes),
         bloc_detection(lignes),
         bloc_signalements(lignes),
         bloc_front(lignes),

@@ -128,10 +128,39 @@ def main(polluant: str, horizon: int) -> int:
     d["jour"] = pd.to_datetime(d["jour"]).dt.tz_localize(None)
     d["mois"] = d["jour"].dt.strftime("%Y-%m")
 
+    # ── L'étage `tendance`, et pourquoi c'est le SEUL des quatre qu'on puisse ajouter ici
+    #
+    # Le duel tournait sur la configuration `base` : ni GEOS-CF, ni membres d'ensemble, ni
+    # feux, ni tendance. Sur l'ozone c'est +7,01 % au lieu de +15,83 % — les écarts publiés
+    # étaient donc un MINORANT de notre système, ce qui est exact mais sous-déclaré.
+    #
+    # Mesuré le 11/08, les trois autres familles sont hors d'atteinte SUR CETTE FENÊTRE, et
+    # c'est une limite de fraîcheur des flux, pas un choix :
+    #   · feux    — dernier fichier 2025-06, quatorze mois de retard ;
+    #   · membres — s'arrête au 2026-08-01, soit 5 jours sur les 10 testés ;
+    #   · geoscf  — s'arrête au 2026-08-01, ET le dernier flux est en v2 : mélanger v1 et v2
+    #               est interdit (VERITE_DOSSIER § 13).
+    # Les faire entrer amputerait la moitié de la fenêtre ou la totalité. `tendance`, elle,
+    # ne lit AUCUNE donnée extérieure : elle se dérive de CAMS, donc elle existe partout où
+    # CAMS existe.
+    #
+    # ⚠️ Calculée AVANT toute restriction de fenêtre : elle décale la série d'un jour par
+    # station, et la calculer après le filtrage ferait venir la veille du premier jour
+    # retenu depuis le dernier jour d'une autre période.
+    from banc_preprocessing import f_tendance_cams  # noqa: PLC0415
+    tendance = f_tendance_cams(d)
+    if collision := [c for c in tendance.columns if c in d.columns]:
+        raise SystemExit(f"colonnes de tendance déjà présentes : {collision}")
+    d = pd.concat([d, tendance], axis=1)
+    pred_cols += list(tendance.columns)
+
     from optuna_mos import typologie as charger_typologie  # noqa: PLC0415
     typo, cols_typo = charger_typologie(np.sort(d["station_id"].unique()))
     d = d.merge(typo, on="station_id", how="left")
     pred_cols += cols_typo
+    print(f"  familles : base · tendance({len(tendance.columns)}) · "
+          f"typologie({len(cols_typo)}) — feux/membres/geoscf HORS ATTEINTE sur cette "
+          f"fenêtre (fraîcheur des flux)", flush=True)
 
     jours_pv = set(pv["jour"].unique())
     appr = d[d["mois"] <= FIN_APPRENTISSAGE]

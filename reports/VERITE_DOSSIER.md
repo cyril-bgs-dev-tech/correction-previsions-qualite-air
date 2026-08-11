@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 11/08/2026 à 15 h 21 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 11/08/2026 à 16 h 25 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -263,6 +263,23 @@ Deux références, parce qu'elles répondent à deux questions. **Contre CAMS br
 ⚠️ **Les PM10 sont publiés en deux variantes, et les deux sont légitimes.** Les membres d'ensemble n'existent pour ce polluant que depuis 2025-01, d'où deux tables. « PM10 » est la variante **longue — 31 mois**, chaîne réglementaire **ancrée sur CAMS** faute de membres ; « PM10 · chaîne nommée » est la variante **courte — 19 mois**, CHIMERE+MOCAGE réel. La longue est à la fois le plus grand corpus **et** le test le plus dur : son substitut atteint une RMSE de **7,20** contre **7,63** pour la chaîne nommée. **Le même modèle, sur les mêmes 19 mois, rend le même +20,2 % contre CAMS brut dans les deux tables** — seule la référence change. Ne jamais publier l'une en taisant l'autre.
 
 ⚠️ **La réserve porte sur les deux dénominateurs.** Les lignes AASQA s'ancrent sur des modèles en configuration **européenne 0,1° sans assimilation**. La chaîne réelle tourne en version nationale, plus fine et assimilée : elle est donc **meilleure** que cette simulation, et tout écart affiché ici est un **majorant** de notre avance. Le § 10 ter chiffre cet écart sur les journées de PREV'AIR réel captées.
+
+## 10 quater. Le duel DIRECT — nos sorties contre PREV'AIR, mêmes stations, mêmes jours
+
+Aucun confondant d'amont à neutraliser ici : les trois systèmes sont évalués sur **exactement les mêmes lignes**. Grain aligné sur le produit PREV'AIR (`MAXJ1` pour O₃ et NO₂, `MOYJ1` pour les particules), échéance **J+1**.
+
+| polluant | fenêtre | lignes | CAMS brut | **nous** | PREV'AIR | écart PREV'AIR / nous |
+|---|---|---|---|---|---|---|
+| O₃ | 10 j · 2026-07-28→2026-08-08 | 2 541 | 24.10 | **22.22** | 23.56 | **+6.0 %** |
+| NO₂ | 10 j · 2026-07-28→2026-08-08 | 3 100 | 22.91 | **13.55** | 20.45 | **+51.0 %** |
+| PM10 | 11 j · 2026-07-28→2026-08-08 | 3 168 | 7.35 | **4.83** | 7.04 | **+45.5 %** |
+| PM2,5 | 10 j · 2026-07-28→2026-08-08 | 2 177 | 2.78 | **2.48** | 3.98 | **+60.9 %** |
+
+🔴 **11 jours NE CONCLUENT RIEN.** C'est un ordre de grandeur, et le script le réaffirme à chaque exécution. PREV'AIR n'expose qu'une fenêtre glissante d'environ six jours et notre archivage quotidien n'a démarré que fin juillet 2026 : **le passé n'est pas récupérable**, cette fenêtre ne grandira que d'un jour par jour.
+
+⚠️ **Deux réserves qui jouent dans des sens opposés, et il faut les dire ensemble.** *Contre nous* : PREV'AIR tourne à 1,7 km **avec assimilation et krigeage**, nous corrigeons un ensemble à 10 km. *Pour nous* : nos stations sont connues de notre modèle — mais les leurs le sont aussi de leur krigeage, donc l'avantage n'est pas unilatéral.
+
+⚠️ **Ce duel n'utilise PAS la pile complète** — seulement `base + tendance + typologie`. GEOS-CF, les membres d'ensemble et les feux sont **hors d'atteinte sur cette fenêtre** : leurs flux s'arrêtent au 01/08/2026 pour les deux premiers et à juin 2025 pour les feux. C'est une limite de **fraîcheur**, pas de conception — et elle rend ces écarts **minorants**.
 
 ## 8. Détection — à budget de fausses alertes égal
 
