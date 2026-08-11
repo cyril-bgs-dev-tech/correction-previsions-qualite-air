@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 11/08/2026 à 16 h 50 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 11/08/2026 à 20 h 59 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -280,6 +280,30 @@ Aucun confondant d'amont à neutraliser ici : les trois systèmes sont évalués
 ⚠️ **Deux réserves qui jouent dans des sens opposés, et il faut les dire ensemble.** *Contre nous* : PREV'AIR tourne à 1,7 km **avec assimilation et krigeage**, nous corrigeons un ensemble à 10 km. *Pour nous* : nos stations sont connues de notre modèle — mais les leurs le sont aussi de leur krigeage, donc l'avantage n'est pas unilatéral.
 
 ⚠️ **Ce duel n'utilise PAS la pile complète** — seulement `base + tendance + typologie`. GEOS-CF, les membres d'ensemble et les feux sont **hors d'atteinte sur cette fenêtre** : leurs flux s'arrêtent au 01/08/2026 pour les deux premiers et à juin 2025 pour les feux. C'est une limite de **fraîcheur**, pas de conception — et elle rend ces écarts **minorants**.
+
+## 10 quinquies. Leur MÉTHODE, rejouée depuis leur point de départ
+
+PREV'AIR ne part pas de CAMS : il part de **CHIMERE**, et son adaptation statistique AS-CHI **krige** le résidu observation−modèle au lieu de l'apprendre. CHIMERE étant un membre de l'ensemble CAMS, archivé ici aux stations, leur chaîne se rejoue **sur nos lignes et sur trois ans** — ce que les onze jours de la § 10 quater ne permettent pas.
+
+Variante de krigeage figée à celle qui a gagné le balayage de `krigeage_du_biais.py` : fenêtre 30 j, portée 200 km, p=1, donneuses de même typologie. La re-choisir sur chaque départ donnerait à leur méthode deux chances et à la nôtre une seule.
+
+| polluant | lignes | CHIMERE brut | + krigeage *(leur chaîne)* | CAMS médiane | + krigeage | **+ notre correction** | + les deux |
+|---|---|---|---|---|---|---|---|
+| O₃ | 87 334 | 18.68 | 13.55 | 12.53 | 11.44 | **10.87** | 10.76 |
+| NO₂ | 109 186 | 22.64 | 18.28 | 23.04 | 15.45 | **14.18** | 14.18 |
+| PM10 | 56 096 | 9.01 | 7.74 | 7.47 | 6.17 | **6.11** | 6.05 |
+| PM2,5 | 76 844 | 5.82 | 5.62 | 4.31 | 4.21 | **3.89** | 3.91 |
+
+RMSE en µg/m³, échéance **J+1**, station cachée. Les six systèmes sont évalués sur **exactement les mêmes lignes** — celles où les deux départs existent.
+
+**Ce que la table sépare, et que rien d'autre ne séparait :**
+
+1. **Le point de départ pèse autant que la méthode.** CHIMERE brut est plus mauvais que la médiane de l'ensemble dont il est membre sur **3 polluants sur 4** — jusqu'à **49 %** sur O₃. Moyenner sept modèles vaut mieux que le meilleur d'entre eux.
+2. **Leur méthode fonctionne, et il faut le dire** : le krigeage retire jusqu'à **27.4 %** de la RMSE de CHIMERE (O₃). Ce dossier ne la conteste pas, il la mesure.
+3. **À départ égal, l'apprentissage bat l'interpolation sur 4 polluants sur 4** — O₃ +13.2 % contre +8.6 % · NO₂ +38.4 % contre +32.9 % · PM10 +18.2 % contre +17.4 % · PM2,5 +9.6 % contre +2.4 %, tous contre le même CAMS.
+4. **Les deux se cumulent, un peu** : ajouter le champ krigé à notre correction gagne encore de -0.30 à +0.90 point (3/4 en positif). Le voisinage porte donc une information résiduelle que la pile n'épuise pas — c'est une **piste**, pas un résultat acquis : elle n'a pas été soumise au double aveugle.
+
+🔴 **CE N'EST PAS PREV'AIR, et la nuance est décisive.** Leur CHIMERE tourne en configuration **nationale** — maille plus fine, inventaire français, assimilation de données ; le nôtre est le membre **européen à 10 km** de l'ensemble CAMS. Ce tableau dit ce que leur **famille de méthode** vaut sur les entrées dont nous disposons. Il ne dit rien de leur produit, que seule la § 10 quater mesure — sur onze jours.
 
 ## 8. Détection — à budget de fausses alertes égal
 

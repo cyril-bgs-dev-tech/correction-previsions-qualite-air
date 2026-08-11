@@ -469,6 +469,125 @@ def bloc_duel_prevair(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def bloc_duel_chimere(lignes: list[dict]) -> str:
+    """Leur MÉTHODE depuis LEUR point de départ — CHIMERE brut → krigeage du biais.
+
+    La § 10 quater oppose nos sorties à leur PRODUIT, sur onze jours. Celle-ci oppose nos
+    sorties à leur MÉTHODE, sur trois ans : AS-CHI interpole spatialement le résidu
+    observation−modèle, il n'apprend pas. CHIMERE étant un membre de l'ensemble CAMS et ce
+    dépôt l'archivant aux stations, la chaîne se rejoue depuis son vrai départ.
+
+    Ce que la table sépare, et qu'aucune comparaison antérieure ne séparait : l'apport du
+    **point de départ** (CHIMERE seul contre la médiane de l'ensemble) et l'apport de la
+    **méthode** à départ égal (krigeage contre apprentissage).
+
+    ⚠️ CE N'EST PAS PREV'AIR. Leur CHIMERE tourne en configuration nationale — maille fine,
+    inventaire français, assimilation ; le nôtre est le membre européen à 10 km. Un score
+    obtenu ici ne dit rien de leur produit ; il dit ce que leur famille de méthode vaut sur
+    les entrées dont nous disposons.
+
+    Régénéré par `bash scripts/lot_duel_chimere.sh`.
+    """
+    fs = {p: RACINE / f"reports/duel_chimere_{p}_h2.csv" for p in ("O3", "NO2", "PM10", "PM25")}
+    tables = {p: pd.read_csv(f) for p, f in fs.items() if f.exists()}
+    if not tables:
+        return ""
+
+    # Les systèmes sont désignés par le DÉBUT de leur libellé, jamais par leur position :
+    # une ligne insérée dans le script décalerait un tableau lu par indice (§ 2 bis).
+    cles = ["CHIMERE brut", "CHIMERE + krigeage", "CAMS médiane", "CAMS + krigeage",
+            "CAMS + notre correction + krigeage", "CAMS + notre correction"]
+    texte = [
+        "## 10 quinquies. Leur MÉTHODE, rejouée depuis leur point de départ\n",
+        "PREV'AIR ne part pas de CAMS : il part de **CHIMERE**, et son adaptation "
+        "statistique AS-CHI **krige** le résidu observation−modèle au lieu de l'apprendre. "
+        "CHIMERE étant un membre de l'ensemble CAMS, archivé ici aux stations, leur chaîne "
+        "se rejoue **sur nos lignes et sur trois ans** — ce que les onze jours de la "
+        "§ 10 quater ne permettent pas.\n",
+        "Variante de krigeage figée à celle qui a gagné le balayage de "
+        "`krigeage_du_biais.py` : fenêtre 30 j, portée 200 km, p=1, donneuses de même "
+        "typologie. La re-choisir sur chaque départ donnerait à leur méthode deux chances "
+        "et à la nôtre une seule.\n",
+        "| polluant | lignes | CHIMERE brut | + krigeage *(leur chaîne)* | CAMS médiane | "
+        "+ krigeage | **+ notre correction** | + les deux |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    lectures = {}
+    for p, t in tables.items():
+        r = {}
+        for prefixe in cles:
+            v = t[t["systeme"].str.startswith(prefixe)]
+            # « CAMS + notre correction » préfixe aussi « … + krigeage » : on retient la
+            # plus courte correspondance, celle dont le libellé colle exactement au début.
+            r[prefixe] = v.iloc[int(v["systeme"].str.len().argmin())] if len(v) else None
+        if any(v is None for v in r.values()):
+            continue
+        lectures[p] = {
+            "depart": float(r["CHIMERE brut"]["gain_vs_cams_pct"]),
+            "krig_chez_eux": float(r["CHIMERE + krigeage"]["gain_vs_chimere_pct"]),
+            "leur_chaine_vs_cams": float(r["CHIMERE + krigeage"]["gain_vs_cams_pct"]),
+            "nous": float(r["CAMS + notre correction"]["gain_vs_cams_pct"]),
+            "krigeage": float(r["CAMS + krigeage"]["gain_vs_cams_pct"]),
+            "cumul": float(r["CAMS + notre correction + krigeage"]["gain_vs_cams_pct"])
+            - float(r["CAMS + notre correction"]["gain_vs_cams_pct"]),
+        }
+        n_fmt = f"{int(r['CHIMERE brut']['n']):,}".replace(",", " ")
+        texte.append(
+            f"| {NOM.get(p, p)} | {n_fmt} | {float(r['CHIMERE brut']['rmse']):.2f} | "
+            f"{float(r['CHIMERE + krigeage']['rmse']):.2f} | "
+            f"{float(r['CAMS médiane']['rmse']):.2f} | "
+            f"{float(r['CAMS + krigeage']['rmse']):.2f} | "
+            f"**{float(r['CAMS + notre correction']['rmse']):.2f}** | "
+            f"{float(r['CAMS + notre correction + krigeage']['rmse']):.2f} |")
+        lignes.append({"bloc": "duel CHIMERE", "polluant": p, "grain": "jour · J+1",
+                       "n": int(r["CHIMERE brut"]["n"]),
+                       "gain": round(float(r["CAMS + notre correction"]["gain_vs_cams_pct"]), 2),
+                       "relatif_pct": round(float(r["CHIMERE + krigeage"]["gain_vs_chimere_pct"]), 2)})
+
+    texte.append(
+        "\nRMSE en µg/m³, échéance **J+1**, station cachée. Les six systèmes sont évalués "
+        "sur **exactement les mêmes lignes** — celles où les deux départs existent.\n")
+    # Les quatre lectures sont DÉRIVÉES du tableau, jamais recopiées : une lecture écrite en
+    # dur survit à la mesure qui la contredit (§ 2 ter).
+    if lectures:
+        n_p = len(lectures)
+        pires = {p: v for p, v in lectures.items() if v["depart"] < 0}
+        gagne = [p for p, v in lectures.items() if v["nous"] > v["krigeage"]]
+        cumule = [p for p, v in lectures.items() if v["cumul"] > 0]
+        pire_p = min(lectures, key=lambda p: lectures[p]["depart"])
+        krig_max = max(lectures, key=lambda p: lectures[p]["krig_chez_eux"])
+        sur = lambda k: f"{k} polluant{'s' if k > 1 else ''} sur {n_p}"  # noqa: E731
+        texte.append(
+            "**Ce que la table sépare, et que rien d'autre ne séparait :**\n\n"
+            f"1. **Le point de départ pèse autant que la méthode.** CHIMERE brut est plus "
+            f"mauvais que la médiane de l'ensemble dont il est membre sur "
+            f"**{sur(len(pires))}** — jusqu'à "
+            f"**{abs(lectures[pire_p]['depart']):.0f} %** sur {NOM.get(pire_p, pire_p)}. "
+            f"Moyenner sept modèles vaut mieux que le meilleur d'entre eux.\n"
+            f"2. **Leur méthode fonctionne, et il faut le dire** : le krigeage retire "
+            f"jusqu'à **{lectures[krig_max]['krig_chez_eux']:.1f} %** de la RMSE de CHIMERE "
+            f"({NOM.get(krig_max, krig_max)}). Ce dossier ne la conteste pas, il la mesure.\n"
+            f"3. **À départ égal, l'apprentissage bat l'interpolation sur "
+            f"{sur(len(gagne))}** — "
+            + " · ".join(f"{NOM.get(p, p)} {v['nous']:+.1f} % contre {v['krigeage']:+.1f} %"
+                         for p, v in lectures.items()) + ", tous contre le même CAMS.\n"
+            f"4. **Les deux se cumulent, un peu** : ajouter le champ krigé à notre "
+            f"correction gagne encore de "
+            f"{min(v['cumul'] for v in lectures.values()):+.2f} à "
+            f"{max(v['cumul'] for v in lectures.values()):+.2f} point "
+            f"({len(cumule)}/{n_p} en positif). Le voisinage porte donc une information "
+            f"résiduelle que la pile n'épuise pas — c'est une **piste**, pas un résultat "
+            f"acquis : elle n'a pas été soumise au double aveugle.\n")
+    texte.append(
+        "🔴 **CE N'EST PAS PREV'AIR, et la nuance est décisive.** Leur CHIMERE tourne en "
+        "configuration **nationale** — maille plus fine, inventaire français, assimilation "
+        "de données ; le nôtre est le membre **européen à 10 km** de l'ensemble CAMS. Ce "
+        "tableau dit ce que leur **famille de méthode** vaut sur les entrées dont nous "
+        "disposons. Il ne dit rien de leur produit, que seule la § 10 quater mesure — sur "
+        "onze jours.\n")
+    return "\n".join(texte)
+
+
 def bloc_seuils_2030(lignes: list[dict]) -> str:
     """Le mur réglementaire, chiffré localement — et le calcul que personne n'avait fait.
 
@@ -1802,6 +1921,7 @@ def main() -> int:
         bloc_reconciliation(lignes),
         bloc_comparaison_annuelle(lignes),
         bloc_duel_prevair(lignes),
+        bloc_duel_chimere(lignes),
         bloc_detection(lignes),
         bloc_signalements(lignes),
         bloc_front(lignes),
