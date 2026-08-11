@@ -399,6 +399,77 @@ def bloc_mqi(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def bloc_seuils_2030(lignes: list[dict]) -> str:
+    """Le mur réglementaire, chiffré localement — et le calcul que personne n'avait fait.
+
+    La directive (UE) 2024/2881 rend la modélisation obligatoire là où un seuil est dépassé,
+    ET divise les valeurs limites annuelles par deux au 1ᵉʳ janvier 2030. Le produit des deux
+    n'est écrit nulle part : abaisser le seuil **multiplie mécaniquement** le nombre de zones
+    où modéliser devient une obligation légale.
+
+    Régénéré par `scripts/seuils_2030.py`.
+    """
+    f = RACINE / "reports/seuils_2030.csv"
+    if not f.exists():
+        return ""
+    g = pd.read_csv(f)
+    VL = {"NO2": (40, 20), "PM10": (40, 20), "PM25": (25, 10)}
+
+    def u(d, col):
+        return int(d.loc[d[col], "station_id"].nunique())
+
+    texte = [
+        "## 5 bis. Le seuil 2030 — combien de stations basculent sans qu'un gramme "
+        "de plus soit émis\n",
+        "Valeurs limites en **moyenne annuelle**, année **2025** (dernière année pleine), "
+        "taux de saisie recalculé ≥ 75 %. L'**ozone est exclu** : il n'a pas de valeur "
+        "limite annuelle mais une valeur cible sur le maximum 8 h — l'y comparer n'aurait "
+        "aucun sens réglementaire.\n",
+        "| polluant | VL actuelle | VL **2030** | stations évaluées | > actuelle | "
+        "> **2030** | **basculent** |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for p, (va, v30) in VL.items():
+        s = g[g["polluant"] == p]
+        if s.empty:
+            continue
+        texte.append(f"| {NOM.get(p, p)} | {va} µg/m³ | **{v30} µg/m³** | {len(s)} | "
+                     f"{int(s['depasse_actuel'].sum())} | **{int(s['depasse_2030'].sum())}** "
+                     f"| {int(s['bascule'].sum())} |")
+        lignes.append({"bloc": "seuil 2030", "polluant": p, "grain": "moyenne annuelle",
+                       "n": len(s), "gain": float(s["depasse_2030"].sum()),
+                       "relatif_pct": float(s["depasse_actuel"].sum())})
+
+    a, b, tot = u(g, "depasse_actuel"), u(g, "depasse_2030"), int(g["station_id"].nunique())
+    texte.append(
+        f"\n**En union sur les trois polluants : {a} station(s) en dépassement aujourd'hui, "
+        f"{b} en 2030** — un facteur **{b / max(a, 1):.1f}**, sur {tot} stations évaluées "
+        f"({b / tot:.0%} du parc). **Aucune émission n'a changé : seul le seuil a bougé.**\n")
+
+    occ = g[g["region"] == 76]
+    if not occ.empty:
+        ao, bo = u(occ, "depasse_actuel"), u(occ, "depasse_2030")
+        deps = set(occ["departement"].dropna().astype(int))
+        sans = sorted({9, 11, 12, 30, 31, 32, 34, 46, 48, 65, 66, 81, 82} - deps)
+        texte.append(
+            f"**Occitanie** : {ao} → **{bo}** stations, sur {int(occ['station_id'].nunique())} "
+            f"évaluées. Et **{len(sans)} des 13 départements n'ont aucune station retenue** "
+            f"({', '.join(f'{d:02d}' for d in sans)}) : pour eux, la conformité 2030 **ne peut "
+            f"pas être posée depuis la mesure**. C'est exactement le cas que la directive "
+            f"confie à la modélisation.\n")
+        lignes.append({"bloc": "seuil 2030", "polluant": "Occitanie", "grain": "union",
+                       "n": int(occ["station_id"].nunique()), "gain": float(bo),
+                       "relatif_pct": float(ao)})
+
+    texte.append(
+        "⚠️ **Ce que ce tableau ne dit pas** : les moyennes de 2025 ne sont pas une "
+        "prévision de 2030. Les émissions baisseront d'ici là. Il mesure une chose et une "
+        "seule — **l'effet du changement de seuil, à air constant** — ce qui est exactement "
+        "la question qu'une collectivité doit se poser aujourd'hui pour préparer sa feuille "
+        "de route.\n")
+    return "\n".join(texte)
+
+
 def bloc_meteo(lignes: list[dict]) -> str:
     """Ce que le modèle se refuse — mesuré, et à ne jamais citer comme un gain."""
     presents = [p for p in ("O3", "NO2", "PM25")
@@ -1591,6 +1662,7 @@ def main() -> int:
         bloc_horsechantillon(lignes),
         bloc_factoriel(lignes),
         bloc_mqi(lignes),
+        bloc_seuils_2030(lignes),
         bloc_meteo(lignes),
         bloc_perimetres(lignes),
         bloc_reconciliation(lignes),

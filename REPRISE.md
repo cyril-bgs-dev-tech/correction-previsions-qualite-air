@@ -92,7 +92,7 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 
 | # | tâche | coût | pourquoi |
 |---|---|---|---|
-| **1** | 🔴 **Compter les stations d'Occitanie en dépassement au seuil 2030** (NO₂ 20 µg/m³, PM2,5 10) contre le seuil actuel | **~1 h** | La directive (UE) 2024/2881 rend la modélisation **obligatoire** là où un seuil est dépassé **et** divise les seuils par deux : elle multiplie donc mécaniquement l'obligation. Le calcul local n'a jamais été fait. **Meilleur rapport valeur/coût du dossier.** |
+| ~~1~~ | ✅ **FAIT le 11/08** — le seuil 2030 est chiffré : `scripts/seuils_2030.py` → `VERITE_DOSSIER` **§ 5 bis**. **France : 6 stations en dépassement aujourd'hui → 109 en 2030, × 18,2.** Occitanie 2 → 5, et **4 départements sur 13 sans aucune station** : leur conformité 2030 ne peut pas être posée depuis la mesure | — | — |
 | **2** | **Duel PREV'AIR étendu** sur toute l'archive | ~1 h | Il ne porte que sur **9 jours** (28/07 → 07/08). L'archive a 5 dates complètes de plus. ⚠️ La fenêtre publique de PREV'AIR est de ~6 jours : **le passé n'est pas récupérable**, on ira à ~13 jours, pas à 3 ans. |
 | **3** | **PREV'AIR en fin de présentation** | ~1 h | Demandé par Cyril. À présenter avec sa fenêtre, jamais sans. |
 | **4** | **HTML navigable France → région → département** | élevé | Demandé par Cyril. Architecture arrêtée : **une page pilotée par un JSON de métriques + géométries inline**, pas un empilement des 106 pages (12 Mo, plafond artefact à 16 Mo). Doit **compléter** l'espace interactif d'Atmo Occitanie (observé annuel) par la **prévision corrigée**, pas le dupliquer. |

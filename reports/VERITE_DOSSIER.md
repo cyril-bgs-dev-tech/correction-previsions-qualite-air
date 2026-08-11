@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 11/08/2026 à 14 h 20 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 11/08/2026 à 15 h 04 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -133,6 +133,22 @@ Les six valeurs agrégées sont conformes, avec une marge large. **Aucun produit
 Le MQI horaire était **pessimiste** — l'agrégation journalière réduit la variance de l'erreur davantage que celle de l'incertitude de mesure, qui dépend surtout du niveau observé. L'erreur jouait donc contre nous, ce qui explique qu'elle n'ait rien déclenché. Elle rendait néanmoins l'énoncé infondé, et un jury FAIRMODE l'aurait vue.
 
 **Deux paramètres à connaître si la question vient** : l'α de PM2,5 vaut **0,30** et celui de PM10 **0,13** — les intervertir sur-estime le MQI de PM2,5 de 2 à 20 %, et c'est une erreur qui a été commise dans ce projet puis corrigée. La v4.0 du référentiel (mai 2026) refond les β par polluant ; les chiffres ci-dessus sont en **v3.2**, et le dossier le dit plutôt que de laisser deviner.
+
+## 5 bis. Le seuil 2030 — combien de stations basculent sans qu'un gramme de plus soit émis
+
+Valeurs limites en **moyenne annuelle**, année **2025** (dernière année pleine), taux de saisie recalculé ≥ 75 %. L'**ozone est exclu** : il n'a pas de valeur limite annuelle mais une valeur cible sur le maximum 8 h — l'y comparer n'aurait aucun sens réglementaire.
+
+| polluant | VL actuelle | VL **2030** | stations évaluées | > actuelle | > **2030** | **basculent** |
+|---|---|---|---|---|---|---|
+| NO₂ | 40 µg/m³ | **20 µg/m³** | 341 | 5 | **57** | 52 |
+| PM10 | 40 µg/m³ | **20 µg/m³** | 322 | 1 | **37** | 36 |
+| PM2,5 | 25 µg/m³ | **10 µg/m³** | 243 | 0 | **57** | 57 |
+
+**En union sur les trois polluants : 6 station(s) en dépassement aujourd'hui, 109 en 2030** — un facteur **18.2**, sur 408 stations évaluées (27% du parc). **Aucune émission n'a changé : seul le seuil a bougé.**
+
+**Occitanie** : 2 → **5** stations, sur 25 évaluées. Et **4 des 13 départements n'ont aucune station retenue** (09, 11, 46, 48) : pour eux, la conformité 2030 **ne peut pas être posée depuis la mesure**. C'est exactement le cas que la directive confie à la modélisation.
+
+⚠️ **Ce que ce tableau ne dit pas** : les moyennes de 2025 ne sont pas une prévision de 2030. Les émissions baisseront d'ici là. Il mesure une chose et une seule — **l'effet du changement de seuil, à air constant** — ce qui est exactement la question qu'une collectivité doit se poser aujourd'hui pour préparer sa feuille de route.
 
 ## 6. Le plafond de la météo — ce que le modèle se refuse
 
