@@ -115,3 +115,14 @@ ROADMAP_*.md
 
 # Sorties de nohup des lots — le journal utile est le .log
 logs/*.sortie
+
+# ── Réunions simulées ───────────────────────────────────────────────────────────
+#
+# `reunions/` contient des simulations d'ateliers entre partenaires : un exercice de travail
+# pour faire remonter des besoins métier. Chaque fichier porte un bandeau disant qu'aucune de
+# ces personnes n'existe et qu'aucun de ces propos n'a été tenu. Mais ces textes attribuent
+# des positions à des organisations RÉELLES ET NOMMÉES (ARS, DREAL, métropoles, INERIS…), et
+# sur un dépôt public un lecteur pressé peut les prendre pour des comptes rendus.
+# Ils restent donc locaux, comme NOTE / LETTRE / SOUTENANCE ci-dessus. Décision réversible
+# en retirant cette ligne — mais elle se prend en connaissance de cause, pas par défaut.
+reunions/
