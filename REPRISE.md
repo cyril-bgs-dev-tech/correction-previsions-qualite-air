@@ -19,10 +19,10 @@
 |---|---|
 | **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **11 jours** |
 | **Dossier** | ✅ **déposable**. HTML autonome **8 pages**, PDF **56 p.**, dépôt public à jour, artefact **republié le 11/08 à 17 h 35** |
-| **Git** | ✅ arbre propre hors lot en cours, HEAD `65a01d1` |
-| **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ — la VM est tombée le 11/08 à ~16 h 58 |
-| **Ce qui tourne** | `lot_duel_chimere.sh O3` (lancé 17 h 39) · `prevair-archive.timer` (automatique, ne rien faire) |
-| **Chiffres** | `VERITE_DOSSIER.md` — **165 lignes**, régénéré le 11/08 à 16 h 50 |
+| **Git** | ✅ arbre propre, HEAD `e5dbad0` — ⚠️ **6 commits non poussés** vers `origin/main` |
+| **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ — dernière chute le 11/08 à **18 h 10** (16ᵉ panic, pendant le duel) |
+| **Ce qui tourne** | rien · `prevair-archive.timer` (automatique, ne rien faire) |
+| **Chiffres** | `VERITE_DOSSIER.md` — **177 lignes de chiffres**, régénéré le 11/08 à 20 h 59 (**§ 10 quinquies** ajoutée) |
 | **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 17 h 20) |
 
 **Le geste à faire en arrivant** : `git status` doit être vide. `/mnt/d` a déjà perdu des
@@ -97,7 +97,7 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 | ~~2~~ | ✅ **FAIT le 11/08** — duel étendu à **10-11 jours** (28/07 → 08/08), **gagnant sur les 4 polluants** : O₃ +6,3 %, NO₂ **+48,1 %**, PM10 +38,9 %, PM2,5 **+59,9 %** de RMSE. ⚠️ **10 jours ne concluent rien** — ordre de grandeur, la fenêtre se cite toujours. Butée nommée : PREV'AIR n'a pas archivé le 08-09, notre CAMS s'arrête au 08-10 | — | — |
 | ~~2 bis~~ | ✅ **FAIT le 11/08** — `duel_prevair.py` porte désormais `tendance` + `typologie` : O₃ **+6,0 %**, NO₂ **+51,0 %**, PM10 **+45,5 %**, PM2,5 **+60,9 %**. Les trois autres familles **ne peuvent pas** y entrer — GEOS-CF et les membres s'arrêtent au 01/08/2026, les feux à juin 2025. Limite de **fraîcheur**, pas de conception : ces écarts restent des **minorants** | — | — |
 | ~~3~~ | ✅ **FAIT le 11/08** — **page 07 « La barre réelle »** dans la présentation (commit `c24c322`), PDF 56 p., artefact republié. Chiffres relus depuis `duel_prevair_<P>.csv`, jamais saisis ; la fenêtre est affichée dans le chapeau ET dans la règle finale, toutes deux dérivées de la donnée | — | — |
-| **3 bis** | 🟠 **Duel contre LEUR MÉTHODE** — `lot_duel_chimere.sh`, en cours sur O₃ depuis 17 h 39 | moyen | AS-CHI est un **krigeage** du résidu, pas un apprentissage. CHIMERE étant un membre de CAMS archivé ici, on rejoue leur chaîne depuis **leur** point de départ, sur nos lignes et sur trois ans — ce que les onze jours du duel direct ne permettent pas. ⚠️ **Ce n'est pas PREV'AIR** : leur CHIMERE est national et assimilé, le nôtre est le membre européen à 10 km |
+| ~~3 bis~~ | ✅ **FAIT le 11/08** — duel contre **LEUR MÉTHODE** sur les **4 polluants** (commit `ae3aca2`) → `VERITE_DOSSIER` **§ 10 quinquies**. Leur chaîne (CHIMERE + krigeage) contre la nôtre, J+1, station cachée : O₃ 13,55 → **10,76** · NO₂ 18,28 → **14,18** · PM10 7,74 → **6,05** · PM2,5 5,62 → **3,91**. 🔑 **Le résultat qui compte n'est pas notre gain : CHIMERE brut est plus mauvais que la médiane de l'ensemble dont il est MEMBRE sur 3 polluants sur 4** — jusqu'à 49 % sur O₃. Le point de départ pèse autant que la méthode, et cette table est la première à les séparer. Leur krigeage fonctionne (jusqu'à −27,4 % sur CHIMERE) ; à départ égal l'apprentissage le bat **4/4**. ⚠️ **Ce n'est pas PREV'AIR** : leur CHIMERE est national et assimilé, le nôtre est le membre européen à 10 km — la réserve accompagne le tableau | — | — |
 | ~~4~~ | ✅ **FAIT le 11/08** — `reports/figures/vue_territoires.html`, **publiée** : https://claude.ai/code/artifact/90a78c8f-b714-4b61-adf8-5cb292a6a0e5 (**privée**, à partager). Carte cliquable France → 13 régions → 96 départements, 4 polluants, échéance 2030, et le contexte **sourcé item par item** sur 84 départements. Régénérable : `python3 scripts/vue_territoires.py` puis réinjecter le JSON dans `_vue_template.html` | — | — |
 | **5** | Rafraîchir `app.py` (02/08) | moyen | Antérieur à GEOS-CF en production, à `tendance` et aux PM10. Pas faux — le contrôle des 20 chiffres passe — mais le moins à jour. |
 | **6** | 🔴 **Re-mesurer la part de stations dégradées** (NO₂ et les autres) | faible | L'ancien `REPRISE.md` annonçait « 23 % » ; **ce chiffre ne trace nulle part** (vérifié le 11/08). La réserve est réelle, le chiffre est perdu. **Le re-mesurer ou cesser de la chiffrer.** |
@@ -109,10 +109,10 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 **Le matériel corrompt la mémoire.** Ce n'est pas une hypothèse : c'est mesuré, et le diagnostic
 est clos depuis le 11/08.
 
-📏 **14 kernel panics** dans `%LOCALAPPDATA%\Temp\wsl-crashes\`, du 04/08 au 11/08. Signature
-**unanime** : `release_pages` / `free_pages_and_swap_cache` / `do_vmi_align_munmap` **14/14**,
-zéro panic hors de ce chemin, et le contrôle `CONFIG_DEBUG_LIST` du noyau qui **ne se déclenche
-que sur un pointeur corrompu**.
+📏 **16 kernel panics** dans `%LOCALAPPDATA%\Temp\wsl-crashes\`, du 04/08 au 11/08 — dont **deux
+le 11/08 au soir** (17 h 00 et 18 h 10). Signature **unanime** : `release_pages` /
+`free_pages_and_swap_cache` / `do_vmi_align_munmap` **16/16**, zéro panic hors de ce chemin, et le
+contrôle `CONFIG_DEBUG_LIST` du noyau qui **ne se déclenche que sur un pointeur corrompu**.
 
 C'est **la même corruption** que les segfauts pandas/LightGBM et que les `TypeError: 'UTC' object
 cannot be interpreted as an integer` — pointeur noyau corrompu → panic ; pointeur utilisateur
@@ -122,6 +122,15 @@ corrompu → segfault ; valeur corrompue → exception absurde. **Un seul défau
 
 - **Aucune ligne de Python ne réparera cela.** Ce qui paie est la **reprise** : les lots relisent
   leur `.partiel` et reprennent sur le **nom** des configurations déjà mesurées.
+- 🔴 **La reprise du lot ne suffit pas — elle ne couvre qu'UN des deux modes de mort.** Les
+  `ESSAIS_MAX` d'un lot protègent du **segfault**, où le processus meurt et la boucle shell
+  survit. Quand c'est **la VM** qui est démontée, la boucle meurt avec elle et *personne ne
+  relance* : le 11/08, le duel est resté muet 25 minutes et son silence se lisait comme « ça
+  tourne ». Il faut un relanceur qui vive **chez l'hôte** — `scripts/relance_ablation.ps1`,
+  `scripts/relance_duel_chimere.ps1`. **Tout `lot_*.sh` qui dure se livre avec son
+  `relance_*.ps1` ET son `*_complete.sh` : trois fichiers, pas un.** Deux pièges qui rendent le
+  relanceur silencieusement mort — un `.ps1` **sans BOM UTF-8** ne parse pas (PowerShell 5.1 le
+  lit en Windows-1252), et `wsl.exe -- bash -lc` est un shell de **login**, donc sans conda.
 - **Les résultats ne sont PAS faux.** Vérifié : deux exécutions séparées par sept crashs rendent
   les mêmes chiffres à la décimale. **Les pannes sont bruyantes, pas silencieuses.**
 - La mémoire est **hors de cause** (pic 18,9 Go sur 70 ; hôte jamais sous 52 Go libres).
