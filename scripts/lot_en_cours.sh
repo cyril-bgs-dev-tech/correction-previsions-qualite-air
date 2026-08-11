@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Rend 0 si un `lot_ablation.sh` tourne déjà, 1 sinon.
+# Rend 0 si le lot nommé tourne déjà, 1 sinon.
+#
+# Usage : bash scripts/lot_en_cours.sh [NOM_DU_LOT.sh]     (défaut : lot_ablation.sh)
 #
 # Pourquoi un FICHIER plutôt qu'un `pgrep` en ligne dans le relanceur
 # -------------------------------------------------------------------
@@ -11,12 +13,22 @@
 # positif qui bloque le travail *et* affirme le contraire de la réalité (§ 1 bis).
 # Un fichier n'a pas de couche de citation à traverser.
 #
+# ⚠️ L'ARGUMENT, lui, traverse sans dommage — et seulement parce que c'est un jeton nu,
+# sans espace ni guillemet. C'était toute la difficulté du motif : il en contenait les deux.
+# Ne jamais passer ici autre chose qu'un nom de fichier.
+#
 # Le motif exclut sa propre invocation par le crochet `[l]` — et cela ne suffit pas :
 # tout shell dont la ligne de commande contient le motif entre aussi dans `ps`. On exclut
 # donc explicitement ce processus et son parent.
 set -u
 
-sortie=$(pgrep -af 'bash scripts/[l]ot_ablation\.sh' 2>/dev/null \
+cible="${1:-lot_ablation.sh}"
+# Crochet sur la première lettre, puis échappement des points : le motif construit ici est
+# le même que celui écrit à la main auparavant, `bash scripts/[l]ot_ablation\.sh`.
+motif="bash scripts/[${cible:0:1}]${cible:1}"
+motif="${motif//./\\.}"
+
+sortie=$(pgrep -af "$motif" 2>/dev/null \
          | awk -v moi="$$" -v pere="$PPID" '$1 != moi && $1 != pere')
 
 if [ -n "$sortie" ]; then
