@@ -38,6 +38,9 @@ PAGES_INJECTEES = [
     {"prefixe": "p6", "ident": "decision", "libelle": "06 · Décision réelle",
      "ancre_section": "</main>",
      "ancre_nav": '<a href="#seuils">05 · Déclenchement</a>', "avant": False},
+    {"prefixe": "p7", "ident": "prevair", "libelle": "07 · Barre réelle",
+     "ancre_section": "</main>",
+     "ancre_nav": '<a href="#decision">06 · Décision réelle</a>', "avant": False},
 ]
 
 

@@ -1,0 +1,63 @@
+<!-- ══════════════════════ PAGE 7 ══════════════════════════════════════ -->
+<section class="page" id="prevair">
+  <div class="chapeau-page">
+    <p class="eyebrow">Page 07 — La barre réelle</p>
+    <h1>Contre le produit que les AASQA reçoivent vraiment</h1>
+    <p class="chapeau">
+      Tout ce qui précède se compare à <strong>CAMS brut</strong>, que personne ne
+      consomme. Une AASQA reçoit <strong>PREV'AIR</strong>&#8239;: 1,7&nbsp;km, avec
+      assimilation d'observations et krigeage. Cette page confronte les deux
+      directement — <strong>mêmes stations, mêmes jours, mêmes lignes</strong>, donc
+      aucun confondant d'amont à neutraliser.
+    </p>
+    <p class="these">
+      Le résultat va dans notre sens sur les quatre polluants. Il se paie d'une fenêtre
+      de <b id="p7-jours">—</b> jours, et <strong>c'est la première chose à dire</strong>&#8239;:
+      PREV'AIR n'expose qu'environ six jours glissants, notre archivage quotidien n'a
+      démarré que fin juillet 2026, et <strong>le passé n'est pas récupérable</strong>.
+      Cette fenêtre ne grandira que d'un jour par jour.
+    </p>
+  </div>
+
+  <div class="p7-src">
+    <b>Protocole</b> — grain aligné sur le produit PREV'AIR (<code>MAXJ1</code> pour O₃ et
+    NO₂, <code>MOYJ1</code> pour les particules), échéance <strong>J+1</strong>. Notre
+    modèle est ajusté sur les données <strong>antérieures à 2025</strong> et n'a jamais vu
+    les jours testés. Les valeurs PREV'AIR sont lues dans leurs propres fichiers NetCDF,
+    au plus proche voisin de chaque station.
+  </div>
+
+  <div class="fig-scroll">
+    <table class="p7-tab" id="p7-tab"></table>
+  </div>
+
+  <div class="p7-reserves">
+    <div class="reserve">
+      <b>Onze jours ne concluent rien.</b> C'est un ordre de grandeur, pas une
+      démonstration. Le script qui produit ces chiffres le réaffirme à chaque exécution,
+      et aucune citation ne doit omettre la fenêtre.
+    </div>
+    <div class="reserve">
+      <b>Deux biais jouent en sens opposés</b> — il faut les énoncer ensemble, sinon on
+      choisit son camp. <i>Contre nous</i>&#8239;: leur produit tourne à 1,7&nbsp;km avec
+      assimilation, le nôtre corrige un ensemble à 10&nbsp;km. <i>Pour nous</i>&#8239;: nos
+      stations sont connues de notre modèle — mais les leurs le sont aussi de leur
+      krigeage, donc l'avantage n'est pas unilatéral.
+    </div>
+    <div class="reserve">
+      <b>Ce duel n'utilise pas la pile complète.</b> Seulement <code>base + tendance +
+      typologie</code>. GEOS-CF, les membres d'ensemble et les feux sont hors d'atteinte
+      sur cette fenêtre — leurs flux s'arrêtent au 01/08/2026 pour les deux premiers, à
+      juin 2025 pour les feux. C'est une limite de <strong>fraîcheur</strong>, pas de
+      conception&#8239;: ces écarts sont des <strong>minorants</strong>.
+    </div>
+  </div>
+
+  <p class="regle">
+    Ce que cette page autorise à dire&#8239;: <em>« sur la seule fenêtre où les deux
+    produits sont comparables ligne à ligne, la correction fait mieux que l'adaptation
+    statistique en service, sur les quatre polluants — sur <b id="p7-jours2">—</b> jours
+    d'été. »</em> Rien de plus, et surtout pas un classement des deux systèmes.
+  </p>
+  <p class="sig3" id="p7-sig"></p>
+</section>
