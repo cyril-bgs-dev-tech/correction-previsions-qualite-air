@@ -19,10 +19,10 @@
 |---|---|
 | **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **11 jours** |
 | **Dossier** | ✅ **déposable**. HTML autonome **8 pages**, PDF **56 p.**, dépôt public à jour, artefact **republié le 11/08 à 17 h 35** |
-| **Git** | ✅ arbre propre, HEAD `e5dbad0` — ⚠️ **6 commits non poussés** vers `origin/main` |
+| **Git** | ✅ arbre propre, HEAD `a987280` — ⚠️ **8 commits non poussés** vers `origin/main` |
 | **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ — dernière chute le 11/08 à **18 h 10** (16ᵉ panic, pendant le duel) |
 | **Ce qui tourne** | rien · `prevair-archive.timer` (automatique, ne rien faire) |
-| **Chiffres** | `VERITE_DOSSIER.md` — **177 lignes de chiffres**, régénéré le 11/08 à 20 h 59 (**§ 10 quinquies** ajoutée) |
+| **Chiffres** | `VERITE_DOSSIER.md` — **189 lignes de chiffres**, régénéré le 11/08 à 22 h 20 (**§ 10 quinquies** et **§ 11 bis** ajoutées) |
 | **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 17 h 20) |
 
 **Le geste à faire en arrivant** : `git status` doit être vide. `/mnt/d` a déjà perdu des
@@ -100,7 +100,7 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 | ~~3 bis~~ | ✅ **FAIT le 11/08** — duel contre **LEUR MÉTHODE** sur les **4 polluants** (commit `ae3aca2`) → `VERITE_DOSSIER` **§ 10 quinquies**. Leur chaîne (CHIMERE + krigeage) contre la nôtre, J+1, station cachée : O₃ 13,55 → **10,76** · NO₂ 18,28 → **14,18** · PM10 7,74 → **6,05** · PM2,5 5,62 → **3,91**. 🔑 **Le résultat qui compte n'est pas notre gain : CHIMERE brut est plus mauvais que la médiane de l'ensemble dont il est MEMBRE sur 3 polluants sur 4** — jusqu'à 49 % sur O₃. Le point de départ pèse autant que la méthode, et cette table est la première à les séparer. Leur krigeage fonctionne (jusqu'à −27,4 % sur CHIMERE) ; à départ égal l'apprentissage le bat **4/4**. ⚠️ **Ce n'est pas PREV'AIR** : leur CHIMERE est national et assimilé, le nôtre est le membre européen à 10 km — la réserve accompagne le tableau | — | — |
 | ~~4~~ | ✅ **FAIT le 11/08** — `reports/figures/vue_territoires.html`, **publiée** : https://claude.ai/code/artifact/90a78c8f-b714-4b61-adf8-5cb292a6a0e5 (**privée**, à partager). Carte cliquable France → 13 régions → 96 départements, 4 polluants, échéance 2030, et le contexte **sourcé item par item** sur 84 départements. Régénérable : `python3 scripts/vue_territoires.py` puis réinjecter le JSON dans `_vue_template.html` | — | — |
 | **5** | Rafraîchir `app.py` (02/08) | moyen | Antérieur à GEOS-CF en production, à `tendance` et aux PM10. Pas faux — le contrôle des 20 chiffres passe — mais le moins à jour. |
-| **6** | 🔴 **Re-mesurer la part de stations dégradées** (NO₂ et les autres) | faible | L'ancien `REPRISE.md` annonçait « 23 % » ; **ce chiffre ne trace nulle part** (vérifié le 11/08). La réserve est réelle, le chiffre est perdu. **Le re-mesurer ou cesser de la chiffrer.** |
+| ~~6~~ | ✅ **FAIT le 11/08** — part des stations dégradées re-mesurée → `VERITE_DOSSIER` **§ 11 bis**. Le « 23 % » est **retrouvé** : c'était l'épreuve *temporelle*, citée sans son épreuve. **La part va de 2,1 % à 42,5 % selon l'ÉPREUVE**, pas selon le polluant. Deux lectures qui n'étaient pas dans la réserve d'origine : le **NO₂ est à l'inverse des trois autres** (le plus dégradé station cachée, le moins station vue — son gain est un biais de *site*) ; et **une part élevée n'est pas une part grave** — 42,5 % sur PM2,5 s'adosse à un gain médian de **+2,5 %**, contre 7,8 % / **+35,6 %** sur NO₂ spatial. ⚠️ Mesuré sur une pile **sans l'étage `tendance`**, sens de l'écart non mesuré. Régénérable : `bash scripts/lot_oof_typo.sh` puis `python3 scripts/stations_degradees.py --variante typo` | — | — |
 
 ---
 

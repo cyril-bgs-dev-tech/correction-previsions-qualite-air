@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 11/08/2026 à 20 h 59 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 11/08/2026 à 22 h 20 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -611,6 +611,37 @@ L'énoncé défendable est donc : *la correction retire davantage de perte sur l
 ⚠️ **Ne pas citer le +0,913** mesuré sur les deux ruptures des 13/11 et 03/12/2024 : il repose sur 5 paires de mois et son leave-one-out descend à **+0,135**. Le +0,953 en ΔMSE le remplace.
 
 Ce que cela ne dit **pas** : que la correction nuit quand le forçage est juste. Elle gagne encore +14,0 % — elle gagne moins, elle ne nuit pas, sauf ponctuellement.
+
+## 11 bis. Où la correction NUIT — la part des stations dégradées
+
+Une correction apprise n'améliore pas tout le monde. Cette table dit **combien de stations elle dégrade**, station par station, sur les prédictions hors-échantillon déjà produites — aucun réajustement, donc aucun choix d'après coup.
+
+🔑 **La part dépend de l'épreuve bien plus que du polluant, et l'ignorer rend le chiffre ininterprétable.** C'est précisément ce qui s'est passé : le « 23 % » cité autrefois sans épreuve était celui de la seule colonne *temporelle*.
+
+| épreuve | polluant | stations | dégradées | part | gain médian | pire station |
+|---|---|---|---|---|---|---|
+| spatiale | NO2 | 344 | 27 | **7.8 %** | +35.6 % | -171.7 % |
+| spatiale | O3 | 271 | 8 | **3.0 %** | +21.4 % | -50.6 % |
+| spatiale | PM10 | 315 | 8 | **2.5 %** | +29.8 % | -22.5 % |
+| spatiale | PM25 | 236 | 5 | **2.1 %** | +23.8 % | -24.0 % |
+| temporelle | NO2 | 344 | 3 | **0.9 %** | +36.2 % | -16.4 % |
+| temporelle | O3 | 271 | 55 | **20.3 %** | +6.5 % | -8.4 % |
+| temporelle | PM10 | 315 | 56 | **17.8 %** | +10.6 % | -13.9 % |
+| temporelle | PM25 | 236 | 58 | **24.6 %** | +6.3 % | -11.1 % |
+| double aveugle | NO2 | 337 | 40 | **11.9 %** | +29.6 % | -162.7 % |
+| double aveugle | O3 | 269 | 87 | **32.3 %** | +3.3 % | -46.2 % |
+| double aveugle | PM10 | 314 | 87 | **27.7 %** | +7.6 % | -74.8 % |
+| double aveugle | PM25 | 233 | 99 | **42.5 %** | +2.5 % | -30.0 % |
+
+`spatiale` = station **cachée**, mois vu · `temporelle` = station vue, mois **caché** · `double aveugle` = les deux. Variante « typo », J+1, seuil de **100 jours par station** pour qu'un RMSE de station ait un sens — au plus **7 station(s)** écartée(s) par ce seuil, et le compte est publié dans le CSV.
+
+**Ce que la table apprend, et qui n'était pas dans la réserve d'origine :**
+
+1. **Le NO₂ se comporte à l'inverse des trois autres.** Il est le plus dégradé en spatial et le moins en temporel ; O₃, PM10 et PM2,5 font le contraire. Cohérent avec ce que le dossier montre ailleurs : sur NO₂ l'essentiel du gain est un biais **de site**, donc il s'apprend quand la station est vue et se transfère mal.
+2. **Une part élevée n'est pas une part grave.** Là où la dégradation touche le plus de stations, le gain médian est le plus faible — la correction y est quasi neutre et le signe bascule station par station. Une part de 40 % adossée à un gain médian de +2 % ne décrit pas le même risque qu'une part de 8 % adossée à +35 %.
+3. **Les pires stations perdent beaucoup**, et ce n'est pas dilué par la moyenne : c'est l'argument le plus fort en faveur d'un aiguillage par station plutôt que d'une correction uniforme.
+
+⚠️ **Réserve de périmètre** : ces OOF sont produits par `oof_double_aveugle.py`, qui **ne porte pas l'étage `tendance`** passé en production le 11/08. Les parts ci-dessus décrivent la pile sans cet étage. **Le sens de l'écart n'est pas mesuré** — ne pas le supposer favorable.
 
 ## 12. La pile complète — ce que valent tous les leviers ensemble
 

@@ -1537,6 +1537,76 @@ def bloc_generalisation() -> str:
 
 
 
+def bloc_stations_degradees(lignes: list[dict]) -> str:
+    """Où la correction NUIT — la part des stations qu'elle dégrade.
+
+    Un ancien `REPRISE.md` annonçait « 23 % des stations dégradées ». Vérifié le 11/08 : ce
+    chiffre ne traçait **nulle part**. La réserve était réelle, la mesure perdue. Ceci la
+    rétablit, et le chiffre retrouvé était bien de cet ordre — mais il appartenait à UNE
+    épreuve sur trois, ce que la formulation d'origine ne disait pas.
+
+    Régénéré par `bash scripts/lot_oof_typo.sh` puis
+    `python3 scripts/stations_degradees.py --variante typo`.
+    """
+    f = RACINE / "reports/stations_degradees_h2.csv"
+    if not f.exists():
+        return ""
+    t = pd.read_csv(f)
+    if (v := set(t["variante"])) and len(v) > 1:      # § « une variante écrase sa jumelle »
+        raise SystemExit(f"stations_degradees : variantes mélangées {sorted(v)}")
+
+    ordre = ["spatiale", "temporelle", "double aveugle"]
+    texte = [
+        "## 11 bis. Où la correction NUIT — la part des stations dégradées\n",
+        "Une correction apprise n'améliore pas tout le monde. Cette table dit **combien de "
+        "stations elle dégrade**, station par station, sur les prédictions hors-échantillon "
+        "déjà produites — aucun réajustement, donc aucun choix d'après coup.\n",
+        "🔑 **La part dépend de l'épreuve bien plus que du polluant, et l'ignorer rend le "
+        "chiffre ininterprétable.** C'est précisément ce qui s'est passé : le « 23 % » cité "
+        "autrefois sans épreuve était celui de la seule colonne *temporelle*.\n",
+        "| épreuve | polluant | stations | dégradées | part | gain médian | pire station |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for e in ordre:
+        for _, r in t[t["epreuve"] == e].sort_values("polluant").iterrows():
+            texte.append(
+                f"| {e} | {r.polluant} | {int(r.n_stations)} | {int(r.n_degradees)} | "
+                f"**{r.part_degradees_pct:.1f} %** | {r.gain_median_pct:+.1f} % | "
+                f"{r.perte_pire_pct:+.1f} % |")
+            lignes.append({"bloc": "stations dégradées", "polluant": r.polluant,
+                           "grain": e, "n": int(r.n_stations),
+                           "gain": round(float(r.gain_median_pct), 2),
+                           "relatif_pct": round(float(r.part_degradees_pct), 2)})
+
+    n_min = int(t["n_min_par_station"].iloc[0])
+    ecartees = int(t["n_stations_ecartees"].max())
+    texte.append(
+        f"\n`spatiale` = station **cachée**, mois vu · `temporelle` = station vue, mois "
+        f"**caché** · `double aveugle` = les deux. Variante « {t['variante'].iloc[0]} », "
+        f"J+1, seuil de **{n_min} jours par station** pour qu'un RMSE de station ait un sens "
+        f"— au plus **{ecartees} station(s)** écartée(s) par ce seuil, et le compte est "
+        f"publié dans le CSV.\n")
+    texte.append(
+        "**Ce que la table apprend, et qui n'était pas dans la réserve d'origine :**\n\n"
+        "1. **Le NO₂ se comporte à l'inverse des trois autres.** Il est le plus dégradé en "
+        "spatial et le moins en temporel ; O₃, PM10 et PM2,5 font le contraire. Cohérent "
+        "avec ce que le dossier montre ailleurs : sur NO₂ l'essentiel du gain est un biais "
+        "**de site**, donc il s'apprend quand la station est vue et se transfère mal.\n"
+        "2. **Une part élevée n'est pas une part grave.** Là où la dégradation touche le plus "
+        "de stations, le gain médian est le plus faible — la correction y est quasi neutre et "
+        "le signe bascule station par station. Une part de 40 % adossée à un gain médian de "
+        "+2 % ne décrit pas le même risque qu'une part de 8 % adossée à +35 %.\n"
+        "3. **Les pires stations perdent beaucoup**, et ce n'est pas dilué par la moyenne : "
+        "c'est l'argument le plus fort en faveur d'un aiguillage par station plutôt que d'une "
+        "correction uniforme.\n")
+    texte.append(
+        "⚠️ **Réserve de périmètre** : ces OOF sont produits par `oof_double_aveugle.py`, qui "
+        "**ne porte pas l'étage `tendance`** passé en production le 11/08. Les parts ci-dessus "
+        "décrivent la pile sans cet étage. **Le sens de l'écart n'est pas mesuré** — ne pas "
+        "le supposer favorable.\n")
+    return "\n".join(texte)
+
+
 def bloc_pile_complete(lignes: list[dict]) -> str:
     """L'empilement cumulatif de tous les leviers — le seul chiffre de synthèse honnête.
 
@@ -1926,6 +1996,7 @@ def main() -> int:
         bloc_signalements(lignes),
         bloc_front(lignes),
         bloc_generalisation(),
+        bloc_stations_degradees(lignes),
         bloc_pile_complete(lignes),
         bloc_ablation(lignes),
         bloc_geoscf(lignes),

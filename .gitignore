@@ -126,3 +126,7 @@ logs/*.sortie
 # Ils restent donc locaux, comme NOTE / LETTRE / SOUTENANCE ci-dessus. Décision réversible
 # en retirant cette ligne — mais elle se prend en connaissance de cause, pas par défaut.
 reunions/
+
+# Repère de campagne : datation LOCALE d'un lot régénérant, jamais partagée.
+# Le committer ferait croire à un clone que la campagne a déjà eu lieu.
+logs/.*_campagne
