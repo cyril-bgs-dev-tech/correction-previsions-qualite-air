@@ -1,0 +1,492 @@
+<title>Prévision corrigée de la qualité de l'air — France, régions, départements</title>
+<style>
+/* ── Jetons. Le neutre est biaisé cyan : c'est un instrument atmosphérique, pas un
+   document. L'accent sarcelle ne sert QUE l'interface ; le vert/rouge/ambre sont
+   sémantiques et ne servent que le sens (gain, perte, échéance 2030). ───────────── */
+:root{
+  --fond:#F2F4F6; --sur:#FFFFFF; --sur2:#E7EBEF; --bord:#D3DBE1;
+  --txt:#16202A; --txt2:#5A6875; --txt3:#8494A1;
+  --acc:#0E7C86; --acc-fond:#DCEEF0;
+  --pos:#1B7F4B; --neg:#B4432B; --alerte:#B77A0E;
+  --g0:#C9D3DA; --g1:#A8D3D6; --g2:#63B4BD; --g3:#2A8E9B; --g4:#12626F;
+  --ombre:0 1px 2px rgba(22,32,42,.06),0 4px 12px rgba(22,32,42,.05);
+  --r:10px;
+  --sys:ui-sans-serif,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#0D1418; --sur:#141E24; --sur2:#1D2A32; --bord:#283841;
+  --txt:#E6EDF1; --txt2:#93A5B0; --txt3:#6C7E8A;
+  --acc:#4FC3CE; --acc-fond:#14343A;
+  --pos:#4BB47B; --neg:#E0745A; --alerte:#E0A83C;
+  --g0:#31424C; --g1:#26545C; --g2:#2E7A85; --g3:#3FA3B0; --g4:#6FCBD6;
+  --ombre:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  --fond:#0D1418; --sur:#141E24; --sur2:#1D2A32; --bord:#283841;
+  --txt:#E6EDF1; --txt2:#93A5B0; --txt3:#6C7E8A;
+  --acc:#4FC3CE; --acc-fond:#14343A;
+  --pos:#4BB47B; --neg:#E0745A; --alerte:#E0A83C;
+  --g0:#31424C; --g1:#26545C; --g2:#2E7A85; --g3:#3FA3B0; --g4:#6FCBD6;
+  --ombre:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--txt);font-family:var(--sys);
+     font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{text-wrap:balance;margin:0;letter-spacing:-.02em;font-weight:700}
+a{color:var(--acc)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ── Ossature ─────────────────────────────────────────────────────────────────── */
+.enveloppe{max-width:1320px;margin:0 auto;padding:20px 20px 64px}
+header.tete{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;
+            justify-content:space-between;padding:8px 0 18px}
+.titre h1{font-size:clamp(20px,2.4vw,27px)}
+.titre p{margin:6px 0 0;color:var(--txt2);font-size:13.5px;max-width:62ch}
+.segments{display:flex;gap:2px;background:var(--sur2);padding:3px;border-radius:9px}
+.segments button{font:600 13px/1 var(--sys);letter-spacing:.01em;border:0;cursor:pointer;
+  background:transparent;color:var(--txt2);padding:8px 13px;border-radius:7px}
+.segments button[aria-pressed="true"]{background:var(--sur);color:var(--txt);box-shadow:var(--ombre)}
+.segments button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+.fil{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;
+     margin:0 0 14px;color:var(--txt2)}
+.fil button{font:600 13px var(--sys);border:0;background:none;cursor:pointer;
+  color:var(--acc);padding:3px 5px;border-radius:5px}
+.fil button:hover{background:var(--acc-fond)}
+.fil button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.fil .ici{font-weight:700;color:var(--txt)}
+.fil .sep{color:var(--txt3)}
+
+.grille{display:grid;grid-template-columns:minmax(320px,44%) 1fr;gap:22px;align-items:start}
+@media (max-width:940px){.grille{grid-template-columns:1fr}}
+
+/* ── Carte ────────────────────────────────────────────────────────────────────── */
+.carte{background:var(--sur);border:1px solid var(--bord);border-radius:var(--r);
+       padding:14px;box-shadow:var(--ombre);position:sticky;top:14px}
+@media (max-width:940px){.carte{position:static}}
+.carte svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.terr{stroke:var(--sur);stroke-width:1.1;stroke-linejoin:round;cursor:pointer;
+      transition:opacity .15s,filter .15s}
+.terr:hover{filter:brightness(1.12)}
+.terr:focus-visible{outline:none;stroke:var(--txt);stroke-width:2.4}
+.terr.muet{cursor:default;opacity:.35}
+.terr.actif{stroke:var(--txt);stroke-width:2.2}
+.contour{fill:none;stroke:var(--txt3);stroke-width:.9;pointer-events:none;opacity:.5}
+.legende{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;
+         margin-top:12px;font-size:11.5px;color:var(--txt2)}
+.legende .ech{display:flex;align-items:center;gap:0}
+.legende .ech i{width:26px;height:11px;display:block}
+.legende .ech i:first-child{border-radius:3px 0 0 3px}
+.legende .ech i:last-child{border-radius:0 3px 3px 0}
+.legende .cle{display:flex;align-items:center;gap:6px}
+.legende .cle i{width:13px;height:13px;border-radius:3px;display:block}
+
+/* ── Panneau ──────────────────────────────────────────────────────────────────── */
+.panneau{display:flex;flex-direction:column;gap:16px;min-width:0}
+.bloc{background:var(--sur);border:1px solid var(--bord);border-radius:var(--r);
+      padding:18px 20px;box-shadow:var(--ombre)}
+.bloc>h2{font-size:12px;text-transform:uppercase;letter-spacing:.09em;
+         color:var(--txt2);font-weight:700;margin-bottom:12px}
+.identite h2{font-size:clamp(21px,2.6vw,28px);text-transform:none;letter-spacing:-.025em;
+             color:var(--txt);margin-bottom:4px}
+.identite .sous{color:var(--txt2);font-size:13px}
+.identite .resume{margin-top:12px;font-size:14.5px;color:var(--txt);max-width:66ch}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:1px;
+      background:var(--bord);border:1px solid var(--bord);border-radius:8px;overflow:hidden}
+.kpi{background:var(--sur);padding:13px 14px}
+.kpi .et{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt2)}
+.kpi .v{font-family:var(--mono);font-variant-numeric:tabular-nums;
+        font-size:23px;font-weight:600;margin-top:3px;letter-spacing:-.02em}
+.kpi .v.pos{color:var(--pos)} .kpi .v.neg{color:var(--neg)}
+.kpi .n{font-size:11.5px;color:var(--txt2);margin-top:2px}
+
+/* Le bloc 2030 porte un liseré : c'est une échéance, pas une mesure de plus. */
+.echeance{border-left:3px solid var(--alerte)}
+.echeance .compare{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.echeance .fleche{color:var(--txt3);font-size:19px}
+.echeance .gros{font-family:var(--mono);font-variant-numeric:tabular-nums;
+                font-size:30px;font-weight:700;letter-spacing:-.02em}
+.echeance .gros.futur{color:var(--alerte)}
+
+.vide{color:var(--txt2);font-size:13.5px;background:var(--sur2);border-radius:8px;
+      padding:12px 14px;border-left:3px solid var(--txt3)}
+
+table.polls{width:100%;border-collapse:collapse;font-size:13.5px}
+table.polls th{text-align:left;font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--txt2);font-weight:700;padding:0 8px 7px 0;
+  border-bottom:1px solid var(--bord)}
+table.polls td{padding:8px 8px 8px 0;border-bottom:1px solid var(--bord)}
+table.polls tr:last-child td{border-bottom:0}
+table.polls td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.puce{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11.5px;
+      font-weight:700;font-family:var(--mono)}
+.puce.pos{background:color-mix(in srgb,var(--pos) 15%,transparent);color:var(--pos)}
+.puce.neg{background:color-mix(in srgb,var(--neg) 15%,transparent);color:var(--neg)}
+
+.items{display:flex;flex-direction:column;gap:12px}
+.item{border-left:2px solid var(--bord);padding-left:13px}
+.item .l{font-size:14px}
+.item .m{font-size:13px;color:var(--txt2);margin-top:3px}
+.item .meta{margin-top:5px;font-size:11px;color:var(--txt3);display:flex;
+            flex-wrap:wrap;gap:8px;align-items:center}
+.tag{font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:4px;
+     background:var(--sur2);color:var(--txt2)}
+.conf-haute{border-left-color:var(--acc)}
+.conf-moyenne{border-left-color:var(--txt3)}
+.src{color:var(--txt3);text-decoration:none;border-bottom:1px dotted var(--txt3)}
+.src:hover{color:var(--acc);border-bottom-color:var(--acc)}
+
+footer.pied{margin-top:28px;padding-top:16px;border-top:1px solid var(--bord);
+            color:var(--txt2);font-size:12px;max-width:80ch}
+footer.pied strong{color:var(--txt)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="enveloppe">
+  <header class="tete">
+    <div class="titre">
+      <h1>Prévision corrigée de la qualité de l'air</h1>
+      <p>Ce que la correction statistique de CAMS apporte, territoire par territoire —
+         et pourquoi ici plutôt qu'ailleurs. Cliquez la carte pour descendre.</p>
+    </div>
+    <div class="segments" id="segments" role="group" aria-label="Polluant"></div>
+  </header>
+
+  <nav class="fil" id="fil" aria-label="Niveau"></nav>
+
+  <div class="grille">
+    <div class="carte">
+      <svg id="carte" role="img" aria-label="Carte de France, gain par territoire"></svg>
+      <div class="legende" id="legende"></div>
+    </div>
+    <div class="panneau" id="panneau"></div>
+  </div>
+
+  <footer class="pied" id="pied"></footer>
+</div>
+
+<script id="donnees" type="application/json">__DONNEES__</script>
+<script>
+"use strict";
+const D = JSON.parse(document.getElementById("donnees").textContent);
+const NP = D.nom_polluant;
+let polluant = D.polluants.includes("NO2") ? "NO2" : D.polluants[0];
+let niveau = { type: "FR", code: "FR" };
+
+const nomRegion = Object.fromEntries(D.geo.regions.map(r => [r.code, r.nom]));
+const nomDep    = Object.fromEntries(D.geo.departements.map(d => [d.code, d.nom]));
+const regionDeDep = D.geo.region_de_departement;
+
+/* Bornes d'un chemin SVG : on relit les nombres du tracé plutôt que de les stocker. */
+function bbox(d){
+  const n = d.match(/-?\d+(?:\.\d+)?/g).map(Number);
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(let i=0;i<n.length;i+=2){
+    x0=Math.min(x0,n[i]); x1=Math.max(x1,n[i]);
+    y0=Math.min(y0,n[i+1]); y1=Math.max(y1,n[i+1]);
+  }
+  return [x0,y0,x1,y1];
+}
+/* Échelle ADAPTATIVE, par quartiles des territoires réellement affichés.
+   Des bornes fixes (0-15-25-35) rendaient la carte monochrome : sur le NO₂ tous les
+   territoires dépassent 35 %, donc tous prenaient la même teinte et la carte
+   n'informait plus. Les bornes suivent donc la distribution, et la légende affiche
+   leurs VALEURS — sans quoi une couleur ne voudrait rien dire.
+   ⚠️ Conséquence à assumer : les couleurs ne se comparent PAS d'un polluant à l'autre.
+   La légende le dit. */
+const TEINTES = ["var(--g1)","var(--g2)","var(--g3)","var(--g4)"];
+let bornes = [];
+function calerEchelle(gains){
+  const v = gains.filter(g => g !== null && g !== undefined && g > 0).sort((a,b)=>a-b);
+  if (v.length < 4){ bornes = []; return; }
+  bornes = [0.25,0.5,0.75].map(q => v[Math.floor(q*(v.length-1))]);
+}
+function couleur(g){
+  if (g === null || g === undefined) return null;
+  if (g <= 0) return "var(--g0)";
+  if (!bornes.length) return TEINTES[TEINTES.length-1];
+  let i = 0; while (i < bornes.length && g >= bornes[i]) i++;
+  return TEINTES[i];
+}
+
+const M = code => (D.metriques[polluant] || {})[code] || null;
+const S = code => D.seuils_2030[code] || null;
+
+function fmt(x, s){ return (x>0?"+":"") + x.toFixed(2) + (s||""); }
+
+/* ── Carte ────────────────────────────────────────────────────────────────────── */
+function dessiner(){
+  const svg = document.getElementById("carte");
+  const auDep = niveau.type !== "FR";
+  // ⚠️ `niveau.code` est PRÉFIXÉ (« R76 », « D31 ») pour que les deux échelles ne se
+  // confondent jamais dans les tables ; `regionDeDep` est indexé par le code NU. Comparer
+  // les deux sans retirer le préfixe ne lève rien et grise toute la carte.
+  const regionCourante = niveau.type === "R" ? niveau.code.slice(1)
+                       : niveau.type === "D" ? regionDeDep[niveau.code.slice(1)] : null;
+
+  // L'échelle se cale sur les territoires RÉELLEMENT affichés, pas sur toute la France.
+  calerEchelle(!auDep
+    ? D.geo.regions.map(r => (M("R"+r.code)||{}).gain)
+    : D.geo.departements.filter(d => regionDeDep[d.code] === regionCourante)
+                        .map(d => (M("D"+d.code)||{}).gain));
+
+  let vb = D.viewbox;
+  if (auDep && regionCourante){
+    const p = D.geo.chemins_regions[regionCourante];
+    if (p){ const [x0,y0,x1,y1] = bbox(p); const m = Math.max(x1-x0,y1-y0)*0.08;
+            vb = `${x0-m} ${y0-m} ${x1-x0+2*m} ${y1-y0+2*m}`; }
+  }
+  svg.setAttribute("viewBox", vb);
+
+  const parts = [];
+  if (!auDep){
+    for (const r of D.geo.regions){
+      const d = D.geo.chemins_regions[r.code]; if (!d) continue;
+      const m = M("R"+r.code), c = m ? couleur(m.gain) : null;
+      parts.push(piece(d, c, r.nom, m, "R"+r.code, niveau.code==="R"+r.code));
+    }
+  } else {
+    for (const dep of D.geo.departements){
+      const d = D.geo.chemins_departements[dep.code]; if (!d) continue;
+      const dansRegion = regionDeDep[dep.code] === regionCourante
+                      || Object.keys(D.contexte).length === 0;
+      const m = M("D"+dep.code), c = dansRegion && m ? couleur(m.gain) : null;
+      parts.push(piece(d, c, dep.nom, dansRegion ? m : null, "D"+dep.code,
+                       niveau.code === "D"+dep.code, !dansRegion));
+    }
+    const rp = D.geo.chemins_regions[regionCourante];
+    if (rp) parts.push(`<path class="contour" d="${rp}"/>`);
+  }
+  svg.innerHTML = parts.join("");
+  svg.querySelectorAll("[data-code]").forEach(el => {
+    el.addEventListener("click", () => aller(el.dataset.code));
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); aller(el.dataset.code); }
+    });
+  });
+  legende();
+}
+
+function piece(d, c, nom, m, code, actif, muet){
+  const fill = c || "var(--sur2)";
+  const hach = c ? "" : ';fill-opacity:.55';
+  const cls = "terr" + (muet ? " muet" : "") + (actif ? " actif" : "");
+  const info = m ? `${fmt(m.gain," %")} · ${m.stations} station${m.stations>1?"s":""}`
+                 : "aucune station retenue";
+  return `<path class="${cls}" d="${d}" data-code="${code}" tabindex="${muet?-1:0}"
+    role="button" aria-label="${nom} : ${info}" style="fill:${fill}${hach}">
+    <title>${nom}\n${info}</title></path>`;
+}
+
+function legende(){
+  const ech = TEINTES.map(v => `<i style="background:${v}"></i>`).join("");
+  const seuils = bornes.length
+    ? bornes.map(b => b.toFixed(0) + " %").join(" · ")
+    : "un seul palier — trop peu de territoires mesurés";
+  document.getElementById("legende").innerHTML =
+    `<span class="cle"><strong>Gain</strong></span>
+     <span class="ech">${ech}</span>
+     <span>bornes ${seuils} — <em>propres à ce polluant et à ce niveau</em></span>
+     <span class="cle"><i style="background:var(--g0)"></i> perte</span>
+     <span class="cle"><i style="background:var(--sur2);opacity:.55"></i> aucune station retenue</span>`;
+}
+
+/* ── Panneau ──────────────────────────────────────────────────────────────────── */
+function nomDe(code){
+  if (code === "FR") return "France métropolitaine";
+  return code[0] === "R" ? (nomRegion[code.slice(1)] || code)
+                         : (nomDep[code.slice(1)] || code);
+}
+
+function bloc(titre, corps, cls){
+  return `<section class="bloc ${cls||""}"><h2>${titre}</h2>${corps}</section>`;
+}
+
+function listeItems(items, champ){
+  return `<div class="items">` + items.map(o => {
+    const conf = o.confiance ? `conf-${o.confiance}` : "";
+    const tags = (o.polluants||[]).map(p => `<span class="tag">${p}</span>`).join("");
+    const src = o.source ? lienSource(o.source) : "";
+    const sec = o.mecanisme || o.effet || "";
+    const chapeau = o.saison ? `<span class="tag">${o.saison}</span> ` : "";
+    return `<div class="item ${conf}">
+      <div class="l">${chapeau}${escape_(o[champ] || o.libelle || "")}</div>
+      ${sec ? `<div class="m">${escape_(sec)}</div>` : ""}
+      <div class="meta">${tags}${o.confiance?`<span class="tag">confiance ${o.confiance}</span>`:""}${src}</div>
+    </div>`;
+  }).join("") + `</div>`;
+}
+
+function lienSource(s){
+  const u = (String(s).match(/https?:\/\/\S+/) || [])[0];
+  const t = String(s).split(" - http")[0].slice(0, 150);
+  return u ? `<a class="src" href="${u}" target="_blank" rel="noopener">${escape_(t)} ↗</a>`
+           : `<span class="src">${escape_(t)}</span>`;
+}
+function escape_(s){ return String(s).replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])); }
+
+function panneau(){
+  const code = niveau.code, p = document.getElementById("panneau"), out = [];
+  const ctx = D.contexte[code];
+  const sous = code === "FR" ? "13 régions · 96 départements"
+             : code[0] === "R" ? "Région" : `Département — ${nomRegion[regionDeDep[code.slice(1)]] || ""}`;
+
+  out.push(`<section class="bloc identite"><h2>${nomDe(code)}</h2>
+    <div class="sous">${sous}</div>
+    ${ctx && ctx.resume ? `<p class="resume">${escape_(ctx.resume)}</p>` : ""}</section>`);
+
+  // ── Ce que la correction apporte ici
+  const m = M(code);
+  if (m){
+    const s = g => g > 0 ? "pos" : "neg";
+    out.push(bloc(`Ce que la correction apporte — ${NP[polluant]}`,
+      `<div class="kpis">
+        <div class="kpi"><div class="et">Gain contre la chaîne en service</div>
+          <div class="v ${s(m.gain)}">${fmt(m.gain," %")}</div>
+          <div class="n">RMSE ${m.rmse_nous} contre ${m.rmse_aasqa} µg/m³</div></div>
+        <div class="kpi"><div class="et">Stations évaluées</div>
+          <div class="v">${m.stations}</div>
+          <div class="n">${m.jours_station.toLocaleString("fr-FR")} jours-station</div></div>
+        <div class="kpi"><div class="et">Stations améliorées</div>
+          <div class="v ${m.part_ameliorees>=50?"pos":"neg"}">${m.part_ameliorees} %</div>
+          <div class="n">le reste est dégradé</div></div>
+      </div>`));
+  } else {
+    out.push(bloc(`Ce que la correction apporte — ${NP[polluant]}`,
+      `<div class="vide"><strong>Aucune station retenue ici pour ce polluant.</strong>
+       Ce n'est pas un gain nul : c'est une absence de mesure. Les deux ne se confondent
+       jamais — et c'est précisément le cas que la modélisation doit couvrir.</div>`));
+  }
+
+  // ── Tous polluants
+  const lignes = D.polluants.map(pp => {
+    const mm = (D.metriques[pp]||{})[code];
+    return `<tr><td><strong>${NP[pp]}</strong></td>
+      <td class="n">${mm ? mm.stations : "—"}</td>
+      <td class="n">${mm ? `<span class="puce ${mm.gain>0?"pos":"neg"}">${fmt(mm.gain," %")}</span>` : "—"}</td>
+      <td class="n">${mm ? mm.part_ameliorees+" %" : "—"}</td></tr>`;
+  }).join("");
+  out.push(bloc("Les quatre polluants ici",
+    `<table class="polls"><thead><tr><th>Polluant</th><th style="text-align:right">Stations</th>
+     <th style="text-align:right">Gain</th><th style="text-align:right">Améliorées</th></tr></thead>
+     <tbody>${lignes}</tbody></table>`));
+
+  // ── Seuil 2030
+  const s2 = S(code);
+  if (s2 && s2.stations){
+    out.push(bloc("L'échéance 2030 — à air constant",
+      `<div class="compare">
+        <span class="gros">${s2.sur_actuel}</span>
+        <span class="fleche">→</span>
+        <span class="gros futur">${s2.sur_2030}</span>
+        <span style="color:var(--txt2);font-size:13px">stations en dépassement,
+          sur ${s2.stations} évaluées</span>
+       </div>
+       <p style="margin:0;font-size:13.5px;color:var(--txt2)">Valeurs limites annuelles
+       divisées par deux au 1<sup>er</sup> janvier 2030 — NO₂ 40 → <strong>20</strong>,
+       PM10 40 → <strong>20</strong>, PM2,5 25 → <strong>10</strong> µg/m³
+       (directive UE 2024/2881). Mesuré sur 2025 : <strong>aucune émission n'a changé,
+       seul le seuil bouge</strong>. Ce n'est pas une prévision de 2030.</p>`,
+      "echeance"));
+  }
+
+  // ── Contexte sourcé (départements)
+  if (ctx){
+    if (ctx.sources_dominantes?.length)
+      out.push(bloc("Ce qui est émis ici", listeItems(ctx.sources_dominantes, "libelle")));
+    if (ctx.topographie_climat)
+      out.push(bloc("Relief et circulation", listeItems([ctx.topographie_climat], "libelle")));
+    if (ctx.regime_episodes?.length)
+      out.push(bloc("Quand les épisodes arrivent", listeItems(ctx.regime_episodes, "libelle")));
+    if (ctx.transport_longue_distance){
+      // Ces items n'ont pas de `libelle` : le texte vit dans `regime`, l'origine sert de
+      // chapeau. Les passer bruts affichait un bloc SANS AUCUN TEXTE — juste une puce de
+      // confiance et un lien, ce qui a l'air d'un contenu et n'en est pas.
+      const brut = Array.isArray(ctx.transport_longue_distance)
+                 ? ctx.transport_longue_distance : [ctx.transport_longue_distance];
+      const t = brut.map(o => ({
+        libelle: o.regime || o.libelle || "",
+        saison: o.origine,
+        polluants: o.polluant ? [o.polluant] : o.polluants,
+        confiance: o.confiance, source: o.source}));
+      out.push(bloc("Ce qui vient d'ailleurs", listeItems(t, "libelle")));
+    }
+    if (ctx.cadre_decision){
+      const c = ctx.cadre_decision;
+      // `confiance` et `source` sont des MÉTADONNÉES : les rendre comme des items faisait
+      // s'afficher « CONFIANCE — haute » à côté du PPA, au même rang que lui.
+      const ETIQ = {ppa:"PPA", zfe:"ZFE", contentieux_no2:"Contentieux NO₂",
+                    contentieux_pm10:"Contentieux PM10"};
+      const items = Object.entries(c)
+        .filter(([k,v]) => v && k !== "source" && k !== "confiance")
+        .map(([k,v]) => ({
+          libelle: `${ETIQ[k] || k.replace(/_/g," ")} — ${v === true ? "oui" : v}`,
+          source: c.source, confiance: c.confiance}));
+      if (items.length) out.push(bloc("Le cadre de décision", listeItems(items, "libelle")));
+    }
+    if (ctx.pieges_modelisation?.length)
+      out.push(bloc("Ce qui piège la modélisation ici",
+                    listeItems(ctx.pieges_modelisation, "libelle")));
+    if (ctx.sans_source?.length)
+      out.push(bloc("Ce que nous n'avons pas pu sourcer",
+        `<div class="vide">${ctx.sans_source.map(escape_).join(" · ")}</div>`));
+  } else if (code[0] === "D"){
+    out.push(bloc("Contexte local",
+      `<div class="vide">Aucun bloc de contexte sourcé pour ce département.
+       Les 84 blocs existants couvrent les territoires les plus documentés ;
+       une absence est dite, jamais comblée par une supposition.</div>`));
+  }
+
+  p.innerHTML = out.join("");
+}
+
+/* ── Navigation ───────────────────────────────────────────────────────────────── */
+function aller(code){
+  if (code === "FR") niveau = {type:"FR", code:"FR"};
+  else if (code[0] === "R") niveau = {type:"R", code};
+  else niveau = {type:"D", code};
+  rendre();
+}
+function fil(){
+  const f = [];
+  f.push(niveau.type==="FR" ? `<span class="ici">France métropolitaine</span>`
+       : `<button type="button" data-go="FR">France métropolitaine</button>`);
+  const rc = niveau.type==="R" ? niveau.code.slice(1)
+           : niveau.type==="D" ? regionDeDep[niveau.code.slice(1)] : null;
+  if (rc){
+    f.push(`<span class="sep">›</span>`);
+    f.push(niveau.type==="R" ? `<span class="ici">${nomRegion[rc]||rc}</span>`
+         : `<button type="button" data-go="R${rc}">${nomRegion[rc]||rc}</button>`);
+  }
+  if (niveau.type==="D"){
+    f.push(`<span class="sep">›</span><span class="ici">${nomDe(niveau.code)}</span>`);
+  }
+  const el = document.getElementById("fil");
+  el.innerHTML = f.join(" ");
+  el.querySelectorAll("[data-go]").forEach(b =>
+    b.addEventListener("click", () => aller(b.dataset.go)));
+}
+function segments(){
+  const el = document.getElementById("segments");
+  el.innerHTML = D.polluants.map(p =>
+    `<button type="button" data-p="${p}" aria-pressed="${p===polluant}">${NP[p]}</button>`).join("");
+  el.querySelectorAll("[data-p]").forEach(b =>
+    b.addEventListener("click", () => { polluant = b.dataset.p; rendre(); }));
+}
+function pied(){
+  const c = D.couverture[polluant] || {};
+  document.getElementById("pied").innerHTML =
+    `<strong>Périmètre.</strong> Gain mesuré contre la <strong>chaîne en service</strong>
+     (et non CAMS brut), à J+1, ${c.debut||"—"} → ${c.fin||"—"}. Un gain se cite toujours
+     avec son polluant, son épreuve et son périmètre : la même correction vaut de +3 % à
+     +22 % sur l'ozone selon l'épreuve.
+     <strong>Un territoire sans station n'est pas un territoire à zéro</strong> — il est
+     hachuré, jamais coloré.
+     Le contexte local est <strong>sourcé item par item</strong> ; chaque lien mène au
+     document d'origine. Données générées le ${D.genere.replace("T"," ")}.`;
+}
+function rendre(){ segments(); fil(); dessiner(); panneau(); pied(); }
+rendre();
+</script>
