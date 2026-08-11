@@ -72,6 +72,7 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 
 | pièce | état | date |
 |---|---|---|
+| **`reports/figures/vue_territoires.html`** — vue navigable France → rég. → dép. | ✅ **publiée** `90a78c8f-…` | 11/08 |
 | `reports/figures/presentation_atmo.html` — 10 pages, autonome | ✅ | 10/08 23:41 |
 | PDF ~54 pages | ✅ | 10/08 23:41 |
 | **Artefact publié** `6ff4908f-bdb3-4a6b-8499-65aa7a688e98` | ✅ **privé** | 10/08 |
@@ -96,7 +97,7 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 | ~~2~~ | ✅ **FAIT le 11/08** — duel étendu à **10-11 jours** (28/07 → 08/08), **gagnant sur les 4 polluants** : O₃ +6,3 %, NO₂ **+48,1 %**, PM10 +38,9 %, PM2,5 **+59,9 %** de RMSE. ⚠️ **10 jours ne concluent rien** — ordre de grandeur, la fenêtre se cite toujours. Butée nommée : PREV'AIR n'a pas archivé le 08-09, notre CAMS s'arrête au 08-10 | — | — |
 | **2 bis** | 🔴 **Porter les 4 familles dans `duel_prevair.py`** | moyen | **Le duel tourne sur la configuration `base`** — 53 colonnes, **sans** GEOS-CF, tendance, membres ni feux (vérifié le 11/08). Sur l'ozone c'est **+7,01 %** au lieu de **+15,83 %**. Les chiffres ci-dessus sont donc un **MINORANT** : on bat PREV'AIR avec notre pile la plus faible. Demandé par Cyril — « lancer les prédictions avec la meilleure version ». |
 | **3** | **PREV'AIR en fin de présentation** | ~1 h | Demandé par Cyril. À présenter avec sa fenêtre, jamais sans. |
-| **4** | **HTML navigable France → région → département** | élevé | Demandé par Cyril. Architecture arrêtée : **une page pilotée par un JSON de métriques + géométries inline**, pas un empilement des 106 pages (12 Mo, plafond artefact à 16 Mo). Doit **compléter** l'espace interactif d'Atmo Occitanie (observé annuel) par la **prévision corrigée**, pas le dupliquer. |
+| ~~4~~ | ✅ **FAIT le 11/08** — `reports/figures/vue_territoires.html`, **publiée** : https://claude.ai/code/artifact/90a78c8f-b714-4b61-adf8-5cb292a6a0e5 (**privée**, à partager). Carte cliquable France → 13 régions → 96 départements, 4 polluants, échéance 2030, et le contexte **sourcé item par item** sur 84 départements. Régénérable : `python3 scripts/vue_territoires.py` puis réinjecter le JSON dans `_vue_template.html` | — | — |
 | **5** | Rafraîchir `app.py` (02/08) | moyen | Antérieur à GEOS-CF en production, à `tendance` et aux PM10. Pas faux — le contrôle des 20 chiffres passe — mais le moins à jour. |
 | **6** | 🔴 **Re-mesurer la part de stations dégradées** (NO₂ et les autres) | faible | L'ancien `REPRISE.md` annonçait « 23 % » ; **ce chiffre ne trace nulle part** (vérifié le 11/08). La réserve est réelle, le chiffre est perdu. **Le re-mesurer ou cesser de la chiffrer.** |
 
