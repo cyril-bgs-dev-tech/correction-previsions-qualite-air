@@ -39,6 +39,7 @@ import argparse
 import html
 import json
 import re
+import statistics
 import sys
 import unicodedata
 from pathlib import Path
@@ -57,6 +58,10 @@ from contexte_departements import (  # noqa: E402
 )
 from figures_territoire import (  # noqa: E402
     CSS as CSS_TERR, bloc_departement as fig_departement, bloc_region as fig_region,
+)
+from figures_performance import (  # noqa: E402
+    CSS as CSS_PERF, matrice_territoires, position_nationale, profil_polluants,
+    rang_departements,
 )
 from pages_soutenance import (  # noqa: E402
     BANDE_COULEUR, COURT, ISSUE, MIN_JOURS_STATION, NOM_BANDE, POLLUANTS, SEUIL,
@@ -340,8 +345,14 @@ def page_territoire(nom: str, code: str, jeux: dict, compositions: dict, cle: st
         f'polluant(s) mesuré(s). {retours}</p>'
         f'{supplement}'
         f'<nav class="ong" role="tablist">{onglets}</nav>{vues}')
+    # `lignes` — le gain de CHAQUE polluant — était calculé puis jeté, seule la moyenne
+    # survivait. C'est précisément la donnée qui manquait aux figures : une moyenne de
+    # quatre polluants cache que le NO₂ gagne trois fois plus que l'ozone, et treize
+    # régions moyennées se ressemblent toutes. On la garde.
     return corps, {"nom": nom, "code": code, "gain_moyen": moyen, "stations": n_st,
-                   "polluants": len(lignes)}
+                   "polluants": len(lignes),
+                   "par_polluant": {x["polluant"]: x["gain"] for x in lignes},
+                   "n_par_polluant": {x["polluant"]: x["n"] for x in lignes}}
 
 
 CSS_SUP = """
@@ -379,6 +390,12 @@ CSS_REGION_TERR = """
 section.terr{margin:26px 0 4px;padding:18px 20px;border:1px solid var(--trait);
  border-radius:10px;background:var(--sur)}
 section.terr>h2{margin:0 0 8px;font-size:1rem;font-weight:640}
+section.perf{margin:26px 0 4px;padding:18px 20px;border:1px solid var(--trait);
+ border-radius:10px;background:var(--sur)}
+section.perf>h2{margin:0 0 8px;font-size:1rem;font-weight:640}
+.perf-garde{margin:0 0 14px;padding-left:11px;border-left:3px solid var(--azur);
+ font-size:.79rem;line-height:1.5;color:var(--doux)}
+.perf-garde b{color:var(--texte)}
 .terr-garde{margin:0 0 14px;padding-left:11px;border-left:3px solid var(--or,#c98a1e);
  font-size:.79rem;line-height:1.5;color:var(--doux)}
 .terr-garde b{color:var(--texte)}
@@ -437,6 +454,13 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
     (dossier / "dep").mkdir(parents=True, exist_ok=True)
     fiches_dep: dict[str, list[dict]] = {}
     n_dep, codes_pages = 0, []
+
+    # ── DEUX passes, et c'est la seule façon correcte ───────────────────────────
+    # Une figure qui situe un département parmi les 84 a besoin des 84 valeurs. En une
+    # seule passe, la première page écrite ne connaîtrait qu'elle-même : le repère serait
+    # faux pour les premiers départements et juste pour les derniers, sans que rien ne
+    # l'indique. On calcule tout, PUIS on écrit.
+    calcules = []
     for dp in deps:
         res = page_territoire(
             f'{dp["nom"]} ({dp["code"]})', dp["code"], jeux, compositions, "dep",
@@ -449,13 +473,48 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
             # permettaient que de lire un département à la fois.
             (rendre_contexte(contextes[dp["code"]]) + fig_departement(contextes[dp["code"]])
              if dp["code"] in contextes else ""))
-        if res is None:
-            continue
+        if res is not None:
+            calcules.append((dp, res))
+
+    tous_gains = [r["gain_moyen"] for _dp, (_c, r) in calcules]
+    med_polluant = {
+        p: statistics.median(v) for p in ("NO2", "O3", "PM10", "PM25")
+        if (v := [r["par_polluant"][p] for _dp, (_c, r) in calcules
+                  if p in r.get("par_polluant", {})])}
+    med_fr = statistics.median(tous_gains) if tous_gains else None
+    # Les départements d'une même région, pour la figure « où il se situe chez lui ».
+    par_region_dep = {}
+    for dp, (_c, r) in calcules:
+        par_region_dep.setdefault(dep_de_region.get(dp["code"], ""), []).append(
+            {**r, "fichier": f'{dp["code"]}-{dp["ardoise"]}.html'})
+
+    for dp, res in calcules:
         corps, r = res
+        voisins = par_region_dep.get(dep_de_region.get(dp["code"], ""), [])
+        corps += (
+            '<section class="perf"><h2>Où ce département se situe</h2>'
+            '<p class="perf-garde">Ici, <b>nos mesures</b> — pas le contexte publié '
+            'ci-dessus. Gain de RMSE contre la chaîne en service, échéance J0, modèle '
+            'national jamais réajusté pour ce territoire.</p>'
+            f'<div class="fig-perf"><h4>Polluant par polluant</h4>'
+            f'<p class="sous">Le chiffre unique de l\'onglet est une moyenne&#8239;: elle '
+            f'cache que le gain n\'est pas le même partout. Le trait vertical est la '
+            f'médiane des 84 départements pour ce polluant.</p>'
+            f'{profil_polluants(r.get("par_polluant", {}), med_polluant, "médiane des 84 départements")}'
+            f'</div>'
+            f'<div class="fig-perf"><h4>Parmi les 84 départements</h4>'
+            f'<p class="sous">Chaque trait est un département&#8239;; le repère épais est '
+            f'celui-ci. Un rang seul ne dirait pas s\'il est serré contre son voisin.</p>'
+            f'{position_nationale(r["gain_moyen"], tous_gains, dp["nom"])}</div>'
+            + (f'<div class="fig-perf"><h4>Dans sa région</h4>'
+               f'{rang_departements(voisins, med_fr, dp["code"])}</div>'
+               if len(voisins) > 1 else "")
+            + '</section>')
         f = dossier / "dep" / f'{dp["code"]}-{dp["ardoise"]}.html'
         f.write_text(enveloppe(f'{dp["nom"]} — cartes de chaleur départementales',
                                corps, "maille départementale")
-                     .replace("</style>", CSS_SUP + CSS_CONTEXTE + CSS_TERR + "</style>"),
+                     .replace("</style>", CSS_SUP + CSS_CONTEXTE + CSS_TERR + CSS_PERF
+                              + CSS_REGION_TERR + "</style>"),
                      encoding="utf-8")
         r["fichier"] = f"dep/{dp['code']}-{dp['ardoise']}.html"
         fiches_dep.setdefault(dep_de_region.get(dp["code"], ""), []).append(r)
@@ -503,6 +562,22 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
             gains[r0["code"]] = None
             continue
         corps, x = res
+        # Nos mesures détaillées viennent APRÈS les onglets, comme sur les pages
+        # départementales : d'abord la donnée brute, ensuite sa lecture comparée.
+        corps += (
+            '<section class="perf"><h2>Ce que nos mesures donnent ici</h2>'
+            '<p class="perf-garde">Ici, <b>nos mesures</b> — pas le contexte publié '
+            'plus haut. Gain de RMSE contre la chaîne en service, échéance J0, modèle '
+            'national jamais réajusté pour cette région.</p>'
+            f'<div class="fig-perf"><h4>Polluant par polluant</h4>'
+            f'<p class="sous">La moyenne de la région cache des écarts d\'un facteur trois '
+            f'entre polluants. Le trait vertical est la médiane des 84 départements.</p>'
+            f'{profil_polluants(x.get("par_polluant", {}), med_polluant, "médiane des 84 départements")}'
+            f'</div>'
+            + (f'<div class="fig-perf"><h4>Ses départements, rangés</h4>'
+               f'<p class="sous">Cliquez un département pour sa page.</p>'
+               f'{rang_departements(liste, med_fr)}</div>' if len(liste) > 1 else "")
+            + '</section>')
         f = dossier / f'{r0["ardoise"]}.html'
         f.write_text(enveloppe(f'{r0["nom"]} — cartes de chaleur régionales', corps,
                                "maille régionale")
@@ -541,10 +616,22 @@ def main(horizon: int, sortie: str, departements: bool) -> int:
         f'<section class="bloc"><h2>Les {faits} régions</h2>'
         f'<p>Classées par gain moyen décroissant. {n_dep} pages départementales '
         f'disponibles depuis chacune.</p>'
-        f'<div class="grille-reg">{cartes}</div></section></div>')
+        f'<div class="grille-reg">{cartes}</div></section></div>'
+        # ── La table que la carte écrasait ────────────────────────────────────────
+        # La carte colorie treize régions par leur gain MOYEN sur quatre polluants. Entre
+        # +19,7 et +33,1 %, cela fait treize bleus qu'on ne distingue pas — et surtout,
+        # moyenner masque que le NO₂ gagne plusieurs fois ce que gagne l'ozone. La table
+        # rend les deux entrées et reste lisible en noir et blanc : chaque case porte son
+        # chiffre, la couleur ne fait que hiérarchiser.
+        f'<section class="perf"><h2>Le détail que la moyenne écrase</h2>'
+        f'<p class="perf-garde">Ici, <b>nos mesures</b>. Une région ne gagne pas autant '
+        f'sur tous les polluants&#8239;: la carte ci-dessus en donne la moyenne, cette '
+        f'table en donne les termes.</p>'
+        f'{matrice_territoires(resume)}</section>')
     idx = dossier / "index.html"
     idx.write_text(enveloppe("Cartes de chaleur par région", corps, "maille régionale")
-                   .replace("</style>", CSS_SUP + "</style>"), encoding="utf-8")
+                   .replace("</style>", CSS_SUP + CSS_PERF + CSS_REGION_TERR
+                            + "</style>"), encoding="utf-8")
     pd.DataFrame(resume).to_csv(RACINE / "reports/pages_regions.csv", index=False)
     print(f"\nÉcrit : {idx.relative_to(RACINE)} · {faits} régions · "
           f"{n_dep} départements")
