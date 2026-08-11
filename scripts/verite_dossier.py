@@ -1245,8 +1245,15 @@ def bloc_pile_complete(lignes: list[dict]) -> str:
             r = r.iloc[0]
             m = r["apport_marginal_pct"]
             gras = "**" if str(e).startswith("★") else ""
-            cells.append(f"{gras}{r['gain_pct']:+.2f} %{gras}"
-                         + ("" if pd.isna(m) else f" *({m:+.2f})*"))
+            # Sur une ligne d'ablation, `apport_marginal_pct` est l'écart à la ligne
+            # PRÉCÉDENTE, donc à une autre ablation : il ne veut rien dire. L'afficher
+            # publierait un chiffre faux. L'apport réel — MAXIMALE − ablation — est
+            # recalculé en § 12 bis, et c'est le seul à citer.
+            if "(ablation)" in str(e):
+                cells.append(f"{r['gain_pct']:+.2f} %")
+            else:
+                cells.append(f"{gras}{r['gain_pct']:+.2f} %{gras}"
+                             + ("" if pd.isna(m) else f" *({m:+.2f})*"))
             lignes.append({"bloc": "pile complète", "polluant": p, "grain": e,
                            "n": int(r["n_plis"]), "gain": r["gain_pct"],
                            "relatif_pct": r["apport_marginal_pct"]})
@@ -1260,6 +1267,85 @@ def bloc_pile_complete(lignes: list[dict]) -> str:
     texte.append("⚠️ Ne jamais citer le chiffre **AUX STATIONS** comme une performance de "
                  "spatialisation : il exige l'historique d'observations du point, que la "
                  "spatialisation n'a par définition pas.\n")
+    return "\n".join(texte)
+
+
+FAMILLES_ABLATION = ("typologie", "membres", "feux", "geoscf", "tendance")
+
+
+def bloc_ablation(lignes: list[dict]) -> str:
+    """Ce que chaque famille apporte vraiment — la seule lecture indépendante de l'ordre.
+
+    L'empilement cumulatif de la § 12 répond à « que gagne-t-on en ajoutant cet étage
+    APRÈS les précédents ». Un étage placé tôt s'attribue donc ce qu'un étage plus tardif
+    aurait apporté seul, et l'ordre déclaré devient une décision de protocole dont l'effet
+    ne se voit nulle part. L'ablation retire **une** famille de la pile complète, toutes
+    les autres en place : elle ne dépend d'aucun ordre.
+
+    ⚠️ Le CSV porte une colonne `apport_marginal_pct` qu'il ne faut PAS lire ici — elle
+    vaut l'écart à la ligne **précédente**, donc à une autre ablation. Elle tombe juste
+    pour la première ablation seulement, dont la précédente est justement MAXIMALE : le
+    défaut est donc invisible à qui ne vérifie que celle-là. L'apport est recalculé
+    `MAXIMALE − ablation`.
+
+    ⚠️ C'est une **mesure, pas une sélection**. Élaguer les familles dont l'ablation ne
+    coûte rien, puis publier le score de la pile élaguée sur ces mêmes plis, serait le
+    biais de criblage mesuré à ×2 à ×4 sur ce dépôt.
+    """
+    fs = {p: RACINE / f"reports/methode_maximale_{p}_h2.csv"
+          for p in ("O3", "NO2", "PM10", "PM25")}
+    tables = {}
+    for p, f in fs.items():
+        if not f.exists():
+            continue
+        t = pd.read_csv(f)
+        if t["configuration"].astype(str).str.contains("(ablation)", regex=False).any():
+            tables[p] = (t, f)
+    if not tables:
+        return ""
+
+    # Périmètre EFFECTIF, jamais le périmètre demandé (§ 2 quater).
+    absents = [NOM[p] for p in fs if p not in tables]
+    texte = [
+        "## 12 bis. L'ablation — ce que chaque famille apporte, hors effet d'ordre\n",
+        "Chaque ligne retire **une seule** famille de la pile complète, toutes les autres "
+        "en place. Le chiffre gras est `MAXIMALE − ablation` : ce que la pile perd si "
+        "cette famille disparaît. En regard, *en italique*, la lecture **cumulative** de "
+        "la § 12 — ce que la même famille semblait valoir à sa place dans l'ordre.\n",
+        "| famille retirée | " + " | ".join(NOM[p] for p in tables) + " |",
+        "|---" * (len(tables) + 1) + "|",
+    ]
+    desaccords: list[str] = []
+    for fam in FAMILLES_ABLATION:
+        cells = []
+        for p, (t, f) in tables.items():
+            abl = _ligne_unique(t, "configuration", f"− {fam} (ablation)", f)
+            cum = _ligne_unique(t, "configuration", f"+ {fam}", f)
+            maxi = _ligne_unique(t, "configuration", "★ MAXIMALE — PARTOUT", f)
+            apport = float(maxi["gain_pct"]) - float(abl["gain_pct"])
+            marg = float(cum["apport_marginal_pct"])
+            cells.append(f"**{apport:+.2f}** *({marg:+.2f})*")
+            lignes.append({"bloc": "ablation", "polluant": p, "grain": fam,
+                           "n": int(abl["n_plis"]), "gain": apport, "relatif_pct": marg})
+            if (apport > 0) != (marg > 0):
+                desaccords.append(f"**{fam}** sur {NOM[p]} (*{marg:+.2f}* → **{apport:+.2f}**)")
+        texte.append(f"| − {fam} | " + " | ".join(cells) + " |")
+
+    if absents:
+        n = len(tables)
+        texte.append(f"\n⚠️ **Périmètre effectif : {n} polluant{'s' if n > 1 else ''} sur 4** — "
+                     f"{', '.join(absents)} sans lignes d'ablation à cette génération. "
+                     f"Ne pas lire ce tableau comme un bilan des quatre.\n")
+    if desaccords:
+        texte.append("\nLes deux lectures **se contredisent en signe** sur "
+                     + " · ".join(desaccords) + ". Là où elles divergent, c'est "
+                     "l'ablation qui fait foi : la lecture cumulative attribue à un étage "
+                     "ce que sa **position** lui a donné, pas ce qu'il apporte.\n")
+    texte.append("\n⚠️ Un apport d'ablation faible ne veut pas dire « famille inutile » : "
+                 "il veut dire **redondante avec le reste de la pile**. Deux familles qui "
+                 "captent la même information s'annulent mutuellement à l'ablation alors "
+                 "que retirer les deux coûterait cher. Ce tableau ne se lit jamais comme "
+                 "une liste de coupes à opérer.\n")
     return "\n".join(texte)
 
 
@@ -1514,6 +1600,7 @@ def main() -> int:
         bloc_front(lignes),
         bloc_generalisation(),
         bloc_pile_complete(lignes),
+        bloc_ablation(lignes),
         bloc_geoscf(lignes),
         bloc_episodes_reels(lignes),
         bloc_agregation_zone(lignes),
