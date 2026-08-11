@@ -675,6 +675,7 @@ figcaption {
       <a href="#seuils">05 · Déclenchement</a>
       <a href="#decision">06 · Décision réelle</a>
       <a href="#prevair">07 · Barre réelle</a>
+      <a href="#degradees">08 · La limite</a>
     </nav>
   </div>
 </header>
@@ -3661,6 +3662,86 @@ i.d-ex { margin-right: 5px; }
 </section>
 
 <!-- P7-SECTION:FIN -->
+<!-- P8-STYLE:DEBUT -->
+<style>
+/* ── Page 08 · où la correction nuit ─────────────────────────────────── */
+.p8-grille{display:flex;flex-direction:column;gap:1.15rem;margin:.2rem 0 1.2rem}
+.p8-bloc{border-left:3px solid var(--bord,#d3dbe1);padding-left:.85rem}
+.p8-bloc h3{margin:0 0 .12rem;font-size:1rem;letter-spacing:-.01em}
+.p8-bloc .p8-sous{margin:0 0 .5rem;font-size:.82rem;opacity:.72}
+.p8-tab{width:100%;border-collapse:collapse;font-size:.92rem}
+.p8-tab th{text-align:right;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.07em;padding:0 .5rem .35rem;border-bottom:1px solid var(--bord,#d3dbe1)}
+.p8-tab th:first-child{text-align:left}
+.p8-tab td{padding:.4rem .5rem;border-bottom:1px solid var(--bord,#d3dbe1);
+  text-align:right;font-variant-numeric:tabular-nums}
+.p8-tab td:first-child{text-align:left;font-weight:600}
+.p8-tab tr:last-child td{border-bottom:0}
+.p8-part{font-weight:700}
+.p8-lectures{display:flex;flex-direction:column;gap:.7rem;margin:1.1rem 0}
+</style>
+<!-- P8-STYLE:FIN -->
+<!-- P8-SECTION:DEBUT -->
+<!-- ══════════════════════ PAGE 8 ══════════════════════════════════════ -->
+<section class="page" id="degradees">
+  <div class="chapeau-page">
+    <p class="eyebrow">Page 08 — La limite</p>
+    <h1>Où la correction nuit, et de combien</h1>
+    <p class="chapeau">
+      Tout ce qui précède dit de combien la correction améliore. Une correction apprise
+      n'améliore pourtant <strong>jamais tout le monde</strong>. Cette page dit combien de
+      stations elle <strong>dégrade</strong>, une par une, sur des prédictions
+      hors-échantillon déjà produites — donc <strong>aucun choix d'après coup</strong>.
+    </p>
+    <p class="these">
+      La part dégradée dépend de <strong>l'épreuve</strong> bien plus que du polluant&#8239;:
+      elle va de <b id="p8-min">—</b> à <b id="p8-max">—</b> selon qu'on cache la station,
+      la période, ou les deux. <strong>Un tel chiffre cité sans son épreuve ne veut rien
+      dire</strong> — et ce dossier en a porté un pendant des semaines.
+    </p>
+  </div>
+
+  <div class="p8-grille" id="p8-grille"></div>
+
+  <div class="p8-lectures">
+    <div class="reserve">
+      <b>Le NO₂ se comporte à l'inverse des trois autres.</b> Il est le plus dégradé quand
+      la station est cachée, et le moins quand elle est vue&#8239;; O₃, PM10 et PM2,5 font
+      exactement le contraire. Ce n'est pas un défaut, c'est le <strong>mécanisme</strong>&#8239;:
+      sur NO₂ l'essentiel du gain est un biais <strong>de site</strong>, donc il s'apprend
+      quand le site est connu et se transfère mal.
+    </div>
+    <div class="reserve">
+      <b>Une part élevée n'est pas une part grave.</b> Là où la dégradation touche le plus
+      de stations, le <strong>gain médian est le plus faible</strong>&#8239;: la correction y
+      est quasi neutre et le signe bascule d'une station à l'autre. Une part de 42&nbsp;%
+      adossée à +2,5&nbsp;% de gain médian ne décrit pas le même risque qu'une part de
+      8&nbsp;% adossée à +36&nbsp;%. <strong>Ne jamais citer l'une sans l'autre.</strong>
+    </div>
+    <div class="reserve">
+      <b>Les pires stations perdent beaucoup</b>, et la moyenne ne le dilue pas. C'est
+      l'argument le plus fort en faveur d'un <strong>aiguillage par station</strong> plutôt
+      que d'une correction uniforme — une piste, pas un résultat&#8239;: elle n'a pas été
+      mesurée.
+    </div>
+    <div class="reserve">
+      <b>Réserve de périmètre.</b> Ces prédictions viennent de la pile
+      <strong>sans l'étage <code>tendance</code></strong>, passé en production après leur
+      calcul. Le sens de l'écart <strong>n'a pas été mesuré</strong>&#8239;: il n'est pas
+      supposé favorable.
+    </div>
+  </div>
+
+  <p class="regle">
+    Ce que cette page autorise à dire&#8239;: <em>« la correction dégrade une minorité de
+    stations quand le site est connu, et jusqu'à quatre sur dix quand il ne l'est pas — mais
+    là où elle en dégrade le plus, elle n'apporte presque rien&#8239;; le risque est une
+    neutralité bruitée, pas une perte. »</em> Rien de plus.
+  </p>
+  <p class="sig3" id="p8-sig"></p>
+</section>
+
+<!-- P8-SECTION:FIN -->
 </main>
 
 <footer class="pied">
@@ -4479,3 +4560,48 @@ i.d-ex { margin-right: 5px; }
 })();
 </script>
 <!-- P7-SCRIPT:FIN -->
+
+<!-- P8-SCRIPT:DEBUT -->
+<script id="p8-data" type="application/json">{"genere":"2026-08-11T23:45:12","variante":"typo","n_min":100,"ecartees":7,"blocs":[{"cle":"spatiale","titre":"Station cachée","sous":"le site n'a jamais été vu — déploiement sur un point non instrumenté","lignes":[{"polluant":"NO₂","stations":344,"degradees":27,"part":7.8,"median":35.6,"pire":-171.7},{"polluant":"O₃","stations":271,"degradees":8,"part":3.0,"median":21.4,"pire":-50.6},{"polluant":"PM10","stations":315,"degradees":8,"part":2.5,"median":29.8,"pire":-22.5},{"polluant":"PM2,5","stations":236,"degradees":5,"part":2.1,"median":23.8,"pire":-24.0}]},{"cle":"temporelle","titre":"Mois caché","sous":"le site est connu, la période non — le régime normal d'exploitation","lignes":[{"polluant":"NO₂","stations":344,"degradees":3,"part":0.9,"median":36.2,"pire":-16.4},{"polluant":"O₃","stations":271,"degradees":55,"part":20.3,"median":6.5,"pire":-8.4},{"polluant":"PM10","stations":315,"degradees":56,"part":17.8,"median":10.6,"pire":-13.9},{"polluant":"PM2,5","stations":236,"degradees":58,"part":24.6,"median":6.3,"pire":-11.1}]},{"cle":"double aveugle","titre":"Les deux cachés","sous":"l'épreuve la plus dure du dossier","lignes":[{"polluant":"NO₂","stations":337,"degradees":40,"part":11.9,"median":29.6,"pire":-162.7},{"polluant":"O₃","stations":269,"degradees":87,"part":32.3,"median":3.3,"pire":-46.2},{"polluant":"PM10","stations":314,"degradees":87,"part":27.7,"median":7.6,"pire":-74.8},{"polluant":"PM2,5","stations":233,"degradees":99,"part":42.5,"median":2.5,"pire":-30.0}]}]}</script>
+<script>
+(function(){
+  var d = JSON.parse(document.getElementById("p8-data").textContent);
+  // Les bornes de la thèse DÉRIVENT de la table : écrites en dur, elles se périmeraient
+  // à la première re-mesure sans que rien ne le signale.
+  var parts = [];
+  d.blocs.forEach(function(b){ b.lignes.forEach(function(l){ parts.push(l.part); }); });
+  var mn = Math.min.apply(null, parts), mx = Math.max.apply(null, parts);
+  var e;
+  if ((e = document.getElementById("p8-min"))) e.textContent = mn.toFixed(1) + " %";
+  if ((e = document.getElementById("p8-max"))) e.textContent = mx.toFixed(1) + " %";
+
+  var g = document.getElementById("p8-grille"); if (!g) return;
+  var h = "";
+  d.blocs.forEach(function(b){
+    // Le tableau vit dans `.fig-scroll` — six colonnes de chiffres débordent sur un écran
+    // étroit, et c'est LA PAGE qui se mettrait à défiler latéralement sans ce conteneur.
+    // Même idiome que la page 07 : on n'invente pas un mécanisme, on réemploie le sien.
+    h += '<div class="p8-bloc"><h3>' + b.titre + '</h3>'
+       + '<p class="p8-sous">' + b.sous + '</p><div class="fig-scroll">'
+       + '<table class="p8-tab"><thead><tr><th>Polluant</th><th>Stations</th>'
+       + '<th>Dégradées</th><th>Part</th><th>Gain médian</th><th>Pire station</th>'
+       + '</tr></thead><tbody>';
+    b.lignes.forEach(function(l){
+      h += '<tr><td>' + l.polluant + '</td>'
+         + '<td>' + l.stations + '</td>'
+         + '<td>' + l.degradees + '</td>'
+         + '<td class="p8-part">' + l.part.toFixed(1) + ' %</td>'
+         + '<td>' + (l.median >= 0 ? "+" : "") + l.median.toFixed(1) + ' %</td>'
+         + '<td>' + l.pire.toFixed(1) + ' %</td></tr>';
+    });
+    h += '</tbody></table></div></div>';
+  });
+  g.innerHTML = h;
+
+  var s = document.getElementById("p8-sig");
+  if (s) s.textContent = "Échéance J+1 · variante « " + d.variante + " » · au moins "
+      + d.n_min + " jours par station (" + d.ecartees
+      + " écartée(s) au plus, compte publié) · généré le " + d.genere.replace("T", " ");
+})();
+</script>
+<!-- P8-SCRIPT:FIN -->

@@ -41,6 +41,9 @@ PAGES_INJECTEES = [
     {"prefixe": "p7", "ident": "prevair", "libelle": "07 · Barre réelle",
      "ancre_section": "</main>",
      "ancre_nav": '<a href="#decision">06 · Décision réelle</a>', "avant": False},
+    {"prefixe": "p8", "ident": "degradees", "libelle": "08 · La limite",
+     "ancre_section": "</main>",
+     "ancre_nav": '<a href="#prevair">07 · Barre réelle</a>', "avant": False},
 ]
 
 
