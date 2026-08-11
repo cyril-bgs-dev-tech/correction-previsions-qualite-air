@@ -137,10 +137,35 @@ corrompu → segfault ; valeur corrompue → exception absurde. **Un seul défau
 - ⚠️ `kern.log` **ne sert plus qu'à dater** : depuis `PYTHONFAULTHANDLER=1`, les signaux 11 sont
   la **ré-émission** par faulthandler. **Ne rien conclure d'un RIP.**
 
-**Les deux réparations, dans cet ordre — elles n'appartiennent qu'à Cyril :**
-① retirer les **deux barrettes de 16 Go** (4 DIMM de **deux kits différents** = hors spec ; garder
-les 2 × 32 Go) · ② si ça persiste, **RMA Intel** sur l'i9-13900KF (garantie étendue à 5 ans ;
-`WHEA-Logger ID 19 — Internal parity error` est journalisé et suffit au dossier).
+**🔴 Les réparations, dans cet ordre — elles n'appartiennent qu'à Cyril. L'ordre a été CORRIGÉ
+le 11/08 : les fiches antérieures mettaient la RAM en premier, et c'était mal classé.**
+
+Ce que le matériel signe réellement, mesuré le 11/08 : **9 événements WHEA, dont ZÉRO ne mentionne
+la mémoire** et **3 nomment le processeur** — « cœur du processeur · Corrected Machine Check ·
+**Internal parity error** · APIC 33 ». La RAM était en tête parce que le geste est gratuit et prend
+5 minutes, pas parce que la preuve la désignait.
+
+① **Mettre à jour le BIOS.** 1805 date du 30/10/2024 et porte le microcode **0x12B** (confirmé au
+registre : `2B010000`) — le correctif d'août 2024, qui *arrête* la dégradation Raptor Lake sans
+annuler celle déjà subie. ASUS a publié depuis des versions plus récentes pour la PRIME Z790-A
+WIFI. Gratuit, peu risqué, vise l'hypothèse principale.
+② **RMA Intel** sur l'i9-13900KF si ça persiste — garantie étendue à 5 ans, et
+`WHEA-Logger ID 19 — Internal parity error` est déjà journalisé : c'est la pièce du dossier.
+③ **Retirer les 2 × 16 Go** — maintenu, mais requalifié en **expérience pour éliminer une
+variable**, pas en réparation. Les 4 barrettes sont de la même marque (G.Skill) mais de deux
+modèles : `F5-6000J3040G32G` (DDR5-6000 CL30-40, 32 Go) et `F5-6800J3445G16G` (DDR5-6800 CL34-45,
+16 Go). ⚠️ **Les quatre tournent pourtant à la même vitesse configurée (3600) à 1,1 V JEDEC**,
+bien sous les deux spécifications : la carte a déjà neutralisé l'écart. Ce qui reste mixte est la
+capacité, donc probablement le **rang** — et le contrôleur mémoire est *dans le processeur*.
+④ Pour trancher la RAM définitivement : **MemTest86 une nuit**, pas `mdsched.exe`.
+
+⚠️ **Deux réserves, à ne pas escamoter** : les 3 erreurs WHEA datent du **24/06**, six semaines
+avant la série de plantages — elles prouvent que ce processeur produit des erreurs de parité
+internes, **elles ne datent pas les crashs**. Et une *corrected* machine check est corrigée : c'est
+un marqueur, pas la cause directe. Ce qui penche : **une barrette défaillante corrompt à des
+adresses particulières, un cœur fautif corrompt ce qu'il calcule, n'importe où** — et le défaut
+observé se déplace (listes de pages du noyau, pandas, LightGBM, une valeur dans une fente
+d'argument entier). C'est un profil de faute de calcul, pas de faute d'adresse.
 
 ---
 
