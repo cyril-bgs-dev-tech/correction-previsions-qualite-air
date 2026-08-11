@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 11/08/2026 à 16 h 25 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 11/08/2026 à 16 h 50 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -425,10 +425,52 @@ Tout ce document compare à **CAMS brut**, que les AASQA ne consomment pas : ell
 
 | | brut | corrigé | gain de la correction |
 |---|---|---|---|
-| PREV'AIR (CHIMERE → AS-CHI) | 13,9 | 13,3 | **+4,3 %** |
-| ce projet (CAMS → nous) | 11,08 | 8,84 | **+20,2 %** |
+| PREV'AIR (CHIMERE → AS-CHI), **ozone** | 13,9 | 13,3 | **+4,3 %** |
+| ce projet (CAMS → nous), **ozone** | 11,08 | 8,84 | **+20,2 %** |
 
-Cette lecture neutralise le confondant d'amont **et** celui des DROM, inclus dans leur moyenne France avec une RMSE avoisinant 20 mais affectant les deux lignes également. Deux écarts jouent **contre** nous, donc ne fragilisent pas la conclusion : leurs scores sont à **J0** et les nôtres à **J+1** ; et notre 8,84 vient de plis `i % 3`, optimistes — au protocole bloqué le gain descendrait vers 13-14 %, soit **encore trois fois** celui de l'adaptation statistique.
+Cette lecture neutralise le confondant d'amont **et** celui des DROM, inclus dans leur moyenne France avec une RMSE avoisinant 20 mais affectant les deux lignes également. Deux écarts jouent **contre** nous, donc ne fragilisent pas la conclusion : leurs scores sont à **J0** et les nôtres à **J+1** ; et notre 8,84 vient de plis `i % 3`, optimistes — au protocole bloqué le gain descendrait vers 13-14 %.
+
+### 🔴 « +4,3 % » est un chiffre d'OZONE, et le lire comme leur performance générale est faux
+
+Le même rapport donne les trois autres polluants. Extraits de sa prose, pas de ses figures — p. 19, 29, 39 et 45, à J0, France :
+
+| polluant | MOCAGE | CHIMERE brut | **AS-CHI** | **gain de LEUR adaptation** |
+|---|---|---|---|---|
+| O₃ *(avril–septembre)* | 14,6 | 13,9 | 13,3 | **+4,3 %** |
+| NO₂ | 17,5 | 16,7 | 11,2 | **+32,9 %** |
+| PM10 | 7,8 | 9,9 | 4,7 | **+52,5 %** |
+| PM2,5 | 5,80 | 7,65 | 3,05 | **+60,1 %** |
+
+**Sur les trois autres polluants, leur adaptation gagne davantage que la nôtre sur l'ozone.** Le résultat n'est donc pas « nous faisons cinq fois mieux » : c'est que **l'ozone est le polluant où l'adaptation statistique paie le moins — pour eux comme pour nous**. Citer +4,3 % sans dire « sur l'ozone » est la faute que le § 7 ter interdit, commise contre un tiers.
+
+### Ce qu'est AS-CHI, et pourquoi ça explique tout le reste
+
+**AS-CHI est un krigeage, pas un apprentissage.** L'hypothèse est que la concentration vaut CHIMERE **plus un résidu aléatoire, décorrélé du modèle mais spatialement structuré**. Ce résidu — l'« innovation » — est calculé **aux stations** comme mesure moins modèle, puis interpolé : krigeage ordinaire à l'origine, **krigeage à dérive externe depuis 2010**, qui ajuste localement une relation linéaire entre observations et CHIMERE.
+
+Ce mécanisme rend cohérents trois faits mesurés qui paraissaient sans lien :
+
+1. **Leur avantage s'effondre avec l'échéance** — jusqu'à devenir négatif dès J2 sur la RMSE. Un champ d'innovations est un instantané&nbsp;: plus la prévision est lointaine, moins il s'applique. **Nos leviers, eux, ne se dégradent pas avec l'horizon** (moins d'un point entre J0, J+1 et J+2), parce que le biais corrigé est une propriété du **site**, pas de l'échéance.
+2. **Ils gagnent énormément sur les particules** (+52 %, +60 %) : le résidu des PM est fortement structuré dans l'espace, donc très krigeable à courte portée.
+3. **Ils gagnent peu sur l'ozone** (+4,3 %) : l'ozone est régionalement homogène — il y a peu de structure spatiale résiduelle à interpoler.
+
+> **La différence de nature compte plus que l'écart de score.** Le krigeage exige des **observations au moment de la correction** : il fonctionne près des stations et se dégrade là où le réseau est lâche. Notre correction apprend le résidu à partir de variables **disponibles à l'heure d'émission** — terrain, calendrier, typologie, autres modèles — donc elle existe **là où aucune station n'existe**. C'est précisément le cas des **43 EPCI sans station à moins de 30 km** et des **4 départements d'Occitanie sans station retenue** (§ 5 bis).
+
+⚠️ **Et c'est aussi pourquoi le duel aux stations leur est favorable** : leur krigeage *utilise* les observations des stations sur lesquelles on l'évalue. L'avantage n'est pas unilatéral — le nôtre les connaît par apprentissage — mais il n'est pas symétrique non plus.
+
+### 🔴 Pourquoi ce dossier ne rejoue PAS sa correction sur leur fenêtre 2024
+
+La tentation est forte : leur rapport porte sur une **année entière**, nos duels directs sur **onze jours**. Mesuré le 11/08/2026, c'est impossible sans fausser la comparaison **contre nous** :
+
+| polluant | notre corpus démarre | mois d'entraînement AVANT 2024-01 |
+|---|---|---|
+| O₃ · NO₂ · PM2,5 | 2023-06 | **7** *(10 avant avril)* |
+| **PM10** | **2024-01** | **0** |
+
+Sur PM10 le corpus **commence** quand leur fenêtre commence — et ses membres d'ensemble n'existent qu'à partir de **2025-01**. Sur l'ozone, les dix mois disponibles ne contiennent qu'**un seul été partiel**. Une évaluation 2024 opposerait **notre année la plus mal entraînée** à **leur système de production en régime normal**.
+
+> *S'infliger un protocole plus dur que celui de la référence n'est pas de la prudence : c'est fausser la comparaison contre soi, ce qui est aussi peu informatif que la fausser en sa faveur.* Le duel direct de la § 10 quater, malgré ses onze jours, a l'avantage décisif que 2024 n'aurait pas : **les deux systèmes y tournent dans leur régime normal**.
+
+✅ Les autres « capteurs » sont en revanche **disculpés** : GEOS-CF, feux, météo et TROPOMI couvrent bien les douze mois de 2024, comme les membres d'ensemble d'O₃, NO₂ et PM2,5. Seul PM10 est privé des siens.
 
 ### Le motif qui se répète, et c'est le vrai résultat
 

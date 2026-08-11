@@ -338,7 +338,8 @@ footer{{border-top:1px solid var(--liseré);padding:1.9rem 0 3.4rem;
     <thead><tr><th>chaîne</th><th class="n">brut</th><th class="n">corrigé</th>
       <th class="n">gain de la correction</th></tr></thead>
     <tbody>
-      <tr><td>PREV'AIR — CHIMERE → adaptation statistique</td><td class="n">13,9</td>
+      <tr><td>PREV'AIR — CHIMERE → adaptation statistique, <b>sur l'ozone</b></td>
+        <td class="n">13,9</td>
         <td class="n">13,3</td><td class="n">+4,3 %</td></tr>
       <tr class="fort"><td>ce projet — CAMS → notre correction</td><td class="n">11,08</td>
         <td class="n">8,84</td><td class="n">+20,2 %</td></tr>
@@ -349,8 +350,27 @@ footer{{border-top:1px solid var(--liseré);padding:1.9rem 0 3.4rem;
   neutralise aussi les DROM, inclus dans leur moyenne nationale.</p>
   <p>Deux écarts jouent <b>contre</b> nous et ne fragilisent donc pas la conclusion : leurs
   scores sont à J0 quand les nôtres sont à J+1, et notre 8,84 vient de plis non bloqués —
-  au protocole strict le gain descendrait vers 13-14 %, soit <b>encore trois fois</b> celui
-  de l'adaptation statistique nationale.</p>
+  au protocole strict le gain descendrait vers 13-14&nbsp;%.</p>
+
+  <div class="borne"><div class="lab">🔴 Ce tableau est un tableau d'ozone — ne pas le lire
+    comme un classement des deux méthodes</div>
+    <p>Le même rapport donne les trois autres polluants à J0, et l'ordre s'y inverse&nbsp;:
+    leur adaptation statistique gagne <b>+32,9&nbsp;%</b> sur le NO₂ (16,7 → 11,2),
+    <b>+52,5&nbsp;%</b> sur les PM10 (9,9 → 4,7) et <b>+60,1&nbsp;%</b> sur les PM2,5
+    (7,65 → 3,05). <b>Sur ces trois-là, leur correction gagne davantage que la nôtre sur
+    l'ozone.</b> Le résultat n'est pas « nous faisons cinq fois mieux » — c'est que
+    <b>l'ozone est le polluant où l'adaptation statistique paie le moins, pour eux comme
+    pour nous</b>.</p>
+    <p><b>Et la différence de nature compte plus que l'écart de score.</b> AS-CHI est un
+    <b>krigeage</b>&nbsp;: le résidu mesure moins modèle est calculé <i>aux stations</i>,
+    puis interpolé — krigeage à dérive externe depuis 2010. Il lui faut donc des
+    <b>observations au moment de la correction</b>, et il se dégrade là où le réseau est
+    lâche. Notre correction apprend ce résidu à partir de variables disponibles à l'heure
+    d'émission&nbsp;: elle existe <b>là où aucune station n'existe</b> — les 43 EPCI sans
+    station à moins de 30 km, les 4 départements d'Occitanie sans station retenue. C'est
+    aussi ce qui explique que leur avantage s'annule dès J2&nbsp;: un champ d'innovations
+    est un instantané, quand un biais de site ne l'est pas.</p>
+  </div>
   <div class="borne"><div class="lab">Le motif qui se répète</div>
     <p>Le rapport du LCSQA écrit, page 22, que <i>« l'amélioration apportée par l'adaptation
     statistique diminue au fur et à mesure des échéances, jusqu'à une légère dégradation des
