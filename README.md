@@ -20,7 +20,7 @@
 Post-traitement des prévisions **CAMS Europe** aux stations de mesure françaises. Le modèle
 apprend le **résidu** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h) et le retranche.
 
-Corpus : **36 mois**, **29,1 M d'enregistrements horaires**, observations réglementaires
+Corpus : **36 mois** (2023-08 → 2026-07), **28,0 M d'enregistrements horaires**, observations réglementaires
 LCSQA, cible journalière. Prévisions extraites à 476 points ; **438 stations effectivement
 évaluées**, de 236 (PM2,5) à 344 (NO₂) selon le polluant.
 
