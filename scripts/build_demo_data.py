@@ -3,10 +3,22 @@
 Usage : python scripts/build_demo_data.py
 Sortie : data/demo/*.parquet
 
-**Pourquoi une étape de préparation plutôt qu'une lecture directe.** Mesuré : les sorties
-MOS en CSV pèsent 127 Mo et mettent 2,0 s à charger ; en Parquet, 36 Mo et 0,1 s — soit
-**22× plus rapide**. Streamlit relit ses données à chaque interaction : sur une carte où
-l'on change de polluant, la différence sépare une démo fluide d'une démo poussive.
+**Pourquoi une étape de préparation plutôt qu'une lecture directe.** Streamlit relit ses
+données à chaque interaction : sur une carte où l'on change de polluant, la différence
+sépare une démo fluide d'une démo poussive.
+
+Chiffres **re-mesurés le 11/08/2026**, les précédents (« 127 Mo → 36 Mo, 2,0 s → 0,1 s »)
+datant d'un corpus trois fois plus petit et de trois polluants :
+
+- entrée : quatre CSV MOS, **1,8 Go** au total ;
+- sortie : `predictions.parquet`, **295 Mo** pour **28,9 M de lignes**, chargé en **1,70 s**
+  et **634 Mo** en mémoire.
+
+Le volume a grossi avec le corpus (flux LCSQA) et l'arrivée de PM10 ; il n'est pas réduit
+par un échantillonnage. **C'est un arbitrage, pas un oubli** : raccourcir la fenêtre
+allégerait la démo mais la ferait diverger du corpus annoncé dans le dossier, ce qui coûte
+plus cher qu'une seconde et demie de chargement — d'autant que `@st.cache_data` ne la paie
+qu'une fois par session.
 
 On en profite pour ne garder que ce que l'interface affiche réellement.
 """
@@ -23,7 +35,10 @@ RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 
 SORTIE = RACINE / "data/demo"
-POLLUANTS = ["O3", "NO2", "PM25"]
+# PM10 entre le 11/08 : le dossier le couvre depuis le 01/08 mais la démo n'en montrait que
+# trois sur quatre, parce que `fit_mos.py` le refusait dans son `choices` d'argparse — et
+# nulle part ailleurs. Un polluant absent d'une démo ne lève rien : il est simplement absent.
+POLLUANTS = ["O3", "NO2", "PM25", "PM10"]
 
 
 def preparer_predictions() -> pd.DataFrame:

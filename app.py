@@ -27,11 +27,14 @@ sys.path.insert(0, str(RACINE / "src"))
 BLEU, ORANGE, VERT = "#2a78d6", "#eb6834", "#1baf7a"
 GRIS, ENCRE = "#898781", "#0b0b0b"
 
-NOM = {"O3": "Ozone (O₃)", "NO2": "Dioxyde d'azote (NO₂)", "PM25": "Particules PM2.5"}
+NOM = {"O3": "Ozone (O₃)", "NO2": "Dioxyde d'azote (NO₂)",
+       "PM25": "Particules PM2.5", "PM10": "Particules PM10"}
 
 # Bornes des classes de l'indice ATMO (arrêté du 10/07/2020), en µg/m³.
-BORNES = {"O3": [50, 100, 130, 240, 380], "NO2": [40, 90, 120, 230, 340],
-          "PM25": [10, 20, 25, 50, 75]}
+# **Importées, jamais recopiées.** La démo en tenait une copie littérale de trois polluants ;
+# elle coïncidait avec la source, ce qui est la façon dont une copie se fait oublier jusqu'au
+# jour où elle diverge. PM10 y manquait — comme partout ailleurs dans la chaîne horaire.
+from aq.models.indice_atmo import BORNES  # noqa: E402
 
 st.set_page_config(page_title="Qualité de l'air — démo", page_icon="🌬️",
                    layout="wide", initial_sidebar_state="expanded")
@@ -141,14 +144,33 @@ PAGES = ["Aide à l'expertise du jour", "Vue d'ensemble", "Où la correction agi
          "Station par station", "Détection des épisodes", "Variables du paysage"]
 page = st.sidebar.radio("Page", PAGES, label_visibility="collapsed")
 
-polluant = st.sidebar.selectbox("Polluant", list(NOM), format_func=NOM.get)
+resume_tout = charger("resume_stations")
+
+# Le sélecteur est piloté par CE QUI EST DANS LA DONNÉE, pas par une liste écrite à la main.
+# Une liste en dur peut proposer un polluant absent — page vide sans un mot — ou taire un
+# polluant présent. Les deux sont arrivés : PM10 manquait de `NOM`, et il manquait aussi des
+# données, si bien qu'aucun des deux défauts n'était visible tant que l'autre durait.
+DISPONIBLES = [p for p in NOM if p in set(resume_tout["polluant"].astype(str))]
+if not DISPONIBLES:
+    st.error("Aucun polluant dans `data/demo/` — lancer `python scripts/build_demo_data.py`.")
+    st.stop()
+if absents := [p for p in NOM if p not in DISPONIBLES]:
+    st.sidebar.caption(f"⚠️ Absent des données : {', '.join(NOM[p] for p in absents)}")
+
+polluant = st.sidebar.selectbox("Polluant", DISPONIBLES, format_func=NOM.get)
 st.sidebar.divider()
+# L'échéance n'était affirmée NULLE PART dans cette démo. Ce n'était pas faux — c'était muet,
+# et un chiffre sans son échéance ne se cite pas (§ 4 ter : `TRANCHES[1] = (1, 24)`, ce sont
+# les 24 premières heures de la sortie 00 UTC, donc le JOUR MÊME, pas le lendemain).
+st.sidebar.caption(
+    "**Échéance J0** — les 24 premières heures de la sortie CAMS de 00 UTC, "
+    "c'est-à-dire le jour même. C'est l'échéance du produit officiel de référence."
+)
 st.sidebar.caption(
     "Sources — mesures : EEA · prévisions et modèle de terrain : Copernicus "
     "(CAMS, DEM GLO-30) · paysage : IGN Géoplateforme · stations : LCSQA."
 )
 
-resume_tout = charger("resume_stations")
 stations = charger("stations")
 resume = (resume_tout[resume_tout["polluant"] == polluant]
           .merge(stations, on="station_id", how="inner"))

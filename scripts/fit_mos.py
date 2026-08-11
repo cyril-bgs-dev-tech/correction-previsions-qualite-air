@@ -238,15 +238,25 @@ def main(polluant: str, horizon: int, n_plis: int) -> int:
     for _, ligne in resultat.importances.head(8).iterrows():
         print(f"  {ligne['variable']:28s} {100*ligne['importance']:5.1f} %")
 
+    # Nom provisoire puis renommage (§ 4). Ces CSV pèsent 400 à 600 Mo : une écriture
+    # interrompue — et sur cette machine un segfault tombe une fois sur deux — laissait
+    # jusqu'ici un fichier TRONQUÉ portant le nom définitif, que toute reprise en aval
+    # aurait compté comme complet.
     sortie = RACINE / f"reports/mos_{polluant}_J{horizon}.csv"
-    resultat.predictions.to_csv(sortie, index=False)
+    partiel = sortie.with_suffix(".csv.partiel")
+    resultat.predictions.to_csv(partiel, index=False)
+    partiel.replace(sortie)
     print(f"\nÉcrit : {sortie.name}")
     return 0
 
 
 if __name__ == "__main__":
     parseur = argparse.ArgumentParser(description=__doc__)
-    parseur.add_argument("--polluant", default="O3", choices=["O3", "NO2", "PM25"])
+    # PM10 manquait ici — et NULLE PART ailleurs : `PANEL_PAR_POLLUANT`, `BANDES` et la table
+    # des espèces le portent tous depuis le 01/08. Seul `choices` le refusait, si bien que la
+    # démo Streamlit n'a jamais pu montrer que trois polluants sur les quatre du dossier.
+    parseur.add_argument("--polluant", default="O3",
+                         choices=["O3", "NO2", "PM25", "PM10"])
     parseur.add_argument("--horizon", type=int, default=1, choices=[1, 2, 3])
     parseur.add_argument("--plis", type=int, default=5)
     args = parseur.parse_args()
