@@ -154,12 +154,21 @@ def main(debut: str, fin: str, passe_unitaire: bool) -> int:
         cle = d.strftime("%Y%m")
         cible = SORTIE / f"lcsqa_{cle}.parquet"
         if cible.exists() and d.day == 1:
-            # Reprise au mois : on saute, mais seulement si le mois est déjà **écrit**
-            # sous son nom définitif — règle 4.
-            saut = pd.Timestamp(d) + pd.offsets.MonthBegin(1)
-            print(f"── {cle} déjà écrit, sauté", flush=True)
-            d = saut.date()
-            continue
+            # Reprise sur le CONTENU, jamais sur l'existence (§ 4). Le commentaire qui
+            # tenait ici invoquait la règle 4 et testait `exists()` : un mois ingéré alors
+            # qu'il était EN COURS porte le bon nom, la bonne extension et une taille
+            # plausible, et n'aurait plus jamais été complété. Mesuré le 11/08/2026 :
+            # `lcsqa_202608.parquet` couvrait 7 jours sur 10 et le script annonçait
+            # « déjà écrit, sauté ».
+            fin_mois = (pd.Timestamp(d) + pd.offsets.MonthEnd(0)).date()
+            besoin = min(fin_mois, dfin)
+            couvert = pd.read_parquet(cible, columns=["timestamp_utc"])["timestamp_utc"].max()
+            if pd.notna(couvert) and couvert.date() >= besoin:
+                print(f"── {cle} déjà couvert jusqu'au {couvert:%Y-%m-%d}, sauté", flush=True)
+                d = (pd.Timestamp(d) + pd.offsets.MonthBegin(1)).date()
+                continue
+            print(f"── {cle} INCOMPLET : couvert jusqu'au "
+                  f"{couvert:%Y-%m-%d} · demandé jusqu'au {besoin} — complété", flush=True)
         try:
             par_mois.setdefault(cle, []).append(jour(d))
         except Exception as e:  # noqa: BLE001 — on veut le nom du jour et la cause
@@ -175,16 +184,30 @@ def main(debut: str, fin: str, passe_unitaire: bool) -> int:
                 # est l'ozone à l'étalon CCQM.O3.2019 : le filtrer coûtait 13 mois.
                 m = m[m["validite"] > 0]
                 ecartes += avant - len(m)
-                prov = (SORTIE / f"lcsqa_{cle}.parquet").with_suffix(".parquet.partiel")
+                # ⚠️ FUSION, jamais remplacement. Ce bloc écrivait `m` seul — donc une
+                # ingestion sur une PLAGE PARTIELLE d'un mois déjà présent détruisait
+                # silencieusement les jours qu'elle ne redemandait pas. Le fichier gardait
+                # son nom, sa structure et un nombre de lignes plausible : rien à voir.
+                cible_mois = SORTIE / f"lcsqa_{cle}.parquet"
+                if cible_mois.exists():
+                    ancien = pd.read_parquet(cible_mois)
+                    n_av = len(ancien)
+                    m = (pd.concat([ancien, m], ignore_index=True)
+                         .drop_duplicates(["station_id", "polluant", "timestamp_utc"],
+                                          keep="last"))
+                    print(f"   fusion : {n_av:,} ligne(s) déjà présentes → {len(m):,}",
+                          flush=True)
+                prov = cible_mois.with_suffix(".parquet.partiel")
                 m.to_parquet(prov, index=False)
-                prov.replace(SORTIE / f"lcsqa_{cle}.parquet")
-                print(f"── {cle} · {len(m):,} lignes valides sur {avant:,} · "
-                      f"{m['station_id'].nunique()} sites · {time.time() - depart:.0f}s",
-                      flush=True)
+                prov.replace(cible_mois)
+                print(f"── {cle} · {len(m):,} lignes valides · "
+                      f"{m['station_id'].nunique()} sites · "
+                      f"jusqu'au {m['timestamp_utc'].max():%Y-%m-%d} · "
+                      f"{time.time() - depart:.0f}s", flush=True)
         d = lendemain
 
     print(f"\n{len(manques)} jour(s) manquant(s) · {ecartes:,} lignes écartées "
-          f"(validité ≠ 1)")
+          f"(validité ≤ 0)")
     for j, cause in manques[:10]:
         print(f"  {j} · {cause[:90]}")
     print(f"Écrit dans {SORTIE.relative_to(RACINE)} · {time.time() - depart:.0f}s")
