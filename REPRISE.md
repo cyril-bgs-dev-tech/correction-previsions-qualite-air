@@ -1,8 +1,41 @@
 # Reprise — l'état du projet
 
-> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 12/08 à 00 h 30.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
+> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 12/08 au soir.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
 > fichier** : sur ce projet il a déjà été périmé de dix jours tout en s'annonçant comme l'état
 > courant. Vérifie par `git log --oneline -5` et `ls -lt reports/` avant de croire ce qui suit.
+
+---
+
+## 🆕 LE 12/08 — nouvelle lane « Découverte », et c'est par là qu'on reprend
+
+Cyril a ouvert un chantier distinct du dossier technique : **des documents simples, pour un
+lecteur non spécialiste**. Le premier est **fini, vérifié au navigateur et publié**.
+
+| | |
+|---|---|
+| **Fichier** | `reports/figures/Découverte_ATMO.html` — autonome, thème clair/sombre, sans dépendance externe |
+| **Artefact** | **PRIVÉ** — `25b7f4bf-74b5-4b8f-8294-16dba1428ba0` · à partager depuis le menu de la page |
+| **Trame** | 7 chapitres dictés par Cyril : effets sanitaires → sources de données → le RMSE → stratégie AASQA → ce qui améliore le score → directive 2024/2881 → spatialisation |
+| **Nouveau calcul** | `scripts/exposition_oms.py` → `reports/exposition_oms.csv` |
+
+**Le chiffre neuf que ce document a produit** : sur les moyennes annuelles 2025,
+**238 stations PM2,5 sur 243 — 97,9 % — dépassent la ligne directrice OMS** (médiane 8,97 pour
+une ligne à 5). NO₂ 62,8 %, PM10 47,8 %. En Occitanie, **17 stations PM2,5 sur 17**. Lu en
+multiples de la ligne OMS, cela donne l'angle qui relie santé et droit : **la valeur limite
+PM2,5 en vigueur vaut 5× la ligne sanitaire, celle de 2030 la vaudra encore 2×.**
+
+⚠️ Ce comptage porte sur les **lignes directrices OMS**, pas sur les **valeurs limites** de la
+§ 5 bis. Les deux ne se citent jamais l'une pour l'autre.
+
+**➡️ La suite appartient à Cyril** : il a écrit « la 1ère », donc d'autres documents sont
+prévus — **leur sujet n'est pas connu, le demander avant de commencer**.
+
+**Trois pièges de mise en page rencontrés, tous muets** — détail dans la fiche mémoire
+« Série Découverte » : une colonne de grille nommée ne traverse pas un descendant · un `<li>`
+en grille à 2 colonnes avec 3 enfants écrase son texte sur 30 px (la page est passée de 24 000
+à 47 600 px de haut sans rien lever) · un `style="margin: …"` en ligne écrase le débord.
+**Le contrôle qui les attrape est la mesure au navigateur**, pas la relecture du CSS :
+`scrollWidth` contre `innerWidth` à six largeurs, hauteur totale, géométrie des colonnes.
 
 **Ordre de lecture pour arriver sur ce dépôt :**
 
