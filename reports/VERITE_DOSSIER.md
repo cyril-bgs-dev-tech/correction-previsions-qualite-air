@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 11/08/2026 à 22 h 20 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 13/08/2026 à 21 h 45 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -285,7 +285,7 @@ Aucun confondant d'amont à neutraliser ici : les trois systèmes sont évalués
 
 PREV'AIR ne part pas de CAMS : il part de **CHIMERE**, et son adaptation statistique AS-CHI **krige** le résidu observation−modèle au lieu de l'apprendre. CHIMERE étant un membre de l'ensemble CAMS, archivé ici aux stations, leur chaîne se rejoue **sur nos lignes et sur trois ans** — ce que les onze jours de la § 10 quater ne permettent pas.
 
-Variante de krigeage figée à celle qui a gagné le balayage de `krigeage_du_biais.py` : fenêtre 30 j, portée 200 km, p=1, donneuses de même typologie. La re-choisir sur chaque départ donnerait à leur méthode deux chances et à la nôtre une seule.
+Variante de krigeage figée à celle qui a gagné le balayage de `krigeage_du_biais.py` : fenêtre 30 j, portée 200 km, p=1, donneuses de même typologie. La re-choisir sur chaque départ donnerait à leur méthode deux chances et à la nôtre une seule. ⚠️ **Cette phrase est restée une affirmation non mesurée jusqu'au 13/08** : ce que le figeage leur coûte réellement est chiffré en **§ 10 sexies**, et il est plus petit qu'on ne le supposait.
 
 | polluant | lignes | CHIMERE brut | + krigeage *(leur chaîne)* | CAMS médiane | + krigeage | **+ notre correction** | + les deux |
 |---|---|---|---|---|---|---|---|
@@ -304,6 +304,31 @@ RMSE en µg/m³, échéance **J+1**, station cachée. Les six systèmes sont év
 4. **Les deux se cumulent, un peu** : ajouter le champ krigé à notre correction gagne encore de -0.30 à +0.90 point (3/4 en positif). Le voisinage porte donc une information résiduelle que la pile n'épuise pas — c'est une **piste**, pas un résultat acquis : elle n'a pas été soumise au double aveugle.
 
 🔴 **CE N'EST PAS PREV'AIR, et la nuance est décisive.** Leur CHIMERE tourne en configuration **nationale** — maille plus fine, inventaire français, assimilation de données ; le nôtre est le membre **européen à 10 km** de l'ensemble CAMS. Ce tableau dit ce que leur **famille de méthode** vaut sur les entrées dont nous disposons. Il ne dit rien de leur produit, que seule la § 10 quater mesure — sur onze jours.
+
+## 10 sexies. Ce que le RÉGLAGE par polluant change — des deux côtés
+
+La § 10 quinquies fige la variante de krigeage adverse pour ne pas lui donner deux chances quand nous n'en prenons qu'une. **C'était une précaution non mesurée.** Elle l'est ici : on règle leur krigeage par polluant *sur leur propre départ*, on règle nos hyperparamètres par polluant, et on regarde qui y gagne quoi.
+
+Trois colonnes plutôt qu'une, parce que choisir la meilleure de 100 variantes **sur les lignes qui la notent** n'est pas une performance mais le biais de criblage, mesuré **×2 à ×4** sur ce dépôt :
+
+- **au mieux** — le minimum des 100 RMSE, choisi *et* noté sur les mêmes lignes. Un **majorant**, jamais un score.
+- **honnête** — variante choisie sur la **1ʳᵉ moitié du calendrier**, notée sur la **2ᵈᵉ**. C'est la seule colonne citable de leur côté.
+- **notre réglage** — hyperparamètres choisis par validation imbriquée sur des groupes de stations, notés sur des **stations jamais consultées**.
+
+| polluant | leur krigeage, figée | au mieux | **honnête** | notre RMSE déployée | notre RMSE réglée | **notre gain** |
+|---|---|---|---|---|---|---|
+| O₃ | 13.711 | +1.67 % | **+1.01 %** | *en cours* | *en cours* | *en cours* |
+| NO₂ | 18.331 | +1.44 % | **+0.92 %** | *en cours* | *en cours* | *en cours* |
+| PM10 | 7.983 | +0.00 % | **-0.13 %** | *en cours* | *en cours* | *en cours* |
+| PM2,5 | 5.606 | +1.53 % | **-0.15 %** | *en cours* | *en cours* | *en cours* |
+
+RMSE en µg/m³, échéance J+1. Leur colonne porte sur le départ **CHIMERE** — le leur — et non sur la médiane CAMS.
+
+**Le figeage ne décide de rien.** Réglé par polluant sur son propre départ, leur krigeage gagne **au plus +1.01 %**, et il **perd** sur **2 polluants sur 4** (PM10, PM2,5) : régler une interpolation sur le passé ne dit pas qu'elle sera meilleure ensuite. L'écart entre « au mieux » et « honnête » est la mesure directe du biais de criblage sur cette grille.
+
+🟠 **Notre côté est en cours de mesure** — `lot_optuna_reglage.sh`, 200 essais par polluant. Tant qu'il n'est pas fini, la ligne « notre gain » ne se cite pas.
+
+⚠️ **Les deux gains ne s'additionnent pas et ne se comparent qu'avec prudence** : leur hors-échantillon est TEMPOREL, le nôtre est SPATIAL. Le projet a par ailleurs mesuré qu'un réglage gagnant en spatial peut **perdre ~3 points en temporel** — notre colonne est donc, elle aussi, un majorant de ce qui serait déployé.
 
 ## 8. Détection — à budget de fausses alertes égal
 

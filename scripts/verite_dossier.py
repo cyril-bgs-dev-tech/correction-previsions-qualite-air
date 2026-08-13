@@ -507,7 +507,9 @@ def bloc_duel_chimere(lignes: list[dict]) -> str:
         "Variante de krigeage figée à celle qui a gagné le balayage de "
         "`krigeage_du_biais.py` : fenêtre 30 j, portée 200 km, p=1, donneuses de même "
         "typologie. La re-choisir sur chaque départ donnerait à leur méthode deux chances "
-        "et à la nôtre une seule.\n",
+        "et à la nôtre une seule. ⚠️ **Cette phrase est restée une affirmation non mesurée "
+        "jusqu'au 13/08** : ce que le figeage leur coûte réellement est chiffré en "
+        "**§ 10 sexies**, et il est plus petit qu'on ne le supposait.\n",
         "| polluant | lignes | CHIMERE brut | + krigeage *(leur chaîne)* | CAMS médiane | "
         "+ krigeage | **+ notre correction** | + les deux |",
         "|---|---|---|---|---|---|---|---|",
@@ -585,6 +587,117 @@ def bloc_duel_chimere(lignes: list[dict]) -> str:
         "tableau dit ce que leur **famille de méthode** vaut sur les entrées dont nous "
         "disposons. Il ne dit rien de leur produit, que seule la § 10 quater mesure — sur "
         "onze jours.\n")
+    return "\n".join(texte)
+
+
+def bloc_reglage(lignes: list[dict]) -> str:
+    """Ce que le RÉGLAGE par polluant vaut — à leur méthode, et à la nôtre.
+
+    Pourquoi ce bloc existe
+    -------------------------
+    La § 10 quinquies fige la variante de krigeage adverse « pour ne pas lui donner deux
+    chances quand nous n'en prenons qu'une ». C'était une précaution défendable et une
+    **affirmation non mesurée** : elle supposait un avantage sans le chiffrer.
+
+    Elle est ici chiffrée des deux côtés. La leçon de méthode est plus large que le
+    résultat : *avant d'écrire qu'une comparaison est imparfaite, se demander si on peut la
+    rendre équitable* (§ 4 ter). Ici, cela coûtait un balayage numpy de trois minutes.
+
+    ⚠️ Deux hors-échantillon, et ce ne sont pas les mêmes : leur variante est choisie sur la
+    première moitié du calendrier et notée sur la seconde (axe TEMPOREL) ; notre réglage est
+    choisi par validation imbriquée sur des groupes de stations et noté sur des stations
+    jamais consultées (axe SPATIAL). Les additionner serait faux.
+
+    Régénéré par `python3 scripts/optimisation_krigeage.py --polluant <P>` puis
+    `bash scripts/lot_optuna_reglage.sh` et `python3 scripts/gain_reglage.py --tous`.
+    """
+    ordre = ("O3", "NO2", "PM10", "PM25")
+    kri = {p: pd.read_csv(f) for p in ordre
+           if (f := RACINE / f"reports/optimisation_krigeage_{p}_h2.csv").exists()}
+    if not kri:
+        return ""
+    notre = {p: pd.read_csv(f) for p in ordre
+             if (f := RACINE / f"reports/gain_reglage_{p}.csv").exists()}
+
+    texte = [
+        "## 10 sexies. Ce que le RÉGLAGE par polluant change — des deux côtés\n",
+        "La § 10 quinquies fige la variante de krigeage adverse pour ne pas lui donner deux "
+        "chances quand nous n'en prenons qu'une. **C'était une précaution non mesurée.** "
+        "Elle l'est ici : on règle leur krigeage par polluant *sur leur propre départ*, on "
+        "règle nos hyperparamètres par polluant, et on regarde qui y gagne quoi.\n",
+        "Trois colonnes plutôt qu'une, parce que choisir la meilleure de 100 variantes **sur "
+        "les lignes qui la notent** n'est pas une performance mais le biais de criblage, "
+        "mesuré **×2 à ×4** sur ce dépôt :\n",
+        "- **au mieux** — le minimum des 100 RMSE, choisi *et* noté sur les mêmes lignes. "
+        "Un **majorant**, jamais un score.\n"
+        "- **honnête** — variante choisie sur la **1ʳᵉ moitié du calendrier**, notée sur la "
+        "**2ᵈᵉ**. C'est la seule colonne citable de leur côté.\n"
+        "- **notre réglage** — hyperparamètres choisis par validation imbriquée sur des "
+        "groupes de stations, notés sur des **stations jamais consultées**.\n",
+        "| polluant | leur krigeage, figée | au mieux | **honnête** | notre RMSE déployée | "
+        "notre RMSE réglée | **notre gain** |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    lus = {}
+    for p in ordre:
+        if p not in kri:
+            continue
+        k = kri[p]
+        k = k[k["depart"] == "CHIMERE"]
+        if len(k) != 1:
+            continue
+        k = k.iloc[0]
+        n = notre.get(p)
+        lus[p] = {"figee": float(k["rmse_figee"]),
+                  "majorant": float(k["gain_majorant_pct"]),
+                  "honnete": float(k["gain_honnete_pct"]),
+                  "variante": str(k["variante_choisie_1re_moitie"]),
+                  "deploye": float(n["rmse_deploye"].iloc[0]) if n is not None else None,
+                  "regle": float(n["rmse_regle"].iloc[0]) if n is not None else None,
+                  "gain": float(n["gain_reglage_pct"].iloc[0]) if n is not None else None,
+                  "essais": int(n["essais_complets"].iloc[0]) if n is not None else None}
+        v = lus[p]
+        cote = (f"{v['deploye']:.3f} | {v['regle']:.3f} | **{v['gain']:+.2f} %**"
+                if v["gain"] is not None else "*en cours* | *en cours* | *en cours*")
+        texte.append(f"| {NOM.get(p, p)} | {v['figee']:.3f} | {v['majorant']:+.2f} % | "
+                     f"**{v['honnete']:+.2f} %** | {cote} |")
+        lignes.append({"bloc": "10 sexies", "polluant": p,
+                       "grandeur": "gain du réglage du krigeage (honnête, axe temporel)",
+                       "valeur": round(v["honnete"], 2), "unite": "%"})
+        if v["gain"] is not None:
+            lignes.append({"bloc": "10 sexies", "polluant": p,
+                           "grandeur": "gain du réglage de notre méthode (axe spatial)",
+                           "valeur": round(v["gain"], 2), "unite": "%"})
+
+    faits = {p: v for p, v in lus.items() if v["gain"] is not None}
+    negatifs = [p for p, v in lus.items() if v["honnete"] < 0]
+    texte.append(
+        f"\nRMSE en µg/m³, échéance J+1. Leur colonne porte sur le départ **CHIMERE** — le "
+        f"leur — et non sur la médiane CAMS.\n")
+    texte.append(
+        f"**Le figeage ne décide de rien.** Réglé par polluant sur son propre départ, leur "
+        f"krigeage gagne **au plus {max(v['honnete'] for v in lus.values()):+.2f} %**, et il "
+        f"**perd** sur **{len(negatifs)} polluants sur {len(lus)}** "
+        f"({', '.join(NOM.get(p, p) for p in negatifs) or '—'}) : régler une interpolation "
+        f"sur le passé ne dit pas qu'elle sera meilleure ensuite. L'écart entre « au mieux » "
+        f"et « honnête » est la mesure directe du biais de criblage sur cette grille.\n")
+    if faits:
+        texte.append(
+            f"**Notre méthode, au même traitement, gagne "
+            f"{min(v['gain'] for v in faits.values()):+.2f} à "
+            f"{max(v['gain'] for v in faits.values()):+.2f} %** "
+            f"({len(faits)} polluants mesurés sur {len(lus)}). **La précaution jouait donc "
+            f"contre nous** : les écarts de la § 10 quinquies sont des minorants de ce "
+            f"côté-là aussi.\n")
+    else:
+        texte.append("🟠 **Notre côté est en cours de mesure** — `lot_optuna_reglage.sh`, "
+                     "200 essais par polluant. Tant qu'il n'est pas fini, la ligne « notre "
+                     "gain » ne se cite pas.\n")
+    texte.append(
+        "⚠️ **Les deux gains ne s'additionnent pas et ne se comparent qu'avec prudence** : "
+        "leur hors-échantillon est TEMPOREL, le nôtre est SPATIAL. Le projet a par ailleurs "
+        "mesuré qu'un réglage gagnant en spatial peut **perdre ~3 points en temporel** — "
+        "notre colonne est donc, elle aussi, un majorant de ce qui serait déployé.\n")
     return "\n".join(texte)
 
 
@@ -1992,6 +2105,7 @@ def main() -> int:
         bloc_comparaison_annuelle(lignes),
         bloc_duel_prevair(lignes),
         bloc_duel_chimere(lignes),
+        bloc_reglage(lignes),
         bloc_detection(lignes),
         bloc_signalements(lignes),
         bloc_front(lignes),

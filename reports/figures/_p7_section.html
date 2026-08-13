@@ -6,19 +6,20 @@
     <p class="chapeau">
       Tout ce qui précède se compare à <strong>CAMS brut</strong>, que personne ne
       consomme. Une AASQA reçoit <strong>PREV'AIR</strong>&#8239;: 1,7&nbsp;km, avec
-      assimilation d'observations et krigeage. Cette page confronte les deux
-      directement — <strong>mêmes stations, mêmes jours, mêmes lignes</strong>, donc
-      aucun confondant d'amont à neutraliser.
+      assimilation d'observations et krigeage. Cette page le confronte deux fois, et les
+      deux lectures sont complémentaires par construction&#8239;: <strong>leur produit</strong>
+      sur onze jours, <strong>leur méthode</strong> sur trois ans.
     </p>
     <p class="these">
-      Le résultat va dans notre sens sur les quatre polluants. Il se paie d'une fenêtre
-      de <b id="p7-jours">—</b> jours, et <strong>c'est la première chose à dire</strong>&#8239;:
-      PREV'AIR n'expose qu'environ six jours glissants, notre archivage quotidien n'a
-      démarré que fin juillet 2026, et <strong>le passé n'est pas récupérable</strong>.
-      Cette fenêtre ne grandira que d'un jour par jour.
+      Aucune des deux ne suffit seule. La première mesure exactement la bonne chose, sur
+      <b id="p7-jours">—</b> jours&#8239;; la seconde mesure sur <strong>trois ans</strong>
+      une chose légèrement différente — leur <em>famille de méthode</em>, pas leur produit.
+      <strong>L'écart entre les deux est lui-même une information</strong>, et c'est
+      pourquoi elles sont publiées ensemble plutôt qu'au choix.
     </p>
   </div>
 
+  <h2 class="p7-h2"><span>①</span> Leur produit, ligne à ligne</h2>
   <div class="p7-src">
     <b>Protocole</b> — grain aligné sur le produit PREV'AIR (<code>MAXJ1</code> pour O₃ et
     NO₂, <code>MOYJ1</code> pour les particules), échéance <strong>J+1</strong>. Notre
@@ -53,11 +54,79 @@
     </div>
   </div>
 
+  <h2 class="p7-h2"><span>②</span> Leur méthode, depuis leur point de départ</h2>
+  <div class="p7-src">
+    <b>Ce que la fenêtre de onze jours interdisait</b> — PREV'AIR ne part pas de CAMS&#8239;:
+    il part de <strong>CHIMERE</strong>, et son adaptation statistique <code>AS-CHI</code>
+    <strong>krige</strong> le résidu observation−modèle au lieu de l'apprendre. Or CHIMERE
+    est un <strong>membre de l'ensemble CAMS</strong>, archivé ici aux stations&#8239;: leur
+    chaîne se rejoue donc sur <strong>nos lignes et sur trois ans</strong>. Les six systèmes
+    sont notés sur <strong>exactement les mêmes lignes</strong>, échéance J+1, station cachée.
+  </div>
+
+  <div class="fig-scroll">
+    <table class="p7-tab" id="p7-tab2"></table>
+  </div>
+
+  <p class="p7-cle" id="p7-cle"></p>
+
+  <div class="p7-reserves">
+    <div class="reserve">
+      <b>Leur méthode fonctionne, et il faut le dire.</b> Le krigeage retire jusqu'à
+      <b id="p7-leurgain">—</b>&nbsp;% de la RMSE de CHIMERE. Ce dossier ne conteste pas
+      l'adaptation statistique de PREV'AIR&#8239;: il la mesure, puis se compare à elle à
+      départ égal.
+    </div>
+    <div class="reserve rouge">
+      <b>Ce n'est PAS PREV'AIR, et la nuance est décisive.</b> Leur CHIMERE tourne en
+      configuration <strong>nationale</strong> — maille plus fine, inventaire français,
+      assimilation de données&#8239;; le nôtre est le membre <strong>européen à 10&nbsp;km</strong>
+      de l'ensemble CAMS. Ce tableau dit ce que leur <em>famille de méthode</em> vaut sur
+      les entrées dont nous disposons. Il ne dit rien de leur produit — que seul le bloc
+      ① mesure, sur onze jours.
+    </div>
+  </div>
+
+  <h2 class="p7-h2"><span>③</span> Et si l'on réglait les deux méthodes&#8239;?</h2>
+  <div class="p7-src">
+    Le bloc ② fige la variante de krigeage adverse — 30&nbsp;j · 200&nbsp;km · p=1 · même
+    typologie — pour ne pas lui donner deux chances quand nous n'en prenons qu'une.
+    <strong>C'était une précaution non mesurée</strong>, c'est-à-dire une réserve qu'il
+    fallait croire sur parole. Elle est ici chiffrée <strong>des deux côtés</strong>&#8239;:
+    on règle leur krigeage par polluant, on règle nos hyperparamètres par polluant, et on
+    regarde qui y gagne quoi.
+  </div>
+
+  <div class="fig-scroll">
+    <table class="p7-tab" id="p7-tab3"></table>
+  </div>
+
+  <p class="p7-cle" id="p7-cle3"></p>
+
+  <div class="p7-reserves">
+    <div class="reserve">
+      <b>Deux hors-échantillon, pas le même.</b> Leur variante est choisie sur la
+      <strong>première moitié du calendrier</strong> et notée sur la seconde — axe
+      <em>temporel</em>. Notre réglage est choisi par validation imbriquée sur des
+      <strong>groupes de stations</strong> et noté sur des stations jamais consultées — axe
+      <em>spatial</em>. Les deux sont honnêtes&#8239;; ce ne sont pas les mêmes épreuves, et
+      les additionner serait faux.
+    </div>
+    <div class="reserve">
+      <b>Le majorant est là pour être écarté.</b> La colonne « au mieux » prend la
+      meilleure des 100 variantes <em>sur les lignes qui la notent</em>&#8239;: c'est le biais
+      de criblage, mesuré <strong>×2 à ×4</strong> sur ce dépôt. Elle borne ce que le
+      réglage pourrait rapporter en trichant — la colonne citable est la suivante.
+    </div>
+  </div>
+
   <p class="regle">
     Ce que cette page autorise à dire&#8239;: <em>« sur la seule fenêtre où les deux
     produits sont comparables ligne à ligne, la correction fait mieux que l'adaptation
     statistique en service, sur les quatre polluants — sur <b id="p7-jours2">—</b> jours
-    d'été. »</em> Rien de plus, et surtout pas un classement des deux systèmes.
+    d'été&#8239;; et sur trois ans, à départ égal, l'apprentissage bat l'interpolation du
+    biais sur <b id="p7-nousdevant">—</b> polluants sur <b id="p7-nbtot">—</b>. »</em>
+    Rien de plus, et surtout pas un classement des deux <em>systèmes</em>.
   </p>
   <p class="sig3" id="p7-sig"></p>
 </section>

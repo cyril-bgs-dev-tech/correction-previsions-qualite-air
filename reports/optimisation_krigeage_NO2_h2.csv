@@ -1,0 +1,3 @@
+polluant,horizon,depart,variante_figee,rmse_figee,rmse_meilleure_majorant,gain_majorant_pct,variante_choisie_1re_moitie,rmse_figee_2de_moitie,rmse_choisie_2de_moitie,gain_honnete_pct,charniere,n
+NO2,2,CHIMERE,30 j · 200 km · p=1 · même typo,18.330782346111015,18.06711528405823,1.438384118442848,14 j · 400 km · p=1 · même typo,17.83083467878755,17.66688526084533,0.9194713590007231,202502,328421
+NO2,2,CAMS médiane,30 j · 200 km · p=1 · même typo,15.407743538493119,15.153414553700246,1.6506569190841147,7 j · 400 km · p=1 · même typo,15.272238437000526,15.16523364845247,0.7006490174276792,202502,328421

@@ -3582,6 +3582,9 @@ i.d-ex { margin-right: 5px; }
 <style>
 /* ── Page 07 · duel PREV'AIR ─────────────────────────────────────────── */
 .p7-src{font-size:.92rem;line-height:1.6;margin:0 0 1.1rem}
+.p7-h2{font-size:1.02rem;letter-spacing:.01em;margin:1.6rem 0 .7rem;
+  display:flex;align-items:baseline;gap:.5rem}
+.p7-h2 span{font-family:var(--mono,monospace);font-size:.86rem;opacity:.6}
 .p7-tab{width:100%;border-collapse:collapse;font-size:.94rem}
 .p7-tab th{text-align:right;font-size:.74rem;text-transform:uppercase;
   letter-spacing:.07em;padding:0 .55rem .5rem;border-bottom:1px solid var(--bord,#d3dbe1)}
@@ -3592,8 +3595,13 @@ i.d-ex { margin-right: 5px; }
 .p7-tab tr:last-child td{border-bottom:0}
 .p7-tab .nous{font-weight:700}
 .p7-tab .ecart{font-weight:700}
+.p7-tab .perd{color:#b4342b}
+.p7-tab .sep{border-left:1px solid var(--bord,#d3dbe1)}
 .p7-fen{font-size:.8rem;opacity:.72;font-variant-numeric:tabular-nums}
 .p7-reserves{display:flex;flex-direction:column;gap:.7rem;margin:1.2rem 0}
+.p7-cle{font-size:.94rem;line-height:1.62;margin:.9rem 0 0;padding:.7rem .9rem;
+  border-left:3px solid var(--accent,#2f6f8f);background:var(--accent-pale,#eef4f8)}
+.p7-attente{font-size:.84rem;opacity:.72;font-style:italic}
 </style>
 <!-- P7-STYLE:FIN -->
 <!-- P7-SECTION:DEBUT -->
@@ -3605,19 +3613,20 @@ i.d-ex { margin-right: 5px; }
     <p class="chapeau">
       Tout ce qui précède se compare à <strong>CAMS brut</strong>, que personne ne
       consomme. Une AASQA reçoit <strong>PREV'AIR</strong>&#8239;: 1,7&nbsp;km, avec
-      assimilation d'observations et krigeage. Cette page confronte les deux
-      directement — <strong>mêmes stations, mêmes jours, mêmes lignes</strong>, donc
-      aucun confondant d'amont à neutraliser.
+      assimilation d'observations et krigeage. Cette page le confronte deux fois, et les
+      deux lectures sont complémentaires par construction&#8239;: <strong>leur produit</strong>
+      sur onze jours, <strong>leur méthode</strong> sur trois ans.
     </p>
     <p class="these">
-      Le résultat va dans notre sens sur les quatre polluants. Il se paie d'une fenêtre
-      de <b id="p7-jours">—</b> jours, et <strong>c'est la première chose à dire</strong>&#8239;:
-      PREV'AIR n'expose qu'environ six jours glissants, notre archivage quotidien n'a
-      démarré que fin juillet 2026, et <strong>le passé n'est pas récupérable</strong>.
-      Cette fenêtre ne grandira que d'un jour par jour.
+      Aucune des deux ne suffit seule. La première mesure exactement la bonne chose, sur
+      <b id="p7-jours">—</b> jours&#8239;; la seconde mesure sur <strong>trois ans</strong>
+      une chose légèrement différente — leur <em>famille de méthode</em>, pas leur produit.
+      <strong>L'écart entre les deux est lui-même une information</strong>, et c'est
+      pourquoi elles sont publiées ensemble plutôt qu'au choix.
     </p>
   </div>
 
+  <h2 class="p7-h2"><span>①</span> Leur produit, ligne à ligne</h2>
   <div class="p7-src">
     <b>Protocole</b> — grain aligné sur le produit PREV'AIR (<code>MAXJ1</code> pour O₃ et
     NO₂, <code>MOYJ1</code> pour les particules), échéance <strong>J+1</strong>. Notre
@@ -3652,11 +3661,79 @@ i.d-ex { margin-right: 5px; }
     </div>
   </div>
 
+  <h2 class="p7-h2"><span>②</span> Leur méthode, depuis leur point de départ</h2>
+  <div class="p7-src">
+    <b>Ce que la fenêtre de onze jours interdisait</b> — PREV'AIR ne part pas de CAMS&#8239;:
+    il part de <strong>CHIMERE</strong>, et son adaptation statistique <code>AS-CHI</code>
+    <strong>krige</strong> le résidu observation−modèle au lieu de l'apprendre. Or CHIMERE
+    est un <strong>membre de l'ensemble CAMS</strong>, archivé ici aux stations&#8239;: leur
+    chaîne se rejoue donc sur <strong>nos lignes et sur trois ans</strong>. Les six systèmes
+    sont notés sur <strong>exactement les mêmes lignes</strong>, échéance J+1, station cachée.
+  </div>
+
+  <div class="fig-scroll">
+    <table class="p7-tab" id="p7-tab2"></table>
+  </div>
+
+  <p class="p7-cle" id="p7-cle"></p>
+
+  <div class="p7-reserves">
+    <div class="reserve">
+      <b>Leur méthode fonctionne, et il faut le dire.</b> Le krigeage retire jusqu'à
+      <b id="p7-leurgain">—</b>&nbsp;% de la RMSE de CHIMERE. Ce dossier ne conteste pas
+      l'adaptation statistique de PREV'AIR&#8239;: il la mesure, puis se compare à elle à
+      départ égal.
+    </div>
+    <div class="reserve rouge">
+      <b>Ce n'est PAS PREV'AIR, et la nuance est décisive.</b> Leur CHIMERE tourne en
+      configuration <strong>nationale</strong> — maille plus fine, inventaire français,
+      assimilation de données&#8239;; le nôtre est le membre <strong>européen à 10&nbsp;km</strong>
+      de l'ensemble CAMS. Ce tableau dit ce que leur <em>famille de méthode</em> vaut sur
+      les entrées dont nous disposons. Il ne dit rien de leur produit — que seul le bloc
+      ① mesure, sur onze jours.
+    </div>
+  </div>
+
+  <h2 class="p7-h2"><span>③</span> Et si l'on réglait les deux méthodes&#8239;?</h2>
+  <div class="p7-src">
+    Le bloc ② fige la variante de krigeage adverse — 30&nbsp;j · 200&nbsp;km · p=1 · même
+    typologie — pour ne pas lui donner deux chances quand nous n'en prenons qu'une.
+    <strong>C'était une précaution non mesurée</strong>, c'est-à-dire une réserve qu'il
+    fallait croire sur parole. Elle est ici chiffrée <strong>des deux côtés</strong>&#8239;:
+    on règle leur krigeage par polluant, on règle nos hyperparamètres par polluant, et on
+    regarde qui y gagne quoi.
+  </div>
+
+  <div class="fig-scroll">
+    <table class="p7-tab" id="p7-tab3"></table>
+  </div>
+
+  <p class="p7-cle" id="p7-cle3"></p>
+
+  <div class="p7-reserves">
+    <div class="reserve">
+      <b>Deux hors-échantillon, pas le même.</b> Leur variante est choisie sur la
+      <strong>première moitié du calendrier</strong> et notée sur la seconde — axe
+      <em>temporel</em>. Notre réglage est choisi par validation imbriquée sur des
+      <strong>groupes de stations</strong> et noté sur des stations jamais consultées — axe
+      <em>spatial</em>. Les deux sont honnêtes&#8239;; ce ne sont pas les mêmes épreuves, et
+      les additionner serait faux.
+    </div>
+    <div class="reserve">
+      <b>Le majorant est là pour être écarté.</b> La colonne « au mieux » prend la
+      meilleure des 100 variantes <em>sur les lignes qui la notent</em>&#8239;: c'est le biais
+      de criblage, mesuré <strong>×2 à ×4</strong> sur ce dépôt. Elle borne ce que le
+      réglage pourrait rapporter en trichant — la colonne citable est la suivante.
+    </div>
+  </div>
+
   <p class="regle">
     Ce que cette page autorise à dire&#8239;: <em>« sur la seule fenêtre où les deux
     produits sont comparables ligne à ligne, la correction fait mieux que l'adaptation
     statistique en service, sur les quatre polluants — sur <b id="p7-jours2">—</b> jours
-    d'été. »</em> Rien de plus, et surtout pas un classement des deux systèmes.
+    d'été&#8239;; et sur trois ans, à départ égal, l'apprentissage bat l'interpolation du
+    biais sur <b id="p7-nousdevant">—</b> polluants sur <b id="p7-nbtot">—</b>. »</em>
+    Rien de plus, et surtout pas un classement des deux <em>systèmes</em>.
   </p>
   <p class="sig3" id="p7-sig"></p>
 </section>
@@ -4530,33 +4607,104 @@ i.d-ex { margin-right: 5px; }
 <!-- P0-SCRIPT:FIN -->
 
 <!-- P7-SCRIPT:DEBUT -->
-<script id="p7-data" type="application/json">{"genere":"2026-08-11T16:29:23","jours_max":11,"debut":"2026-07-28","fin":"2026-08-08","lignes":[{"polluant":"O₃","produit":"MAXJ1","jours":10,"n":2541,"stations":null,"cams":24.1,"nous":22.22,"prevair":23.56,"ecart":6.0,"corr_nous":0.743,"corr_prevair":0.557},{"polluant":"NO₂","produit":"MAXJ1","jours":10,"n":3100,"stations":null,"cams":22.91,"nous":13.55,"prevair":20.45,"ecart":51.0,"corr_nous":0.744,"corr_prevair":0.457},{"polluant":"PM10","produit":"MOYJ1","jours":11,"n":3168,"stations":null,"cams":7.35,"nous":4.83,"prevair":7.04,"ecart":45.5,"corr_nous":0.711,"corr_prevair":0.352},{"polluant":"PM2,5","produit":"MOYJ1","jours":10,"n":2177,"stations":null,"cams":2.78,"nous":2.48,"prevair":3.98,"ecart":60.9,"corr_nous":0.827,"corr_prevair":0.529}]}</script>
+<script id="p7-data" type="application/json">{"genere":"2026-08-13T21:42:19","produit":{"lignes":[{"polluant":"O₃","produit":"MAXJ1","jours":10,"n":2541,"cams":24.1,"nous":22.22,"prevair":23.56,"ecart":6.0},{"polluant":"NO₂","produit":"MAXJ1","jours":10,"n":3100,"cams":22.91,"nous":13.55,"prevair":20.45,"ecart":51.0},{"polluant":"PM10","produit":"MOYJ1","jours":11,"n":3168,"cams":7.35,"nous":4.83,"prevair":7.04,"ecart":45.5},{"polluant":"PM2,5","produit":"MOYJ1","jours":10,"n":2177,"cams":2.78,"nous":2.48,"prevair":3.98,"ecart":60.9}],"jours_max":11,"debut":"2026-07-28","fin":"2026-08-08"},"methode":{"lignes":[{"polluant":"O₃","n":87334,"chimere":18.68,"chim_krig":13.55,"cams":12.53,"cams_krig":11.44,"nous":10.87,"depart_pct":-49.1,"leur_gain_pct":27.4,"krig_sur_cams_pct":8.6,"nous_sur_cams_pct":13.2},{"polluant":"NO₂","n":109186,"chimere":22.64,"chim_krig":18.28,"cams":23.04,"cams_krig":15.45,"nous":14.18,"depart_pct":1.7,"leur_gain_pct":19.2,"krig_sur_cams_pct":32.9,"nous_sur_cams_pct":38.4},{"polluant":"PM10","n":56096,"chimere":9.01,"chim_krig":7.74,"cams":7.47,"cams_krig":6.17,"nous":6.11,"depart_pct":-20.5,"leur_gain_pct":14.0,"krig_sur_cams_pct":17.4,"nous_sur_cams_pct":18.2},{"polluant":"PM2,5","n":76844,"chimere":5.82,"chim_krig":5.62,"cams":4.31,"cams_krig":4.21,"nous":3.89,"depart_pct":-35.0,"leur_gain_pct":3.3,"krig_sur_cams_pct":2.4,"nous_sur_cams_pct":9.6}],"n_depart_perdant":3,"n_total":4,"pire_depart":-49.1,"leur_gain_max":27.4,"nous_devant":4,"mois":76844},"reglage":{"lignes":[{"polluant":"O₃","leur_majorant":1.67,"leur_honnete":1.01,"leur_variante":"14 j · 400 km · p=1 · tous","notre_gain":null,"notre_essais":null},{"polluant":"NO₂","leur_majorant":1.44,"leur_honnete":0.92,"leur_variante":"14 j · 400 km · p=1 · même typo","notre_gain":null,"notre_essais":null},{"polluant":"PM10","leur_majorant":0.0,"leur_honnete":-0.13,"leur_variante":"30 j · 400 km · p=1 · même typo","notre_gain":null,"notre_essais":null},{"polluant":"PM2,5","leur_majorant":1.53,"leur_honnete":-0.15,"leur_variante":"14 j · 400 km · p=1 · tous","notre_gain":null,"notre_essais":null}],"mesures":0,"attendus":4,"leur_max":1.01,"leur_negatifs":2,"notre_min":null,"notre_max":null}}</script>
 <script>
 (function(){
   var d = JSON.parse(document.getElementById("p7-data").textContent);
-  // Les DEUX mentions de la fenêtre dérivent de la donnée. Une seule écrite en dur
-  // (« sur dix jours d'été ») contredisait déjà l'autre : PM10 en compte onze.
-  ["p7-jours", "p7-jours2"].forEach(function(id){
-    var e = document.getElementById(id); if (e) e.textContent = d.jours_max;
-  });
-  var t = document.getElementById("p7-tab"); if (!t) return;
-  var h = '<thead><tr><th>Polluant</th><th>Fenêtre</th><th>Lignes</th>'
-        + '<th>CAMS brut</th><th>Nous</th><th>PREV\u2019AIR</th>'
-        + '<th>Écart / nous</th></tr></thead><tbody>';
-  d.lignes.forEach(function(l){
-    h += '<tr><td>' + l.polluant + ' <span class="p7-fen">' + l.produit + '</span></td>'
-       + '<td class="p7-fen">' + l.jours + ' j</td>'
-       + '<td>' + l.n.toLocaleString("fr-FR") + '</td>'
-       + '<td>' + l.cams.toFixed(2) + '</td>'
-       + '<td class="nous">' + l.nous.toFixed(2) + '</td>'
-       + '<td>' + l.prevair.toFixed(2) + '</td>'
-       + '<td class="ecart">+' + l.ecart.toFixed(1) + ' %</td></tr>';
-  });
-  t.innerHTML = h + '</tbody>';
+  var pr = d.produit, me = d.methode, rg = d.reglage;
+  function pose(id, v){ var e = document.getElementById(id); if (e) e.textContent = v; }
+  // Toutes les mentions de fenêtre et de compte DÉRIVENT de la donnée. Une seule écrite
+  // en dur (« sur dix jours d'été ») contredisait déjà l'autre : PM10 en compte onze.
+  ["p7-jours", "p7-jours2"].forEach(function(id){ pose(id, pr.jours_max); });
+  pose("p7-leurgain", me.leur_gain_max);
+  pose("p7-nousdevant", me.nous_devant);
+  pose("p7-nbtot", me.n_total);
+
+  function tableau(id, entetes, corps){
+    var t = document.getElementById(id); if (!t) return;
+    t.innerHTML = '<thead><tr>' + entetes + '</tr></thead><tbody>' + corps + '</tbody>';
+  }
+  function num(v, n){ return v.toFixed(n === undefined ? 2 : n); }
+  function signe(v, n){ return (v > 0 ? '+' : '') + v.toFixed(n === undefined ? 2 : n) + ' %'; }
+
+  // ── ① leur produit ──────────────────────────────────────────────────────────
+  tableau("p7-tab",
+    '<th>Polluant</th><th>Fenêtre</th><th>Lignes</th><th>CAMS brut</th>'
+    + '<th>Nous</th><th>PREV\u2019AIR</th><th>Écart / nous</th>',
+    pr.lignes.map(function(l){
+      return '<tr><td>' + l.polluant + ' <span class="p7-fen">' + l.produit + '</span></td>'
+        + '<td class="p7-fen">' + l.jours + ' j</td>'
+        + '<td>' + l.n.toLocaleString("fr-FR") + '</td>'
+        + '<td>' + num(l.cams) + '</td>'
+        + '<td class="nous">' + num(l.nous) + '</td>'
+        + '<td>' + num(l.prevair) + '</td>'
+        + '<td class="ecart">+' + l.ecart.toFixed(1) + ' %</td></tr>';
+    }).join(""));
+
+  // ── ② leur méthode ──────────────────────────────────────────────────────────
+  tableau("p7-tab2",
+    '<th>Polluant</th><th>Lignes</th><th>CHIMERE brut</th>'
+    + '<th>+ leur krigeage</th><th class="sep">CAMS médiane</th>'
+    + '<th>+ krigeage</th><th>+ nous</th>',
+    me.lignes.map(function(l){
+      return '<tr><td>' + l.polluant + '</td>'
+        + '<td class="p7-fen">' + l.n.toLocaleString("fr-FR") + '</td>'
+        + '<td>' + num(l.chimere) + '</td>'
+        + '<td>' + num(l.chim_krig) + '</td>'
+        + '<td class="sep">' + num(l.cams) + '</td>'
+        + '<td>' + num(l.cams_krig) + '</td>'
+        + '<td class="nous">' + num(l.nous) + '</td></tr>';
+    }).join(""));
+
+  // La phrase clé est DÉRIVÉE : elle se périmerait en silence si on l'écrivait.
+  var cle = document.getElementById("p7-cle");
+  if (cle) cle.innerHTML =
+    '<b>Le point de départ pèse autant que la méthode.</b> CHIMERE brut est plus mauvais '
+    + 'que la <strong>médiane de l\u2019ensemble dont il est membre</strong> sur '
+    + '<strong>' + me.n_depart_perdant + ' polluants sur ' + me.n_total + '</strong> — '
+    + 'jusqu\u2019à <strong>' + Math.abs(me.pire_depart).toFixed(0) + ' %</strong>. '
+    + 'Moyenner sept modèles vaut mieux que le meilleur d\u2019entre eux, et aucune '
+    + 'comparaison de méthodes ne le montre si les deux partent du même endroit.';
+
+  // ── ③ le réglage, des deux côtés ────────────────────────────────────────────
+  tableau("p7-tab3",
+    '<th>Polluant</th><th>Leur krigeage, au mieux</th><th>Leur krigeage, honnête</th>'
+    + '<th class="sep">Notre réglage</th><th>Essais</th>',
+    rg.lignes.map(function(l){
+      var n = l.notre_gain === null
+        ? '<td class="sep p7-attente">en cours</td><td class="p7-attente">—</td>'
+        : '<td class="sep nous">' + signe(l.notre_gain) + '</td>'
+          + '<td class="p7-fen">' + l.notre_essais + '</td>';
+      return '<tr><td>' + l.polluant + '</td>'
+        + '<td class="p7-fen">' + signe(l.leur_majorant) + '</td>'
+        + '<td class="' + (l.leur_honnete < 0 ? 'perd' : '') + '">'
+        + signe(l.leur_honnete) + '</td>' + n + '</tr>';
+    }).join(""));
+
+  var c3 = document.getElementById("p7-cle3");
+  if (c3) {
+    var t = '<b>Le figeage ne décide de rien.</b> Réglé par polluant sur son propre '
+      + 'départ, leur krigeage gagne <strong>au plus ' + rg.leur_max.toFixed(2)
+      + ' %</strong>, et il <strong>perd</strong> sur ' + rg.leur_negatifs + ' polluants '
+      + 'sur ' + rg.lignes.length + ' — régler une interpolation sur le passé ne dit pas '
+      + 'qu\u2019elle sera meilleure ensuite.';
+    if (rg.mesures > 0) {
+      t += ' Notre méthode, au même traitement, gagne <strong>'
+        + rg.notre_min.toFixed(2) + ' à ' + rg.notre_max.toFixed(2) + ' %</strong>'
+        + (rg.mesures < rg.attendus
+            ? ' (mesuré sur ' + rg.mesures + ' polluants sur ' + rg.attendus + ')' : '')
+        + '. <strong>La précaution jouait donc contre nous</strong> : les écarts du bloc ② '
+        + 'sont des minorants de ce côté-là aussi.';
+    } else {
+      t += ' Notre côté est en cours de mesure.';
+    }
+    c3.innerHTML = t;
+  }
+
   var s = document.getElementById("p7-sig");
-  if (s) s.textContent = "RMSE en µg/m³ · " + d.debut + " → " + d.fin
-      + " · les trois systèmes sur exactement les mêmes lignes · généré le "
-      + d.genere.replace("T", " ");
+  if (s) s.textContent = "RMSE en µg/m³ · ① " + pr.debut + " → " + pr.fin
+      + " · ② trois ans, station cachée, mêmes lignes pour les six systèmes"
+      + " · généré le " + d.genere.replace("T", " ");
 })();
 </script>
 <!-- P7-SCRIPT:FIN -->
