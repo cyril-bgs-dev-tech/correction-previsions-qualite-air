@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 13/08/2026 à 22 h 49 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 14/08/2026 à 00 h 07 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -735,6 +735,9 @@ Les deux lectures **se contredisent en signe** sur **typologie** sur O₃ (*-0.1
 
 
 ⚠️ Un apport d'ablation faible ne veut pas dire « famille inutile » : il veut dire **redondante avec le reste de la pile**. Deux familles qui captent la même information s'annulent mutuellement à l'ablation alors que retirer les deux coûterait cher. Ce tableau ne se lit jamais comme une liste de coupes à opérer.
+
+
+🔴 **C'est une MESURE, pas une SÉLECTION.** Élaguer les familles dont l'ablation ne coûte rien, puis publier le score de la pile élaguée **sur ces mêmes plis**, est le **biais de criblage** — mesuré à **×2 à ×4** sur ce dépôt lors du balayage des variables inexploitées. Si une sélection doit être faite, elle se fait sur des plis qui ne serviront pas à publier le score.
 
 ## 13. GEOS-CF — la seule information venue de l'extérieur
 

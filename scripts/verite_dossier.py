@@ -1930,6 +1930,15 @@ def bloc_ablation(lignes: list[dict]) -> str:
                  "captent la même information s'annulent mutuellement à l'ablation alors "
                  "que retirer les deux coûterait cher. Ce tableau ne se lit jamais comme "
                  "une liste de coupes à opérer.\n")
+    # Cette mise en garde vivait dans la docstring de cette fonction — donc invisible au
+    # lecteur du tableau, qui est précisément celui qui risque d'élaguer. Un avertissement
+    # que seul l'auteur du script peut lire ne protège personne.
+    texte.append("\n🔴 **C'est une MESURE, pas une SÉLECTION.** Élaguer les familles dont "
+                 "l'ablation ne coûte rien, puis publier le score de la pile élaguée **sur "
+                 "ces mêmes plis**, est le **biais de criblage** — mesuré à **×2 à ×4** sur "
+                 "ce dépôt lors du balayage des variables inexploitées. Si une sélection "
+                 "doit être faite, elle se fait sur des plis qui ne serviront pas à publier "
+                 "le score.\n")
     return "\n".join(texte)
 
 
