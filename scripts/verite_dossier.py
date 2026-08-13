@@ -652,6 +652,7 @@ def bloc_reglage(lignes: list[dict]) -> str:
                   "majorant": float(k["gain_majorant_pct"]),
                   "honnete": float(k["gain_honnete_pct"]),
                   "variante": str(k["variante_choisie_1re_moitie"]),
+                  "_fige": str(k["variante_figee"]),
                   "deploye": float(n["rmse_deploye"].iloc[0]) if n is not None else None,
                   "regle": float(n["rmse_regle"].iloc[0]) if n is not None else None,
                   "gain": float(n["gain_reglage_pct"].iloc[0]) if n is not None else None,
@@ -693,11 +694,87 @@ def bloc_reglage(lignes: list[dict]) -> str:
         texte.append("🟠 **Notre côté est en cours de mesure** — `lot_optuna_reglage.sh`, "
                      "200 essais par polluant. Tant qu'il n'est pas fini, la ligne « notre "
                      "gain » ne se cite pas.\n")
+    # ── POURQUOI le réglage rapporte si peu : la variante figée est déjà au sommet ──
+    # Sans ce rang, « +1 % » se lit comme « le krigeage est insensible à ses réglages »,
+    # ce qui est FAUX : entre la meilleure et la pire variante il y a jusqu'à 28 %. Le
+    # réglage compte énormément — il est simplement déjà fait.
+    rangs = []
+    for p in ordre:
+        f = RACINE / f"reports/optimisation_krigeage_{p}_h2_grille.csv"
+        if not f.exists() or p not in lus:
+            continue
+        g = pd.read_csv(f)
+        g = g[g["depart"] == "CHIMERE"].sort_values("rmse").reset_index(drop=True)
+        ou = g.index[g["variante"] == lus[p].get("_fige", "")].tolist()
+        if not ou:
+            continue
+        best, pire = float(g["rmse"].iloc[0]), float(g["rmse"].iloc[-1])
+        rangs.append({"p": p, "rang": ou[0] + 1, "n": len(g),
+                      "plateau": int((g["rmse"] <= best * 1.01).sum()),
+                      "etendue": 100 * (pire - best) / pire})
+    if rangs:
+        texte.append(
+            "\n### Pourquoi le réglage rapporte si peu — l'optimum ne tient pas dans le temps\n\n"
+            "⚠️ **Ne pas lire « +1 % » comme « le krigeage est insensible à ses réglages ».** "
+            "C'est l'inverse : entre la meilleure et la pire variante de la grille, l'écart "
+            f"va jusqu'à **{max(r['etendue'] for r in rangs):.0f} %**. Les réglages comptent "
+            "énormément.\n\n"
+            "Deux choses expliquent que le figeage ne coûte pourtant presque rien. **La "
+            "variante figée est déjà dans le premier cinquième** de la grille sur leur propre "
+            "départ. Et surtout — c'est le point décisif — **l'optimum ne se transfère pas "
+            "d'une période à l'autre** : choisie sur la 1ʳᵉ moitié du calendrier, la meilleure "
+            "variante fait **moins bien que la figée** sur la 2ᵈᵉ pour PM10 et PM2,5. Le gain "
+            "visible dans la grille est en bonne partie du criblage, pas de la connaissance.\n")
+        texte.append("| polluant | rang de la variante figée | variantes à moins de 1 % du "
+                     "meilleur | écart meilleure ↔ pire |")
+        texte.append("|---|---|---|---|")
+        for r in rangs:
+            texte.append(f"| {NOM.get(r['p'], r['p'])} | **{r['rang']} / {r['n']}** | "
+                         f"{r['plateau']} | {r['etendue']:.1f} % |")
+            lignes.append({"bloc": "10 sexies", "polluant": r["p"],
+                           "grandeur": "rang de la variante figée sur la grille (départ CHIMERE)",
+                           "valeur": r["rang"], "unite": f"/{r['n']}"})
+        texte.append(
+            "\nCe qui gagne partout — fenêtre longue, portée large, pondération douce — "
+            "décrit une propriété du **champ de biais** (lisse dans l'espace, persistant "
+            "dans le temps), pas une propriété du polluant. **Il n'y a rien à spécialiser "
+            "parce que les quatre polluants partagent cette physique-là.**\n")
+
+    # ── Le coût de l'autre axe, mesuré et non supposé ─────────────────────────────
+    ft = RACINE / "reports/reglage_temporel_O3.csv"
+    if ft.exists():
+        t = pd.read_csv(ft)
+        r = t[t["reglage"].str.startswith("REGLE")]
+        d = t[t["reglage"].str.startswith("DÉFAUT")]
+        if len(r) == 1 and len(d) == 1:
+            r, d = r.iloc[0], d.iloc[0]
+            texte.append(
+                f"\n### Ce que notre réglage coûte sur l'AUTRE axe — O₃, mesuré\n\n"
+                f"| réglage | gain spatial | gain temporel | pire mois | mois négatifs |\n"
+                f"|---|---|---|---|---|\n"
+                f"| **RÉGLÉ** (choisi sur des stations) | **{r['gain_spatial_pct']:+.2f} %** "
+                f"| {r['gain_temporel_pct']:+.2f} % | {r['pire_mois_pct']:.2f} % | "
+                f"**{int(r['mois_negatifs'])}** |\n"
+                f"| DÉFAUT | {d['gain_spatial_pct']:+.2f} % | "
+                f"**{d['gain_temporel_pct']:+.2f} %** | {d['pire_mois_pct']:.2f} % | "
+                f"{int(d['mois_negatifs'])} |\n")
+            texte.append(
+                f"**{r['gain_spatial_pct'] - d['gain_spatial_pct']:+.2f} point de spatial "
+                f"coûte {r['gain_temporel_pct'] - d['gain_temporel_pct']:+.2f} de temporel**, "
+                f"le pire mois empire et les mois négatifs passent de "
+                f"{int(d['mois_negatifs'])} à {int(r['mois_negatifs'])}. 🔴 **Le gain de "
+                f"réglage n'est donc PAS une amélioration déployable** : c'est un gain d'axe "
+                f"payé sur l'autre axe, et ce dossier revendique les deux généralisations. "
+                f"La colonne « notre réglage » ci-dessus répond à *« le figeage a-t-il faussé "
+                f"le verdict ? »*, jamais à *« faut-il régler ? »*.\n")
+            for cle, nom_g in (("gain_spatial_pct", "gain spatial du réglage REGLE (O3)"),
+                               ("gain_temporel_pct", "gain temporel du réglage REGLE (O3)")):
+                lignes.append({"bloc": "10 sexies", "polluant": "O3", "grandeur": nom_g,
+                               "valeur": round(float(r[cle]), 2), "unite": "%"})
+
     texte.append(
         "⚠️ **Les deux gains ne s'additionnent pas et ne se comparent qu'avec prudence** : "
-        "leur hors-échantillon est TEMPOREL, le nôtre est SPATIAL. Le projet a par ailleurs "
-        "mesuré qu'un réglage gagnant en spatial peut **perdre ~3 points en temporel** — "
-        "notre colonne est donc, elle aussi, un majorant de ce qui serait déployé.\n")
+        "leur hors-échantillon est TEMPOREL, le nôtre est SPATIAL.\n")
     return "\n".join(texte)
 
 

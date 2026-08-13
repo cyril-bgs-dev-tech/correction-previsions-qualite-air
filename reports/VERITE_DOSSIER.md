@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 13/08/2026 à 21 h 45 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 13/08/2026 à 22 h 49 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -328,7 +328,33 @@ RMSE en µg/m³, échéance J+1. Leur colonne porte sur le départ **CHIMERE** �
 
 🟠 **Notre côté est en cours de mesure** — `lot_optuna_reglage.sh`, 200 essais par polluant. Tant qu'il n'est pas fini, la ligne « notre gain » ne se cite pas.
 
-⚠️ **Les deux gains ne s'additionnent pas et ne se comparent qu'avec prudence** : leur hors-échantillon est TEMPOREL, le nôtre est SPATIAL. Le projet a par ailleurs mesuré qu'un réglage gagnant en spatial peut **perdre ~3 points en temporel** — notre colonne est donc, elle aussi, un majorant de ce qui serait déployé.
+
+### Pourquoi le réglage rapporte si peu — l'optimum ne tient pas dans le temps
+
+⚠️ **Ne pas lire « +1 % » comme « le krigeage est insensible à ses réglages ».** C'est l'inverse : entre la meilleure et la pire variante de la grille, l'écart va jusqu'à **20 %**. Les réglages comptent énormément.
+
+Deux choses expliquent que le figeage ne coûte pourtant presque rien. **La variante figée est déjà dans le premier cinquième** de la grille sur leur propre départ. Et surtout — c'est le point décisif — **l'optimum ne se transfère pas d'une période à l'autre** : choisie sur la 1ʳᵉ moitié du calendrier, la meilleure variante fait **moins bien que la figée** sur la 2ᵈᵉ pour PM10 et PM2,5. Le gain visible dans la grille est en bonne partie du criblage, pas de la connaissance.
+
+| polluant | rang de la variante figée | variantes à moins de 1 % du meilleur | écart meilleure ↔ pire |
+|---|---|---|---|
+| O₃ | **20 / 100** | 11 | 16.4 % |
+| NO₂ | **9 / 100** | 6 | 20.4 % |
+| PM10 | **1 / 100** | 9 | 12.8 % |
+| PM2,5 | **20 / 100** | 13 | 10.0 % |
+
+Ce qui gagne partout — fenêtre longue, portée large, pondération douce — décrit une propriété du **champ de biais** (lisse dans l'espace, persistant dans le temps), pas une propriété du polluant. **Il n'y a rien à spécialiser parce que les quatre polluants partagent cette physique-là.**
+
+
+### Ce que notre réglage coûte sur l'AUTRE axe — O₃, mesuré
+
+| réglage | gain spatial | gain temporel | pire mois | mois négatifs |
+|---|---|---|---|---|
+| **RÉGLÉ** (choisi sur des stations) | **+29.91 %** | +6.41 % | -7.32 % | **4** |
+| DÉFAUT | +24.52 % | **+9.26 %** | -5.88 % | 2 |
+
+**+5.39 point de spatial coûte -2.85 de temporel**, le pire mois empire et les mois négatifs passent de 2 à 4. 🔴 **Le gain de réglage n'est donc PAS une amélioration déployable** : c'est un gain d'axe payé sur l'autre axe, et ce dossier revendique les deux généralisations. La colonne « notre réglage » ci-dessus répond à *« le figeage a-t-il faussé le verdict ? »*, jamais à *« faut-il régler ? »*.
+
+⚠️ **Les deux gains ne s'additionnent pas et ne se comparent qu'avec prudence** : leur hors-échantillon est TEMPOREL, le nôtre est SPATIAL.
 
 ## 8. Détection — à budget de fausses alertes égal
 
