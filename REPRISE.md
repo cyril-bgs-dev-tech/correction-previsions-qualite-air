@@ -1,8 +1,26 @@
 # Reprise — l'état du projet
 
-> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 12/08 au soir.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
+> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 13/08 à 22 h.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
 > fichier** : sur ce projet il a déjà été périmé de dix jours tout en s'annonçant comme l'état
 > courant. Vérifie par `git log --oneline -5` et `ls -lt reports/` avant de croire ce qui suit.
+
+---
+
+## 🟠 LE 13/08 — UN LOT TOURNE : le lire AVANT de lancer quoi que ce soit
+
+**`lot_optuna_reglage.sh`**, lancé le **13/08 à 20 h 36**, porte NO₂ / PM10 / PM2,5 à
+**200 essais Optuna** chacun — la cible d'O₃, sans quoi les quatre ne se comparent pas.
+
+| | |
+|---|---|
+| **Durée attendue** | **~12 h** — fin vers le **14/08 au matin**. ⚠️ L'extrapolation de la passe unitaire (10 essais → 2 h/polluant) était **optimiste** : la cadence réelle à 68 essais donne **~4 h/polluant**. § 1 ter, une fois de plus |
+| **Reprise** | **native** : Optuna vit dans `reports/optuna/mos_<P>_lgbm.db`, un segfaut ne perd que l'essai en cours |
+| **Relanceur hôte** | ✅ **lancé** — `relance_optuna_reglage.ps1`, journal `C:\Users\Cyril\relance_optuna_reglage.log` (le lire avec `Get-Content -Encoding UTF8`) |
+| **Où en est-il** | `bash scripts/optuna_reglage_complete.sh` — rend 0 quand les trois sont à 200 |
+| **À faire quand il finit** | `python3 scripts/gain_reglage.py --tous` (≈ 10 min), puis `python3 scripts/page_duel_prevair.py && python3 scripts/injecter_pages.py && python3 scripts/exporter_pdf.py && python3 scripts/verite_dossier.py`, puis **republier l'artefact** |
+
+**Ce qu'il complète** : le bloc ③ de la page 07 et la § 10 sexies affichent *« en cours »*
+dans la colonne « notre réglage ». Le reste de la page est **complet et citable**.
 
 ---
 
@@ -51,11 +69,11 @@ en grille à 2 colonnes avec 3 enfants écrase son texte sur 30 px (la page est 
 | | |
 |---|---|
 | **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **11 jours** |
-| **Dossier** | ✅ **déposable**. HTML autonome **9 pages**, PDF **58 p.**, dépôt public **à jour et poussé**, artefact **republié le 11/08 à 23 h 55** |
-| **Git** | ✅ arbre propre, HEAD `287385a` — **synchronisé et POUSSÉ** vers `origin/main` |
-| **Machine** | ✅ libre · 🔴 **matériel défaillant**, voir § ⑤ — dernière chute le 11/08 à **18 h 10** (16ᵉ panic, pendant le duel) |
-| **Ce qui tourne** | rien · `prevair-archive.timer` (automatique, ne rien faire) |
-| **Chiffres** | `VERITE_DOSSIER.md` — **189 lignes de chiffres**, régénéré le 11/08 à 22 h 20 (**§ 10 quinquies** et **§ 11 bis** ajoutées) |
+| **Dossier** | ✅ **déposable**. HTML autonome **9 pages**, PDF **60 p.**, dépôt public **à jour et poussé** |
+| **Git** | ✅ arbre propre, HEAD `75a5670` — **synchronisé et POUSSÉ** vers `origin/main` |
+| **Machine** | 🟠 **occupée** — un lot tourne, voir ci-dessous · 🔴 **matériel défaillant**, voir § ⑤ |
+| **Ce qui tourne** | 🟠 **`lot_optuna_reglage.sh`** (depuis le 13/08 20 h 36, ~12 h) + son relanceur hôte · `prevair-archive.timer` (automatique, ne rien faire) |
+| **Chiffres** | `VERITE_DOSSIER.md` — **193 lignes de chiffres**, régénéré le 13/08 à 21 h 45 (**§ 10 sexies** ajoutée) |
 | **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 23 h 55, après publication) |
 
 🟢 **Reprise après extinction** — la session du 11/08 est intégralement poussée. Le récit
@@ -144,7 +162,8 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 | ~~5~~ | ✅ **FAIT le 11/08** — démo rafraîchie, **PM10 ajouté**, et l'échéance **J0 enfin affichée** (elle n'était affirmée nulle part). ⚠️ **Deux des trois retards annoncés n'existaient pas** : `fit_mos.py` ne contient aucune occurrence de `tendance`, et pour cause — `tendance` et GEOS-CF vivent dans la chaîne **journalière**, la démo montre le MOS **horaire**. Les y attendre confondait deux piles. Le seul retard réel était PM10, et le blocage tenait en un mot : `choices=["O3","NO2","PM25"]` dans l'`argparse` de `fit_mos.py`, alors que panel, bandes ATMO et table des espèces le portaient tous. Ajusté en **5 min**. Vérifié en pilotant l'app (Playwright) : 4 polluants proposés, **6 pages sans exception** sous PM10 | — | — |
 | ~~6~~ | ✅ **FAIT le 11/08** — part des stations dégradées re-mesurée → `VERITE_DOSSIER` **§ 11 bis**. Le « 23 % » est **retrouvé** : c'était l'épreuve *temporelle*, citée sans son épreuve. **La part va de 2,1 % à 42,5 % selon l'ÉPREUVE**, pas selon le polluant. Deux lectures qui n'étaient pas dans la réserve d'origine : le **NO₂ est à l'inverse des trois autres** (le plus dégradé station cachée, le moins station vue — son gain est un biais de *site*) ; et **une part élevée n'est pas une part grave** — 42,5 % sur PM2,5 s'adosse à un gain médian de **+2,5 %**, contre 7,8 % / **+35,6 %** sur NO₂ spatial. ⚠️ Mesuré sur une pile **sans l'étage `tendance`**, sens de l'écart non mesuré. Régénérable : `bash scripts/lot_oof_typo.sh` puis `python3 scripts/stations_degradees.py --variante typo` | — | — |
 | ~~7~~ | ✅ **FAIT le 11/08** — **page 08 « La limite »** dans la présentation (commit `7980654`), PDF **58 p.** à l'échelle 1:1, artefact republié. C'est la seule page qui dise où la correction ÉCHOUE. Chiffres relus depuis `stations_degradees_h2.csv`, bornes de la thèse dérivées en JS ; le script **lève** si le CSV croise deux variantes | — | — |
-| **8** | Faire entrer **§ 10 quinquies** dans la présentation | faible | Le duel contre LEUR MÉTHODE n'est que dans `VERITE_DOSSIER` (`AS-CHI` : **0 occurrence** dans la présentation, vérifié). ⚠️ **À fondre dans la page 07**, pas à ajouter en page 09 : elle traite déjà un duel, deux pages de duel se répéteraient. Le résultat à porter n'est pas notre gain mais que **CHIMERE brut est moins bon que la médiane de l'ensemble dont il est membre sur 3/4** |
+| ~~8~~ | ✅ **FAIT le 13/08** — § 10 quinquies **fondue dans la page 07** (commit `75a5670`), qui porte désormais **trois lectures** : ① leur produit 11 j · ② leur méthode 3 ans · ③ le réglage des deux côtés. PDF **60 p.** à l'échelle 1:1, trois tables vérifiées **remplies** au navigateur. 🔑 Le résultat porté par ② est bien que **CHIMERE brut est moins bon que la médiane de l'ensemble dont il est MEMBRE sur 3/4 — jusqu'à 49 % sur O₃**, pas notre gain. Et ③ répond à une remarque de Cyril : la réserve « on ne leur donne pas deux chances » était une **affirmation non mesurée**, elle vaut **au plus +1,01 %** pour eux et **elle les fait perdre sur 2 polluants sur 4** → `VERITE_DOSSIER` **§ 10 sexies** | — | — |
+| **8 bis** | Finir la **moitié « notre réglage »** du bloc ③ | faible, mais **long** | Le lot tourne (voir l'encadré 🟠 en tête). Quand `optuna_reglage_complete.sh` rend 0 : `gain_reglage.py --tous`, puis régénérer page + PDF + `VERITE_DOSSIER`, puis republier. ⚠️ **Le chiffre attendu n'est pas un détail** : O₃ donne déjà **+4,96 %** contre **+1,01 %** à leur krigeage — si les trois autres confirment, la précaution de la § 10 quinquies jouait **contre nous**, et les écarts publiés sont des minorants de ce côté-là aussi. ⚠️ Axe **SPATIAL** pour nous, **TEMPOREL** pour eux : les deux ne s'additionnent pas |
 | **9** | Préparer la **soutenance** | moyen | Le dossier est fini ; ce qui reste risqué est de le défendre. La matière existe et n'a jamais été mise en forme d'oral : quel chiffre pour quel protocole, les objections attendues (périmètre, antériorité, 2 épisodes sur 33), et les réponses aux questions dures. **Le plus gros risque résiduel du projet à 11 jours de l'échéance.** |
 
 ---
