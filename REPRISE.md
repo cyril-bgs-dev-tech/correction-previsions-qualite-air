@@ -1,26 +1,56 @@
 # Reprise — l'état du projet
 
-> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 13/08 à 22 h.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
+> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 15/08 à 11 h.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
 > fichier** : sur ce projet il a déjà été périmé de dix jours tout en s'annonçant comme l'état
 > courant. Vérifie par `git log --oneline -5` et `ls -lt reports/` avant de croire ce qui suit.
 
 ---
 
-## 🟠 LE 13/08 — UN LOT TOURNE : le lire AVANT de lancer quoi que ce soit
+## 🟠 LE 15/08 — UN LOT TOURNE : le lire AVANT de lancer quoi que ce soit
 
-**`lot_optuna_reglage.sh`**, lancé le **13/08 à 20 h 36**, porte NO₂ / PM10 / PM2,5 à
-**200 essais Optuna** chacun — la cible d'O₃, sans quoi les quatre ne se comparent pas.
+**`lot_optuna_reglage.sh PM10 PM25`**, relancé le **15/08 à 09 h 32**, porte les deux derniers
+polluants à **200 essais Optuna** — la cible d'O₃ et de NO₂, sans quoi les quatre ne se
+comparent pas.
 
 | | |
 |---|---|
-| **Durée attendue** | **~12 h** — fin vers le **14/08 au matin**. ⚠️ L'extrapolation de la passe unitaire (10 essais → 2 h/polluant) était **optimiste** : la cadence réelle à 68 essais donne **~4 h/polluant**. § 1 ter, une fois de plus |
+| **Où il en est** | ✅ **O₃ 201** (02/08) · ✅ **NO₂ 200** (14/08 01 h 37) · 🟠 **PM10 en cours** · ⬜ PM2,5 non commencé |
+| **Durée attendue** | fin vers **23 h le 15/08**, extrapolée d'une cadence **mesurée** (~27 essais/h : 40 essais en 88 min) — pas d'une passe unitaire |
 | **Reprise** | **native** : Optuna vit dans `reports/optuna/mos_<P>_lgbm.db`, un segfaut ne perd que l'essai en cours |
-| **Relanceur hôte** | ✅ **lancé** — `relance_optuna_reglage.ps1`, journal `C:\Users\Cyril\relance_optuna_reglage.log` (le lire avec `Get-Content -Encoding UTF8`) |
-| **Où en est-il** | `bash scripts/optuna_reglage_complete.sh` — rend 0 quand les trois sont à 200 |
+| **Relanceur hôte** | ✅ **lancé à 10 h 52**, 20 relances / **18 h** — journal `C:\Users\Cyril\relance_optuna_reglage.log` (le lire avec `Get-Content -Encoding UTF8`) |
+| **Où en est-il, en une ligne** | `bash scripts/optuna_progression.sh PM10 PM25` — compte VIVANT lu dans le `.db`, avec l'âge de la dernière écriture |
+| **Est-ce fini ?** | `bash scripts/optuna_reglage_complete.sh` — rend 0 quand les trois sont à 200 |
 | **À faire quand il finit** | `python3 scripts/gain_reglage.py --tous` (≈ 10 min), puis `python3 scripts/page_duel_prevair.py && python3 scripts/injecter_pages.py && python3 scripts/exporter_pdf.py && python3 scripts/verite_dossier.py`, puis **republier l'artefact** |
 
 **Ce qu'il complète** : le bloc ③ de la page 07 et la § 10 sexies affichent *« en cours »*
 dans la colonne « notre réglage ». Le reste de la page est **complet et citable**.
+
+**Le premier chiffre est tombé** : NO₂, 200 essais, test jamais consulté —
+**RMSE 13,5616 → 12,8937, soit +4,92 %** sur l'axe **SPATIAL** (gain contre CAMS : +39,59 %
+→ +42,57 %). À rapprocher d'O₃ à **+4,96 %**, et des **+1,01 % au plus** que le réglage
+rapporte à leur krigeage. ⚠️ **Axe spatial pour nous, temporel pour eux — les deux ne
+s'additionnent pas**, et un réglage gagnant en spatial peut perdre en temporel.
+
+### 🔴 Ce que le 14/08 a coûté, et la règle qui en sort
+
+**31 heures perdues.** Le lot du 13/08 est mort à **02 h 21** sur la **17ᵉ panique noyau**
+(signature `release_pages` / `free_pages_and_swap_cache` — identique **17/17**, rien de neuf).
+Le relanceur hôte, lui, était mort **quatre heures plus tôt**, à 22 h 27.
+
+Pourquoi : ses **20 passes** ne distinguaient pas une **relance** d'une simple **constatation**
+que le lot tourne encore. NO₂ ayant tourné 5 h d'un seul tenant, les 20 passes ont été brûlées
+en **40 minutes** à écrire « un lot tourne déjà ». Le garde-fou s'est épuisé à regarder.
+
+> **On borne un nombre d'ÉVÉNEMENTS et une DURÉE de surveillance séparément. Un compteur
+> unique borne le mauvais.** Les cinq relanceurs sont corrigés (commit `3136d62`) : budget de
+> relances d'un côté, échéance horaire de l'autre, et le message de fin **nomme** celle qui a
+> cédé — « épuisé » et « expiré » appellent des gestes opposés.
+
+⚠️ **Et la ligne de veille portait le défaut qu'elle prétendait corriger** : elle affichait le
+compte du **CSV**, que `optuna_mos.py` n'écrit qu'à la **fin** d'une exécution. Trente-sept
+lignes d'affilée annonçaient « PM10(0) » pendant que l'étude passait de 32 à 61 essais —
+**un compteur immobile est indiscernable d'un lot gelé**. C'est la § 1 quinquies rejouée dans
+le geste même qui prétendait l'appliquer.
 
 ---
 
@@ -68,11 +98,11 @@ en grille à 2 colonnes avec 3 enfants écrase son texte sur 30 px (la page est 
 
 | | |
 |---|---|
-| **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **11 jours** |
+| **Objectif** | candidature spontanée à **Atmo Occitanie** — échéance **22/08/2026**, soit **7 jours** |
 | **Dossier** | ✅ **déposable**. HTML autonome **9 pages**, PDF **60 p.**, dépôt public **à jour et poussé** |
-| **Git** | ✅ arbre propre, HEAD `75a5670` — **synchronisé et POUSSÉ** vers `origin/main` |
-| **Machine** | 🟠 **occupée** — un lot tourne, voir ci-dessous · 🔴 **matériel défaillant**, voir § ⑤ |
-| **Ce qui tourne** | 🟠 **`lot_optuna_reglage.sh`** (depuis le 13/08 20 h 36, ~12 h) + son relanceur hôte · `prevair-archive.timer` (automatique, ne rien faire) |
+| **Git** | arbre propre, HEAD `3136d62` |
+| **Machine** | 🟠 **occupée** — un lot tourne, voir ci-dessus · 🔴 **matériel défaillant**, voir § ⑤ |
+| **Ce qui tourne** | 🟠 **`lot_optuna_reglage.sh PM10 PM25`** (depuis le 15/08 09 h 32, fin ~23 h) + son relanceur hôte · `prevair-archive.timer` (automatique, ne rien faire) |
 | **Chiffres** | `VERITE_DOSSIER.md` — **193 lignes de chiffres**, régénéré le 13/08 à 21 h 45 (**§ 10 sexies** ajoutée) |
 | **Contrôle** | `verifier_dossier_candidature.py` → **20 vérifiés, 0 en écart** (11/08 23 h 55, après publication) |
 
@@ -173,10 +203,15 @@ publier le score de la pile élaguée **sur ces mêmes plis** est le biais de cr
 **Le matériel corrompt la mémoire.** Ce n'est pas une hypothèse : c'est mesuré, et le diagnostic
 est clos depuis le 11/08.
 
-📏 **16 kernel panics** dans `%LOCALAPPDATA%\Temp\wsl-crashes\`, du 04/08 au 11/08 — dont **deux
-le 11/08 au soir** (17 h 00 et 18 h 10). Signature **unanime** : `release_pages` /
-`free_pages_and_swap_cache` / `do_vmi_align_munmap` **16/16**, zéro panic hors de ce chemin, et le
-contrôle `CONFIG_DEBUG_LIST` du noyau qui **ne se déclenche que sur un pointeur corrompu**.
+📏 **17 kernel panics** dans `%LOCALAPPDATA%\Temp\wsl-crashes\`, du 04/08 au **14/08** — dont deux
+le 11/08 au soir (17 h 00 et 18 h 10) et la **17ᵉ le 14/08 à 02 h 21**, qui a emporté le lot
+Optuna. Signature **unanime** : `release_pages` / `free_pages_and_swap_cache` /
+`do_vmi_align_munmap` **17/17**, zéro panic hors de ce chemin, et le contrôle
+`CONFIG_DEBUG_LIST` du noyau qui **ne se déclenche que sur un pointeur corrompu**.
+
+⚠️ Le 14/08, **Windows n'est pas tombé** — aucun `Kernel-Power 41`, le dernier date du 10/08.
+C'est la **VM seule** qui est morte : précisément le mode que la reprise interne d'un lot ne
+couvre pas, et que seul un relanceur hôte peut rattraper.
 
 C'est **la même corruption** que les segfauts pandas/LightGBM et que les `TypeError: 'UTC' object
 cannot be interpreted as an integer` — pointeur noyau corrompu → panic ; pointeur utilisateur
@@ -195,6 +230,12 @@ corrompu → segfault ; valeur corrompue → exception absurde. **Un seul défau
   `relance_*.ps1` ET son `*_complete.sh` : trois fichiers, pas un.** Deux pièges qui rendent le
   relanceur silencieusement mort — un `.ps1` **sans BOM UTF-8** ne parse pas (PowerShell 5.1 le
   lit en Windows-1252), et `wsl.exe -- bash -lc` est un shell de **login**, donc sans conda.
+  🔴 **Troisième piège, mesuré le 14/08 : le relanceur se dimensionne sur la DURÉE du lot.**
+  Un compteur unique de « passes » ne distingue pas **relancer** de **regarder**, et un lot
+  sain qui tourne cinq heures épuise le budget en quarante minutes. Le relanceur meurt alors
+  *avant* le lot qu'il protège, et son « ARRÊT SANS ABOUTIR » s'écrit à 22 h 27 dans un
+  journal que personne ne lit. **Deux bornes séparées — un budget de relances, une échéance
+  horaire — et le message de fin nomme celle qui a cédé.**
 - **Les résultats ne sont PAS faux.** Vérifié : deux exécutions séparées par sept crashs rendent
   les mêmes chiffres à la décimale. **Les pannes sont bruyantes, pas silencieuses.**
 - La mémoire est **hors de cause** (pic 18,9 Go sur 70 ; hôte jamais sous 52 Go libres).
