@@ -22,8 +22,27 @@ $racine  = '/mnt/d/Projet_Air_Quality'
 # /usr/bin/python3, sans numpy : 16 tentatives brûlées en ModuleNotFoundError le 11/08.
 $prelude = 'source /home/cyril/miniforge3/etc/profile.d/conda.sh && conda activate llm-agent'
 $journal = 'C:\Users\Cyril\relance_optuna_reglage.log'
-$passes  = 20
-$plancher = 60         # sous cette durée, une passe n'a pas pu calculer quoi que ce soit
+
+# ⚠️ DEUX bornes, et surtout PAS UNE SEULE — c'est le défaut qui a coûté 31 heures le 14/08.
+#
+# La version précédente comptait « 20 passes » sans distinguer une RELANCE d'une simple
+# constatation que le lot tourne encore. Chaque tour de surveillance consommait donc le
+# budget censé protéger d'un défaut structurel : NO2 a tourné 5 h d'un seul tenant, les
+# 20 passes ont été brûlées en 40 minutes à écrire « un lot tourne déjà », et le relanceur
+# était mort à 22 h 27 quand la VM a paniqué à 02 h 21. Personne n'a relancé, PM10 est
+# resté à 38 essais et PM25 n'a jamais démarré.
+#
+# Ce qu'on veut borner est le nombre de FOIS OÙ L'ON REPART — un défaut non transitoire ne
+# doit pas boucler sans fin. Ce qu'on ne veut PAS borner est le temps passé à regarder un
+# lot sain avancer. Les deux ne se comptent pas dans la même unité : l'un est un nombre
+# d'événements, l'autre une durée. Les confondre borne le mauvais.
+$relancesMax = 20      # relances RÉELLES ; la surveillance n'en consomme aucune
+# Échéance dimensionnée sur la CADENCE MESURÉE, pas sur une intuition (§ 1) : 40 essais PM10
+# en 88 min le 15/08, soit ~27 essais/h → 128 essais restants ≈ 4,7 h, puis PM25 ≈ 7,4 h,
+# fin attendue vers 23 h. 18 h laisse de quoi absorber plusieurs paniques sans rien coûter :
+# la boucle s'arrête sur l'ARTEFACT dès qu'il est complet, jamais sur l'échéance.
+$heuresMax   = 18
+$plancher    = 60      # sous cette durée, une passe n'a pas pu calculer quoi que ce soit
 
 function Note($m) {
   $l = '{0}  {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $m
@@ -41,10 +60,15 @@ if ($jumeaux.Count -gt 0) {
   exit 3
 }
 
-Note "=== relanceur réglage Optuna démarré · $passes passes au plus ==="
-$eclairs = 0
+$echeance = (Get-Date).AddHours($heuresMax)
+Note ("=== relanceur réglage Optuna démarré · {0} relances au plus · surveillance jusqu'à {1} ===" `
+      -f $relancesMax, $echeance.ToString('yyyy-MM-dd HH:mm'))
+$eclairs  = 0
+$relances = 0
+$i        = 0
 
-for ($i = 1; $i -le $passes; $i++) {
+while ((Get-Date) -lt $echeance -and $relances -lt $relancesMax) {
+  $i++
 
   # ── condition d'arrêt : sur l'ARTEFACT attendu, jamais sur un code de sortie (§ 1 bis)
   $etat = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/optuna_reglage_complete.sh"
@@ -58,24 +82,39 @@ for ($i = 1; $i -le $passes; $i++) {
   # dans la même étude Optuna. Le garde porte donc sur la COQUILLE du lot.
   $vu = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/lot_en_cours.sh lot_optuna_reglage.sh"
   if ($LASTEXITCODE -eq 0) {
-    Note "passe $i : un lot tourne déjà — $vu"
+    # La ligne porte la PROGRESSION, pas « ça tourne » — et surtout pas `$etat` (§ 1 quinquies).
+    #
+    # ⚠️ Première version de ce correctif, le 15/08 : elle affichait `$etat`, en croyant
+    # justement montrer la progression. Or `optuna_reglage_complete.sh` compte les lignes du
+    # CSV, que `optuna_mos.py` n'écrit qu'à la FIN d'une exécution. Le journal a donc répété
+    # « PM10(0) PM25(0) » 37 fois d'affilée pendant que l'étude passait de 32 à 61 essais.
+    # Un compteur qui ne bouge jamais est indiscernable d'un lot gelé : la règle appliquée
+    # à l'envers, dans le geste même qui prétendait l'appliquer.
+    #
+    # La source VIVANTE est le `.db`, où Optuna écrit à chaque essai — et l'âge du fichier
+    # distingue « lent » de « gelé ». C'est ce que rend `optuna_progression.sh`.
+    $prog = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/optuna_progression.sh PM10 PM25"
+    Note "veille $i : $prog"
     Start-Sleep -Seconds 120
-    continue
+    continue          # ⚠️ ne consomme AUCUNE relance : surveiller n'est pas repartir
   }
 
-  Note "passe $i/$passes — $etat"
+  $relances++
+  Note "relance $relances/$relancesMax (passe $i) — $etat"
   $t0 = Get-Date
   & wsl.exe -d $distro -- bash -lc "$prelude && cd $racine && bash scripts/lot_optuna_reglage.sh"
   $code = $LASTEXITCODE
   $duree = [int]((Get-Date) - $t0).TotalSeconds
 
   if ($code -eq 2) {
-    Note "passe $i : refus (un lot tourne déjà) — attente 120 s"
+    # Le lot a REFUSÉ de démarrer : rien n'est reparti, donc rien n'est dû au budget.
+    $relances--
+    Note "veille $i : refus (un lot tourne déjà) — attente 120 s, relance non décomptée"
     Start-Sleep -Seconds 120
     continue
   }
 
-  Note "passe $i : le lot a rendu la main · code=$code · ${duree}s"
+  Note "relance $relances : le lot a rendu la main · code=$code · ${duree}s"
 
   # ── Détecteur d'échec STRUCTUREL : une passe réelle dure des minutes. Une passe qui rend
   # la main en quelques secondes n'a rien calculé — environnement absent, chemin faux,
@@ -95,4 +134,12 @@ for ($i = 1; $i -le $passes; $i++) {
 }
 
 $final = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/optuna_reglage_complete.sh"
-if ($LASTEXITCODE -ne 0) { Note "ARRÊT SANS ABOUTIR — $final" }
+if ($LASTEXITCODE -ne 0) {
+  # NOMMER laquelle des deux bornes a cédé : « épuisé » et « expiré » appellent des gestes
+  # opposés — l'un dit qu'un défaut se répète, l'autre seulement que le lot est plus long
+  # que prévu. Un message qui les confond envoie chercher au mauvais endroit.
+  $cause = if ($relances -ge $relancesMax) { "budget de $relancesMax relances épuisé" }
+           elseif ((Get-Date) -ge $echeance) { "échéance de $heuresMax h atteinte — le lot dure plus que prévu" }
+           else { "arrêt anticipé (voir ci-dessus)" }
+  Note "ARRÊT SANS ABOUTIR — $cause · $final"
+}

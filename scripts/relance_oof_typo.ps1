@@ -18,7 +18,20 @@ $racine  = '/mnt/d/Projet_Air_Quality'
 # ModuleNotFoundError en 0 min — indéfiniment, sans que la reprise serve à rien.
 $prelude = 'source /home/cyril/miniforge3/etc/profile.d/conda.sh && conda activate llm-agent'
 $journal = 'C:\Users\Cyril\relance_oof_typo.log'
-$passes  = 20
+# ⚠️ DEUX bornes, et surtout PAS UNE SEULE — le défaut mesuré le 14/08 sur le jumeau
+# `relance_optuna_reglage.ps1`, qui a coûté 31 heures de calcul.
+#
+# Un compteur unique ne distinguait pas une RELANCE d'une simple constatation que le lot
+# tourne encore : chaque tour de surveillance consommait le budget censé protéger d'un
+# défaut structurel. Le lot Optuna a tourné 5 h d'un seul tenant, les 20 passes ont été
+# brûlées en 40 minutes à écrire « un lot tourne déjà », et le relanceur était mort quatre
+# heures avant la panique noyau qu'il devait couvrir.
+#
+# Ce qu'on borne est le nombre de FOIS OÙ L'ON REPART. Ce qu'on ne borne PAS est le temps
+# passé à regarder un lot sain avancer. Les deux ne se comptent pas dans la même unité —
+# les confondre borne le mauvais.
+$relancesMax = 20      # relances RÉELLES ; la surveillance n'en consomme aucune
+$heuresMax   = 14      # échéance de surveillance, dimensionnée sur la durée du lot
 $plancher = 60
 
 function Note($m) {
@@ -37,10 +50,16 @@ if ($jumeaux.Count -gt 0) {
   exit 3
 }
 
-Note "=== relanceur OOF typo démarré · $passes passes au plus ==="
+$echeance = (Get-Date).AddHours($heuresMax)
+Note ("=== relanceur OOF typologie démarré · {0} relances au plus · surveillance jusqu'à {1} ===" `
+      -f $relancesMax, $echeance.ToString('yyyy-MM-dd HH:mm'))
+$relances = 0
 $eclairs = 0
 
-for ($i = 1; $i -le $passes; $i++) {
+$i = 0
+
+while ((Get-Date) -lt $echeance -and $relances -lt $relancesMax) {
+  $i++
 
   # Condition d'arrêt sur l'ARTEFACT, jamais sur un code de sortie (§ 1 bis).
   $etat = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/oof_typo_complete.sh"
@@ -53,19 +72,25 @@ for ($i = 1; $i -le $passes; $i++) {
   # deux tentatives il répond « libre » et laisserait démarrer un second lot.
   $vu = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/lot_en_cours.sh lot_oof_typo.sh"
   if ($LASTEXITCODE -eq 0) {
-    Note "passe $i : un lot tourne déjà — $vu"
+    # La ligne porte l'ÉTAT DE L'ARTEFACT, pas seulement « ça tourne » (§ 1 quinquies) :
+    # le journal montre la PROGRESSION, donc un gel devient lisible. Un moniteur
+    # qui ne dit que « vivant » est muet sur un lot vivant qui n'avance plus.
+    Note "veille $i : lot en cours — $etat"
     Start-Sleep -Seconds 90
     continue
   }
 
-  Note "passe $i/$passes — $etat"
+  $relances++
+  Note "relance $relances/$relancesMax (passe $i) — $etat"
   $t0 = Get-Date
   & wsl.exe -d $distro -- bash -lc "$prelude && cd $racine && bash scripts/lot_oof_typo.sh"
   $code = $LASTEXITCODE
   $duree = [int]((Get-Date) - $t0).TotalSeconds
 
   if ($code -eq 2) {
-    Note "passe $i : refus (un lot tourne déjà) — attente 90 s"
+    # Le lot a REFUSÉ de démarrer : rien n'est reparti, rien n'est dû au budget.
+    $relances--
+    Note "veille $i : refus (un lot tourne déjà) — attente 90 s, relance non décomptée"
     Start-Sleep -Seconds 90
     continue
   }
@@ -91,4 +116,11 @@ for ($i = 1; $i -le $passes; $i++) {
 }
 
 $final = & wsl.exe -d $distro -- bash -lc "bash $racine/scripts/oof_typo_complete.sh"
-if ($LASTEXITCODE -ne 0) { Note "ARRÊT SANS ABOUTIR — $final" }
+if ($LASTEXITCODE -ne 0) {
+  # NOMMER laquelle des deux bornes a cédé : l'une dit qu'un défaut se répète,
+  # l'autre seulement que le lot est plus long que prévu.
+  $cause = if ($relances -ge $relancesMax) { "budget de $relancesMax relances épuisé" }
+           elseif ((Get-Date) -ge $echeance) { "échéance de $heuresMax h atteinte" }
+           else { "arrêt anticipé (voir ci-dessus)" }
+  Note "ARRÊT SANS ABOUTIR — $cause · $final"
+}
