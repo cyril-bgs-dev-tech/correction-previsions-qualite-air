@@ -131,7 +131,7 @@ def extraire_aux_stations(
         station=("station", stations["station_id"].to_numpy())
     )
     tableau = echantillon.to_dataframe().reset_index()
-    return convertir_unites(_normaliser_colonnes(tableau, chemin))
+    return convertir_unites(_normaliser_colonnes(tableau, chemin, jeu))
 
 
 def indices_plus_proches(axe: np.ndarray, valeurs: np.ndarray) -> np.ndarray:
@@ -146,13 +146,28 @@ def indices_plus_proches(axe: np.ndarray, valeurs: np.ndarray) -> np.ndarray:
     return np.abs(axe[None, :] - valeurs[:, None]).argmin(axis=1)
 
 
-def date_base_prevision(chemin: str | Path) -> pd.Timestamp | None:
-    """Date de base d'un membre CAMS, lue dans son NOM de fichier.
+def date_base_prevision(chemin: str | Path,
+                        jeu=None) -> pd.Timestamp | None:
+    """Date de base d'une prévision CAMS — **dans le fichier d'abord, le nom ensuite**.
 
-    Les membres s'appellent `ENS_FORECAST_AAAA-MM-JJ.nc`, et c'est le seul endroit où
-    la date figure : à l'intérieur, la coordonnée `time` ne porte que l'échéance en
-    heures, de 0 à 72.
+    Deux conventions coexistent, et l'ordre entre elles n'est pas indifférent :
+
+    * les fichiers **journaliers** `ENS_FORECAST_AAAA-MM-JJ.nc` ne portent la date que
+      dans leur nom — à l'intérieur, `time` ne compte que l'échéance, de 0 à 72 h ;
+    * les fichiers **mensuels** de spéciation la portent dans l'attribut
+      ``time.long_name`` — ``"FORECAST time from 20250101"`` — et leur nom ne dit que le
+      mois.
+
+    On lit donc **l'attribut en premier**. C'est la § 4 bis appliquée à la lettre : *un nom
+    de fichier n'est pas une source de vérité*, et quand la donnée porte l'information,
+    c'est elle qui fait foi. L'inverse a coûté une passe le 16/08 — l'extraction refusait
+    un fichier dont la date de base était pourtant écrite trois octets plus loin.
     """
+    if jeu is not None and "time" in getattr(jeu, "coords", {}):
+        trouve = re.search(r"from\s*(\d{4})(\d{2})(\d{2})",
+                           str(jeu["time"].attrs.get("long_name", "")))
+        if trouve:
+            return pd.Timestamp("-".join(trouve.groups()), tz="UTC")
     trouve = re.search(r"(\d{4})-(\d{2})-(\d{2})", Path(chemin).name)
     if not trouve:
         return None
@@ -177,7 +192,8 @@ RENOMMAGES = {
 }
 
 
-def _normaliser_colonnes(tableau: pd.DataFrame, chemin: str | Path) -> pd.DataFrame:
+def _normaliser_colonnes(tableau: pd.DataFrame, chemin: str | Path,
+                         jeu=None) -> pd.DataFrame:
     """Uniformise les colonnes, et surtout rétablit le temps absolu des prévisions.
 
     **Le piège que ce code existe pour éviter.** Dans un membre CAMS, la coordonnée
@@ -194,7 +210,7 @@ def _normaliser_colonnes(tableau: pd.DataFrame, chemin: str | Path) -> pd.DataFr
         if est_horodatage:
             tableau = tableau.rename(columns={"time": "timestamp_utc"})
         else:
-            base = date_base_prevision(chemin)
+            base = date_base_prevision(chemin, jeu)
             if base is None:
                 raise ValueError(
                     f"{Path(chemin).name} : la coordonnée `time` porte des échéances "

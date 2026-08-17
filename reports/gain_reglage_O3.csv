@@ -1,0 +1,2 @@
+polluant,algo,essais_complets,essais_admissibles,essai_retenu,stations_test,n,rmse_deploye,decile_haut_deploye,gain_cams_deploye_pct,rmse_regle,decile_haut_regle,gain_cams_regle_pct,gain_reglage_pct,gain_reglage_pt
+O3,lgbm,203,168,253,90,280183,9.429613726270137,11.239654517874598,25.37470032703576,9.054642695766216,10.84428917626033,28.34219468389142,3.97652588312587,2.96749435685566

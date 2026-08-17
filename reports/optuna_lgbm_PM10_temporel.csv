@@ -1,0 +1,2 @@
+polluant,axe,essais,rmse_cams,rmse_reference,rmse_candidat,rmse_moyenne,correlation_erreurs,p_num_leaves,p_learning_rate,p_n_estimators,p_min_child_samples,p_reg_lambda,p_reg_alpha,p_subsample,p_colsample_bytree,modele_candidat,modele_reference
+PM10,temporel,60,7.340032444721553,6.200972020481173,5.794339205046144,5.851105783131932,0.9011313762402824,283,0.0050194032984928,207,216,0.1962260930748417,0.0112560595304042,0.9449723172751792,0.602535279884577,lgbm,lgbm_defaut

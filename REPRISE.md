@@ -1,8 +1,353 @@
 # Reprise — l'état du projet
 
-> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 15/08 à 11 h.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
+> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 17/08 au petit matin.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
 > fichier** : sur ce projet il a déjà été périmé de dix jours tout en s'annonçant comme l'état
 > courant. Vérifie par `git log --oneline -5` et `ls -lt reports/` avant de croire ce qui suit.
+
+---
+
+## 🔴 17/08 APRÈS-MIDI — LIRE CECI D'ABORD : les chiffres publiés ont changé
+
+Tout ce qui suit dans ce fichier a été écrit **avant** trois corrections qui invalident
+partiellement ses tableaux. La table publiée est désormais celle-ci :
+
+| § ③ · double aveugle, **J+1**, 24 mois communs | O₃ | NO₂ | PM10 | PM2,5 |
+|---|---:|---:|---:|---:|
+| **PARTOUT** | **+17,90 %** | **+39,61 %** | **+20,23 %** | **+11,79 %** |
+| AUX STATIONS | +24,05 % | +45,71 % | +26,25 % | +19,56 % |
+
+Pile **identique aux quatre polluants** : base + typologie + GEOS-CF + tendance + `core7`.
+Ni membres, ni feux, ni nitrate. Support commun vérifié, zéro valeur manquante.
+
+### ① Le défaut qui a tout déclenché — « un mois absent est un code d'époque »
+
+Quand une famille manque sur un mois entier, LightGBM apprend une direction par défaut pour
+les `NaN` — donc il apprend **la date**. Le protocole cachant les mois, c'est une fuite.
+**Trois occurrences** : GEOS-CF (vue à la conception), la spéciation (réintroduite le 17/08
+par une jointure `how="left"` qui préservait le corpus — trouvée par une revue externe), puis
+**les membres et les feux**, découverts en cherchant la cause d'une anomalie sur l'ozone.
+
+Mesuré : sur le pli de **juillet 2025** en ozone, où les membres manquent à 97 %, l'étage
+« + membres » rend **−126,48 %** de gain. C'est ce seul pli qui faisait chuter l'ozone.
+
+🔑 **Le critère juste est un TAUX, et il a fallu trois versions du garde.** « Toutes les
+colonnes vides » ratait ; « une colonne entièrement vide » ratait aussi — le fichier de juin
+**déborde d'un jour** sur juillet, donc le mois n'est jamais *entièrement* vide. Mécanisé
+dans `methode_maximale.py --support-complet` (`TAUX_MANQUE_MAX = 0.5`), qui **mesure** la
+couverture au lieu de lister les familles à la main. Voir
+[[un-mois-absent-est-un-code-d-epoque]].
+
+### ② L'échéance était fausse, et elle nous flattait
+
+`horizon=2` couvre les heures 25-48 : c'est **J+1**. Le dossier publiait **J+2**, sept fois.
+Vérifié dans les données — `horizon=1` démarre le 2023-08-01, `horizon=2` le 02, `horizon=3`
+le 03, `horizon=4` le 04. Une revue antérieure l'avait déjà classé P0 et déclaré corrigé ;
+**le libellé était revenu**. C'est devenu du code : `aq.rapport.libelle_echeance()` dérive
+`J+(horizon−1)` et refuse une entrée invalide.
+
+### ③ Le dossier a enfin un INTERVALLE sur son protocole principal
+
+Bootstrap **circulaire par blocs de mois**, 10 000 tirages, sur les différences appariées pli
+à pli. Les plis ne sont pas indépendants — les groupes de stations tournent (`i mod 3`) et
+deux plis partagent ~93 % de leur apprentissage.
+
+| apport de la spéciation | point | IC95 blocs 3 mois | blocs 6 mois |
+|---|---:|---|---|
+| NO₂ | **+1,54 %** | [+0,85 ; +2,19] | [+0,90 ; +2,12] |
+| O₃ | **+5,9 %** | [+3,4 ; +8,3] | [+3,5 ; +8,0] |
+| PM10 | **+6,0 %** | [+4,2 ; +7,6] | [+4,5 ; +7,0] |
+| PM2,5 | **+4,3 %** | [+2,4 ; +6,5] | [+2,5 ; +6,6] |
+
+Bornes basses toutes positives, même verdict aux deux tailles de bloc, Holm franchi — les
+trois seuils fixés avant lecture. `scripts/intervalle_apport.py`.
+
+**Le nombre de décimales suit l'intervalle** (règle NIST GLP 9) : le NO₂ garde ses deux parce
+que sa fourchette est serrée, les autres passent à une.
+
+### ④ 🔴 Le balayage J0 → J+3 RÉFUTE une affirmation du dossier
+
+Les échéances 73-96 h existaient en `.nc` mais **n'avaient jamais été extraites** : 86
+parquets sur 90 s'arrêtaient à 72 h. Re-extraction → 164,9 M → **213,0 M lignes (+29,2 %)**,
+zéro parquet dégradé. `TRANCHES[4] = (73, 96)` ajoutée.
+
+| pile commune | J0 | J+1 | J+2 | J+3 | plage R | verdict |
+|---|---:|---:|---:|---:|---:|---|
+| **NO₂** | +37,10 | +37,10 | +36,89 | +36,72 | **0,38** | ✅ **stable** |
+| PM10 | +15,14 | +15,22 | +14,58 | +15,26 | 0,69 | indéterminée |
+| PM2,5 | +5,46 | +6,01 | +6,09 | **+7,03** | 1,57 | indéterminée |
+| **O₃** | +9,25 | +9,12 | +8,53 | **+7,00** | **2,25** | 🔴 **réfutée** |
+
+⭐ **Et le classement suit le mécanisme invoqué** : l'apport de la typologie de station vaut
+**+9,03 pt sur NO₂** et **−0,23 sur O₃**. Le polluant dont le résidu est attaché au site
+résiste à l'échéance ; celui qui ne l'est pas se dégrade. *L'affirmation était juste sur son
+mécanisme et trop large dans sa portée.* Voir
+[[la-stabilite-a-l-echeance-est-refutee-sur-l-ozone]].
+
+### Ce qui a été propagé
+
+`VERITE_DOSSIER` (§ ③, § 12 bis intervalle, § 12 quinquies balayage) · `page_synthese.py` et
+`verite_dossier.py` pointent sur la passe contrôlée · présentation régénérée et **PDF exporté
+à 61 pages, échelle 1:1**, trois gardes passés · `Découverte_ATMO` : pile régénérée depuis les
+CSV, échéance et réserve de fenêtre corrigées · **les deux artefacts republiés**.
+
+### Ce qui reste
+
+- **§ C de la revue externe** : deux panneaux de comparaison, la persistance hors de `PARTOUT`.
+- **40 tailles de police** de 8,2 à 34 px — le seul défaut de forme confirmé, sans échelle.
+- ⚠️ **Rien n'est commité.**
+
+---
+
+## 🆕 LA NUIT DU 16 AU 17/08 — la spéciation CAMS, et deux revues externes
+
+### ⭐ Le résultat : on téléchargeait 4 des 28 variables que CAMS expose
+
+Le catalogue ADS expose **28 variables** pour `cams-europe-air-quality-forecasts` ; ce dépôt
+en prenait **quatre** — NO₂, O₃, PM2,5, PM10, des masses totales sans décomposition. Les
+sept traceurs de composition sont désormais téléchargés (32 mois, 8,6 Go + complément),
+extraits aux stations, et **mesurés** :
+
+| polluant | base J+1 | + spéciation | apport | **IC95** |
+|---|---:|---:|---:|---|
+| **PM10** | 6,0635 | **5,2563** | **+13,31 %** | [+10,17 ; +16,17] |
+| O₃ | 13,2313 | 12,0952 | +8,59 % | [+4,59 ; +13,02] |
+| NO₂ | 12,0263 | 11,2271 | +6,65 % | [+4,71 ; +8,55] |
+| PM2,5 | 3,5814 | 3,3525 | +6,39 % | [+4,00 ; +9,14] |
+
+Bootstrap **apparié**, 2 000 tirages, **17 blocs mensuels × 20 groupes géographiques** —
+aucun tirage négatif sur aucun polluant.
+
+**Le contrôle qui rend l'interprétation défendable** : configuration `T` = base + forme du
+total CAMS (min, max, écart-type, P90−P10 des 24 échéances). Si le gain venait d'une simple
+amplitude intra-journalière que la base n'a pas, il s'effondrerait. Il ne s'effondre pas :
+
+| | T − B *(la forme)* | **S − T** *(la composition)* |
+|---|---:|---:|
+| PM10 | +1,38 % | **+12,10 %** |
+| O₃ | +1,61 % | **+7,09 %** |
+| PM2,5 | +0,20 % | **+6,21 %** |
+| NO₂ | +1,30 % | **+5,41 %** |
+
+### 🔴 Ce qu'on ne peut PAS en dire, et qui compte autant
+
+- **Ce n'est pas le chauffage au bois.** L'hypothèse qui a lancé le chantier est **réfutée** :
+  retirer `ecres_conc` seul *améliore* sur 3 polluants sur 4. Par groupes, c'est
+  **combustion-organique** qui pèse le plus (O₃, NO₂, PM2,5) et **grossier-naturel** sur PM10.
+- **Le corpus n'est pas celui de cette épreuve** : les pourcentages ci-dessus sont sur l'axe
+  **temporel**. **Ils ne s'additionnent pas** aux +38,86 % publiés — voir la § suivante, qui
+  donne le chiffre au protocole du dossier.
+
+### ✅ 17/08 — le chiffre au PROTOCOLE DU DOSSIER, et la fenêtre est préservée
+
+`methode_maximale --ablation` a tourné sur les quatre polluants. **La jointure est en
+`how="left"`** : les mois antérieurs à 2024-01 gardent des `NaN` de composition que LightGBM
+traite nativement, donc **le corpus est intégralement conservé** — 29, 29, 24 et 29 mois,
+exactement ceux d'avant.
+
+| polluant | mois | sans spéciation | **avec** | apport | AUX STATIONS |
+|---|---:|---:|---:|---:|---:|
+| **NO₂** | 29 | +38,86 % | **+40,16 %** | +1,30 pt | +46,81 % |
+| **O₃** | 29 | +15,83 % | **+18,19 %** | **+2,36 pt** | +24,26 % |
+| **PM10** | 24 | +17,88 % | **+20,71 %** | **+2,83 pt** | +26,47 % |
+| **PM2,5** | 29 | +10,03 % | **+12,49 %** | **+2,46 pt** | +21,34 % |
+
+**Les quatre valeurs « sans spéciation » reproduisent à la décimale les chiffres publiés au
+§ ③ de `VERITE_DOSSIER`.** La chaîne est déterministe et la comparaison ne fait varier qu'une
+seule chose. Le diff de couverture ancien → nouveau (§ regenerer-peut-degrader ②) est un
+**enrichissement strict** : mêmes plis, 14 → 16 lignes.
+
+⚠️ **PM10 est le seul dont la spéciation couvre tout le corpus** (24 mois à partir de
+2024-01). Sur les trois autres, neuf mois entrent avec des `NaN` : l'apport mesuré est un
+**minorant**. C'est cohérent avec l'ordre observé — PM10 obtient le plus gros apport.
+
+### 🔴 17/08 — le MÉCANISME est tranché, et les deux explications concurrentes tombent
+
+`scripts/mecanisme_speciation.py` — cinq configurations, **seuils écrits avant lecture**,
+5 graines, mêmes lignes partout. Part du gain de la spéciation que chacune reproduit :
+
+| | PM10 | PM2,5 | O₃ | NO₂ | seuil |
+|---|---:|---:|---:|---:|---:|
+| **C** climatologie station × mois | 1,1 % | 7,6 % | **−15,2 %** | **−2,7 %** | 70 % |
+| **X** permutation **dans** station × mois | **1,9 %** | 5,2 % | 7,2 % | **−0,0 %** | 50 % |
+| **P** totaux CAMS des 3 autres polluants | 28,2 % | 27,6 % | 34,7 % | 37,0 % | 70 % |
+| **R** anomalie journalière | **89,2 %** | **110,7 %** | **127,3 %** | **95,1 %** | 70 % |
+| **F** composition relative | 92,7 % | 89,4 % | 57,3 % | 86,3 % | — |
+
+**`X` est le test décisif** : permuter la spéciation *à l'intérieur* de chaque (station, mois)
+conserve **exactement** l'histogramme par site et par saison, et ne détruit que l'appariement
+au **jour**. Il efface la totalité du gain, sur 4/4. **Le « proxy de régime » noté ci-dessus
+comme l'objection la plus forte est donc réfuté** — `P` ne reprend qu'un tiers du gain avec
+des données déjà présentes sur le disque.
+
+Ce qui reste : **le modèle exploite l'écart du JOUR à la composition habituelle du site.**
+Toujours aucune source nommée — l'attribution reste prédictive.
+
+### ⭐ Et une piste que le mécanisme a ouverte : l'anomalie bat la valeur brute
+
+`R` **dépasse** `S` sur O₃ (127 %) et PM2,5 (111 %) : la composante brute mélange le niveau
+habituel du lieu et l'écart du jour, et retirer le premier aide — O₃ +8,94 → **+10,06 %**,
+PM2,5 +11,55 → **+12,18 %** sur l'axe temporel. **C'est déployable** : la climatologie se
+calcule sur les champs CAMS *prévus*, sans aucune observation.
+
+### 🔴 …et la piste est RÉFUTÉE au protocole du dossier — 4/4, le signe s'inverse
+
+| polluant | brute | anomalie | écart |
+|---|---:|---:|---:|
+| O₃ | +18,19 % | +17,14 % | **−1,04 pt** |
+| PM2,5 | +12,49 % | +11,64 % | **−0,85 pt** |
+| PM10 | +20,71 % | +20,01 % | **−0,70 pt** |
+| NO₂ | +40,16 % | +39,66 % | **−0,50 pt** |
+
+Sur l'axe temporel les stations sont **les mêmes** de part et d'autre : le modèle connaît
+déjà chaque site, le niveau de composition y est redondant, et le retirer nettoie le signal.
+En double aveugle la station est **inconnue**, et ce niveau est justement ce qui dit *quel
+type de lieu c'est*. C'est `un-reglage-ne-vaut-que-pour-son-axe`, appliqué à une
+transformation de variable. **On garde la spéciation brute.**
+
+⚠️ **Sans le protocole du dossier, j'aurais publié un gain qui n'existe pas.**
+
+Le défaut traversé pour y arriver a produit la **règle L** du § 0 (climatologie ajustée sur
+le pli d'apprentissage, introuvable pour des stations cachées par construction) — mécanisée
+par `aq.eval.critere.exiger_couverture_de_reference`, éprouvée sur le défaut réel.
+
+### ✅ 17/08 — LE DOSSIER EST RÉGÉNÉRÉ avec la spéciation
+
+- `VERITE_DOSSIER.md` : § ③ passe à **+40,16 / +18,19 / +20,71 / +12,49 %**, § ② aux stations
+  à **+46,81 / +24,26 / +26,47 / +21,34 %**. Deux nouvelles sections : **§ 12 ter** (le
+  mécanisme, avec l'échelle de falsification) et **§ 12 quater** (l'attribution de Shapley
+  et son seuil de renoncement).
+- La régénération a aussi rattrapé deux tables en attente : le **duel PREV'AIR passe de
+  10-11 à 16-17 jours**, et la comparaison au krigeage n'est plus « en cours ».
+- `presentation_atmo.html` : page 00 régénérée par `page_synthese.py`, plus **4 blocs écrits
+  à la main** repris (bilan de tête, phrase AUX STATIONS).
+- `Découverte_ATMO.html` : la pile cumulative gagne son étage **« + composition du champ
+  CAMS »**, les deux lignes de maximum suivent.
+
+🔴 **Ce que le contrôle automatique NE POUVAIT PAS attraper, et il faut le savoir** :
+`tracer_chiffres_soutenance.py` n'a **pas** signalé `+38,86 %` comme périmé, parce que le
+chiffre figure toujours dans la source — sur la ligne **`− speciation (ablation)`**. Même
+nombre, autre protocole. Seul `+22,47 %`, qui n'avait pas de jumeau, est sorti. C'est la
+réserve que le script énonce lui-même : *une correspondance est un candidat, pas une
+validation*.
+
+### 🔴 17/08 — la stabilité par époque, et la réserve qu'elle impose sur le NO₂
+
+Le relecteur conditionnait la publication de la spéciation à un signe identique dans les
+deux époques CAMS. Mesuré (`--epoque U9|U10`, 8 lots) :
+
+| | PM10 | PM2,5 | O₃ | NO₂ |
+|---|---:|---:|---:|---:|
+| apport S − T · corpus entier | +9,42 | +5,88 | +4,11 | +2,78 |
+| apport S − T · U9 | +10,09 | +9,75 | +6,12 | +2,53 |
+| apport S − T · U10 | +14,44 | +5,49 | +16,28 | **−0,69** |
+| part reproduite par **X** | 1,9 → 9,6 → 6,2 % | 5,2 → 8,9 → 19,4 % | 7,2 → 7,3 → 6,3 % | −0,0 → 12,8 → 23,6 % |
+
+✅ **Le mécanisme est robuste** : sur les **12** mesures de `X`, la part reproduite va de
+−0,0 % à 23,6 %, jamais près du seuil de 50 %.
+
+🔴 **Mais l'apport change de signe sur le NO₂ en U10.** Le seuil du relecteur n'est pas
+franchi : l'étage reste dans la pile (il est mesuré positivement au protocole du dossier sur
+le corpus entier), mais **son apport ne se cite pas pour le NO₂**. C'est écrit dans
+`VERITE_DOSSIER` § 12 ter, et le verdict y est **calculé**, pas rédigé.
+
+⚠️ **Les dates de version n'ont pas pu être vérifiées** : le saut normalisé au 2025-11-13
+(|z| médian 0,38) est indiscernable d'une date témoin arbitraire (0,37 au 2025-03-15). Le
+découpage vaut comme deux sous-corpus disjoints, pas comme une expérience sur les versions.
+
+### 17/08 — la démo corrigée sur les trois défauts que KIMI a mesurés
+
+- 🔴 **La bannière « épisodes manqués » sommait des seuils EMBOÎTÉS.** Une heure à 140 µg/m³
+  compte dans ≥ 50, ≥ 100 *et* ≥ 130 ; le total était dominé par le seuil trivial (60 % du
+  corpus sur O₃) et annonçait **« 282 224 épisodes manqués de plus »** alors que le corrigé
+  en manque **moins** aux deux seuils sévères. Elle porte désormais sur **un** seuil — le plus
+  sévère qui ait ≥ 30 épisodes — et publie le détail par seuil, sans total. Rejoué sur les
+  chiffres du défaut : rouge −310 637 → **vert +963**.
+- 🔴 **« La correction fait jeu égal dans la queue »** était démenti par le graphique juste à
+  côté. La légende se **calcule** maintenant depuis les mêmes bandes que la figure, et **dit**
+  la dégradation (O₃ 50-100 : −12,7 %).
+- 🔴 **« Météo non extraite » s'affichait sur le premier écran** : le chemin était construit
+  en `%Y%m` alors que 2025 est en fichiers **groupés** (`era5_metropole_202501_04.parquet`).
+  Index en cache lu **dans les données** (§ 4 bis), et la couverture réelle est annoncée.
+- **« Elle repose sur trois mois de 2024 »** — réserve périmée qui sous-déclarait notre propre
+  corpus. La fenêtre se dérive des données, et la phrase nomme les trois écarts au dossier
+  (J0, horaire, base seule).
+
+### 17/08 — les cinq défauts restants de la démo, fermés
+
+- 🟠 **« La correction perd en rappel à l'échelle horaire »** — vrai au seuil trivial,
+  **faux aux seuils sévères** (O₃ : rappel 0,489 → 0,584 à 100 µg/m³ ; 0,179 → 0,286 à 130).
+  Une loi publiée sur un sous-ensemble (règle E). La phrase se **dérive** désormais de la
+  table affichée et nomme les deux sens.
+- 🟠 **La réserve du § 11 n'avait pas traversé** : les plis excluent des stations entières
+  mais **ne sont pas bloqués spatialement**. Le modèle n'a pas vu la station, il a vu ses
+  voisines. Écrit, avec le chiffre — jusqu'à −10 pts sur l'ozone.
+- 🟠 **Le bloc « régime du jour » servait un verdict de confiance hors de son périmètre** :
+  classification sur la **moyenne nationale des 24 h** quand l'étude classe station × heure
+  (stagnation ne se déclenchait que **3,4 %** du temps) ; « −17 % » cité sans ses trois mots ;
+  et **PM10 n'a jamais été mesuré** dans cette étude. Le verdict est **retiré** — le régime
+  reste descriptif, et la réserve ne s'énonce que sur O₃/NO₂/PM2,5.
+- 🟠 **Étiquettes décalées d'un cran** : `BORNES` porte les bornes **hautes**, borne incluse,
+  donc 50 µg/m³ est encore « Bon ». On compte `>` et l'on étiquette « ou pire ».
+- 🔴 **90 s de page blanche au premier clic sur « Détection »**, `show_spinner=False`. La
+  table fait **huit lignes** : elle est précalculée par `build_demo_data.py` dans
+  `src/aq/demo.py` (module partagé, pour ne pas importer une page Streamlit). Repli
+  conservé mais **bruyant**.
+- 🟡 **La carte écrêtait à ±50 %** : 13 stations NO₂ et 2 O₃ hors plage, dont une à
+  **−396,9 %** peinte comme une −50 %. Borne dérivée du 98ᵉ centile (±74,5 % sur NO₂,
+  ±29,1 % sur PM2,5), et le nombre de stations hors plage est annoncé.
+
+> **Et le calcul est mort deux fois avant d'aboutir**, sur
+> `SystemError: more argument specifiers than keyword list entries` dans
+> `ints_to_pydatetime` — **le site exact** du `TypeError: 'UTC' object cannot be interpreted
+> as an integer` du 08/08. Même signature d'instabilité de plateforme. La reprise a payé du
+> premier coup (1,3 min) : *quand un défaut est intermittent, l'ingénierie qui paie est la
+> reprise, pas le diagnostic.*
+
+### 17/08 — deux défauts de forme, fermés et mécanisés
+
+- **`var(--bord, #d3dbe1)` × 6 dans les pages 07/08 : `--bord` n'existe pas** (le jeton est
+  `--trait`). Le repli s'appliquait à chaque bordure — invisible en clair, faux en sombre.
+  `exporter_pdf.py` **refuse d'exporter** sur un jeton fantôme (garde éprouvé dans les deux sens).
+- **41 `toFixed()` produisaient un point décimal** dans un document français. 33 sites
+  d'affichage passés à la virgule, **la géométrie SVG épargnée nommément** : le PDF passe de
+  135 à **11** décimales au point, et les onze restantes sont des licences (« ODbL 1.0 ») et
+  un seuil ESA cité littéralement. 61 pages, échelle 1:1 — rien n'a bougé.
+
+### Le contrôle des chiffres, rendu utilisable
+
+`tracer_chiffres_soutenance.py` annonçait **2 780 chiffres sans trace** sur la présentation,
+dont ~2 775 étaient des coordonnées de contours dans des `<script type="application/json">`.
+Un contrôle qui rend 2 780 alertes ne se lit pas. Il exclut désormais les blocs `script` et
+`style`, les attributs et les entités — **97 chiffres réellement lisibles sans trace**,
+chacun pointant sa vraie ligne. Reste à arbitrer : ce sont des mesures réelles issues
+d'**autres rapports** que la source unique.
+
+### Le PDF était amputé, et aucun contrôle ne pouvait le voir
+
+Une revue externe a établi que **le document imprimé ne contenait pas le chiffre qu'il
+désigne lui-même comme le seul citable** : un tableau de 805 px dans une colonne de 615 px
+défile à l'écran et **disparaît sur papier**. Le contrôle mesurait la largeur du *document*
+(718 ≤ 718, vert) sans voir l'écrêtage *interne*.
+
+**Six défauts**, dont **cinq largeurs plancher écrites en dur** et un `text-overflow:
+ellipsis` qui supprimait une phrase éditoriale entière. Tous corrigés ; `exporter_pdf.py`
+**refuse désormais d'exporter** un PDF écrêté et nomme l'élément fautif.
+
+### Les règles nées de la nuit — `CLAUDE.md` § 0
+
+**A** seuils dérivés · **B** un budget par unité · **C** le code de sortie appartient à la
+dernière commande · **D** une comparaison nomme son axe · **E** deux sous-ensembles avant
+publication · **F** l'état d'un shell ne traverse pas une commande · **G** une file par
+ressource · **H** une colonne porte un rôle, jamais une identité · **I** la concurrence se
+compte par ressource · **J** une leçon vit à un endroit · **K** toute règle solde une dette.
+
+Neuf sur onze sont **exécutables** : `lancer_controle.sh`, `file_ressource.sh`,
+`auditer_regles.py`, `aq.rapport`, `aq.eval.critere.tient_sur_sous_ensembles`.
+
+### ⚠️ Rien n'est commité
+
+**Une centaine de fichiers** modifiés ou créés. Sur une machine à dix-sept paniques noyau,
+c'est le risque le plus concret de la nuit.
 
 ---
 

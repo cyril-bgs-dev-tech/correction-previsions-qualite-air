@@ -1,0 +1,6 @@
+systeme,rmse,gain_cams_pct,correlation_erreurs,polluant,axe,epoques
+CAMS brut,22.744630292637087,0.0,,NO2,temporel,30
+lgbm,12.388171872179605,45.5336415110255,,NO2,temporel,30
+realmlp,12.552010662203596,44.81330098266339,,NO2,temporel,30
+moyenne 50/50,12.313110217917394,45.863660743241866,,NO2,temporel,30
+apport du mélange,,0.6059138913852014,0.963639350962074,NO2,temporel,30

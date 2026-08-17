@@ -1,0 +1,2 @@
+polluant,axe,essais,rmse_cams,rmse_lgbm,rmse_realmlp,rmse_moyenne,correlation_erreurs,p_lr,p_train_bs,p_epochs,p_dropout,p_hidden_dims,p_n_ens,p_pbld_freq_scale
+PM10,temporel,60,7.340032444721553,6.200972020481173,5.640460192010912,5.773118171727867,0.8994179435161161,0.0028315678227832704,256,20,0.0685804819762508,"[512, 512, 512]",16,1.3425189690366905
