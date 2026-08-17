@@ -57,7 +57,11 @@ PANEL_UNIFIE = "data/processed/panel_unifie_lcsqa.parquet"
 PANEL_PAR_POLLUANT = {p: PANEL_UNIFIE for p in ("O3", "NO2", "PM25", "PM10")}
 PANEL_DEFAUT = "data/processed/panel_metropole_ds2.parquet"
 
-TRANCHES = {1: (1, 24), 2: (25, 48), 3: (49, 72)}
+# ⚠️ La clé est l'index de tranche, le libellé est J+(clé−1) : la tranche 1
+# couvre les heures 1-24 d'une sortie 00 UTC, donc le JOUR MÊME. Voir
+# `aq.rapport.libelle_echeance`, qui le dérive au lieu de le laisser écrire.
+# La tranche 4 (73-96 h) est le dernier étage que CAMS Europe produise.
+TRANCHES = {1: (1, 24), 2: (25, 48), 3: (49, 72), 4: (73, 96)}
 
 # Bandes d'analyse, calées sur les classes de l'indice ATMO plutôt que sur des
 # quantiles : ce sont elles qui décident de la couleur affichée au public.

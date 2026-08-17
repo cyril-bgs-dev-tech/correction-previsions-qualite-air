@@ -45,7 +45,11 @@ ESPECES = {
 
 # Un horizon réglementaire couvre 24 heures d'échéance. L'échéance 0 est l'analyse,
 # pas une prévision : l'inclure flatterait le modèle.
-TRANCHES = {1: (1, 24), 2: (25, 48), 3: (49, 72)}
+# ⚠️ La clé est l'index de tranche, le libellé est J+(clé−1) : la tranche 1
+# couvre les heures 1-24 d'une sortie 00 UTC, donc le JOUR MÊME. Voir
+# `aq.rapport.libelle_echeance`, qui le dérive au lieu de le laisser écrire.
+# La tranche 4 (73-96 h) est le dernier étage que CAMS Europe produise.
+TRANCHES = {1: (1, 24), 2: (25, 48), 3: (49, 72), 4: (73, 96)}
 
 
 def mois_disponibles(scope: str, court: str) -> list[Path]:

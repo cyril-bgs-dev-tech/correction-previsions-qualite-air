@@ -66,6 +66,7 @@ sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
 from apport_geoscf import charger_geoscf  # noqa: E402
+from aq.rapport import libelle_echeance  # noqa: E402
 from double_aveugle_journalier import (  # noqa: E402
     DEFAUT, GRAINE, GRANDEUR_PAR_POLLUANT, agreger_journalier, ajuster, charger,
     colonnes_admises,
@@ -85,10 +86,79 @@ from leviers_36mois import (  # noqa: E402
 # aveugle, à l'écran comme en confirmation — O₃ +3,49 pt, PM10 +1,42, PM2,5 +1,63 — et
 # **perdant sur le NO₂** (−0,10 pt, non significatif ; −0,61 significatif à l'écran).
 # L'exception a un mécanisme : le résidu du NO₂ est attaché au site, pas à la dynamique.
-ORDRE = ["typologie", "membres", "feux", "geoscf", "tendance"]
+# ⚠️ `speciation` ajoutée le 17/08/2026, en DERNIER de l'ordre cumulatif — la place la plus
+# dure : elle n'hérite que de ce que les cinq autres n'ont pas pris. Mesurée à part sur
+# l'axe temporel, elle rend +5,4 à +12,1 % au-delà de la forme du total, IC95 excluant zéro.
+# Ici on demande autre chose : ce qu'elle ajoute à une pile DÉJÀ complète, en double aveugle.
+#
+# ⚠️ Elle ne couvre que **2024-01 → 2026-08**. Comme GEOS-CF, elle restreint donc la fenêtre
+# quand elle entre : le script le dit déjà pour geoscf, et `--ablation` reste la lecture
+# honnête — l'ordre cumulatif attribue à un étage tardif ce qu'un étage précoce a pris.
+# Au-delà de ce taux de manque sur un mois, la famille code l'époque plutôt que le
+# phénomène. 0,5 sépare nettement les cas mesurés — 97 % et 100 % d'un côté, des
+# trous épars de quelques pour cent de l'autre.
+TAUX_MANQUE_MAX = 0.5
+
+ORDRE = ["typologie", "membres", "feux", "geoscf", "tendance", "speciation"]
 PERIMETRE = {"typologie": "PARTOUT", "membres": "PARTOUT", "feux": "PARTOUT",
-             "geoscf": "PARTOUT", "tendance": "PARTOUT",
+             "geoscf": "PARTOUT", "tendance": "PARTOUT", "speciation": "PARTOUT",
              "veille": "AUX STATIONS", "era5": "— (plafond)"}
+
+
+def anomaliser(ref: pd.DataFrame, tr: pd.DataFrame, te: pd.DataFrame,
+               cols: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Remplace les colonnes de spéciation par leur écart à la climatologie station × mois.
+
+    Pourquoi — mesuré le 17/08 par `mecanisme_speciation.py` : la valeur brute d'une
+    composante mélange **le niveau habituel du lieu** et **l'écart du jour**, et seul le
+    second porte l'information (la permutation conditionnelle efface 100 % du gain). Retirer
+    le premier a rendu +1,12 pt sur O₃ et +0,63 pt sur PM2,5 sur l'axe temporel.
+
+    🔴 D'où vient `ref`, et pourquoi ce n'est PAS le pli d'apprentissage
+    --------------------------------------------------------------------
+    Première version écrite ce jour-là : climatologie ajustée sur `tr`. **Elle est fausse
+    ici**, et le défaut est invisible dans le résultat. Le protocole cache la station *et*
+    le mois, donc **les stations de test sont absentes de `tr` par construction** : leur
+    climatologie n'existe pas, la ligne replie sur la moyenne globale, et le modèle apprend
+    sur des anomalies centrées puis prédit sur des valeurs brutes décalées d'une constante.
+    Deux échelles de part et d'autre du modèle, sans qu'aucune assertion ne lève.
+
+    `ref` est donc **toutes les stations, mois de test exclu**. C'est ce que la production
+    peut faire : en un point non instrumenté l'archive CAMS existe — seul le futur n'existe
+    pas. Aucune observation n'entre ici ; ce sont des champs prévus.
+
+    Les couples (station, mois) absents de `ref` replient sur la station, puis sur sa
+    moyenne. Un repli **conserve le périmètre**, là où écarter la ligne le détruirait
+    (§ 2 quater).
+    """
+    m_ref = pd.to_datetime(ref["jour"]).dt.month
+    m_tr = pd.to_datetime(tr["jour"]).dt.month
+    m_te = pd.to_datetime(te["jour"]).dt.month
+    par_sm = ref[cols].groupby([ref["station_id"], m_ref]).mean()
+    par_s = ref[cols].groupby(ref["station_id"]).mean()
+    glob = ref[cols].mean()
+
+    def ecart(bloc: pd.DataFrame, mois: pd.Series, quoi: str) -> pd.DataFrame:
+        r = par_sm.reindex(pd.MultiIndex.from_arrays([bloc["station_id"], mois])).to_numpy()
+        sec = par_s.reindex(bloc["station_id"]).to_numpy()
+        manque = np.isnan(r[:, 0])
+        r[manque] = sec[manque]
+        orphelin = np.isnan(r[:, 0])
+        r[orphelin] = glob.to_numpy()
+        # 🔴 Le contrôle qui aurait attrapé le défaut du 17/08 : si la quasi-totalité d'un
+        # bloc replie sur la moyenne globale, ses « anomalies » sont la valeur brute décalée
+        # d'une constante — et l'autre bloc, lui, est bien centré. Le modèle apprendrait et
+        # prédirait alors sur deux échelles, sans qu'aucune exception ne lève.
+        if orphelin.mean() > 0.5:
+            raise SystemExit(
+                f"anomaliser : {100 * orphelin.mean():.0f} % du bloc « {quoi} » replie sur la "
+                f"moyenne globale — la référence ne couvre pas ces stations, les anomalies "
+                f"seraient sur une autre échelle que l'autre bloc")
+        out = bloc.copy()
+        out[cols] = bloc[cols].to_numpy() - r
+        return out
+
+    return ecart(tr, m_tr, "apprentissage"), ecart(te, m_te, "test")
 
 
 def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[str]]:
@@ -101,7 +171,9 @@ def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[s
     return _fusion(d, g, "geoscf"), cols
 
 
-def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int:
+def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
+         speciation: str = "brute", support_complet: bool = False,
+         exclure: tuple[str, ...] = ()) -> int:
     depart = time.time()
     jeu = charger(polluant, horizon)
     base_cols = colonnes_admises(jeu)
@@ -144,6 +216,71 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int
           f" ({len(mois_ok)} mois) · {len(d):,} jours-station sur {avant:,}", flush=True)
 
     debut, fin = mois_ok[0].replace("-", ""), mois_ok[-1].replace("-", "")
+    from ablation_speciation import charger_speciation  # noqa: PLC0415
+
+    spe = charger_speciation()
+    cols_spe = [c for c in spe.columns if c.startswith("spe_")]
+
+    # ═══ SUPPORT COMMUN — le défaut que la revue externe a trouvé le 17/08 ═══════════
+    #
+    # 🔴 Joindre la spéciation en `how="left"` préserve le corpus, et c'est exactement le
+    # problème. Sur les mois antérieurs à 2024-01 la spéciation N'EXISTE PAS : les 16
+    # colonnes y sont entièrement NaN, LightGBM apprend une direction par défaut pour les
+    # NaN, et « tout est absent » devient un **indicateur d'année parfaitement apprenable**.
+    # Le protocole cachant les mois, c'est une fuite.
+    #
+    # Mesuré : sur les 5 plis de 2023 où la variable n'existe pas, l'ajout du bloc produit
+    # tout de même +2,64 pt de différence moyenne sur PM2,5 (−3,40 à +5,86). Le modèle
+    # exploite donc le motif d'absence.
+    #
+    # ⚠️ C'est le défaut que la docstring de ce fichier documente déjà pour GEOS-CF —
+    # « geoscf est absent » vaut « nous sommes en 2026 » — et qui lui a valu sa restriction
+    # de fenêtre. Il a été réintroduit par une autre porte.
+    #
+    # Le nitrate est écarté pour la même raison : il n'existe qu'à partir de 2024-12, donc
+    # sa seule absence date le mois à l'intérieur même de la fenêtre commune.
+    if speciation == "core7":
+        nitrate = [c for c in cols_spe if "no3" in c]
+        cols_spe = [c for c in cols_spe if c not in nitrate]
+        spe = spe.drop(columns=nitrate)
+        mois_spe = set(pd.to_datetime(spe["jour"]).dt.strftime("%Y-%m"))
+        avant_sc = sorted(set(d["mois"]))
+        d = d[d["mois"].isin(mois_spe)].reset_index(drop=True)
+        garde = sorted(set(d["mois"]))
+        print(f"  SUPPORT COMMUN : {len(cols_spe)} colonnes (nitrate écarté : "
+              f"{len(nitrate)}) · fenêtre {len(avant_sc)} → {len(garde)} mois "
+              f"({garde[0]} → {garde[-1]})", flush=True)
+    if speciation == "anomalie":
+        print(f"  spéciation en ANOMALIE : les {len(cols_spe)} colonnes seront remplacées, "
+              f"pli par pli, par leur écart à la climatologie station × mois-calendaire "
+              f"ajustée sur le SEUL pli d'apprentissage", flush=True)
+    avant_spe = len(d)
+    d = d.merge(spe, on=["station_id", "jour"], how="left")
+    if len(d) != avant_spe:
+        raise SystemExit(f"la spéciation a changé le compte de lignes "
+                         f"({avant_spe} → {len(d)}) — doublons de clé")
+    familles["speciation"] = cols_spe
+    if speciation == "core7":
+        # Il reste des trous à l'intérieur même de la fenêtre commune : la spéciation
+        # commence le 2024-01-02, donc le 1er janvier n'en a pas. On retire ces lignes —
+        # pour LES DEUX configurations à l'identique, puisque le filtre précède la
+        # construction des plis. Le repli est COMPTÉ (§ 2 quater), jamais silencieux.
+        trous = d[cols_spe].isna().any(axis=1)
+        if trous.any():
+            jours = sorted(d.loc[trous, "jour"].dt.strftime("%Y-%m-%d").unique())
+            print(f"  support commun : {int(trous.sum()):,} lignes retirées "
+                  f"({100 * trous.mean():.2f} %) sur {len(jours)} jour(s) — "
+                  f"{', '.join(jours[:4])}{' …' if len(jours) > 4 else ''}", flush=True)
+            d = d[~trous].reset_index(drop=True)
+        # Seuil fixé avant lecture : zéro valeur manquante, sinon le score n'est pas
+        # publiable. Un support « commun » qui ne l'est pas rendrait le lot inutile.
+        manquants = int(d[cols_spe].isna().sum().sum())
+        if manquants:
+            raise SystemExit(f"support commun VIOLÉ après nettoyage : {manquants:,} "
+                             f"valeurs manquantes. Le score n'est pas publiable.")
+        print(f"  ✅ support commun vérifié : 0 valeur manquante sur "
+              f"{len(d):,} lignes × {len(cols_spe)} colonnes", flush=True)
+
     d, familles["membres"] = joindre_membres(d, polluant, debut, fin)
     d, familles["feux"] = joindre_feux(d, debut, fin)
     d, familles["veille"] = joindre_veille(d)
@@ -153,6 +290,73 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int
         if not familles[nom]:
             print(f"  ⚠️ famille « {nom} » vide après jointure — écartée de la pile")
             del familles[nom]
+
+    # ═══ UN MOIS ENTIÈREMENT ABSENT EST UN CODE D'ÉPOQUE ═══════════════════════════
+    #
+    # 🔴 La règle générale que trois défauts successifs ont fini par dessiner. Quand TOUTES
+    # les colonnes d'une famille sont manquantes sur un mois entier, « cette famille est
+    # absente » vaut exactement « nous sommes en ce mois-là ». LightGBM apprend une direction
+    # par défaut pour les NaN, donc il apprend la date — et le protocole cache justement les
+    # mois. Ce n'est pas une donnée incomplète, c'est une FUITE.
+    #
+    # Les trois occurrences, dans l'ordre où elles ont été trouvées :
+    #   1. GEOS-CF — vue dès la conception, traitée en restreignant la fenêtre (docstring) ;
+    #   2. la spéciation — réintroduite le 17/08 par une jointure `how="left"` qui préservait
+    #      le corpus, et repérée par une revue externe : sur les plis de 2023 où la variable
+    #      n'existe pas, le modèle produisait quand même +2,64 pt de différence sur PM2,5 ;
+    #   3. les membres et les feux — trouvés en cherchant la cause d'une anomalie sur l'ozone.
+    #      Membres PM10 : 12 mois sur 24. Membres NO₂/O₃ : juillet 2025 absent, et sur ce
+    #      seul pli l'étage « + membres » rend **−126 %** de gain.
+    #
+    # Le contrôle ne liste plus les familles fautives : il MESURE la couverture de chacune.
+    # ⚠️ Le garde mesure par polluant, donc il peut écarter une famille chez trois d'entre
+    # eux et la garder chez le quatrième — les membres sont troués sur NO₂, O₃ et PM10 mais
+    # complets sur PM2,5. On obtiendrait alors QUATRE piles principales différentes, ce qui
+    # rend le tableau final non comparable d'une colonne à l'autre. `--exclure` porte donc
+    # l'union des familles trouées, décidée une fois pour les quatre.
+    if exclure:
+        for nom in exclure:
+            if nom in familles:
+                del familles[nom]
+                print(f"  famille « {nom} » exclue par --exclure (pile commune aux quatre "
+                      f"polluants)", flush=True)
+
+    mois_corpus = sorted(d["mois"].unique())
+    troues: dict[str, list[str]] = {}
+    for nom, cols in list(familles.items()):
+        if nom in ("veille", "era5"):        # hors pile PARTOUT — jugées ailleurs
+            continue
+        # ⚠️ Le critère est un TAUX, pas la totalité — et il a fallu deux versions fausses
+        # pour l'apprendre. « Toutes les colonnes absentes » laissait passer les membres
+        # NO₂/O₃ de juillet 2025 ; « une colonne entièrement absente » aussi. La cause :
+        # le fichier mensuel de juin **déborde d'un jour** sur juillet, donc le mois porte
+        # 1 jour sur 31 et n'est jamais « entièrement » vide. Il est pourtant manquant à
+        # 97 %, et c'est exactement le pli où l'étage « + membres » rend **−126 %** de gain.
+        vides = [m for m, bloc in d.groupby("mois")[cols]
+                 if float(bloc.isna().mean(axis=0).max()) > TAUX_MANQUE_MAX]
+        if vides:
+            troues[nom] = vides
+    if troues:
+        print(f"\n  🔴 {len(troues)} famille(s) avec au moins un MOIS entièrement absent — "
+              f"« absente » y vaut « nous sommes en ce mois-là » :", flush=True)
+        for nom, vides in troues.items():
+            taux = {m: float(bloc.isna().mean(axis=0).max())
+                    for m, bloc in d.groupby("mois")[familles[nom]] if m in vides}
+            print(f"     {nom:12s} {len(mois_corpus) - len(vides)}/{len(mois_corpus)} mois · "
+                  f"troués : " + ", ".join(f"{m} ({100*taux[m]:.0f} %)" for m in vides[:4])
+                  + (" …" if len(vides) > 4 else ""),
+                  flush=True)
+        if support_complet:
+            for nom in troues:
+                del familles[nom]
+            print(f"  → écartées de la pile (--support-complet) : {', '.join(troues)}",
+                  flush=True)
+        else:
+            print("  ⚠️ CONSERVÉES : la mesure porte un indicateur d'époque implicite. "
+                  "Utiliser --support-complet pour une pile auditable.", flush=True)
+    else:
+        print(f"  ✅ aucune famille n'a de mois entièrement absent "
+              f"({len(mois_corpus)} mois)", flush=True)
 
     # ── Les configurations, cumulatives et déclarées ─────────────────────────────────
     configs: list[tuple[str, list[str], str]] = [("base (CAMS, terrain, calendrier)",
@@ -199,6 +403,17 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int
                         partout + familles.get("veille", []) + familles["era5"],
                         "— (plafond)"))
 
+    # 🔴 La fenêtre annoncée doit être celle qui a SERVI. `mois_ok` est calculé avant les
+    # restrictions de support (core7, familles trouées) : le laisser tel quel faisait
+    # annoncer « 2023-08→2025-12 · 29 mois » à des rapports portant 24 plis de 2024-01 à
+    # 2025-12. Le « 5 écartés » était exact, la fenêtre mentait — et une revue externe l'a
+    # relevé. On recalcule depuis les données effectivement retenues.
+    avant_fenetre = len(mois_ok)
+    mois_ok = [m for m in mois_ok if m in set(d["mois"])]
+    if len(mois_ok) != avant_fenetre:
+        print(f"  fenêtre recalculée après restriction de support : {avant_fenetre} → "
+              f"{len(mois_ok)} mois ({mois_ok[0]} → {mois_ok[-1]})", flush=True)
+
     # ── Le protocole : double aveugle, station ET mois cachés ────────────────────────
     rng = np.random.default_rng(GRAINE)
     ids = np.sort(d["station_id"].unique())
@@ -209,14 +424,17 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int
         plis.append((mm, (d["mois"] == mm) & dans, (d["mois"] != mm) & ~dans))
 
     print(f"\n{'═' * 100}")
-    print(f"MÉTHODE MAXIMALE — {polluant} J+{horizon} · double aveugle, station ET mois cachés")
+    print(f"MÉTHODE MAXIMALE — {polluant} {libelle_echeance(horizon)} · double aveugle, station ET mois cachés")
     print(f"{'═' * 100}")
     print(f"  {'configuration':38s} {'périmètre':14s} {'col.':>5s} {'gain':>8s} "
           f"{'marginal':>9s} {'σ':>6s} {'plis<0':>7s}")
     # Le fichier `.partiel` est écrit après CHAQUE configuration. Un plantage machine a
     # déjà coûté trois configurations mesurées et perdues (05/08, 01 h 08) : un script qui
     # n'écrit qu'à la fin transforme n'importe quelle interruption en zéro résultat.
-    partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}.csv.partiel"
+    suff = "" if speciation == "brute" else f"_spe-{speciation}"
+    suff += "_sc" if support_complet else ""
+    suff += ("_sans-" + "-".join(sorted(exclure))) if exclure else ""
+    partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv.partiel"
 
     # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
     # `CLAUDE.md` § 2 quater : un pli écarté pour effectif insuffisant change le
@@ -247,6 +465,12 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int
     # ne le dirait pas. Et elle est invalidée si la fenêtre du corpus a changé — sinon on
     # recollerait des mesures faites sur deux périmètres différents.
     lignes, precedent = [], None
+    # ⚠️ Le CSV ne portait que l'écart-type inter-plis et le compte de plis négatifs. Deux
+    # résumés ne permettent PAS de calculer un intervalle sur la DIFFÉRENCE APPARIÉE entre
+    # deux configurations : les plis partagent leurs lignes, leur graine et leur découpage,
+    # donc la différence est bien plus serrée que ne le suggère la dispersion de chaque
+    # série prise séparément. Sans les plis, on ne peut ni le montrer ni le réfuter.
+    par_pli: list[dict] = []
     fenetre_courante = f"{mois_ok[0]}→{mois_ok[-1]}"
     if partiel.exists():
         deja = pd.read_csv(partiel)
@@ -274,14 +498,24 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int
             continue
         t0 = time.time()
         obs, cams, pred, gains = [], [], [], []
-        for _, m_te, m_tr in plis:
+        for mm, m_te, m_tr in plis:
             te, tr = d[m_te], d[m_tr]
             if len(te) < 200 or len(tr) < 1000:
                 continue
+            if speciation == "anomalie" and any(c in colonnes for c in cols_spe):
+                # référence = TOUTES les stations, le mois de test exclu (cf. `anomaliser`)
+                tr, te = anomaliser(d[d["mois"] != mm], tr, te, cols_spe)
             p = ajuster(DEFAUT, tr, te, colonnes, "cams_jour")
             o, c = te["valeur"].to_numpy(), te["cams_jour"].to_numpy()
             gains.append(gain(o, c, p))
             obs.append(o); cams.append(c); pred.append(p)
+            par_pli.append({
+                "polluant": polluant, "configuration": nom, "mois": mm,
+                "n_test": len(te), "n_train": len(tr),
+                "n_stations_test": int(te["station_id"].nunique()),
+                "rmse_cams": float(np.sqrt(np.mean((c - o) ** 2))),
+                "rmse_corrige": float(np.sqrt(np.mean((p - o) ** 2))),
+                "gain_pct": gains[-1]})
         g = gain(np.concatenate(obs), np.concatenate(cams), np.concatenate(pred))
         marge = np.nan if precedent is None else g - precedent
         neg = int(np.sum(np.array(gains) < 0))
@@ -306,8 +540,13 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False) -> int
     for c in ("gain_pct", "apport_marginal_pct", "perimetre", "n_mois"):
         if c not in t:
             raise SystemExit(f"colonne « {c} » absente du rapport")
-    f = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}.csv"
+    f = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv"
     t.to_csv(f, index=False)
+    if par_pli:   # un pli par ligne : de quoi apparier deux configurations à la main
+        fp = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}_par_pli.csv"
+        pd.DataFrame(par_pli).to_csv(fp, index=False)
+        print(f"Écrit : {fp.relative_to(RACINE)} · {len(par_pli)} lignes "
+              f"({len(set(x['configuration'] for x in par_pli))} configurations)", flush=True)
     partiel.unlink(missing_ok=True)   # le nom définitif ne paraît qu'une fois complet
     print(f"\nÉcrit : {f.relative_to(RACINE)} · {(time.time() - depart) / 60:.1f} min")
     return 0
@@ -321,5 +560,18 @@ if __name__ == "__main__":
     a.add_argument("--ablation", action="store_true",
                    help="ajouter les 5 configurations « pile complète MOINS une famille » "
                         "— ce que chaque famille apporte pour CE polluant, hors effet d'ordre")
+    a.add_argument("--exclure", default="",
+                   help="familles à retirer quoi qu'il arrive, séparées par des virgules — "
+                        "pour rendre la pile identique sur les quatre polluants")
+    a.add_argument("--support-complet", action="store_true",
+                   help="écarter toute famille ayant au moins un MOIS entièrement absent — "
+                        "sinon le modèle apprend la date par le motif de manque")
+    a.add_argument("--speciation", default="brute",
+                   choices=("brute", "anomalie", "core7"),
+                   help="« anomalie » remplace chaque composante par son écart à la "
+                        "climatologie station × mois, ajustée pli par pli. Écrit dans "
+                        "un artefact SUFFIXÉ : le chemin publié reste intact.")
     n = a.parse_args()
-    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.ablation))
+    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.ablation,
+                          n.speciation, n.support_complet,
+                          tuple(x for x in n.exclure.split(',') if x)))
