@@ -1,0 +1,2 @@
+gain_ponctuel_pct,ic95_bas,ic95_haut,part_tirages_positifs,n_lignes,n_blocs_mois,n_clusters,tirages,rmse_reference,rmse_candidat,axe
+8.189972753515107,4.587140330868294,13.023928157905988,1.0,120141,17,20,2000,13.231285819532209,12.147647115972813,temporel

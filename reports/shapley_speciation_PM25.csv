@@ -1,0 +1,4 @@
+groupe,shapley_median_pt,shapley_min_pt,shapley_max_pt,part_graines_positives,attribuable,n_variables,polluant,axe
+grossier_naturel,1.318013767817776,1.1744317905254278,1.7922824428492428,1.0,True,4,PM25,temporel
+combustion_organique,3.6250575700126313,3.3484552952790367,3.833255612044425,1.0,True,8,PM25,temporel
+secondaire,0.8995327162881862,0.4715121996476966,0.9519330205332652,1.0,False,2,PM25,temporel
