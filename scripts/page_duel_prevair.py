@@ -9,7 +9,7 @@ AASQA reçoit **PREV'AIR**. Cette page porte les deux seules confrontations qui 
 
 | | ce qui est comparé | fenêtre | ce que ça coûte |
 |---|---|---|---|
-| ① | leur **PRODUIT**, ligne à ligne | **11 jours** | l'archive publique n'expose que ~6 jours glissants |
+| ① | leur **PRODUIT**, ligne à ligne | **~17 jours**, et le compte est DÉRIVÉ | ce n'est PAS PREV'AIR qui borne — voir ci-dessous |
 | ② | leur **MÉTHODE**, depuis **leur** départ | **3 ans** | ce n'est plus leur produit, c'est leur famille de méthode |
 
 Aucune des deux ne suffit seule : ① mesure la bonne chose sur trop peu de jours, ② mesure
@@ -47,7 +47,24 @@ NOM = {"O3": "O₃", "NO2": "NO₂", "PM10": "PM10", "PM25": "PM2,5"}
 PRODUIT = {"O3": "MAXJ1", "NO2": "MAXJ1", "PM10": "MOYJ1", "PM25": "MOYJ1"}
 
 
-# ══ ① Leur PRODUIT — le duel direct, onze jours ═══════════════════════════════════
+# ══ ① Leur PRODUIT — le duel direct ═══════════════════════════════════════════════
+#
+# ⚠️ **Ce qui borne cette fenêtre n'est pas PREV'AIR** — mesuré le 16/08/2026, après y
+# avoir cru et l'avoir écrit dans l'en-tête pendant deux semaines. Les trois sources, ce
+# jour-là : PREV'AIR jusqu'au 16/08 (timer systemd, 21 jours d'affilée), CAMS brut jusqu'au
+# 07/08, observations LCSQA jusqu'au 10/08. Le duel s'arrêtait au 08/08.
+#
+# La chaîne à rejouer pour l'étendre, et **chaque maillon est un plafond distinct** :
+#   1. `download_copernicus.py --service cams_prevision`  (le `.nc` brut)
+#   2. `extract_copernicus_stations.py --service cams_prevision`  ← **le maillon oublié** :
+#      télécharger le `.nc` ne sert à rien tant que l'extraction aux stations n'est pas
+#      refaite. C'est elle que `charger()` lit, pas le `.nc`.
+#   3. `ingerer_lcsqa.py --debut … --fin …` puis `panel_unifie.py`  (les observations)
+#   4. `duel_prevair.py --polluant <P>` pour les quatre
+#
+# Fait le 16/08 : la fenêtre est passée de **11 à 17 jours**, et les quatre écarts ont
+# BAISSÉ de 4 à 14 points. Une fenêtre courte flattait — c'est la raison de dériver le
+# compte plutôt que de l'écrire.
 def bloc_produit() -> dict:
     lignes, jours, debuts, fins = [], [], [], []
     for p in NOM:
@@ -142,11 +159,18 @@ def bloc_reglage() -> dict:
     validation imbriquée sur des groupes de stations et noté sur des stations jamais
     consultées (axe SPATIAL). Les deux sont des hors-échantillon honnêtes, ce ne sont pas
     les mêmes hors-échantillon.
+
+    🔴 **Et le dire ne suffisait pas** (règle D de `CLAUDE.md`, 16/08). Cette page a
+    juxtaposé « nous +3,98 % » et « leur +1,01 % » avec la réserve en note, ce qu'un
+    lecteur lit comme un facteur quatre. Mesuré sur LEUR axe, notre réglage vaut
+    **−0,14 à +1,92 %** — du même ordre que le leur. La colonne temporelle est donc dans le
+    tableau, pas dans une note : *la réserve ne tient pas lieu de mesure.*
     """
     lignes = []
     for p in NOM:
         fk = RACINE / f"reports/optimisation_krigeage_{p}_h2.csv"
         fn = RACINE / f"reports/gain_reglage_{p}.csv"
+        ft = RACINE / f"reports/gain_reglage_{p}_temporel.csv"
         if not fk.exists():
             continue
         k = pd.read_csv(fk)
@@ -158,11 +182,14 @@ def bloc_reglage() -> dict:
              "leur_majorant": round(float(k["gain_majorant_pct"]), 2),
              "leur_honnete": round(float(k["gain_honnete_pct"]), 2),
              "leur_variante": str(k["variante_choisie_1re_moitie"]),
-             "notre_gain": None, "notre_essais": None}
+             "notre_gain": None, "notre_essais": None, "notre_gain_temporel": None}
         if fn.exists():
             n = pd.read_csv(fn).iloc[0]
             l["notre_gain"] = round(float(n["gain_reglage_pct"]), 2)
             l["notre_essais"] = int(n["essais_complets"])
+        if ft.exists():
+            l["notre_gain_temporel"] = round(
+                float(pd.read_csv(ft)["gain_reglage_pct"].iloc[0]), 2)
         lignes.append(l)
     if not lignes:
         return {"lignes": [], "mesures": 0, "attendus": len(NOM)}
@@ -173,7 +200,13 @@ def bloc_reglage() -> dict:
             "leur_max": round(max(l["leur_honnete"] for l in lignes), 2),
             "leur_negatifs": sum(1 for l in lignes if l["leur_honnete"] < 0),
             "notre_min": round(min([l["notre_gain"] for l in faits]), 2) if faits else None,
-            "notre_max": round(max([l["notre_gain"] for l in faits]), 2) if faits else None}
+            "notre_max": round(max([l["notre_gain"] for l in faits]), 2) if faits else None,
+            # La mesure sur LEUR axe. Sans elle, la colonne « notre réglage » se lit comme
+            # un facteur quatre sur la leur, ce qu'elle n'est pas.
+            "tempo_min": round(min(t), 2) if (t := [l["notre_gain_temporel"] for l in lignes
+                                                    if l["notre_gain_temporel"] is not None]) else None,
+            "tempo_max": round(max(t), 2) if t else None,
+            "tempo_mesures": len(t)}
 
 
 def donnees() -> dict:
@@ -192,7 +225,7 @@ SECTION = """<!-- ════════════════════�
       consomme. Une AASQA reçoit <strong>PREV'AIR</strong>&#8239;: 1,7&nbsp;km, avec
       assimilation d'observations et krigeage. Cette page le confronte deux fois, et les
       deux lectures sont complémentaires par construction&#8239;: <strong>leur produit</strong>
-      sur onze jours, <strong>leur méthode</strong> sur trois ans.
+      sur <b id="p7-jours3">—</b> jours, <strong>leur méthode</strong> sur trois ans.
     </p>
     <p class="these">
       Aucune des deux ne suffit seule. La première mesure exactement la bonne chose, sur
@@ -240,7 +273,8 @@ SECTION = """<!-- ════════════════════�
 
   <h2 class="p7-h2"><span>②</span> Leur méthode, depuis leur point de départ</h2>
   <div class="p7-src">
-    <b>Ce que la fenêtre de onze jours interdisait</b> — PREV'AIR ne part pas de CAMS&#8239;:
+    <b>Ce que la fenêtre de <span id="p7-jours4">—</span> jours interdisait</b> — PREV'AIR
+    ne part pas de CAMS&#8239;:
     il part de <strong>CHIMERE</strong>, et son adaptation statistique <code>AS-CHI</code>
     <strong>krige</strong> le résidu observation−modèle au lieu de l'apprendre. Or CHIMERE
     est un <strong>membre de l'ensemble CAMS</strong>, archivé ici aux stations&#8239;: leur
@@ -267,7 +301,7 @@ SECTION = """<!-- ════════════════════�
       assimilation de données&#8239;; le nôtre est le membre <strong>européen à 10&nbsp;km</strong>
       de l'ensemble CAMS. Ce tableau dit ce que leur <em>famille de méthode</em> vaut sur
       les entrées dont nous disposons. Il ne dit rien de leur produit — que seul le bloc
-      ① mesure, sur onze jours.
+      ① mesure, sur <b id="p7-jours5">—</b> jours.
     </div>
   </div>
 
@@ -346,7 +380,8 @@ SCRIPT = """(function(){
   function pose(id, v){ var e = document.getElementById(id); if (e) e.textContent = v; }
   // Toutes les mentions de fenêtre et de compte DÉRIVENT de la donnée. Une seule écrite
   // en dur (« sur dix jours d'été ») contredisait déjà l'autre : PM10 en compte onze.
-  ["p7-jours", "p7-jours2"].forEach(function(id){ pose(id, pr.jours_max); });
+  ["p7-jours", "p7-jours2", "p7-jours3", "p7-jours4", "p7-jours5"]
+    .forEach(function(id){ pose(id, pr.jours_max); });
   pose("p7-leurgain", me.leur_gain_max);
   pose("p7-nousdevant", me.nous_devant);
   pose("p7-nbtot", me.n_total);
@@ -399,12 +434,17 @@ SCRIPT = """(function(){
 
   // ── ③ le réglage, des deux côtés ────────────────────────────────────────────
   tableau("p7-tab3",
-    '<th>Polluant</th><th>Leur krigeage, au mieux</th><th>Leur krigeage, honnête</th>'
-    + '<th class="sep">Notre réglage</th><th>Essais</th>',
+    '<th>Polluant</th><th>Leur krigeage, au mieux</th>'
+    + '<th>Leur krigeage, honnête<br><small>axe temporel</small></th>'
+    + '<th class="sep">Notre réglage<br><small>axe spatial</small></th>'
+    + '<th>Notre réglage<br><small>axe temporel — le leur</small></th><th>Essais</th>',
     rg.lignes.map(function(l){
       var n = l.notre_gain === null
         ? '<td class="sep p7-attente">en cours</td><td class="p7-attente">—</td>'
+          + '<td class="p7-attente">—</td>'
         : '<td class="sep nous">' + signe(l.notre_gain) + '</td>'
+          + '<td class="' + (l.notre_gain_temporel < 0 ? 'perd' : '') + '">'
+          + (l.notre_gain_temporel === null ? '—' : signe(l.notre_gain_temporel)) + '</td>'
           + '<td class="p7-fen">' + l.notre_essais + '</td>';
       return '<tr><td>' + l.polluant + '</td>'
         + '<td class="p7-fen">' + signe(l.leur_majorant) + '</td>'
@@ -420,12 +460,23 @@ SCRIPT = """(function(){
       + 'sur ' + rg.lignes.length + ' — régler une interpolation sur le passé ne dit pas '
       + 'qu\\u2019elle sera meilleure ensuite.';
     if (rg.mesures > 0) {
-      t += ' Notre méthode, au même traitement, gagne <strong>'
-        + rg.notre_min.toFixed(2) + ' à ' + rg.notre_max.toFixed(2) + ' %</strong>'
+      t += ' Notre méthode gagne <strong>'
+        + rg.notre_min.toFixed(2) + ' à ' + rg.notre_max.toFixed(2) + ' %</strong> sur '
+        + 'l\\u2019axe <strong>spatial</strong>'
         + (rg.mesures < rg.attendus
             ? ' (mesuré sur ' + rg.mesures + ' polluants sur ' + rg.attendus + ')' : '')
-        + '. <strong>La précaution jouait donc contre nous</strong> : les écarts du bloc ② '
-        + 'sont des minorants de ce côté-là aussi.';
+        + '.';
+      // ⚠️ Sans la phrase qui suit, les deux colonnes se lisent comme un facteur quatre.
+      // La réserve ne tient pas lieu de mesure : on a mesuré (règle D).
+      if (rg.tempo_mesures > 0) {
+        t += ' <strong>Mais les deux colonnes ne se comparent pas terme à terme :</strong> '
+          + 'la leur est un hors-échantillon <strong>temporel</strong>, la nôtre '
+          + '<strong>spatial</strong>. Rejoué sur <em>leur</em> axe, notre réglage vaut '
+          + '<strong>' + rg.tempo_min.toFixed(2) + ' à ' + rg.tempo_max.toFixed(2)
+          + ' %</strong> — <strong>du même ordre que le leur</strong>. Le gain du réglage '
+          + 'est un phénomène de l\\u2019axe spatial ; ce qui se compare à armes égales est '
+          + 'la colonne de droite.';
+      }
     } else {
       t += ' Notre côté est en cours de mesure.';
     }
@@ -449,7 +500,7 @@ def main() -> int:
     (FIG / "_p7_script.js").write_text(SCRIPT, encoding="utf-8")
 
     pr, me, rg = d["produit"], d["methode"], d["reglage"]
-    print("① leur PRODUIT — onze jours")
+    print(f"① leur PRODUIT — {pr['jours_max']} jours")
     for l in pr["lignes"]:
         print(f"  {l['polluant']:6s} {l['jours']:2d} j · {l['n']:>6,} lignes · "
               f"CAMS {l['cams']:6.2f} · nous {l['nous']:6.2f} · "
@@ -465,10 +516,18 @@ def main() -> int:
     print(f"\n③ le RÉGLAGE des deux côtés — {rg['mesures']} polluants mesurés de notre "
           f"côté sur {rg['attendus']}")
     for l in rg["lignes"]:
-        n = f"{l['notre_gain']:+.2f} % ({l['notre_essais']} essais)" \
-            if l["notre_gain"] is not None else "en cours"
-        print(f"  {l['polluant']:6s} leur krigeage {l['leur_majorant']:+.2f} % au mieux, "
-              f"{l['leur_honnete']:+.2f} % honnête · nous {n}")
+        n = f"{l['notre_gain']:+.2f} %" if l["notre_gain"] is not None else "en cours"
+        # La console montre les DEUX axes, comme la page. Un journal qui n'affiche que la
+        # colonne flatteuse fait relire à l'opérateur autre chose que ce que lit le jury.
+        t = ("—" if l["notre_gain_temporel"] is None
+             else f"{l['notre_gain_temporel']:+.2f} %")
+        print(f"  {l['polluant']:6s} leur krigeage {l['leur_honnete']:+.2f} % (temporel) "
+              f"· nous {n} (spatial) / {t} (temporel, LEUR axe)")
+    if rg.get("tempo_mesures"):
+        print(f"  → sur leur axe, notre réglage vaut {rg['tempo_min']:+.2f} à "
+              f"{rg['tempo_max']:+.2f} % — du même ordre que leur "
+              f"{min(l['leur_honnete'] for l in rg['lignes']):+.2f} … "
+              f"{rg['leur_max']:+.2f} %")
 
     print(f"\nÉcrit : 4 fragments p7 dans {FIG.relative_to(RACINE)} "
           f"· fenêtre ① {pr['debut']} → {pr['fin']} ({pr['jours_max']} j max)")
