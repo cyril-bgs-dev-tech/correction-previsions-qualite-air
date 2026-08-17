@@ -25,6 +25,7 @@ On en profite pour ne garder que ce que l'interface affiche réellement.
 
 from __future__ import annotations
 
+import time
 import sys
 from pathlib import Path
 
@@ -111,6 +112,23 @@ def main() -> int:
                 .merge(geo, on="station_id", how="inner"))
     contexte.to_parquet(SORTIE / "stations.parquet", index=False)
     resume.to_parquet(SORTIE / "resume_stations.parquet", index=False)
+
+    # ── La table qui gelait la démo quatre-vingt-dix secondes ────────────────────────
+    # Trois passes de `sous_indices_journaliers` sur 28,9 M de lignes, avec `iterrows`.
+    # Chronométré deux fois : 90 s au mieux, > 120 s au pire. Le résultat fait huit lignes,
+    # et la page le recalculait à chaque session — sans spinner. Il se calcule ici.
+    print("Détection journalière (indice ATMO)… une à deux minutes", flush=True)
+    t0 = time.time()
+    from aq.demo import detection_journaliere  # noqa: PLC0415
+
+    detection = detection_journaliere(predictions)
+    if detection.empty:
+        raise SystemExit("détection journalière vide — la démo aurait un tableau muet")
+    for c in ("seuil", "seuil_val", "modele", "rappel", "precision", "manques", "n"):
+        if c not in detection:
+            raise SystemExit(f"colonne « {c} » absente de la détection journalière")
+    detection.to_parquet(SORTIE / "detection_journaliere.parquet", index=False)
+    print(f"  {len(detection)} lignes · {(time.time() - t0) / 60:.1f} min", flush=True)
 
     for nom, chemin in [("cams_benchmark.csv", "reports/cams_benchmark.csv"),
                         ("indice_detection.csv", "reports/indice_detection.csv")]:

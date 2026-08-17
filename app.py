@@ -57,69 +57,73 @@ def metriques(observe: pd.Series, predit: pd.Series) -> dict[str, float]:
             "r2": float(1 - (err ** 2).mean() / var) if var > 0 else np.nan}
 
 
-def _detection(reel: pd.Series, annonce: pd.Series) -> dict[str, float]:
-    vp = int((reel & annonce).sum())
-    return {"rappel": vp / max(1, int(reel.sum())),
-            "precision": vp / max(1, int(annonce.sum())),
-            "manques": int((reel & ~annonce).sum()), "n": int(reel.sum())}
+from aq.demo import compter as _detection  # noqa: E402
+from aq.demo import detection_journaliere as _detection_journaliere  # noqa: E402
+
+
+@st.cache_data(show_spinner=False)
+def _index_meteo(chemins: tuple[str, ...]) -> dict:
+    """Fichier ERA5 → (premier jour, dernier jour), lus DANS les données.
+
+    § 4 bis : le nom ne dit pas la fenêtre. `era5_metropole_202501_04.parquet` en porte
+    quatre mois, `..._202505_06.parquet` deux, et un chemin construit depuis `%Y%m` n'en
+    trouve aucun — ce qui faisait afficher « Météo non extraite » sur des mois présents.
+    On lit la seule colonne temporelle, une fois, et le résultat est mis en cache.
+    """
+    index = {}
+    for c in chemins:
+        try:
+            t = pd.read_parquet(c, columns=["timestamp_utc"])
+        except Exception as e:                       # jamais silencieux (§ 2 bis)
+            st.warning(f"ERA5 illisible : {pathlib.Path(c).name} — {type(e).__name__}")
+            continue
+        j = t["timestamp_utc"].dt.tz_convert("Europe/Paris").dt.date
+        index[c] = (j.min(), j.max())
+    return index
 
 
 def detection_horaire(p: pd.DataFrame, polluant: str) -> pd.DataFrame:
     """Franchissement d'un seuil, heure par heure — l'échelle du déclenchement d'alerte."""
+    # ⚠️ `BORNES` porte les bornes **hautes** de chaque classe, borne supérieure INCLUSE :
+    # une valeur d'exactement 50 µg/m³ d'ozone est encore « Bon ». Compter `>= 50` et
+    # étiqueter « Moyen » promettait donc une classe que la donnée ne tient pas, d'un cran.
+    # On compte `>` et l'on étiquette « ou pire » — la même forme que l'échelle journalière
+    # juste en dessous, qui l'avait déjà juste.
     etiquettes = ["Moyen", "Dégradé", "Mauvais", "Très mauvais", "Extrêmement mauvais"]
     lignes = []
     for seuil, nom in zip(BORNES[polluant], etiquettes):
-        reel = p["observe"] >= seuil
+        reel = p["observe"] > seuil
         if reel.sum() < 5:
             continue
         for modele, colonne in (("CAMS brut", "cams"), ("Corrigé", "corrige")):
-            lignes.append({"seuil": f"≥ {seuil:.0f} — {nom}", "modele": modele,
-                           **_detection(reel, p[colonne] >= seuil)})
+            lignes.append({"seuil": f"> {seuil:.0f} — {nom} ou pire", "seuil_val": float(seuil),
+                           "modele": modele,
+                           **_detection(reel, p[colonne] > seuil)})
     return pd.DataFrame(lignes)
 
 
-@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner="Calcul de l\'indice ATMO sur 28,9 M de lignes…")
 def detection_journaliere(pred: pd.DataFrame) -> pd.DataFrame:
-    """Classe d'indice ATMO du jour — l'échelle de ce qui est publié au public.
+    """Lit la table précalculée par `build_demo_data.py` ; la recalcule si elle manque.
 
-    L'indice retient le **pire** des sous-indices, sur le maximum horaire du jour pour
-    les gaz et la moyenne journalière pour les particules. Cette agrégation par le
-    maximum est ce qui rattrape l'amortissement que la correction introduit heure par
-    heure : les deux échelles ne rendent pas le même verdict, et il faut les deux.
+    🔴 Mesuré le 17/08 : le calcul prend **90 s au mieux, plus de 120 s au pire**, une fois
+    par session, et le cache portait `show_spinner=False` — donc quatre-vingt-dix secondes
+    de page blanche au premier clic, devant un jury. La table fait huit lignes ; elle est
+    désormais matérialisée à la construction du jeu de démo.
+
+    Le repli qui recalcule reste, mais il est **bruyant** : un spinner nommé, et un
+    avertissement qui dit pourquoi c'est lent et comment l'éviter. Un repli silencieux
+    rendrait le défaut invisible jusqu'au jour où il compte.
     """
-    from aq.models import indice_atmo as idx
-
-    tables = {}
-    for source, colonne in (("observe", "observe"), ("cams", "cams"),
-                            ("mos", "corrige")):
-        jeu = pred.rename(columns={colonne: "valeur"})[
-            ["station_id", "timestamp_utc", "polluant", "valeur"]].dropna()
-        jeu["polluant"] = jeu["polluant"].astype(str)
-        indices = idx.indice_par_station(idx.sous_indices_journaliers(jeu))
-        tables[source] = idx.indice_complet_seulement(indices, n_requis=3)
-
-    cles = [set(map(tuple, t[["station_id", "jour_local"]].to_numpy()))
-            for t in tables.values()]
-    communs = set.intersection(*cles)
-
-    def aligner(t: pd.DataFrame) -> pd.DataFrame:
-        garde = [tuple(x) in communs
-                 for x in t[["station_id", "jour_local"]].to_numpy()]
-        return (t[garde].sort_values(["station_id", "jour_local"])
-                .reset_index(drop=True))
-
-    ref = aligner(tables["observe"])
-    LIB = {2: "Moyen ou pire", 3: "Dégradé ou pire", 4: "Mauvais ou pire",
-           5: "Très mauvais ou pire"}
-    lignes = []
-    for seuil, nom in LIB.items():
-        reel = ref["indice"] >= seuil
-        if reel.sum() < 5:
-            continue
-        for modele, source in (("CAMS brut", "cams"), ("Corrigé", "mos")):
-            lignes.append({"seuil": f"≥ {seuil} — {nom}", "modele": modele,
-                           **_detection(reel, aligner(tables[source])["indice"] >= seuil)})
-    return pd.DataFrame(lignes)
+    fichier = DEMO / "detection_journaliere.parquet"
+    if fichier.exists():
+        return pd.read_parquet(fichier)
+    st.warning(
+        "Table de détection journalière **non précalculée** — elle est reconstruite ici, "
+        "ce qui prend une à deux minutes. Lancer `python3 scripts/build_demo_data.py` "
+        "avant une démonstration."
+    )
+    return _detection_journaliere(pred)
 
 
 def mise_en_forme(fig: go.Figure, hauteur: int = 380) -> go.Figure:
@@ -209,43 +213,86 @@ if page == "Aide à l'expertise du jour":
               f"{abs(ecart_corrige.mean()) - abs(ecart.mean()):+.1f}",
               delta_color="inverse")
 
-    # ── Régime météo, qui conditionne la confiance ──
-    st.subheader("Régime du jour, et confiance associée")
-    mois = pd.Timestamp(jour).strftime("%Y%m")
-    chemin_meteo = DEMO.parent / "processed" / "meteo" / f"era5_metropole_{mois}.parquet"
-    if chemin_meteo.exists():
-        meteo = pd.read_parquet(chemin_meteo)
+    # ── Régime météo, DESCRIPTIF — et pourquoi il ne conditionne plus la confiance ──
+    #
+    # 🔴 Trois défauts de périmètre, mesurés par une revue externe le 17/08 :
+    #
+    # ① `REGIMES_METEO.md` classe chaque **station × heure** ; cette page classait la
+    #    **moyenne nationale des 24 h** en lui appliquant les mêmes seuils. Rejouée sur le
+    #    corpus, cette classification donne stagnation **3,4 %** — le régime qui portait le
+    #    message de prudence ne se déclenchait presque jamais, et une journée ventilée à
+    #    Brest et stagnante à Lyon recevait une seule étiquette.
+    # ② Le « −17 % » cité est mesuré à **J+1, par station-heure, sur trois mois de 2024,
+    #    pour l'ozone seul**. Sans ces trois mots, il était affiché sur un autre objet.
+    # ③ **PM10 n'a jamais été mesuré dans ce rapport** (O₃, NO₂, PM2,5 seulement) — et la
+    #    page lui servait quand même le verdict vert « suivable sur les pics ».
+    #
+    # Le verdict est donc retiré : le régime reste affiché comme **description du jour**,
+    # et la réserve de confiance ne s'énonce que sur le périmètre où elle a été mesurée.
+    # C'est § 4 ter — signaler un défaut n'est pas le corriger, mais ici corriger voulait
+    # dire cesser d'affirmer.
+    MESURE_REGIME = ("O3", "NO2", "PM25")     # le périmètre réel de REGIMES_METEO.md
+    st.subheader("Régime météo du jour — description nationale")
+    # 🔴 § 4 bis — un nom de fichier n'est pas une source de vérité. La météo de 2025 est
+    # stockée en fichiers GROUPÉS (`era5_metropole_202501_04.parquet`), et construire le
+    # chemin depuis `%Y%m` ne les trouve pas : la page annonçait « Météo non extraite »
+    # pour des mois **présents sur le disque** — y compris sur le jour affiché par défaut,
+    # donc sur le premier écran. On liste les candidats, puis on tranche sur le CONTENU.
+    candidats = sorted((DEMO.parent / "processed" / "meteo").glob("era5_metropole_*.parquet"))
+    couverture = _index_meteo(tuple(str(c) for c in candidats))
+    porteur = next((c for c, (d0, d1) in couverture.items() if d0 <= jour <= d1), None)
+    m = pd.DataFrame()
+    if porteur:
+        meteo = pd.read_parquet(porteur)
         meteo["jour"] = meteo["timestamp_utc"].dt.tz_convert("Europe/Paris").dt.date
         m = meteo[meteo["jour"] == jour]
+    if candidats:
         if not m.empty:
             couche = m["couche_limite_m"].mean()
             vent = m["vent_vitesse_m_s"].mean()
             rayon = m["rayonnement_w_m2"].mean()
             if couche < 300 and vent < 2:
-                regime, fiable = "stagnation", polluant != "O3"
+                regime = "stagnation"
             elif rayon > 150:
-                regime, fiable = "photochimique", True
+                regime = "photochimique"
             else:
-                regime, fiable = "ventilé", polluant != "O3"
+                regime = "ventilé"
 
             g1, g2, g3 = st.columns(3)
             g1.metric("Couche limite", f"{couche:.0f} m")
             g2.metric("Vent moyen", f"{vent:.1f} m/s")
             g3.metric("Rayonnement", f"{rayon:.0f} W/m²")
 
-            if fiable:
-                st.success(
-                    f"**Régime {regime}.** Dans ce régime, la correction améliore aussi "
-                    "les fortes valeurs — elle peut être suivie sur les pics.")
+            st.caption(
+                f"**Régime {regime}** — classé sur la **moyenne nationale des 24 heures**, "
+                "pas station par station. Une journée ventilée à Brest et stagnante à Lyon "
+                "reçoit ici une seule étiquette : c'est une **description du jour**, pas "
+                "l'objet de l'étude des régimes.")
+            if polluant in MESURE_REGIME:
+                st.warning(
+                    "**Ce que l'étude des régimes dit, et sur quoi exactement.** Sur "
+                    "l'**ozone seul**, à **J+1**, par **station-heure**, sur **trois mois "
+                    "de 2024**, la correction dégrade le décile supérieur de **17 %** en "
+                    "régime ventilé comme en régime de stagnation. Ces trois mots — "
+                    "polluant, échéance, objet — ne se retirent pas du chiffre, et rien "
+                    "ici ne transpose ce résultat à la classification ci-dessus.")
             else:
-                st.error(
-                    f"**Régime {regime} — prudence sur les pics.** Mesuré sur l'ozone : "
-                    "la correction dégrade de 17 % le décile supérieur dans ce régime. "
-                    "Elle reste fiable sur le fond, pas sur les maxima.")
+                st.info(
+                    f"**Le PM10 n'a pas été mesuré dans l'étude des régimes** "
+                    f"(elle porte sur {', '.join(MESURE_REGIME)}). Aucune réserve de "
+                    "confiance par régime n'est donc publiable pour ce polluant — ni "
+                    "dans un sens ni dans l'autre.")
         else:
-            st.info("Météo indisponible pour ce jour.")
+            # Dire la couverture RÉELLE, pas « ce mois manque » : la couverture est
+            # partielle par construction (ERA5 s'arrête avant la fin du corpus), et un
+            # message qui ne la nomme pas laisse croire à une panne.
+            jours = sorted(d for bornes in couverture.values() for d in bornes)
+            st.info(f"Météo indisponible pour ce jour. Couverture ERA5 réelle : "
+                    f"{jours[0]:%Y-%m-%d} → {jours[-1]:%Y-%m-%d} "
+                    f"({len(couverture)} fichier·s) — le bloc « régime » n'existe que là."
+                    if jours else "Météo indisponible pour ce jour.")
     else:
-        st.info(f"Météo non extraite pour {mois}.")
+        st.info("Aucun fichier ERA5 dans `data/processed/meteo` — bloc « régime » désactivé.")
 
     # ── Les stations qui divergent le plus : où porter l'attention ──
     st.subheader("Stations où le modèle diverge le plus")
@@ -269,11 +316,18 @@ if page == "Aide à l'expertise du jour":
                          "ecart_cams": "Écart CAMS", "ecart_corrige": "Écart corrigé"}),
         hide_index=True, use_container_width=True)
 
+    # ⚠️ La fenêtre se DÉRIVE des données (règle A du dépôt, appliquée à une phrase). Elle
+    # était écrite en dur — « trois mois de 2024 » — et l'est restée après l'extension du
+    # corpus à ~36 mois : une réserve périmée qui sous-déclarait notre propre travail, et
+    # que n'importe qui réfutait en ouvrant le sélecteur de date juste au-dessus.
+    n_mois = len({pd.Timestamp(j).strftime("%Y-%m") for j in jours})
     st.caption(
-        "⚠️ Cette page est un **prototype d'aide à la décision**, pas un outil validé. "
-        "Elle repose sur trois mois de 2024 et sur une correction dont la généralisation "
-        "temporelle n'est pas démontrée. Sa valeur est de montrer la forme qu'un tel "
-        "outil pourrait prendre, pas de se substituer à l'expertise."
+        f"⚠️ Cette page est un **prototype d'aide à la décision**, pas un outil validé. "
+        f"Elle porte sur {jours[0]:%Y-%m-%d} → {jours[-1]:%Y-%m-%d} ({n_mois} mois) à "
+        f"l'échéance **J0**, au pas **horaire**, avec la pile de base seule — ce n'est ni "
+        f"l'échéance, ni le grain, ni la pile des chiffres du dossier. Sa valeur est de "
+        f"montrer la forme qu'un tel outil pourrait prendre, pas de se substituer à "
+        f"l'expertise."
     )
 
 # ─────────────────────────── 1. Vue d'ensemble ───────────────────────────
@@ -303,11 +357,6 @@ if page == "Vue d'ensemble":
 
     with gauche:
         st.subheader("Où le gain se produit")
-        st.caption(
-            "Le gain n'est pas uniforme : il se concentre sur les valeurs basses, et la "
-            "correction fait **jeu égal** dans la queue. C'est voulu — une version "
-            "antérieure gagnait 13 % de RMSE global en écrasant complètement les épisodes."
-        )
         bornes = [0] + BORNES[polluant][:4] + [float("inf")]
         lignes = []
         for bas, haut in zip(bornes[:-1], bornes[1:]):
@@ -322,6 +371,29 @@ if page == "Vue d'ensemble":
             })
         bandes = pd.DataFrame(lignes)
 
+        # 🔴 La légende se CALCULE depuis les bandes affichées, elle ne se rédige pas.
+        # La version précédente affirmait « le gain se concentre sur les valeurs basses, et
+        # la correction fait jeu égal dans la queue » — un récit vrai d'une version
+        # antérieure du modèle, et démenti par le graphique auquel il était accolé : sur
+        # PM10 le gain est le plus FAIBLE en bas (+2,7 %) et le plus fort en queue (+17,6 %),
+        # et sur O₃ la bande 50-100 est DÉGRADÉE de 12,7 %. Un juré voyait la barre orange
+        # au-dessus de la bleue pendant que la légende disait « jeu égal ».
+        # Une légende dérivée des mêmes nombres que la figure ne peut plus la contredire.
+        if not bandes.empty:
+            bandes["gain_pct"] = 100 * (1 - bandes["Corrigé"] / bandes["CAMS brut"])
+            bas, queue = bandes.iloc[0], bandes.iloc[-1]
+            pire = bandes.loc[bandes["gain_pct"].idxmin()]
+            phrase = (f"Le gain n'est pas uniforme : **{bas['gain_pct']:+.1f} %** sur la "
+                      f"bande basse ({bas['bande']}), **{queue['gain_pct']:+.1f} %** dans la "
+                      f"queue ({queue['bande']}).")
+            if pire["gain_pct"] < 0:
+                phrase += (f" ⚠️ La correction **dégrade** la bande {pire['bande']} de "
+                           f"{abs(pire['gain_pct']):.1f} % — c'est visible sur la figure, "
+                           f"et c'est dit.")
+            phrase += (" Aucune bande n'est écrasée au profit du RMSE global : une version "
+                       "antérieure gagnait 13 % en aplatissant les épisodes.")
+            st.caption(phrase)
+
         fig = go.Figure()
         for nom, couleur in (("CAMS brut", BLEU), ("Corrigé", ORANGE)):
             fig.add_bar(x=bandes["bande"], y=bandes[nom], name=nom,
@@ -333,8 +405,16 @@ if page == "Vue d'ensemble":
 
     with droite:
         st.subheader("Répartition du gain")
+        # La réserve du § 11 du dossier n'avait pas traversé jusqu'ici. L'affirmation
+        # « un modèle qui ne l'a jamais vue » est exacte et **incomplète** : les plis
+        # tirent des stations entières, pas des zones. Le modèle n'a pas vu la station,
+        # il a vu ses voisines — et le dossier chiffre ce que cela flatte.
         st.caption(f"Sur {len(resume)} stations, en validation par **station exclue** — "
-                   "chacune est prédite par un modèle qui ne l'a jamais vue.")
+                   "chacune est prédite par un modèle qui ne l'a jamais vue. "
+                   "⚠️ Les plis ne sont **pas bloqués spatialement** : le modèle n'a pas vu "
+                   "la station, mais il a vu ses voisines. Le § 11 du dossier mesure "
+                   "l'optimisme résiduel — jusqu'à **−10 points sur l'ozone** avec un fossé "
+                   "de 50 km.")
         fig = go.Figure()
         fig.add_histogram(x=resume["gain_pct"], nbinsx=34, marker_color=BLEU,
                           marker_line_width=0, name="stations")
@@ -376,12 +456,20 @@ elif page == "Où la correction agit":
 
     # Échelle divergente : deux pôles opposés, neutre au milieu. Le zéro sépare
     # « la correction aide » de « la correction nuit » — c'est la seule lecture utile.
+    #
+    # ⚠️ Les bornes étaient écrites en dur à ±50 %. Mesuré : 15 stations sortent de cette
+    # plage, dont une à **−396,9 %**, peinte du même rouge qu'une station à −50 %. La
+    # couleur mentait par saturation, alors que le survol donnait le vrai chiffre. La borne
+    # se dérive donc de la donnée affichée (règle A, appliquée à une échelle graphique) :
+    # un quantile plutôt que le maximum, sinon une seule station écrase tout le contraste.
+    borne = max(10.0, float(np.nanquantile(np.abs(vue["gain_pct"]), 0.98)))
+    hors = int((np.abs(vue["gain_pct"]) > borne).sum())
     fig = go.Figure(go.Scattergeo(
         lon=vue["lon_wgs84"], lat=vue["lat_wgs84"], mode="markers",
         marker=dict(
             size=8, color=vue["gain_pct"], colorscale=[[0, "#d03b3b"], [0.5, "#f0efec"],
                                                        [1, BLEU]],
-            cmin=-50, cmax=50, line=dict(width=0.6, color="rgba(255,255,255,0.85)"),
+            cmin=-borne, cmax=borne, line=dict(width=0.6, color="rgba(255,255,255,0.85)"),
             colorbar=dict(title="Gain<br>(%)", thickness=12, len=0.75)),
         text=[f"{n}<br>{c}<br>RMSE {a:.1f} → {b:.1f} µg/m³<br>{g:+.1f} %"
               for n, c, a, b, g in zip(vue["nom"], vue["commune"], vue["rmse_cams"],
@@ -394,6 +482,12 @@ elif page == "Où la correction agit":
     fig.update_layout(height=620, margin=dict(l=0, r=0, t=10, b=0),
                       paper_bgcolor="rgba(0,0,0,0)")
     st.plotly_chart(fig, use_container_width=True)
+    if hors:
+        pire = float(vue["gain_pct"].min())
+        st.caption(f"Échelle bornée à **±{borne:.0f} %**, dérivée du 98ᵉ centile des gains "
+                   f"affichés. **{hors} station·s** sortent de la plage et sont peintes à la "
+                   f"couleur de la borne — la plus dégradée est à **{pire:+.1f} %**. Le "
+                   f"survol donne toujours la valeur réelle.")
 
     st.subheader("Les stations les moins bien traitées")
     st.caption("Comprendre pourquoi la correction échoue sur ces stations est un "
@@ -487,12 +581,27 @@ elif page == "Détection des épisodes":
              "même verdict — c'est le point central de cette page.")
 
     pred = charger("predictions")
-    detection = (detection_journaliere(pred) if echelle.startswith("Classe")
+    journaliere = echelle.startswith("Classe")
+    detection = (detection_journaliere(pred) if journaliere
                  else detection_horaire(pred[pred["polluant"] == polluant], polluant))
 
     if detection.empty:
         st.warning("Trop peu de dépassements pour conclure.")
         st.stop()
+
+    # Deux non-dits que la vue journalière portait en silence — le second est une réserve
+    # que le module lui-même énonce (`indice_atmo.py`) et que cette page n'affichait pas.
+    if journaliere:
+        st.caption(
+            f"⚠️ Cette échelle **ignore le sélecteur de polluant** — vous avez choisi "
+            f"{NOM[polluant]}, mais l'indice ATMO est **multi-polluants** par construction : "
+            "il prend le pire des quatre sous-indices. C'est volontaire, et il faut le "
+            "savoir avant de lire la table. · ⚠️ Un jour n'entre ici que s'il a **au moins "
+            "trois polluants sur quatre** ; la moitié des jours retenus n'en a que trois, "
+            "et un indice calculé sur un sous-ensemble est **optimiste par construction** "
+            "— le pire des quatre ne peut qu'être supérieur ou égal au pire des trois. · "
+            "⚠️ L'indice réellement publié au public est **spatialisé** ; on applique ici "
+            "la même règle d'agrégation, station par station. Même règle, autre objet.")
 
     fig = go.Figure()
     for modele, couleur in (("CAMS brut", BLEU), ("Corrigé", ORANGE)):
@@ -505,15 +614,44 @@ elif page == "Détection des épisodes":
                       yaxis_tickformat=".0%", yaxis_range=[0, 1.08])
     st.plotly_chart(mise_en_forme(fig, 400), use_container_width=True)
 
-    pivot = detection.pivot(index="seuil", columns="modele", values="manques")
-    ecart = int((pivot["CAMS brut"] - pivot["Corrigé"]).sum())
-    if ecart > 0:
-        st.success(f"**{ecart} épisodes manqués en moins.** C'est la même mesure qu'un "
-                   "gain de RMSE, exprimée dans l'unité qui engage une AASQA.")
+    # 🔴 Les seuils sont EMBOÎTÉS : une heure à 140 µg/m³ d'ozone compte dans « ≥ 50 »,
+    # « ≥ 100 » ET « ≥ 130 ». Sommer les manques compte donc le même épisode plusieurs fois,
+    # et le total est dominé par le seuil le plus bas — sur O₃ celui-ci couvre 60 % du
+    # corpus : ce n'est pas un épisode, c'est le régime courant. La version précédente de
+    # cette bannière sommait, et annonçait « 282 224 épisodes manqués de plus » sur l'ozone
+    # alors que le corrigé en manque MOINS aux deux seuils sévères (rappel 0,489 → 0,584 à
+    # 100 µg/m³, 0,179 → 0,286 à 130). Le verdict affiché était l'inverse du verdict réel.
+    #
+    # La bannière porte donc sur UN seuil — le plus sévère qui ait assez d'occurrences pour
+    # être mesurable — et le détail par seuil est publié à côté, sans total.
+    MIN_EPISODES = 30
+    par_seuil = (detection.pivot_table(index=["seuil_val", "seuil"], columns="modele",
+                                       values="manques")
+                 .join(detection.groupby(["seuil_val", "seuil"])["n"].max())
+                 .sort_index())
+    mesurables = par_seuil[par_seuil["n"] >= MIN_EPISODES]
+    if mesurables.empty:
+        st.info(f"Aucun seuil n'atteint {MIN_EPISODES} épisodes observés sur ce périmètre : "
+                "pas de verdict de détection publiable ici.")
     else:
-        st.error(f"**{abs(ecart)} épisodes manqués de plus.** À cette échelle, la "
-                 "correction échange du rappel contre de la précision — et pour un "
-                 "usage d'alerte, c'est le mauvais côté de l'échange.")
+        val, lib = mesurables.index[-1]           # le PLUS SÉVÈRE, par valeur numérique
+        r = mesurables.iloc[-1]
+        ecart = int(r["CAMS brut"] - r["Corrigé"])
+        detail = " · ".join(
+            f"{l.split('—')[0].strip()} : {int(x['CAMS brut'] - x['Corrigé']):+d}"
+            for (_, l), x in par_seuil.iterrows())
+        if ecart > 0:
+            st.success(f"**{ecart} épisodes manqués en moins** au seuil le plus sévère "
+                       f"mesurable — {lib}, {int(r['n'])} épisodes observés. C'est la même "
+                       "mesure qu'un gain de RMSE, dans l'unité qui engage une AASQA.")
+        elif ecart < 0:
+            st.error(f"**{abs(ecart)} épisodes manqués de plus** au seuil le plus sévère "
+                     f"mesurable — {lib}, {int(r['n'])} épisodes observés. À ce seuil, la "
+                     "correction échange du rappel contre de la précision.")
+        else:
+            st.info(f"**Aucun écart** au seuil le plus sévère mesurable — {lib}.")
+        st.caption(f"Écart par seuil, jamais sommé — les seuils sont **emboîtés**, un même "
+                   f"épisode compte dans tous ceux qu'il dépasse : {detail}")
 
     st.dataframe(
         detection.assign(rappel=lambda d: (100 * d["rappel"]).round(1),
@@ -523,14 +661,35 @@ elif page == "Détection des épisodes":
                          "n": "Épisodes réels"}),
         hide_index=True, use_container_width=True)
 
-    st.info(
-        "**Pourquoi les deux échelles divergent.** À l'échelle **horaire**, la correction "
-        "amortit les valeurs extrêmes : elle gagne en précision et **perd en rappel**. "
-        "À l'échelle **journalière** — celle de l'indice publié — l'agrégation par le "
-        "maximum des 24 heures rattrape cet amortissement, et le rappel progresse. "
-        "C'est l'indice qui est publié, mais un déclenchement d'alerte se décide sur "
-        "l'horaire : **les deux comptent, et il faut annoncer les deux.**"
-    )
+    # 🔴 Cette phrase disait « à l'échelle horaire la correction perd en rappel », sans
+    # seuil. C'est vrai au seuil trivial et **faux aux seuils sévères** — sur l'ozone le
+    # rappel passe de 0,489 à 0,584 à 100 µg/m³ et de 0,179 à 0,286 à 130. Une affirmation
+    # vraie sur un sous-ensemble, publiée comme une loi (règle E). Elle se dérive maintenant
+    # de la table affichée, seuil par seuil, et ne dit que ce que la table montre.
+    if not detection.empty:
+        p = detection.pivot_table(index=["seuil_val", "seuil"], columns="modele",
+                                  values="rappel").sort_index()
+        gagne = [l for (_, l), r in p.iterrows() if r["Corrigé"] > r["CAMS brut"]]
+        perd = [l for (_, l), r in p.iterrows() if r["Corrigé"] <= r["CAMS brut"]]
+        court = lambda ls: ", ".join(l.split("—")[0].strip() for l in ls)   # noqa: E731
+        if gagne and perd:
+            phrase = (f"**Le sens dépend du seuil, et il faut le dire ainsi.** Le rappel "
+                      f"**progresse** à {court(gagne)} et **recule** à {court(perd)}. "
+                      f"L'amortissement des extrêmes coûte du rappel là où le seuil est "
+                      f"bas et fréquent ; il n'en coûte pas là où l'épisode est franc.")
+        elif gagne:
+            phrase = (f"**Le rappel progresse à tous les seuils mesurés** "
+                      f"({court(gagne)}) — la correction n'échange pas ici du rappel "
+                      f"contre de la précision.")
+        else:
+            phrase = (f"**Le rappel recule à tous les seuils mesurés** ({court(perd)}) : "
+                      f"la correction amortit les extrêmes.")
+        st.info(
+            phrase + " À l'échelle **journalière** — celle de l'indice publié — l'agrégation "
+            "par le maximum des 24 heures rattrape une part de l'amortissement. C'est "
+            "l'indice qui est publié, mais un déclenchement d'alerte se décide sur "
+            "l'horaire : **les deux comptent, et il faut annoncer les deux.**"
+        )
 
     st.warning(
         "**À dire avant qu'on le demande.** En valeur absolue, la détection reste "
