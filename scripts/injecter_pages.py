@@ -110,10 +110,25 @@ def main() -> int:
                      "</main>")
         page = poser(page, f"{maj}-SECTION",
                      frags["section.html"].read_text(encoding="utf-8"), pg["ancre_section"])
+        # 🔴 Le drapeau de fin d'exécution — posé ICI, pas dans les `.js`.
+        #
+        # Mesuré par une revue de design le 17/08 : `_p4_script.js` fait 19 écritures
+        # `innerHTML`, `_p5` en fait 11. Si la capture PDF précède la fin de ces scripts, le
+        # document emporte des emplacements **vides** — et le CSS les cache lui-même
+        # (`.p4-fr:empty { display: none }`). Le défaut s'efface donc, et le contrôle de fin
+        # ne peut pas le voir : **61 pages vides de leurs chiffres font toujours 61 pages.**
+        # La seule protection était un `wait_for_timeout(1800)`, c'est-à-dire une constante
+        # écrite en dur — exactement ce que la règle A interdit.
+        #
+        # Le drapeau vit dans l'injecteur pour qu'on ne puisse pas oublier de le poser, et il
+        # n'est atteint que si le script s'exécute **jusqu'au bout** : une exception en cours
+        # de route le laisse absent, ce qui est précisément le signal recherché.
         page = poser(page, f"{maj}-SCRIPT",
                      f'<script id="{prefixe}-data" type="application/json">'
                      + frags["donnees"].read_text(encoding="utf-8") + "</script>\n"
-                     + "<script>\n" + frags["script.js"].read_text(encoding="utf-8")
+                     + f'<script data-page="{prefixe}">\n'
+                     + frags["script.js"].read_text(encoding="utf-8")
+                     + f'\ndocument.documentElement.dataset["pret_{prefixe}"] = "1";\n'
                      + "</script>", None)
 
         # Le sommaire : une entrée, une seule, même après plusieurs injections

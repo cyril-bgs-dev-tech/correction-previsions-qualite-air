@@ -8,6 +8,154 @@ conclure d'une mesure.
 
 ---
 
+## 0. Les règles exécutables — et la règle qui borne ce fichier
+
+### Le constat qui a produit cette section — mesuré le 16/08/2026
+
+Ce fichier est passé de **440 à 1 062 lignes en huit jours (+141 %)**, et les pertes ont
+continué **après** : les **31 heures** du 14/08 sont arrivées sous une règle 1 bis vieille
+de seize jours, et le 16/08 j'ai violé **quatre règles que j'avais en contexte au moment
+même** — code de sortie lu sur un `echo`, conclusion tirée d'un seul polluant, mécanisme
+publié sur trois plis, `cd` traversant quatre commandes.
+
+Le registre complet compte **≈ 88 heures documentées**. Sa colonne décisive n'est pas le
+montant, c'est *la règle existait-elle ?* — les pertes précoces ont **créé** les règles, les
+pertes tardives sont arrivées **malgré** elles.
+
+> **Le facteur limitant n'est pas la connaissance, c'est l'instant d'application.** Chaque
+> ligne de prose ajoutée augmente le coût de récupération sans augmenter l'exécution.
+
+Ce qui a réellement tenu sur ce dépôt n'est jamais narratif : `src/aq/ingest/controle.py`,
+la reprise native d'Optuna, le contrôle d'échelle du PDF, le garde-jumeau du relanceur.
+**Elles se déclenchent sans qu'on s'en souvienne.**
+
+### 🔑 La méta-règle
+
+> **Une règle violée deux fois après avoir été écrite devient du code, ou elle disparaît.**
+
+La prose qui n'a pas tenu deux fois ne tiendra pas la troisième. Cette règle **borne** le
+corpus : `CLAUDE.md` doit *rétrécir* à mesure que `controle.py` grossit. Une règle qu'on ne
+sait pas mécaniser et qui a échoué deux fois est un aveu, pas un garde-fou.
+
+### Les six règles, et leur état de mécanisation
+
+Aucune ne porte de constante : c'est ce qui les rend **adaptatives**.
+
+| | règle | mécanisée par |
+|---|---|---|
+| **A** | **Tout seuil se recalcule depuis la passe unitaire de CETTE exécution.** Aucun délai, budget ou intervalle de veille écrit en dur ni repris d'une exécution précédente. | ⬜ **non mécanisée** — et le dire vaut mieux que d'écrire un utilitaire que personne n'appellerait : du code non adopté n'est pas une mécanisation, c'est de la prose exécutable. |
+| **B** | **Un budget par unité, jamais un compteur pour deux.** Événements, durée et volume se comptent séparément, et le message de fin **nomme** celui qui a cédé. | ✅ les 5 relanceurs |
+| **C** | **Le code de sortie appartient à la dernière commande.** Donc jamais de `$?` après un tube ou un `echo` — et le verdict porte sur l'**artefact**, qui doit exister *et* avoir été réécrit. | ✅ `scripts/lancer_controle.sh` |
+| **D** | **Une affirmation comparative nomme son axe.** Si la référence en utilise un autre, on **mesure sur le sien** avant de publier — la réserve ne tient pas lieu de mesure (§ 4 ter). | ✅ `tracer_chiffres_soutenance.py` · `axes_manquants()` |
+| **E** | **Un mécanisme n'est publiable qu'après avoir tenu sur deux sous-ensembles indépendants.** Trois plis ne font pas une loi ; un polluant ne fait pas un mécanisme. | ✅ `aq.eval.critere.tient_sur_sous_ensembles` |
+| **F** | **L'état d'un shell ne traverse pas une commande.** Chemins absolus, ou résolus depuis la racine du dépôt — jamais depuis `$PWD`. | ✅ en-tête de `lancer_controle.sh` |
+| **G** | **Une file par RESSOURCE : sérialiser dedans, paralléliser entre.** Avant de lancer le premier travail, inventorier les ressources et affecter chaque tâche à la sienne. **Une ressource au repos pendant qu'une tâche attend ailleurs est un défaut**, pas une prudence. | ✅ `scripts/file_ressource.sh` |
+| **H** | **Une colonne porte un RÔLE, jamais une identité.** `rmse_candidat` + une colonne `modele`, pas `rmse_realmlp`. Une étiquette qui nomme une identité affirme deux choses ; seule la première survit à une généralisation, et **rien ne voit la seconde mentir**. | ✅ `aq.rapport.exiger_etiquettes_vraies` |
+| **I** | **La concurrence se compte par RESSOURCE, jamais par processus.** § 1 interdit d'empiler sur *la même* ; **G** exige de remplir les *distinctes*. Ce ne sont pas deux avis : c'est une seule question — *quelle ressource ce travail consomme-t-il, et combien en reste-t-il ?* | ✅ `file_ressource.sh` (verrou **par nom de ressource**) |
+| **J** | **Une leçon vit à UN endroit ; les autres la CITENT.** Le premier lieu où elle est écrite fait foi. Toute récurrence est une **instance** — une ligne, un renvoi — jamais une réénonciation. | ✅ `scripts/auditer_regles.py` |
+| **K** | **Toute règle ajoutée solde une dette.** Elle nomme ce qu'elle remplace, ou dit pourquoi rien ne peut l'être. Un corpus qui ne fait que croître se lit de moins en moins. | ✅ `auditer_regles.py` (croissance) |
+| **L** | **Une statistique ajustée sur un pli doit être DÉFINIE sur l'autre.** Quand le protocole cache une dimension (station, groupe, mois), toute statistique ajustée *le long* de cette dimension est introuvable de l'autre côté : elle replie, et les deux blocs se retrouvent sur des **échelles différentes** sans qu'aucune exception ne lève. La référence vient d'un découpage qui **croise** la dimension cachée, jamais du pli lui-même. | ✅ `aq.eval.critere.exiger_couverture_de_reference` |
+
+### Ce que chacune a coûté
+
+- **A** — le 10/08 (61 min de gel sous un moniteur à seuil fixe) et le 14/08 (**31 h** sous
+  un budget dimensionné la veille). Deux morts par constante périmée.
+- **B** — le 14/08 : 20 passes censées protéger d'un défaut structurel, brûlées en
+  **40 minutes** à écrire « un lot tourne déjà ». Le garde-fou s'est épuisé à regarder.
+- **C** — le 16/08, deux fois en une session. La seconde a fait annoncer « archivage
+  PREV'AIR terminé, exit 0 » pour un script qui **n'avait pas tourné** : le `$?` venait de
+  l'`echo`, et la redirection avait échoué faute de répertoire. *Un rapport de succès sur un
+  travail non fait est pire qu'une erreur : il ferme la question.*
+- **D** — le 16/08 : la § 10 sexies de `VERITE_DOSSIER` opposait notre gain de réglage
+  (+3,98 à +7,12 %, axe **spatial**) au leur (+1,01 %, axe **temporel**) en concluant « au
+  même traitement ». Mesuré sur *leur* axe, le nôtre tombe à **−0,14 à +1,92 %** — du même
+  ordre que le leur. La réserve existait, 28 lignes plus bas, et la phrase en gras
+  l'affirmait à l'envers.
+- **E** — le 15/08 : « le réglage profite aux stations trafic », bâti sur trois plis de NO₂.
+  Réfuté deux fois le lendemain — à niveau de pollution comparable p = 0,42, et sur quatre
+  polluants **le sens s'inverse**.
+- **F** — le 16/08 : un `cd data/raw/prevair` a persisté et cassé quatre commandes, dont
+  celle qui a produit le faux succès de **C**. Les deux défauts se sont composés.
+- **G** — le 16/08 au soir, relevé par Cyril et non par moi : **charge 0,45 sur 32 cœurs,
+  GPU à 1 %**, alors que trois chantiers longs étaient identifiés et attendaient leur tour.
+  J'enchaînais **à la main**, un travail après l'autre, en confondant « la concurrence
+  n'est pas la réponse par défaut » (§ 1) avec « ne rien lancer en parallèle ». Or la § 1
+  dit l'inverse : la concurrence ne sert que si **la ressource est réellement libre** — et
+  elles l'étaient.
+
+  **Les ressources de cette machine, et leur limite mesurée :**
+
+  | ressource | plafond mesuré | d'où vient la mesure |
+  |---|---|---|
+  | service ADS | **3 requêtes simultanées** (6 rejetées, puis HTTP 400 muet) | § 1 |
+  | CPU / LightGBM | `n_jobs=4`, **un seul lot** — trois lots concurrents s'effondrent d'un ordre de grandeur | § 1 |
+  | GPU | **un entraînement à la fois** | RTX 5090, 34 Go |
+  | mémoire | plafond `systemd-run` par lot | § 1 quater |
+  | réseau ≠ CPU | l'attente ADS est **84 %** du coût d'une requête et ne consomme aucun cœur | § 1 |
+
+  La dernière ligne est celle qui décide : **une file bloquée sur du temps serveur
+  n'occupe rien**, donc elle n'excuse jamais un CPU ou un GPU au repos.
+
+  Et le maillon de chaînage est l'**artefact**, jamais le code de sortie — sinon la file
+  suivante démarre sur un travail qui n'a rien produit (§ 0, règle C).
+- **H** — le 16/08 au soir. `optuna_realmlp.py` a été généralisé à LightGBM par un paramètre
+  `--modele`. La **valeur** est devenue paramétrique, l'**étiquette** est restée écrite en
+  dur : `reports/optuna_lgbm_PM10_temporel.csv` portait une colonne `rmse_realmlp`
+  contenant… le LightGBM réglé.
+
+  **Coût réel :** j'en ai tiré « RealMLP bat LightGBM de **9 %** sur PM10 », je l'ai écrit
+  dans un brief envoyé à un relecteur externe, et c'est **lui** qui a relu le fichier —
+  correctement — pour trouver **2,65 %**. *Un tiers a corrigé un chiffre que mon propre
+  nommage rendait infalsifiable.*
+
+  > **Une étiquette est une promesse que rien ne vérifie.** `rmse_realmlp` affirme
+  > « c'est une RMSE » **et** « c'est RealMLP » ; le premier survit à un refactoring, le
+  > second non, et aucune relecture du fichier ne peut le contredire — la valeur est
+  > plausible, la colonne existe, le fichier s'ouvre.
+
+  C'est la famille des § 4 bis (un **nom de fichier** ment) et § 4 ter (un **nom d'axe**
+  ment), au niveau de la colonne. Le contrôle mécanisé attrape les quatre familles —
+  modèle, polluant, axe, échéance — et il **aurait attrapé le défaut J0/J+1 du 02/08**,
+  qui avait fait appeler « J+1 » du J0 pendant des semaines.
+
+  ⚠️ **Ce que le garde ne peut pas faire, et c'est structurel** : il ne réfute que les
+  identités que l'appelant **déclare** dans son contexte. On ne réfute pas ce qui n'est pas
+  affirmé. Déclarer le contexte est donc l'acte qui arme le garde-fou, et il revient à
+  celui qui écrit — lui seul sait ce qu'il a calculé.
+
+- **L — la transformation ajustée sur un pli, indéfinie sur l'autre.** *17/08.* Le mécanisme
+  de la spéciation venant d'être établi (§ 12 ter du dossier), j'ai voulu remplacer chaque
+  composante par son **anomalie** à la climatologie station × mois, et j'ai ajusté cette
+  climatologie sur le **pli d'apprentissage** — le geste correct partout ailleurs.
+
+  Il est faux ici : le protocole cache la station **et** le mois, donc **les stations de test
+  sont absentes de l'apprentissage par construction**. Leur climatologie n'existait pas,
+  chaque ligne repliait sur la moyenne globale, et le modèle apprenait sur des anomalies
+  centrées pour prédire sur des valeurs brutes décalées d'une constante.
+
+  > **Deux échelles de part et d'autre du modèle, et rien ne lève.** Le lot tourne, écrit son
+  > CSV, rend 0. Le nombre obtenu aurait été lu comme « l'anomalie n'apporte rien », et la
+  > piste abandonnée sur un artefact d'implémentation.
+
+  Ce qui l'a attrapé n'est pas une relecture : c'est d'avoir **redemandé d'où venait chaque
+  ligne du pli de test**, en écrivant la docstring. La bonne référence est *toutes les
+  stations, mois de test exclu* — ce que la production peut faire, puisqu'en un point non
+  instrumenté l'archive CAMS existe et que seul le futur n'existe pas.
+
+  **La dette soldée** : § 2 quater demandait de *compter le repli*, et je le comptais — sur le
+  périmètre des lignes. Le repli portait ici sur l'**échelle des variables**, que personne ne
+  comptait. `exiger_couverture_de_reference` rend le comptage obligatoire au lieu de le
+  laisser à la mémoire, et **il a été éprouvé sur le défaut réel** : rejoué avec l'ancienne
+  référence, il lève « 100 % du bloc test replie ».
+
+### Le fil commun avec le reste du fichier
+
+Les règles 1 à 4 disent *quoi vérifier*. Celle-ci dit *pourquoi les lire ne suffit pas*, et
+impose la seule réponse qui a marché sur ce dépôt : **déplacer la vigilance du lecteur vers
+l'exécutable.** Une règle mécanisée n'a plus besoin d'être crue.
+
+---
+
 ## 1. La passe unitaire — obligatoire avant tout lot
 
 ### La règle
@@ -110,6 +258,18 @@ processus fantôme. Ancrer le motif sur l'**invocation réelle** —
 `pgrep -f "python3 -u scripts/[m]ethode_maximale\.py"` — et se rappeler que toute commande
 qui mentionne le motif entre elle-même dans `ps` : le contrôle et la chose contrôlée
 partagent le même espace de noms.
+
+> **Instance du 17/08, et elle achève la règle : l'ancrage ne suffit pas — un garde par
+> motif ne peut pas vivre dans la commande qu'il garde.** Le motif était pourtant ancré sur
+> l'invocation réelle, `[m]` compris. Il a quand même levé deux fois sur un fantôme, parce
+> que la **ligne de lancement** qui suivait dans la *même* commande écrivait
+> `python3 -u scripts/mecanisme_speciation.py` **en clair** : le shell qui la portait
+> matchait son propre motif. Le `[m]` protège le motif contre lui-même, jamais contre
+> l'autre occurrence — et exclure `$$`/`$PPID` ne suffit pas non plus, l'enveloppe de
+> l'appel n'est ni l'un ni l'autre.
+>
+> **Le garde et le lancement vont dans deux appels séparés.** C'est la seule forme où le
+> garde ne peut pas se voir.
 
 **Si la conception du lot a changé, recalibrer.** La passe unitaire de la règle 1 vaut
 pour la granularité qu'elle a mesurée. Regrouper les requêtes, changer l'emprise ou le
@@ -1028,7 +1188,39 @@ est aussi peu informatif que la fausser en sa faveur. Deux systèmes se comparen
 
 ---
 
-## 5. Ce qui relie ces cinq règles
+## 5. Ce qui relie toutes ces règles
+
+### Les cinq tensions que l'audit a trouvées — et leur résolution
+
+`python3 scripts/auditer_regles.py` les relève à chaque exécution. Aucune n'est une
+contradiction de fond : ce sont des **leçons qui ont essaimé**, et la règle J les range.
+
+| tension | résolution |
+|---|---|
+| § 1 « la concurrence n'est pas la réponse par défaut » **contre** § 0-G « paralléliser entre ressources » | **règle I** — § 1 parle de *la même* ressource, G des *distinctes*. Je les ai confondues le 16/08 et laissé CPU et GPU au repos. |
+| « un nom ment » en **3 sections** (§ 0-H colonne, § 4 bis fichier, § 4 ter axe) | § 4 bis fait foi ; les deux autres en sont des **instances**. Même défaut, trois supports. |
+| « contrôler l'artefact » en **2 sections** (§ 0-C, § 1 bis) | § 1 bis fait foi ; § 0-C en est la forme *exécutable*. |
+| « une mesure ne fait pas une propriété » en **3 sections** (§ 0-E, § 1 ter, § 1 quater) | § 1 ter fait foi. |
+| « un seuil dérivé » en **2 sections** (§ 0-A, § 1 quinquies) | § 1 quinquies fait foi. |
+
+⚠️ **Et le renvoi de ce titre était faux** : il annonçait « ces **cinq** règles » alors que
+le fichier en compte **17 sections et 11 lettres**. C'est la règle H — une étiquette qui
+ment — appliquée au document lui-même, et elle a menti pendant treize jours.
+
+### 🔴 La dette que ce fichier n'a pas soldée
+
+**440 lignes le 03/08 → 1 181 aujourd'hui, +168 %.** La méta-règle exige l'inverse. Le
+solde honnête, à la date d'écriture :
+
+- **converti en code** : C, D, E, F, G, H, I, J, K — neuf règles sur onze s'exécutent ;
+- **non soldé** : les § 1 bis, 1 ter, 4 bis et 4 ter gardent leur récit *en plus* de leur
+  forme exécutable. Ce sont **eux** que la prochaine passe doit réduire à leur instance.
+
+> Écrire une règle contre la croissance puis ajouter cent vingt lignes le même soir n'est
+> pas une contradiction si la dette est **nommée**. Elle l'est ici. Elle ne le sera plus
+> deux fois.
+
+### Le fil commun
 
 Aucune de ces erreurs n'a provoqué de plantage. Toutes produisaient un résultat
 plausible : un téléchargement qui avance, un fichier qui s'ouvre, un traitement qui rend
