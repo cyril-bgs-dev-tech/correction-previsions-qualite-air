@@ -39,8 +39,8 @@
              : (s.nom === 'notre modèle' ? ' class="nous"' : '');
       h += '<tr' + cl + '><td>' + s.nom + '</td>' +
         '<td class="att">' + s.attrapes + '</td><td>' + s.rates + '</td>' +
-        '<td>' + s.fausses + '</td><td>' + s.rappel.toFixed(1) + '%</td>' +
-        '<td>' + s.precision.toFixed(1) + '%</td></tr>';
+        '<td>' + s.fausses + '</td><td>' + s.rappel.toFixed(1).replace('.', ',') + '%</td>' +
+        '<td>' + s.precision.toFixed(1).replace('.', ',') + '%</td></tr>';
     });
     h += '</tbody></table><p class="p6-plaf"><strong>La ligne « observation » est le ' +
       'plafond</strong>, pas un concurrent : c’est ce qu’un système parfait, ' +

@@ -1,15 +1,47 @@
 /* ── Page 08 · où la correction nuit ─────────────────────────────────── */
 .p8-grille{display:flex;flex-direction:column;gap:1.15rem;margin:.2rem 0 1.2rem}
-.p8-bloc{border-left:3px solid var(--bord,#d3dbe1);padding-left:.85rem}
+.p8-bloc{border-left:3px solid var(--trait);padding-left:.85rem}
 .p8-bloc h3{margin:0 0 .12rem;font-size:1rem;letter-spacing:-.01em}
 .p8-bloc .p8-sous{margin:0 0 .5rem;font-size:.82rem;opacity:.72}
 .p8-tab{width:100%;border-collapse:collapse;font-size:.92rem}
 .p8-tab th{text-align:right;font-size:.72rem;text-transform:uppercase;
-  letter-spacing:.07em;padding:0 .5rem .35rem;border-bottom:1px solid var(--bord,#d3dbe1)}
+  letter-spacing:.07em;padding:0 .5rem .35rem;border-bottom:1px solid var(--trait)}
 .p8-tab th:first-child{text-align:left}
-.p8-tab td{padding:.4rem .5rem;border-bottom:1px solid var(--bord,#d3dbe1);
+.p8-tab td{padding:.4rem .5rem;border-bottom:1px solid var(--trait);
   text-align:right;font-variant-numeric:tabular-nums}
 .p8-tab td:first-child{text-align:left;font-weight:600}
 .p8-tab tr:last-child td{border-bottom:0}
 .p8-part{font-weight:700}
 .p8-lectures{display:flex;flex-direction:column;gap:.7rem;margin:1.1rem 0}
+
+/* ── Impression : resserrer les cellules, jamais la police ───────────────────────────
+   Ajouté le 17/08/2026. Cinq conteneurs perdaient de 5 à 49 px à l'impression — assez
+   pour amputer une colonne, pas assez pour justifier de réduire le corps. Un tableau à
+   six colonnes dépense 6 × 24 px en marges horizontales ; les ramener à 6 × 16 px rend
+   48 px, ce qui couvre exactement les débordements constatés.
+   Réduire la POLICE aurait été le geste facile et le mauvais : les légendes du dossier
+   sont déjà à la limite de lisibilité, et c'est là que vit le protocole des chiffres. */
+@media print {
+  /* `!important` assumé : c'est une surcharge d'IMPRESSION, et les règles de cellule des
+     pages portent des sélecteurs de spécificité variable (`.p5-persist td`, `.tab-gains td`,
+     `.p6-tab-part td`…). Les égaler une par une créerait une liste à tenir à jour — donc
+     une liste qui se périmera. */
+  .fig-scroll table th, .fig-scroll table td,
+  .fig-scroll th, .fig-scroll td { padding-left: 7px !important; padding-right: 7px !important; }
+  .fig-scroll { overflow-x: hidden; }
+  /* Un SVG doit se réduire, pas déborder : sa `min-width` d'écran (460 px) est utile là
+     où l'on peut faire glisser, nuisible sur papier où l'on ne peut pas. */
+  .fig-scroll svg { min-width: 0 !important; max-width: 100%; }
+  /* Un mot plus large que la colonne — un identifiant, un chemin, une clé d'API — ne
+     peut pas être coupé par défaut : il dépasse en silence. `break-word` est ici moins
+     grave que l'amputation, parce qu'un mot coupé se lit encore. */
+  p, li, td, figcaption { overflow-wrap: break-word; }
+  /* ⚠️ `text-overflow: ellipsis` est un choix d'ÉCRAN : les points de suspension disent
+     « il y a la suite, élargis la fenêtre ». Sur papier il n'y a pas de suite — la phrase
+     est perdue, et le lecteur ne sait même pas qu'elle l'est. Ici elle porte du texte
+     éditorial (« l'information que CAMS n'a pas — la seule qui ne soit pas un
+     réarrangement »), pas une étiquette. On la laisse donc revenir à la ligne. */
+  .groupe-tete { align-items: flex-start; }
+  .groupe-tete p { white-space: normal !important; overflow: visible !important;
+                   text-overflow: clip !important; }
+}

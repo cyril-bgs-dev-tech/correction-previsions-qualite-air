@@ -59,7 +59,7 @@
                var v = s[2](q);
                return '<span class="' + s[1] + '" style="width:' + v.toFixed(2) + '%"></span>';
              }).join('') + '</span>' +
-             '<span class="val">' + a.sys[sy.c].exact.toFixed(1) + '%</span></div>';
+             '<span class="val">' + a.sys[sy.c].exact.toFixed(1).replace('.', ',') + '%</span></div>';
       });
       c.innerHTML = h;
       hote.appendChild(c);
@@ -71,9 +71,9 @@
         var nom = D.systemes.filter(function (z) { return z.c === e.dataset.s; })[0];
         bulle(cadre, bul, e, '<b>' + nom.n + ' · ' + (a.an === 'toutes' ? 'ensemble' : a.an) + '</b>' +
           nom.d + '<br>' +
-          SEG.map(function (g) { return g[3] + ' : <i>' + g[2](s.part).toFixed(1) + ' %</i>'; })
+          SEG.map(function (g) { return g[3] + ' : <i>' + g[2](s.part).toFixed(1).replace('.', ',') + ' %</i>'; })
              .join('<br>') +
-          '<small>distance moyenne ' + s.dist_moy.toFixed(3) + ' bande · ' +
+          '<small>distance moyenne ' + s.dist_moy.toFixed(3).replace('.', ',') + ' bande · ' +
           ent(a.n) + ' jours-station</small>');
       };
       e.addEventListener('pointerenter', montre);
@@ -105,7 +105,7 @@
                '<span class="nm">' + sy.n + '</span>' +
                '<span class="mq" tabindex="0" data-s="' + sy.c + '" data-a="' + a.an + '">' +
                (v === null ? '' : '<i style="width:' + v.toFixed(1) + '%"></i>') + '</span>' +
-               '<span class="val">' + (v === null ? '—' : v.toFixed(1) + '%') + '</span></div>';
+               '<span class="val">' + (v === null ? '—' : v.toFixed(1).replace('.', ',') + '%') + '</span></div>';
         });
       }
       c.innerHTML = h;
@@ -120,7 +120,7 @@
         bulle(cadre, bul, e, '<b>' + nom.n + ' · ' + (a.an === 'toutes' ? 'ensemble' : a.an) + '</b>' +
           '<i>' + manq + '</i> journées annoncées plus bénignes qu’elles ne le sont, ' +
           'sur <i>' + ent(a.n_crit) + '</i> observées en bande mauvaise ou pire.' +
-          '<small>bande exacte tous jours confondus : ' + s.exact.toFixed(1) + ' %</small>');
+          '<small>bande exacte tous jours confondus : ' + s.exact.toFixed(1).replace('.', ',') + ' %</small>');
       };
       e.addEventListener('pointerenter', montre);
       e.addEventListener('focus', montre);
@@ -196,9 +196,9 @@
         '<td class="v">' + ep + '</td>' +
         '<td class="v gris">' + ent(s.sans.fausses) + '</td>' +
         '<td class="v">' + ent(s.avec.fausses) + '</td>' +
-        '<td class="v pos">' + s.delta_fausses_pct.toFixed(1) + ' %</td>' +
+        '<td class="v pos">' + s.delta_fausses_pct.toFixed(1).replace('.', ',') + ' %</td>' +
         '<td class="v ' + (s.gratuite ? 'gris' : 'neg') + '">' +
-          s.sans.rappel.toFixed(1) + ' → ' + s.avec.rappel.toFixed(1) + ' %</td>';
+          s.sans.rappel.toFixed(1).replace('.', ',') + ' → ' + s.avec.rappel.toFixed(1).replace('.', ',') + ' %</td>';
       tb.appendChild(r);
     });
     var n = P.systemes[0];

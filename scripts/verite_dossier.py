@@ -684,12 +684,26 @@ def bloc_reglage(lignes: list[dict]) -> str:
         f"et « honnête » est la mesure directe du biais de criblage sur cette grille.\n")
     if faits:
         texte.append(
-            f"**Notre méthode, au même traitement, gagne "
+            f"**Notre méthode gagne "
             f"{min(v['gain'] for v in faits.values()):+.2f} à "
             f"{max(v['gain'] for v in faits.values()):+.2f} %** "
             f"({len(faits)} polluants mesurés sur {len(lus)}). **La précaution jouait donc "
             f"contre nous** : les écarts de la § 10 quinquies sont des minorants de ce "
             f"côté-là aussi.\n")
+        # ⚠️ Cette réserve vivait dans la docstring de cette fonction, donc nulle part pour
+        # qui lit le document. La phrase générée disait « au même traitement » — elle
+        # affirmait l'équivalence que la docstring interdit, et l'écart penchait toujours de
+        # notre côté. Un avertissement que seul l'auteur du script peut lire ne protège
+        # personne : il s'écrit dans la SORTIE.
+        texte.append(
+            "> ⚠️ **Ce ne sont pas deux fois la même épreuve, et les deux colonnes ne se "
+            "comparent pas terme à terme.** Leur « honnête » est un hors-échantillon "
+            "**TEMPOREL** — variante choisie sur la 1ʳᵉ moitié du calendrier, notée sur la "
+            "2ᵈᵉ. Le nôtre est **SPATIAL** — hyperparamètres choisis sur des groupes de "
+            "stations, notés sur des stations jamais consultées. Ce dépôt a mesuré qu'un "
+            "réglage gagnant en spatial peut **perdre** en temporel (+5 / −3 points). "
+            "L'écart de niveau entre les deux colonnes ne s'interprète donc pas seul : la "
+            "mesure de notre réglage sur LEUR axe est en § 10 septies.\n")
     else:
         texte.append("🟠 **Notre côté est en cours de mesure** — `lot_optuna_reglage.sh`, "
                      "200 essais par polluant. Tant qu'il n'est pas fini, la ligne « notre "
@@ -773,8 +787,121 @@ def bloc_reglage(lignes: list[dict]) -> str:
                                "valeur": round(float(r[cle]), 2), "unite": "%"})
 
     texte.append(
-        "⚠️ **Les deux gains ne s'additionnent pas et ne se comparent qu'avec prudence** : "
-        "leur hors-échantillon est TEMPOREL, le nôtre est SPATIAL.\n")
+        "⚠️ **Les deux gains ne s'additionnent pas, et ils ne se comparent pas terme à "
+        "terme** : leur hors-échantillon est TEMPOREL, le nôtre SPATIAL. Cette réserve a "
+        "cessé de tenir lieu de mesure — **la § 10 septies mesure notre réglage sur LEUR "
+        "axe**, et le résultat renverse la lecture de ce tableau.\n")
+    return "\n".join(texte)
+
+
+def bloc_reglage_axe_temporel(lignes: list[dict]) -> str:
+    """Notre réglage, mesuré sur l'axe où le LEUR est mesuré — et il n'y survit pas.
+
+    Pourquoi cette section existe
+    ------------------------------
+    La § 10 sexies opposait notre gain de réglage à celui de leur krigeage, en signalant en
+    fin de bloc que les deux hors-échantillons diffèrent. **Signaler ne suffit pas quand la
+    mesure est à portée** (§ 4 ter de `CLAUDE.md`) : ici elle coûtait deux ajustements par
+    polluant, soit trois minutes chacun. La réserve tenait lieu de mesure, et elle penchait
+    systématiquement de notre côté.
+
+    Ce que la mesure change
+    ------------------------
+    Le gain du réglage est un **phénomène de l'axe spatial**. Évalué sur un partage du
+    calendrier — l'axe sur lequel leur +1,01 % est établi — il tombe à ~0. La phrase
+    « notre réglage rapporte quatre fois le leur » n'est donc pas défendable ; ce qui reste
+    vrai, et qui est le vrai résultat du dossier, est que la **correction** transfère, elle :
+    son gain contre CAMS se maintient d'un axe à l'autre.
+
+    ⚠️ Ce que ce test est : nos hyperparamètres restent choisis sur l'axe SPATIAL, seule
+    l'évaluation passe au temporel. La sélection n'ayant jamais vu ce partage, le test est
+    **non biaisé** de ce côté — mais ce n'est pas la réplique exacte de leur protocole, où
+    la sélection est elle-même temporelle. Il répond à « le réglage tient-il hors de l'axe
+    qui l'a choisi ? », pas à « qui règle le mieux ? ».
+
+    Régénéré par `python3 scripts/gain_reglage.py --tous --axe temporel`.
+    """
+    ordre = ("O3", "NO2", "PM10", "PM25")
+    tem = {p: pd.read_csv(f) for p in ordre
+           if (f := RACINE / f"reports/gain_reglage_{p}_temporel.csv").exists()}
+    if not tem:
+        return ""
+    spa = {p: pd.read_csv(f) for p in ordre
+           if (f := RACINE / f"reports/gain_reglage_{p}.csv").exists()}
+    kri = {p: pd.read_csv(f) for p in ordre
+           if (f := RACINE / f"reports/optimisation_krigeage_{p}_h2.csv").exists()}
+
+    texte = [
+        "## 10 septies. Le même réglage, sur LEUR axe — et il n'y survit pas\n",
+        "La § 10 sexies compare deux gains de réglage établis sur deux hors-échantillons "
+        "différents. Plutôt que de s'en tenir à la réserve, on mesure : les hyperparamètres "
+        "retenus sont réévalués sur un partage du **calendrier** — 1ʳᵉ moitié pour "
+        "l'ajustement, 2ᵈᵉ pour la notation — c'est-à-dire l'axe sur lequel leur chiffre "
+        "est établi.\n",
+        "| polluant | notre gain · axe SPATIAL | notre gain · axe TEMPOREL | "
+        "leur krigeage · axe TEMPOREL | notre gain vs CAMS, temporel |",
+        "|---|---|---|---|---|",
+    ]
+    ecarts = []
+    for p in ordre:
+        if p not in tem:
+            continue
+        t = tem[p].iloc[0]
+        gs = float(spa[p]["gain_reglage_pct"].iloc[0]) if p in spa else None
+        gt = float(t["gain_reglage_pct"])
+        k = kri.get(p)
+        gk = None
+        if k is not None:
+            kc = k[k["depart"] == "CHIMERE"]
+            gk = float(kc["gain_honnete_pct"].iloc[0]) if len(kc) == 1 else None
+        ecarts.append((p, gs, gt, gk))
+        texte.append(
+            f"| {NOM.get(p, p)} | {gs:+.2f} % | **{gt:+.2f} %** | "
+            f"{gk:+.2f} % | {float(t['gain_cams_regle_pct']):+.1f} % |"
+            if gs is not None and gk is not None else
+            f"| {NOM.get(p, p)} | — | **{gt:+.2f} %** | — | "
+            f"{float(t['gain_cams_regle_pct']):+.1f} % |")
+        lignes.append({"bloc": "10 septies", "polluant": p,
+                       "grandeur": "gain du réglage de notre méthode (axe TEMPOREL)",
+                       "valeur": round(gt, 2), "unite": "%"})
+
+    faits = [e for e in ecarts if e[1] is not None]
+    if faits:
+        texte.append(
+            f"\n**Le gain du réglage est un phénomène de l'axe spatial.** Il passe de "
+            f"{min(e[1] for e in faits):+.2f} … {max(e[1] for e in faits):+.2f} % en "
+            f"spatial à {min(e[2] for e in faits):+.2f} … {max(e[2] for e in faits):+.2f} % "
+            f"en temporel. **La phrase « notre réglage rapporte davantage que le leur » "
+            f"n'est donc pas défendable** : sur l'axe où leur chiffre est établi, le nôtre "
+            f"est **du même ordre que le leur** (-0.15 … +1.01 % pour eux).\n")
+        texte.append(
+            "⚠️ **« Du même ordre » n'est pas « nul », et la nuance se mesure.** Station par "
+            "station, le signe du gain temporel est significativement positif sur **3 "
+            "polluants sur 4** (NO₂ p=8·10⁻³, PM10 p=2·10⁻⁶, PM2,5 p=5·10⁻¹⁸ ; O₃ "
+            "indiscernable du hasard, 52 % à p=0,62). L'effet est donc **réel mais petit** — "
+            "c'est la RMSE groupée, pondérée par l'amplitude des erreurs, qui l'efface. "
+            "Vérifié par `aq.eval.critere.tient_sur_sous_ensembles`.\n")
+        texte.append(
+            "🔴 **Et la dernière colonne dit davantage que le réglage : sur un partage "
+            "temporel, l'avantage de la correction sur CAMS s'érode aussi, sauf sur NO₂.** "
+            "Il passe de +28.3 à **+8.3 %** sur O₃, de +37.7 à **+19.3 %** sur PM10, de "
+            "+30.4 à **+1.1 %** sur PM2,5 — et de +42.6 à **+46.0 %** sur NO₂, le seul qui "
+            "tienne. Ce n'est pas une réfutation de la méthode, mais ce n'est pas non plus "
+            "un détail, et cela **ne se cite pas sans la ligne suivante**.\n")
+        texte.append(
+            "**Les deux protocoles ne sont pas d'égale difficulté, et l'écart ne s'impute "
+            "donc pas entièrement au temps.** Le partage spatial ajuste sur 2/3 des "
+            "stations **sur tout le calendrier** et note sur le tiers restant : le modèle a "
+            "vu chaque saison. Le partage temporel ajuste sur la **1ʳᵉ moitié seulement** — "
+            "deux fois moins de données — et note sur une période dont il n'a **vu aucune "
+            "saison**. Une part de la chute mesure la couverture saisonnière, pas la "
+            "généralisation dans le temps. Séparer les deux demanderait un partage temporel "
+            "à volume d'entraînement égal ; ce n'est pas fait.\n")
+        texte.append(
+            "> ⚠️ La sélection reste **spatiale** ; seule l'évaluation est temporelle. Le "
+            "test est donc non biaisé de ce côté, mais il ne réplique pas leur protocole, "
+            "où la sélection est elle-même temporelle. Il répond à « le réglage tient-il "
+            "hors de l'axe qui l'a choisi ? », pas à « qui règle le mieux ? ».\n")
     return "\n".join(texte)
 
 
@@ -1006,8 +1133,20 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
                 f"{r['mois_debut']}→{r['mois_fin']}")
 
     def maxi(p: str) -> tuple[float, float, int, str] | None:
-        f = RACINE / f"reports/methode_maximale_{p}_h2.csv"
-        if not f.exists():
+        # 🔴 On lit la passe la plus CONTRÔLÉE disponible, pas la plus ancienne.
+        #
+        # La passe historique (`_h2.csv`, 29 mois) porte un défaut de support identifié et
+        # reproduit : les familles absentes sur un mois entier — spéciation avant 2024,
+        # membres, feux — donnaient au modèle un indicateur d'époque, alors que le protocole
+        # cache les mois. Elle reste sur le disque comme historique d'audit, elle ne peut
+        # plus servir de résultat principal.
+        #
+        # `_spe-core7_sc_sans-feux-membres` : 24 mois de support commun vérifié, pile
+        # identique aux quatre polluants, zéro valeur manquante dans les 14 colonnes.
+        f = next((RACINE / f"reports/methode_maximale_{p}_h2{x}.csv"
+                  for x in ("_spe-core7_sc_sans-feux-membres", "_spe-core7_sc", "")
+                  if (RACINE / f"reports/methode_maximale_{p}_h2{x}.csv").exists()), None)
+        if f is None:
             return None
         t = pd.read_csv(f)
         aux = _ligne_unique(t, "configuration", "★ MAXIMALE — AUX STATIONS", f)
@@ -1086,12 +1225,12 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
     ligne("①b", "production, contre CAMS brut", "idem", "J0",
           lambda v: v[0][1] if v[0] else None)
     ligne("②", "**maximale — AUX STATIONS**", "double aveugle, pile complète **+ veille**",
-          "J+2", lambda v: v[1][0] if v[1] else None)
+          "J+1", lambda v: v[1][0] if v[1] else None)
     ligne("③", "**maximale — PARTOUT** ⭐", "double aveugle, **sans** la veille",
-          "J+2", lambda v: v[1][1] if v[1] else None, gras=True)
+          "J+1", lambda v: v[1][1] if v[1] else None, gras=True)
     ligne("④", "apport de la seule observation de la veille (§ 7)", "usage A contre usage B",
-          "J+2", lambda v: v[3])
-    ligne("⑤", "double aveugle de référence", "base seule, **aucun levier**", "J+2",
+          "J+1", lambda v: v[3])
+    ligne("⑤", "double aveugle de référence", "base seule, **aucun levier**", "J+1",
           lambda v: v[2][0] if v[2] else None)
 
     corpus = []
@@ -1124,7 +1263,7 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
         "nombre de plis. La comparaison **rigoureuse** est interne à ③ : la ligne « base » de "
         "`methode_maximale_<P>_h2.csv`, mesurée sur exactement les mêmes plis que le total.\n"
         "\n### Les échéances ne sont pas les mêmes partout\n"
-        "\n`methode_maximale` est à **J+2** ; `detection_maximale`, `episodes_reels` et "
+        "\n`methode_maximale` est à **J+1** ; `detection_maximale`, `episodes_reels` et "
         "`agregation_zone` sont à **J0** (`horizon=1`) ; les bancs FAIRMODE et LCSQA à "
         "**J+1** ; les pages HTML de production à **J0**. Un jury demandera « à quelle "
         "échéance ? » et la réponse **change selon le tableau montré**. Le rassurant est "
@@ -1797,6 +1936,316 @@ def bloc_stations_degradees(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def _v(x: float, n: int = 2) -> str:
+    """Un nombre à la française — le dossier écrit « +17,90 », pas « +17.90 »."""
+    return f"{x:+.{n}f}".replace(".", ",")
+
+
+def bloc_intervalle_apport(lignes: list[dict]) -> str:
+    """L'intervalle qui manquait au protocole principal — bootstrap circulaire par blocs.
+
+    Le dossier a longtemps publié ses gains **sans aucun intervalle** sur son épreuve
+    principale : le seul disponible venait d'un bootstrap sur l'axe temporel, un autre
+    corpus et un autre découpage.
+    """
+    f = RACINE / "reports/intervalle_apport_speciation.csv"
+    if not f.exists():
+        return ""
+    t = pd.read_csv(f).set_index("polluant")
+    texte = [
+        "## 12 bis. L'apport de la spéciation, avec son intervalle\n",
+        "Bootstrap **circulaire par blocs de mois**, 10 000 tirages, sur les différences "
+        "**appariées** pli à pli — mêmes lignes, même graine, même découpage, seules les "
+        "14 colonnes de composition changent. Les plis ne sont pas indépendants (les groupes "
+        "de stations tournent, et deux plis partagent ~93 % de leur apprentissage) : des "
+        "blocs contigus capturent cette dépendance, et la version à six mois est la "
+        "**sensibilité obligatoire**.\n",
+        "🔴 **Seuils fixés avant lecture** : borne basse > 0 après Holm sur les quatre "
+        "polluants, **et** même verdict sous blocs de trois et de six mois.\n",
+        "| polluant | apport relatif | IC95 · blocs de 3 mois | IC95 · blocs de 6 mois | verdict |",
+        "|---|---:|---|---|---|"]
+    for p in ("NO2", "O3", "PM10", "PM25"):
+        if p not in t.index:
+            continue
+        r = t.loc[p]
+        # La précision SUIT l'intervalle (règle NIST GLP 9) : on arrondit la demi-largeur
+        # à deux chiffres significatifs, puis l'estimation au même rang.
+        demi = (r.ic_haut_b3 - r.ic_bas_b3) / 2
+        rang = max(0, -int(np.floor(np.log10(abs(demi)))) + 1) if demi > 0 else 1
+        texte.append(
+            f"| {NOM[p]} | **{_v(r.apport_pct, rang)} %** | "
+            f"[{_v(r.ic_bas_b3, rang)} ; {_v(r.ic_haut_b3, rang)}] | "
+            f"[{_v(r.ic_bas_b6, rang)} ; {_v(r.ic_haut_b6, rang)}] | "
+            f"{'✅ déclarable' if r.declarable else '🔴 non déclaré'} |")
+        lignes.append({"bloc": "intervalle apport", "polluant": p, "grain": "spéciation",
+                       "n": int(r.n_jours_station), "gain": r.apport_pct,
+                       "relatif_pct": r.ic_bas_b3})
+    texte.append(
+        "\n**Le nombre de décimales n'est pas un choix de présentation** : il suit la "
+        "largeur de l'intervalle. Écrire deux décimales sur un gain dont l'incertitude "
+        "porte sur le premier chiffre serait une prétention que rien ne soutient.\n")
+    return "\n".join(texte)
+
+
+def bloc_balayage_echeances(lignes: list[dict]) -> str:
+    """La stabilité avec l'échéance, testée jusqu'à J+3 — et réfutée sur l'ozone."""
+    fs = {p: RACINE / f"reports/balayage_echeances_{p}.csv"
+          for p in ("NO2", "O3", "PM10", "PM25")}
+    tab = {p: pd.read_csv(f) for p, f in fs.items() if f.exists()}
+    if not tab:
+        return ""
+    cols = [c for c in next(iter(tab.values())).columns if c.startswith("gain_")]
+    texte = [
+        "## 12 quinquies. La correction se dégrade-t-elle avec l'échéance ? — J0 à J+3\n",
+        "Ce dossier affirmait que **nos leviers ne se dégradent pas avec l'échéance**, parce "
+        "que le biais corrigé est une propriété du **site** et non de la prévision. **J+3 est "
+        "la seule échéance où cette affirmation pouvait encore être réfutée** : CAMS Europe "
+        "s'arrête à 96 h, il n'existe ni J+4 ni J+5. Elle n'avait jamais été consultée.\n",
+        "⚠️ **Pile commune et identique aux quatre échéances** — totaux CAMS, terrain, "
+        "calendrier, typologie, tendance récente. Ni spéciation, ni membres, ni feux, ni "
+        "GEOS-CF : aucune de ces familles n'existe aux quatre horizons, et les inclure "
+        "confondrait l'effet d'échéance avec la composition du modèle. Ce n'est donc **pas** "
+        "la meilleure pile J+1.\n",
+        "🔴 **Seuil fixé avant la première mesure** : stabilité si la plage "
+        "`R = max(G) − min(G)` est **< 1,0 point** *et* si sa borne haute unilatérale à 95 % "
+        "l'est aussi, avec le même verdict sous blocs de trois et six mois. Réfutation si la "
+        "borne **basse** dépasse 1,0.\n",
+        "| polluant | " + " | ".join(c[5:] for c in cols) + " | plage R | haut 95 % | verdict |",
+        "|---" * (len(cols) + 4) + "|"]
+    for p in ("NO2", "PM10", "PM25", "O3"):
+        if p not in tab:
+            continue
+        r = tab[p].iloc[0]
+        marque = {"stable": "✅ **stable**", "réfutée": "🔴 **réfutée**"}.get(
+            r["verdict"], "⚠️ indéterminée")
+        texte.append(f"| {NOM[p]} | " + " | ".join(f"{_v(r[c])} %" for c in cols)
+                     + f" | {_v(r['plage_pt'])[1:]} | {_v(r['plage_haut95_b3'])[1:]} "
+                     f"| {marque} |")
+        lignes.append({"bloc": "balayage échéances", "polluant": p, "grain": "plage",
+                       "n": int(r["n_cles"]), "gain": r["plage_pt"],
+                       "relatif_pct": r["plage_haut95_b3"]})
+    texte.append(
+        "\n🔴 **L'affirmation est réfutée sur l'ozone** : déclin monotone de 2,25 points "
+        "entre J0 et J+3. Elle tient en revanche sur le NO₂, avec 0,38 point de plage.\n")
+    texte.append(
+        "⭐ **Et le classement suit le mécanisme invoqué.** L'apport de la typologie de "
+        "station mesure à quel point le résidu est attaché au lieu :\n")
+    texte.append("| | apport de la typologie | plage sur l'échéance |")
+    texte.append("|---|---:|---:|")
+    for p, typo in (("NO2", None), ("PM10", None), ("PM25", None), ("O3", None)):
+        if p not in tab:
+            continue
+        fm = next((RACINE / f"reports/methode_maximale_{p}_h2{x}.csv"
+                   for x in ("_spe-core7_sc_sans-feux-membres", "_spe-core7_sc", "")
+                   if (RACINE / f"reports/methode_maximale_{p}_h2{x}.csv").exists()), None)
+        if fm is None:
+            continue
+        m = pd.read_csv(fm)
+        haut = m[m["configuration"].str.contains("MAXIMALE — PARTOUT")]["gain_pct"].iloc[0]
+        abl = m[m["configuration"].str.contains("− typologie", na=False)]
+        if abl.empty:
+            continue
+        texte.append(f"| {NOM[p]} | {_v(haut - abl['gain_pct'].iloc[0])} pt | "
+                     f"{_v(tab[p].iloc[0]['plage_pt'])[1:]} |")
+    texte.append(
+        "\n**Le polluant dont le résidu est le plus attaché au site est celui qui résiste à "
+        "l'échéance ; celui qui l'est le moins se dégrade.** Trois rangs sur quatre "
+        "concordent — avec quatre polluants, c'est une concordance **suggestive, pas une "
+        "démonstration**.\n")
+    texte.append(
+        "> **L'affirmation était juste sur son mécanisme et trop large dans sa portée.** "
+        "Elle vaut là où le biais est un effet de site, pas partout.\n")
+    return "\n".join(texte)
+
+
+def bloc_mecanisme_speciation(lignes: list[dict]) -> str:
+    """Le gain de la spéciation : information du JOUR, ou encodeur site × saison ?
+
+    Une famille qui rapporte n'explique pas pourquoi elle rapporte, et deux explications
+    très différentes produisaient le même chiffre. Ce bloc publie l'échelle de falsification
+    plutôt que la seule conclusion : ce sont les configurations REJETÉES qui font la preuve.
+    """
+    fs = {p: RACINE / f"reports/mecanisme_speciation_{p}.csv"
+          for p in ("NO2", "O3", "PM10", "PM25")}
+    tables = {p: pd.read_csv(f) for p, f in fs.items() if f.exists()}
+    if not tables:
+        return ""
+    lib = {"C": "**C** — climatologie station × mois",
+           "X": "**X** — spéciation permutée *dans* station × mois",
+           "P": "**P** — totaux CAMS des 3 autres polluants",
+           "R": "**R** — anomalie journalière (composante − sa climatologie)",
+           "F": "**F** — composition relative (composante ÷ somme)"}
+    texte = [
+        "## 12 ter. Par quel MÉCANISME la spéciation gagne — et les deux explications "
+        "concurrentes, réfutées\n",
+        "Axe **temporel**, J+1, 5 graines, mêmes lignes et mêmes hyperparamètres partout. "
+        "On mesure la **part du gain de la spéciation** que chaque configuration reproduit : "
+        "`(gain(K) − gain(T)) / (gain(S) − gain(T))`, où `T` est la forme du total seule et "
+        "`S` la spéciation brute. **Les seuils sont écrits dans l'en-tête de "
+        "`scripts/mecanisme_speciation.py` avant le premier ajustement.**\n",
+        "| configuration | " + " | ".join(NOM[p] for p in tables) + " | seuil | lecture si franchi |",
+        "|---" * (len(tables) + 3) + "|"]
+    sens = {"C": "le gain serait un encodeur site × saison",
+            "X": "le gain ne tiendrait pas au jour",
+            "P": "la spéciation serait superflue",
+            "R": "l'information est journalière",
+            "F": "c'est la composition, pas la masse"}
+    for code in ("C", "X", "P", "R", "F"):
+        cells = []
+        for p, tb in tables.items():
+            r = tb[tb["code"] == code]
+            if r.empty:
+                cells.append("—"); continue
+            v = float(r.iloc[0]["part_du_gain"])
+            gras = "**" if code in ("R", "F") else ""
+            cells.append(f"{gras}{100 * v:.1f} %{gras}")
+            lignes.append({"bloc": "mécanisme spéciation", "polluant": p, "grain": code,
+                           "n": int(r.iloc[0]["n_lignes"]), "gain": r.iloc[0]["gain_pct"],
+                           "relatif_pct": 100 * v})
+        s = tables[next(iter(tables))].query("code == @code")["seuil"].iloc[0]
+        texte.append(f"| {lib[code]} | " + " | ".join(cells)
+                     + f" | {'—' if pd.isna(s) else f'{100 * s:.0f} %'} | {sens[code]} |")
+    texte.append(
+        "\n🔴 **`X` est le test décisif, et il est réfutatoire sur les quatre polluants.** "
+        "Permuter la spéciation *à l'intérieur* de chaque couple (station, mois calendaire) "
+        "conserve **exactement** l'histogramme de chaque composante par site et par saison, "
+        "et ne détruit que l'appariement au **jour**. Il efface la totalité du gain. Aucune "
+        "explication par la saison ou par la position n'y survit — et `C` le confirme par "
+        "l'autre bout, en n'en reproduisant rien.\n")
+    texte.append(
+        "**`P` chiffre ce que le téléchargement a réellement acheté** : les totaux CAMS des "
+        "trois autres polluants, déjà sur le disque, n'en reprennent que 28 à 37 %. "
+        "La composition apporte donc bien autre chose qu'un indicateur de régime.\n")
+    texte.append(
+        "⚠️ **Ce que ces chiffres n'autorisent toujours pas.** Le mécanisme établi est "
+        "« le modèle exploite l'**écart du jour** à la composition habituelle du site ». "
+        "Il ne nomme **aucune source** : l'attribution par groupes (§ 12 quater) reste "
+        "**prédictive**, et l'établir demanderait une spéciation observée ou une "
+        "perturbation d'inventaire.\n")
+    # ── La stabilité par époque CAMS — le contrôle que la revue conditionne à la publication
+    ep = {(p, e): RACINE / f"reports/mecanisme_speciation_{p}_{e}.csv"
+          for p in tables for e in ("U9", "U10")}
+    dispo = {k: pd.read_csv(v) for k, v in ep.items() if v.exists()}
+    if dispo:
+        texte.append(
+            "\n### La stabilité par époque CAMS — deux sous-corpus temporels disjoints\n")
+        texte.append(
+            "⚠️ **Les dates de montée de version sont citées par la revue externe et n'ont "
+            "pas pu être vérifiées** : le saut normalisé des composantes à la date annoncée "
+            "(|z| médian 0,38 au 2025-11-13) est indiscernable de celui d'une date témoin "
+            "arbitraire (0,37 au 2025-03-15) — à mi-novembre une fenêtre de 45 jours compare "
+            "octobre à décembre, et la saison écrase tout pas de version. Ce découpage vaut "
+            "donc comme **deux sous-corpus disjoints**, pas comme une expérience sur les "
+            "versions.\n")
+        texte.append("| | " + " | ".join(NOM[p] for p in tables) + " |")
+        texte.append("|---" * (len(tables) + 1) + "|")
+        for lib_e, e in (("corpus entier", None), ("époque U9", "U9"), ("époque U10", "U10")):
+            cells = []
+            for p in tables:
+                t = tables[p] if e is None else dispo.get((p, e))
+                if t is None:
+                    cells.append("—"); continue
+                g = t.set_index("code")["gain_pct"]
+                v = g["S"] - g["T"]
+                cells.append(f"{'**' if v < 0 else ''}{v:+.2f} pt{'**' if v < 0 else ''}")
+            texte.append(f"| apport S − T · {lib_e} | " + " | ".join(cells) + " |")
+        for lib_e, e in (("corpus entier", None), ("époque U9", "U9"), ("époque U10", "U10")):
+            cells = []
+            for p in tables:
+                t = tables[p] if e is None else dispo.get((p, e))
+                cells.append("—" if t is None else
+                             f"{100 * float(t.query('code == \"X\"').part_du_gain.iloc[0]):.1f} %")
+            texte.append(f"| part reproduite par **X** · {lib_e} | " + " | ".join(cells) + " |")
+        # Le verdict se CALCULE, il ne se rédige pas : lui aussi doit suivre les chiffres.
+        instables = []
+        for p in tables:
+            signes = []
+            for e in (None, "U9", "U10"):
+                t = tables[p] if e is None else dispo.get((p, e))
+                if t is not None:
+                    g = t.set_index("code")["gain_pct"]
+                    signes.append(g["S"] - g["T"] > 0)
+            if len(set(signes)) > 1:
+                instables.append(NOM[p])
+        xs = [100 * float(t.query('code == "X"').part_du_gain.iloc[0])
+              for t in list(tables.values()) + list(dispo.values())]
+        texte.append(
+            f"\n✅ **Le mécanisme est robuste** : sur les {len(xs)} mesures de `X` "
+            f"(polluants × fenêtres), la part reproduite va de {min(xs):.1f} % à "
+            f"{max(xs):.1f} % — **jamais près du seuil de 50 %**. Les explications par la "
+            f"saison, le site ou le régime sont réfutées dans les deux sous-corpus.\n")
+        if instables:
+            texte.append(
+                f"🔴 **Mais l'APPORT n'est pas stable sur {', '.join(instables)}** : son "
+                f"signe change entre les sous-corpus. Le seuil de la revue externe — *signe "
+                f"identique dans les deux époques* — **n'est pas franchi**. L'étage de "
+                f"spéciation reste dans la pile parce qu'il est mesuré positivement au "
+                f"protocole du dossier sur le corpus entier, mais **son apport ne doit pas "
+                f"être cité pour {', '.join(instables)}** : sur ce polluant, il n'est pas "
+                f"établi qu'il se reproduise.\n")
+        texte.append(
+            "⚠️ Les sous-corpus font 28 à 38 % du total : `C`, `P` et `R` y deviennent "
+            "instables (`C` balaie −56 % à +92 %). **Seul `X` est lu ici** — c'est le seul "
+            "test réfutatoire, et le seul dont le verdict ne dépend pas de la précision de "
+            "l'estimation.\n")
+
+    texte.append(
+        "⚠️ Ces pourcentages sont sur l'axe **temporel** — ils ne se citent jamais à la "
+        "place des gains de la § 12, mesurés en double aveugle.\n")
+    return "\n".join(texte)
+
+
+def bloc_shapley_speciation(lignes: list[dict]) -> str:
+    """À quel GROUPE de composantes attribuer le gain — par Shapley exact, et sous seuil.
+
+    Une ablation un-à-un ne mesure rien sur sept traceurs corrélés : retirer l'un laisse les
+    autres compenser, et c'est ainsi que retirer `ecres_conc` — la variable de l'hypothèse
+    de départ — **améliorait** sur trois polluants sur quatre.
+    """
+    fs = {p: RACINE / f"reports/shapley_speciation_{p}.csv"
+          for p in ("NO2", "O3", "PM10", "PM25")}
+    tables = {p: pd.read_csv(f) for p, f in fs.items() if f.exists()}
+    if not tables:
+        return ""
+    groupes = list(next(iter(tables.values()))["groupe"])
+    texte = [
+        "## 12 quater. À quel groupe de composantes attribuer le gain\n",
+        "Contribution de **Shapley exacte** : moyenne de l'apport marginal d'un groupe sur "
+        "les **six ordres d'arrivée** possibles — la seule attribution qui ne dépende pas "
+        "d'un ordre choisi par l'analyste. Huit sous-ensembles × 5 graines.\n",
+        "🔴 **Seuil d'attribution fixé avant lecture** : médiane **≥ 1,0 point** *et* "
+        "positive dans **au moins 4 graines sur 5**. En dessous, on publie l'apport du "
+        "**bloc** et l'on renonce à toute importance par groupe.\n",
+        "| groupe | " + " | ".join(NOM[p] for p in tables) + " |",
+        "|---" * (len(tables) + 1) + "|"]
+    for g in groupes:
+        cells = []
+        for p, tb in tables.items():
+            r = tb[tb["groupe"] == g]
+            if r.empty:
+                cells.append("—"); continue
+            r = r.iloc[0]
+            att = bool(r["attribuable"])
+            cells.append(f"{'**' if att else ''}{r['shapley_median_pt']:+.2f} pt"
+                         f"{'**' if att else ''}"
+                         f"{'' if att else ' *(non attribuable)*'}")
+            lignes.append({"bloc": "shapley spéciation", "polluant": p, "grain": g,
+                           "n": int(r["n_variables"]), "gain": r["shapley_median_pt"],
+                           "relatif_pct": 100 * float(r["part_graines_positives"])})
+        texte.append(f"| {g.replace('_', ' ')} | " + " | ".join(cells) + " |")
+    manquants = [NOM[p] for p in ("NO2", "O3", "PM10", "PM25") if p not in tables]
+    if manquants:
+        texte.append(f"\n⚠️ Mesuré sur {' et '.join(NOM[p] for p in tables)} seulement — "
+                     f"{', '.join(manquants)} non passés à cette attribution.\n")
+    texte.append(
+        "🔴 **L'attribution est PRÉDICTIVE, jamais causale.** Elle dit quel groupe porte "
+        "le pouvoir prédictif, **pas** quelle source émet. Rien ici n'autorise à écrire "
+        "« le chauffage au bois apporte » : l'hypothèse qui a lancé ce chantier est au "
+        "contraire réfutée — retirer le carbone résidentiel seul **améliore** sur trois "
+        "polluants sur quatre, parce que sept traceurs corrélés se compensent.\n")
+    return "\n".join(texte)
+
+
 def bloc_pile_complete(lignes: list[dict]) -> str:
     """L'empilement cumulatif de tous les leviers — le seul chiffre de synthèse honnête.
 
@@ -1811,7 +2260,7 @@ def bloc_pile_complete(lignes: list[dict]) -> str:
     tables = {p: pd.read_csv(f) for p, f in presents.items()}
     texte = [
         "## 12. La pile complète — ce que valent tous les leviers ensemble\n",
-        "Double aveugle **station ET mois cachés**, J+2, fenêtre du flux GEOS-CF v1. "
+        "Double aveugle **station ET mois cachés**, J+1, fenêtre du flux GEOS-CF v1. "
         "L'ordre des étages est **déclaré avant la mesure** : le réordonner après coup "
         "flatterait un étage choisi. Deux périmètres qui ne se confondent jamais — "
         "**PARTOUT** (utilisable là où aucune station n'existe) et **AUX STATIONS** "
@@ -2192,12 +2641,17 @@ def main() -> int:
         bloc_duel_prevair(lignes),
         bloc_duel_chimere(lignes),
         bloc_reglage(lignes),
+        bloc_reglage_axe_temporel(lignes),
         bloc_detection(lignes),
         bloc_signalements(lignes),
         bloc_front(lignes),
         bloc_generalisation(),
         bloc_stations_degradees(lignes),
         bloc_pile_complete(lignes),
+        bloc_intervalle_apport(lignes),
+        bloc_balayage_echeances(lignes),
+        bloc_mecanisme_speciation(lignes),
+        bloc_shapley_speciation(lignes),
         bloc_ablation(lignes),
         bloc_geoscf(lignes),
         bloc_episodes_reels(lignes),

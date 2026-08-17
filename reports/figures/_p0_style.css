@@ -22,7 +22,7 @@
 /* Un corpus tronqué suit son chiffre partout où le chiffre va. */
 .p0-tuile.tronque { border-top-color: var(--refute); }
 .p0-tuile .flag { display: block; margin-top: 5px; font-family: var(--mono);
-                  font-size: 9.8px; letter-spacing: .07em; color: var(--refute); }
+                  font-size: 10px; letter-spacing: .07em; color: var(--refute); }
 
 .p0-cond { margin: 16px 0 0; font-size: 13px; line-height: 1.62; color: var(--encre-3);
            max-width: 96ch; }
@@ -39,7 +39,7 @@
 .p0-contre .p0-lab { color: var(--refute); }
 .p0-gros { margin: 0; font-family: var(--mono); font-size: 30px; font-weight: 700;
            letter-spacing: -.03em; color: var(--refute); line-height: 1.05; }
-.p0-txt { margin: 8px 0 0; font-size: 13.2px; line-height: 1.55; color: var(--encre-2); }
+.p0-txt { margin: 8px 0 0; font-size: 13px; line-height: 1.55; color: var(--encre-2); }
 .p0-txt strong { color: var(--encre); }
 
 .p0-lecture { padding: 18px 20px; background: var(--surface);
@@ -49,16 +49,16 @@
 .p0-chemin li:last-child { border-bottom: 0; }
 .p0-chemin a { display: flex; align-items: baseline; gap: 9px; text-decoration: none;
                padding: 7px 0 1px; font-size: 14px; font-weight: 600; color: var(--encre); }
-.p0-chemin a b { font-family: var(--mono); font-size: 10.6px; color: var(--accent);
+.p0-chemin a b { font-family: var(--mono); font-size: 10.4px; color: var(--accent);
                  font-weight: 700; letter-spacing: .06em; }
 .p0-chemin a:hover { color: var(--accent); }
-.p0-chemin span { display: block; padding: 0 0 8px 26px; font-size: 12.6px;
+.p0-chemin span { display: block; padding: 0 0 8px 26px; font-size: 12.2px;
                   line-height: 1.45; color: var(--encre-3); }
 .p0-chemin li.p0-dur a b { color: var(--refute); }
 
 .p0-pied { margin: 26px 0 0; padding: 16px 18px; background: var(--surface-2);
            border-left: 3px solid var(--trait-fort); border-radius: var(--r);
-           font-size: 13.4px; line-height: 1.62; color: var(--encre-2); max-width: 94ch; }
+           font-size: 13px; line-height: 1.62; color: var(--encre-2); max-width: 94ch; }
 .p0-pied strong { color: var(--encre); }
 
 /* La signature en trois mots — collée aux chiffres, pas reléguée en note.
@@ -66,7 +66,7 @@
    sans son périmètre, son épreuve et son échéance n'est pas citable. */
 .p0-signature { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
                 margin: 12px 0 0; padding: 9px 12px; background: var(--accent-pale);
-                border-radius: var(--r); font-size: 12.4px; color: var(--encre-2); }
-.p0-signature span { font-family: var(--mono); font-size: 9.6px; letter-spacing: .12em;
+                border-radius: var(--r); font-size: 12.2px; color: var(--encre-2); }
+.p0-signature span { font-family: var(--mono); font-size: 9.4px; letter-spacing: .12em;
                      text-transform: uppercase; color: var(--accent); }
 .p0-signature b { font-weight: 600; color: var(--encre); margin-right: 8px; }

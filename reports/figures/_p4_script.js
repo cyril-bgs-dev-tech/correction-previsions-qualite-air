@@ -9,7 +9,7 @@
   var POLS = Object.keys(D.polluants);
   var etat = { p: 'NO2', an: 'toutes', p2: 'NO2' };
 
-  var nf = function (x, d) { return (x >= 0 ? '+' : '') + x.toFixed(d === undefined ? 1 : d); };
+  var nf = function (x, d) { return (x >= 0 ? '+' : '') + x.toFixed(d === undefined ? 1 : d).replace('.', ','); };
   var ent = function (n) { return n.toLocaleString('fr-FR'); };
   var el = function (n, a) {
     var e = document.createElementNS('http://www.w3.org/2000/svg', n);
@@ -42,16 +42,14 @@
        l'exploite en l'état. Les mélanger produit deux valeurs du même gain. */
     tb.innerHTML =
       '<tr class="p4-surtitre"><th></th><th></th>' +
-      '<th colspan="4">gain contre <b>CAMS brut</b> — pour ordonner les systèmes</th>' +
-      '<th class="p4-col-tete">contre la <b>chaîne en service</b></th></tr>' +
+      '<th colspan="4">gain contre <b>CAMS brut</b> — pour ordonner les systèmes</th></tr>' +
       '<tr><th>année</th><th>jours-station</th><th>RMSE CAMS</th>' +
-      '<th>AASQA réglée</th><th>AASQA usuelle</th><th>nous</th>' +
-      '<th class="p4-col-tete">nous</th></tr>';
+      '<th>AASQA réglée</th><th>AASQA usuelle</th><th>nous</th></tr>';
     POLS.forEach(function (p) {
       var b = D.polluants[p];
       var tr = document.createElement('tr');
       tr.className = 'grp';
-      tr.innerHTML = '<td colspan="7">' + b.nom +
+      tr.innerHTML = '<td colspan="6">' + b.nom +
         ' <span>· ' + b.grandeur + ' · ' + b.unite + '</span></td>';
       tb.appendChild(tr);
       b.annees.forEach(function (a) {
@@ -64,15 +62,45 @@
           '<td>' + (a.an === 'toutes' ? 'ensemble' : a.an) +
             (a.faible ? ' <span class="marq-faible" title="effectif faible">faible</span>' : '') + '</td>' +
           '<td class="v n">' + ent(a.n) + '<span class="n"> · ' + a.ns + ' st.</span></td>' +
-          '<td class="v gris">' + a.rmse.cams.toFixed(2) + '</td>' +
+          '<td class="v gris">' + a.rmse.cams.toFixed(2).replace('.', ',') + '</td>' +
           '<td class="v ' + cl(a.gain.aasqa) + bat + '">' + nf(a.gain.aasqa) + ' %</td>' +
           '<td class="v gris">' + nf(a.gain.usuel) + ' %</td>' +
-          '<td class="v ' + cl(a.gain.nous) + '">' + nf(a.gain.nous) + ' %</td>' +
-          '<td class="v p4-col-tete ' + cl(a.gain.service) + '">' +
-            nf(a.gain.service, 2) + ' %' +
-            '<span class="p4-sec" title="contre la même méthode réglée au mieux — ' +
-            'l\'adversaire le plus dur">réglée au mieux&#8239;: ' +
-            nf(a.gain.service_opt, 2) + ' %</span></td>';
+          '<td class="v ' + cl(a.gain.nous) + '">' + nf(a.gain.nous) + ' %</td>';
+        tb.appendChild(r);
+      });
+    });
+    tableauService();
+  }
+
+  /* ── Le second tableau : LA colonne qui se cite ─────────────────────────────────────
+     Séparé du premier parce que les deux dénominateurs ne se lisent pas ensemble — le
+     texte de la page le disait déjà — et parce qu'un septième rang de colonnes ne tient
+     pas dans la largeur imprimable. Empilé, il est LU ; accolé, il défilait à l'écran et
+     disparaissait du PDF. */
+  function tableauService() {
+    var tb = document.querySelector('#p4-tab2 tbody');
+    if (!tb) return;
+    tb.innerHTML =
+      '<tr class="p4-surtitre"><th></th>' +
+      '<th colspan="2" class="p4-col-tete">contre la <b>chaîne en service</b> — le chiffre qui se cite</th></tr>' +
+      '<tr><th>année</th><th class="p4-col-tete">nous</th>' +
+      '<th>contre cette chaîne <em>réglée au mieux</em></th></tr>';
+    POLS.forEach(function (p) {
+      var b = D.polluants[p];
+      var tr = document.createElement('tr');
+      tr.className = 'grp';
+      tr.innerHTML = '<td colspan="3">' + b.nom +
+        ' <span>· ' + b.grandeur + ' · ' + b.unite + '</span></td>';
+      tb.appendChild(tr);
+      b.annees.forEach(function (a) {
+        var r = document.createElement('tr');
+        r.className = a.an === 'toutes' ? 'tot' : 'an';
+        var cl = function (v) { return v >= 0 ? 'pos' : 'neg'; };
+        r.innerHTML =
+          '<td>' + (a.an === 'toutes' ? 'ensemble' : a.an) +
+            (a.faible ? ' <span class="marq-faible" title="effectif faible">faible</span>' : '') + '</td>' +
+          '<td class="v p4-col-tete ' + cl(a.gain.service) + '">' + nf(a.gain.service, 2) + ' %</td>' +
+          '<td class="v gris ' + cl(a.gain.service_opt) + '">' + nf(a.gain.service_opt, 2) + ' %</td>';
         tb.appendChild(r);
       });
     });
@@ -184,8 +212,8 @@
     // un maximum brut écraserait tout le reste sur une seule journée d'épisode.
     var tri = s.obs.slice().sort(function (x, y) { return x - y; });
     var lo = tri[Math.floor(n * 0.02)], hi = tri[Math.floor(n * 0.98)];
-    document.getElementById('p4-b-min').textContent = lo.toFixed(0) + ' ' + b.unite;
-    document.getElementById('p4-b-max').textContent = hi.toFixed(0) + ' +';
+    document.getElementById('p4-b-min').textContent = lo.toFixed(0).replace('.', ',') + ' ' + b.unite;
+    document.getElementById('p4-b-max').textContent = hi.toFixed(0).replace('.', ',') + ' +';
 
     SERIES.forEach(function (se, r) {
       var y = BY + r * (BHB + BG);
@@ -283,9 +311,9 @@
       }
       if (i < 0 || ecart > 3 * 86400000) { bul.removeAttribute('data-on'); return; }
       bul.innerHTML = '<b>' + s.j[i] + '</b>' +
-        'observé <i>' + s.obs[i].toFixed(1) + '</i> ' + b.unite + '<br>' +
-        'CAMS brut ' + s.cams[i].toFixed(1) + ' · AASQA ' + s.aasqa[i].toFixed(1) +
-        ' · nous ' + s.nous[i].toFixed(1) +
+        'observé <i>' + s.obs[i].toFixed(1).replace('.', ',') + '</i> ' + b.unite + '<br>' +
+        'CAMS brut ' + s.cams[i].toFixed(1).replace('.', ',') + ' · AASQA ' + s.aasqa[i].toFixed(1).replace('.', ',') +
+        ' · nous ' + s.nous[i].toFixed(1).replace('.', ',') +
         '<small>' + s.ns[i] + ' stations ce jour-là</small>';
       bul.setAttribute('data-on', '');
       var rc = cadre.getBoundingClientRect();

@@ -40,7 +40,7 @@ i.d-ex { margin-right: 5px; }
 
 .p5-lig { display: grid; grid-template-columns: 92px 1fr 46px; gap: 8px;
           align-items: center; margin-bottom: 5px; }
-.p5-lig .nm { font-size: 11.4px; color: var(--encre-2); text-align: right;
+.p5-lig .nm { font-size: 11.6px; color: var(--encre-2); text-align: right;
               line-height: 1.15; }
 .p5-lig.nous .nm { color: var(--encre); font-weight: 700; }
 .p5-lig .val { font-family: var(--mono); font-size: 11.6px; font-weight: 600;
@@ -60,18 +60,28 @@ i.d-ex { margin-right: 5px; }
 .p5-lig.best .val { color: var(--accent); }
 
 .p5-legende { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 12px 0 0;
-              font-size: 11.8px; color: var(--encre-3); }
+              font-size: 12.2px; color: var(--encre-3); }
 .p5-faible { color: var(--ambre); font-family: var(--mono); font-size: 10.4px; }
 
 /* ── § 15 · la persistance ────────────────────────────────────────────────────
    La ligne « notre modèle » est mise en avant, mais elle n'est PAS première : le
    plafond — l'observation — l'est. Un tableau qui ouvre sur notre ligne laisse
    croire que le gain nous appartient, alors qu'il appartient à la règle. */
-.p5-persist { width: 100%; border-collapse: collapse; font-size: 13.2px;
-              min-width: 660px; }
-.p5-persist th, .p5-persist td { padding: 8px 12px; text-align: right;
-                                 white-space: nowrap; }
-.p5-persist th { font-family: var(--mono); font-size: 10.2px; letter-spacing: .08em;
+/* ⚠️ `min-width` retiré le 17/08/2026 : une largeur plancher écrite en dur ne sait rien
+   du nombre de colonnes ni de la largeur imprimable. Avec 615 px utiles en A4, elle
+   garantissait l'écrêtage — les colonnes « écart » et « rappel » n'existaient pas dans le
+   PDF. La table prend sa largeur naturelle ; `fig-scroll` ne défile plus que sur un écran
+   étroit, cas où le défilement est le bon comportement. */
+.p5-persist { width: 100%; border-collapse: collapse; font-size: 13px; }
+/* ⚠️ `nowrap` conservé pour les CELLULES — un nombre coupé en deux lignes est illisible —
+   mais retiré des EN-TÊTES. « fausses alertes / règle instantanée » sur une seule ligne
+   imposait 833 px pour 615 px imprimables : les colonnes « écart » et « rappel » sortaient
+   du papier. Un en-tête qui revient à la ligne coûte deux millimètres de hauteur ; un
+   en-tête qui force le défilement coûte deux colonnes de résultats. */
+.p5-persist td { padding: 8px 12px; text-align: right; white-space: nowrap; }
+.p5-persist th { padding: 8px 10px; text-align: right; white-space: normal;
+                 max-width: 92px; }
+.p5-persist th { font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
                  text-transform: uppercase; color: var(--encre-3); font-weight: 600;
                  border-bottom: 1px solid var(--trait-fort); vertical-align: bottom; }
 .p5-persist th span { display: block; font-family: var(--sans); font-size: 10.4px;
@@ -93,7 +103,7 @@ i.d-ex { margin-right: 5px; }
    Le même modèle, trois seuils. La mise en forme doit dire que les trois lignes A/B/C
    sont des VARIANTES d'une même sortie, pas trois systèmes : d'où le liseré d'accent
    commun et le retrait des lignes de référence. */
-.p5-pf { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px; }
+.p5-pf { width: 100%; border-collapse: collapse; font-size: 13px; }
 .p5-pf th { font-family: var(--mono); font-size: 9.4px; letter-spacing: .1em;
   text-transform: uppercase; color: var(--encre-3); font-weight: 600; text-align: right;
   padding: 0 0 7px 12px; border-bottom: 1px solid var(--trait-fort); }

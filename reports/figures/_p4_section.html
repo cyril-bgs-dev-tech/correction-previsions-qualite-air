@@ -123,15 +123,26 @@
   <figure class="fig">
     <h4>Gain de RMSE, par polluant et par année — contre deux références</h4>
     <p class="sous">
-      À gauche, quatre colonnes contre <strong>CAMS brut</strong>&#8239;: un gain positif signifie
-      moins d'erreur que l'ensemble européen brut, et la colonne grise rappelle ce que vaut
-      leur méthode <strong>non réglée</strong>. À droite, séparée par un filet, la colonne qui
-      se cite&#8239;: notre gain contre la <strong>chaîne en service</strong>, avec en dessous le
-      même gain contre cette chaîne <em>réglée au mieux</em>.
+      Le <strong>premier tableau</strong> se lit contre <strong>CAMS brut</strong>&#8239;: un gain
+      positif signifie moins d'erreur que l'ensemble européen brut, et la colonne grise rappelle
+      ce que vaut leur méthode <strong>non réglée</strong>. Le <strong>second</strong> porte la
+      colonne qui se cite&#8239;: notre gain contre la <strong>chaîne en service</strong>, avec
+      en dessous le même gain contre cette chaîne <em>réglée au mieux</em>.
     </p>
     <p class="sig3 sig3--fig"></p>
+    <!-- ⚠️ DEUX tableaux empilés, jamais un seul qui défile. Le 16/08/2026, les sept
+         colonnes tenaient dans un `fig-scroll` de 805 px pour 615 px imprimables : à
+         l'écran on faisait glisser, sur PAPIER la septième colonne — celle que ce texte
+         appelle « la colonne qui se cite » — était PURENT ET SIMPLEMENT ABSENTE du PDF.
+         Le contrôle mesurait la largeur du document (718 ≤ 718, vert) et ne voyait pas
+         l'écrêtage interne : le défaut ne poussait rien, il retranchait.
+         La scission n'est pas une concession au papier — le texte ci-dessus dit déjà que
+         les deux blocs « ne se lisent pas ensemble ». Deux questions, deux tableaux. -->
     <div class="fig-scroll">
       <table class="tab-gains" id="p4-tab"><tbody></tbody></table>
+    </div>
+    <div class="fig-scroll p4-second">
+      <table class="tab-gains tab-service" id="p4-tab2"><tbody></tbody></table>
     </div>
     <figcaption>
       Lecture&#8239;: <b>−10,5 %</b> pour la stratégie AASQA sur l'ozone signifie qu'elle

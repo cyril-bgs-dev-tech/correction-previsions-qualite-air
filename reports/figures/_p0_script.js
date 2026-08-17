@@ -14,7 +14,7 @@
     d.className = 'p0-tuile';
     d.innerHTML =
       '<p class="pol">' + g.nom + '</p>' +
-      '<p class="val">+' + g.gain.toFixed(2) + '<span style="font-size:19px"> %</span></p>' +
+      '<p class="val">+' + g.gain.toFixed(2).replace('.', ',') + '<span style="font-size:19px"> %</span></p>' +
       '<p class="ctx"><b>' + g.n_mois + '</b> mois<br>' + g.fenetre.join(' → ') + '</p>';
     hote.appendChild(d);
   });

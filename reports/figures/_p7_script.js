@@ -4,7 +4,8 @@
   function pose(id, v){ var e = document.getElementById(id); if (e) e.textContent = v; }
   // Toutes les mentions de fenêtre et de compte DÉRIVENT de la donnée. Une seule écrite
   // en dur (« sur dix jours d'été ») contredisait déjà l'autre : PM10 en compte onze.
-  ["p7-jours", "p7-jours2"].forEach(function(id){ pose(id, pr.jours_max); });
+  ["p7-jours", "p7-jours2", "p7-jours3", "p7-jours4", "p7-jours5"]
+    .forEach(function(id){ pose(id, pr.jours_max); });
   pose("p7-leurgain", me.leur_gain_max);
   pose("p7-nousdevant", me.nous_devant);
   pose("p7-nbtot", me.n_total);
@@ -13,8 +14,8 @@
     var t = document.getElementById(id); if (!t) return;
     t.innerHTML = '<thead><tr>' + entetes + '</tr></thead><tbody>' + corps + '</tbody>';
   }
-  function num(v, n){ return v.toFixed(n === undefined ? 2 : n); }
-  function signe(v, n){ return (v > 0 ? '+' : '') + v.toFixed(n === undefined ? 2 : n) + ' %'; }
+  function num(v, n){ return v.toFixed(n === undefined ? 2 : n).replace('.', ','); }
+  function signe(v, n){ return (v > 0 ? '+' : '') + v.toFixed(n === undefined ? 2 : n).replace('.', ',') + ' %'; }
 
   // ── ① leur produit ──────────────────────────────────────────────────────────
   tableau("p7-tab",
@@ -27,7 +28,7 @@
         + '<td>' + num(l.cams) + '</td>'
         + '<td class="nous">' + num(l.nous) + '</td>'
         + '<td>' + num(l.prevair) + '</td>'
-        + '<td class="ecart">+' + l.ecart.toFixed(1) + ' %</td></tr>';
+        + '<td class="ecart">+' + l.ecart.toFixed(1).replace('.', ',') + ' %</td></tr>';
     }).join(""));
 
   // ── ② leur méthode ──────────────────────────────────────────────────────────
@@ -51,18 +52,23 @@
     '<b>Le point de départ pèse autant que la méthode.</b> CHIMERE brut est plus mauvais '
     + 'que la <strong>médiane de l\u2019ensemble dont il est membre</strong> sur '
     + '<strong>' + me.n_depart_perdant + ' polluants sur ' + me.n_total + '</strong> — '
-    + 'jusqu\u2019à <strong>' + Math.abs(me.pire_depart).toFixed(0) + ' %</strong>. '
+    + 'jusqu\u2019à <strong>' + Math.abs(me.pire_depart).toFixed(0).replace('.', ',') + ' %</strong>. '
     + 'Moyenner sept modèles vaut mieux que le meilleur d\u2019entre eux, et aucune '
     + 'comparaison de méthodes ne le montre si les deux partent du même endroit.';
 
   // ── ③ le réglage, des deux côtés ────────────────────────────────────────────
   tableau("p7-tab3",
-    '<th>Polluant</th><th>Leur krigeage, au mieux</th><th>Leur krigeage, honnête</th>'
-    + '<th class="sep">Notre réglage</th><th>Essais</th>',
+    '<th>Polluant</th><th>Leur krigeage, au mieux</th>'
+    + '<th>Leur krigeage, honnête<br><small>axe temporel</small></th>'
+    + '<th class="sep">Notre réglage<br><small>axe spatial</small></th>'
+    + '<th>Notre réglage<br><small>axe temporel — le leur</small></th><th>Essais</th>',
     rg.lignes.map(function(l){
       var n = l.notre_gain === null
         ? '<td class="sep p7-attente">en cours</td><td class="p7-attente">—</td>'
+          + '<td class="p7-attente">—</td>'
         : '<td class="sep nous">' + signe(l.notre_gain) + '</td>'
+          + '<td class="' + (l.notre_gain_temporel < 0 ? 'perd' : '') + '">'
+          + (l.notre_gain_temporel === null ? '—' : signe(l.notre_gain_temporel)) + '</td>'
           + '<td class="p7-fen">' + l.notre_essais + '</td>';
       return '<tr><td>' + l.polluant + '</td>'
         + '<td class="p7-fen">' + signe(l.leur_majorant) + '</td>'
@@ -73,17 +79,28 @@
   var c3 = document.getElementById("p7-cle3");
   if (c3) {
     var t = '<b>Le figeage ne décide de rien.</b> Réglé par polluant sur son propre '
-      + 'départ, leur krigeage gagne <strong>au plus ' + rg.leur_max.toFixed(2)
+      + 'départ, leur krigeage gagne <strong>au plus ' + rg.leur_max.toFixed(2).replace('.', ',')
       + ' %</strong>, et il <strong>perd</strong> sur ' + rg.leur_negatifs + ' polluants '
       + 'sur ' + rg.lignes.length + ' — régler une interpolation sur le passé ne dit pas '
       + 'qu\u2019elle sera meilleure ensuite.';
     if (rg.mesures > 0) {
-      t += ' Notre méthode, au même traitement, gagne <strong>'
-        + rg.notre_min.toFixed(2) + ' à ' + rg.notre_max.toFixed(2) + ' %</strong>'
+      t += ' Notre méthode gagne <strong>'
+        + rg.notre_min.toFixed(2).replace('.', ',') + ' à ' + rg.notre_max.toFixed(2).replace('.', ',') + ' %</strong> sur '
+        + 'l\u2019axe <strong>spatial</strong>'
         + (rg.mesures < rg.attendus
             ? ' (mesuré sur ' + rg.mesures + ' polluants sur ' + rg.attendus + ')' : '')
-        + '. <strong>La précaution jouait donc contre nous</strong> : les écarts du bloc ② '
-        + 'sont des minorants de ce côté-là aussi.';
+        + '.';
+      // ⚠️ Sans la phrase qui suit, les deux colonnes se lisent comme un facteur quatre.
+      // La réserve ne tient pas lieu de mesure : on a mesuré (règle D).
+      if (rg.tempo_mesures > 0) {
+        t += ' <strong>Mais les deux colonnes ne se comparent pas terme à terme :</strong> '
+          + 'la leur est un hors-échantillon <strong>temporel</strong>, la nôtre '
+          + '<strong>spatial</strong>. Rejoué sur <em>leur</em> axe, notre réglage vaut '
+          + '<strong>' + rg.tempo_min.toFixed(2).replace('.', ',') + ' à ' + rg.tempo_max.toFixed(2).replace('.', ',')
+          + ' %</strong> — <strong>du même ordre que le leur</strong>. Le gain du réglage '
+          + 'est un phénomène de l\u2019axe spatial ; ce qui se compare à armes égales est '
+          + 'la colonne de droite.';
+      }
     } else {
       t += ' Notre côté est en cours de mesure.';
     }

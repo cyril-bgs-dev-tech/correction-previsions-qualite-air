@@ -15,16 +15,22 @@
 .marq-faible { border-bottom: 1.5px dotted var(--ambre); color: var(--ambre); }
 
 /* ── Le tableau des gains ────────────────────────────────────────────────── */
-.tab-gains { width: 100%; border-collapse: collapse; font-size: 13.2px; min-width: 780px; }
+/* ⚠️ `min-width: 780px` retiré le 16/08/2026. Il FORÇAIT la largeur indépendamment du
+   contenu : même scindé en six et trois colonnes, chaque tableau réclamait encore 780 px
+   pour 615 px imprimables, donc perdait sa droite au PDF. Avec `white-space: nowrap`, la
+   table prend sa largeur NATURELLE — qui tient — et `fig-scroll` ne défile plus que sur
+   un écran étroit, cas où le défilement est le bon comportement. Une largeur plancher est
+   une constante écrite en dur (§ 0, règle A) : elle ne savait rien du nombre de colonnes. */
+.tab-gains { width: 100%; border-collapse: collapse; font-size: 13px; }
 .tab-gains th, .tab-gains td { padding: 7px 10px; text-align: right; white-space: nowrap; }
-.tab-gains th { font-family: var(--mono); font-size: 10.2px; letter-spacing: .08em;
+.tab-gains th { font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
                 text-transform: uppercase; color: var(--encre-3); font-weight: 600;
                 border-bottom: 1px solid var(--trait-fort); }
 .tab-gains th:first-child, .tab-gains td:first-child { text-align: left; }
-.tab-gains .grp td { padding-top: 15px; font-family: var(--mono); font-size: 11.4px;
+.tab-gains .grp td { padding-top: 15px; font-family: var(--mono); font-size: 11.6px;
                      letter-spacing: .07em; color: var(--encre); font-weight: 700; }
 .tab-gains .grp td span { font-family: var(--sans); font-weight: 400; letter-spacing: 0;
-                          font-size: 12px; color: var(--encre-3); text-transform: none; }
+                          font-size: 12.2px; color: var(--encre-3); text-transform: none; }
 .tab-gains tbody tr.an td { border-top: 1px solid var(--trait); }
 .tab-gains tr.tot td { border-top: 1.5px solid var(--trait-fort); font-weight: 600;
                        background: var(--surface-2); }
@@ -47,7 +53,7 @@
                              text-align: center; font-size: 9.4px;
                              letter-spacing: .1em; color: var(--encre-3); }
 .tab-gains .p4-surtitre th b { color: var(--encre-2); }
-.tab-gains .p4-sec { display: block; font-size: 10.2px; font-weight: 400;
+.tab-gains .p4-sec { display: block; font-size: 10px; font-weight: 400;
                      letter-spacing: .02em; color: var(--encre-3);
                      text-transform: none; }
 
@@ -76,7 +82,7 @@
 .seg { display: inline-flex; border: 1px solid var(--trait-fort); border-radius: 4px;
        overflow: hidden; background: var(--surface); }
 .seg button { appearance: none; border: 0; background: transparent; cursor: pointer;
-              font-family: var(--mono); font-size: 11.4px; letter-spacing: .05em;
+              font-family: var(--mono); font-size: 11.6px; letter-spacing: .05em;
               padding: 6px 11px; color: var(--encre-2);
               border-right: 1px solid var(--trait); }
 .seg button:last-child { border-right: 0; }
@@ -88,12 +94,12 @@
 /* Le bandeau de fraîcheur : vide quand le corpus est complet, donc il ne pèse rien
    dans le cas normal — et il crie quand l'artefact a pris du retard sur ses sources. */
 .p4-fr:empty { display: none; }
-.p4-fr { margin: 0 0 14px; padding: 9px 13px; font-size: 12.6px; line-height: 1.5;
+.p4-fr { margin: 0 0 14px; padding: 9px 13px; font-size: 12.2px; line-height: 1.5;
          color: var(--encre-2); background: var(--refute-pale); border-radius: 4px;
          border-left: 3px solid var(--refute); }
 .p4-fr b { font-family: var(--mono); font-variant-numeric: tabular-nums;
            color: var(--encre); font-weight: 700; }
-.p4-tronque { font-family: var(--mono); font-size: 10.6px; letter-spacing: .09em;
+.p4-tronque { font-family: var(--mono); font-size: 10.4px; letter-spacing: .09em;
               text-transform: uppercase; color: var(--refute); font-weight: 700; }
 .p4-eff b { color: var(--encre-2); font-family: var(--mono);
             font-variant-numeric: tabular-nums; font-weight: 600; }
@@ -103,11 +109,11 @@
 @media (max-width: 700px) { .p4-duo { grid-template-columns: 1fr; } }
 .p4-carte { background: var(--surface-2); border: 1px solid var(--trait);
             border-radius: 4px; padding: 8px 8px 4px; }
-.p4-carte-t { margin: 0 0 2px; font-family: var(--mono); font-size: 10.6px;
+.p4-carte-t { margin: 0 0 2px; font-family: var(--mono); font-size: 10.4px;
               letter-spacing: .07em; text-transform: uppercase; color: var(--encre-2);
               font-weight: 600; }
 .p4-carte-t span { display: block; text-transform: none; letter-spacing: 0;
-                   font-family: var(--sans); font-size: 12.6px; font-weight: 400;
+                   font-family: var(--sans); font-size: 12.2px; font-weight: 400;
                    color: var(--encre-3); margin-top: 2px; }
 .p4-carte-t span b { font-family: var(--mono); font-weight: 700; font-size: 15px; }
 .p4-carte svg { width: 100%; height: auto; display: block; }
@@ -117,7 +123,7 @@
 .p4-carte .st:hover { stroke: var(--encre); stroke-width: 1.4; }
 
 .p4-echelle { display: flex; align-items: center; gap: 9px; margin: 11px 0 0;
-              font-family: var(--mono); font-size: 10.6px; color: var(--encre-3); }
+              font-family: var(--mono); font-size: 10.4px; color: var(--encre-3); }
 .p4-echelle b { font-family: var(--sans); font-size: 12.2px; font-weight: 400;
                 color: var(--encre-3); margin-left: 4px; }
 .p4-ramp { flex: 0 1 230px; height: 9px; border-radius: 5px;
@@ -137,3 +143,11 @@
 #p4-bande .ax { font-family: var(--mono); font-size: 8.8px; fill: var(--encre-3); }
 #p4-bande .sep { stroke: var(--surface); stroke-width: 2; }
 #p4-bande .curseur { stroke: var(--encre); stroke-width: 1; pointer-events: none; }
+
+/* ── Le second tableau, celui qui porte le chiffre citable ────────────────────────────
+   Ajouté le 16/08/2026 après qu'une revue externe eut établi que la septième colonne
+   n'existait PAS dans le PDF : 805 px de contenu pour 615 px imprimables, donc un
+   défilement à l'écran et une absence sur papier. Empilé, il tient. */
+.p4-second { margin-top: 14px; }
+#p4-tab2 { width: 100%; }
+#p4-tab2 .p4-col-tete { border-left: none; }

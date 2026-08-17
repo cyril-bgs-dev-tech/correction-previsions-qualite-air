@@ -93,6 +93,9 @@ reports/offre_atmo_occitanie.png
 reports/VERIFICATION_CANDIDATURE.md
 reports/verification_candidature.csv
 scripts/verifier_dossier_candidature.py
+# Il nomme la fiche d'oral et le fichier de vérification dans son propre code : le publier
+# révélerait l'existence des pièces que ce bloc retire, par leurs chemins exacts.
+scripts/tracer_chiffres_soutenance.py
 
 # ── Artefacts régénérables — 137 Mo mesurés le 04/08 ─────────────────────────
 # Les pages HTML se reconstruisent par `scripts/pages_soutenance.py`,

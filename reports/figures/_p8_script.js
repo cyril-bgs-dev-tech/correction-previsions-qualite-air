@@ -6,8 +6,8 @@
   d.blocs.forEach(function(b){ b.lignes.forEach(function(l){ parts.push(l.part); }); });
   var mn = Math.min.apply(null, parts), mx = Math.max.apply(null, parts);
   var e;
-  if ((e = document.getElementById("p8-min"))) e.textContent = mn.toFixed(1) + " %";
-  if ((e = document.getElementById("p8-max"))) e.textContent = mx.toFixed(1) + " %";
+  if ((e = document.getElementById("p8-min"))) e.textContent = mn.toFixed(1).replace('.', ',') + " %";
+  if ((e = document.getElementById("p8-max"))) e.textContent = mx.toFixed(1).replace('.', ',') + " %";
 
   var g = document.getElementById("p8-grille"); if (!g) return;
   var h = "";
@@ -24,9 +24,9 @@
       h += '<tr><td>' + l.polluant + '</td>'
          + '<td>' + l.stations + '</td>'
          + '<td>' + l.degradees + '</td>'
-         + '<td class="p8-part">' + l.part.toFixed(1) + ' %</td>'
-         + '<td>' + (l.median >= 0 ? "+" : "") + l.median.toFixed(1) + ' %</td>'
-         + '<td>' + l.pire.toFixed(1) + ' %</td></tr>';
+         + '<td class="p8-part">' + l.part.toFixed(1).replace('.', ',') + ' %</td>'
+         + '<td>' + (l.median >= 0 ? "+" : "") + l.median.toFixed(1).replace('.', ',') + ' %</td>'
+         + '<td>' + l.pire.toFixed(1).replace('.', ',') + ' %</td></tr>';
     });
     h += '</tbody></table></div></div>';
   });

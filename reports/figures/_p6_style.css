@@ -2,22 +2,22 @@
 .p6-src {
   margin: 34px 0 0; padding: 14px 18px; background: var(--surface-2);
   border: 1px solid var(--trait); border-left: 3px solid var(--accent);
-  border-radius: var(--r); font-size: 13.4px; line-height: 1.6; color: var(--encre-2);
+  border-radius: var(--r); font-size: 13px; line-height: 1.6; color: var(--encre-2);
 }
 .p6-src b { font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
             text-transform: uppercase; color: var(--accent); }
-.p6-src code { font-family: var(--mono); font-size: 12.4px; color: var(--encre); }
+.p6-src code { font-family: var(--mono); font-size: 12.2px; color: var(--encre); }
 
 .p6-grille { display: grid; gap: 14px; margin: 20px 0 0;
              grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); }
 .p6-carte { background: var(--surface); border: 1px solid var(--trait);
             border-radius: var(--r); padding: 16px 18px 14px; }
 .p6-carte h4 { margin: 0 0 2px; font-size: 15px; font-weight: 640; letter-spacing: -.014em; }
-.p6-carte .seuil { margin: 0 0 12px; font-size: 12.4px; color: var(--encre-3); line-height: 1.45; }
+.p6-carte .seuil { margin: 0 0 12px; font-size: 12.2px; color: var(--encre-3); line-height: 1.45; }
 .p6-carte .seuil b { font-family: var(--mono); color: var(--encre-2); }
 
 .p6-tab { width: 100%; border-collapse: collapse; font-size: 13px; }
-.p6-tab th { font-family: var(--mono); font-size: 9.6px; letter-spacing: .09em;
+.p6-tab th { font-family: var(--mono); font-size: 9.4px; letter-spacing: .09em;
              text-transform: uppercase; color: var(--encre-3); font-weight: 600;
              text-align: right; padding: 0 0 6px; border-bottom: 1px solid var(--trait-fort); }
 .p6-tab th:first-child { text-align: left; }
@@ -31,10 +31,10 @@
 .p6-tab tr.nous td { background: var(--accent-pale); font-weight: 600; }
 .p6-tab tr.nous td:first-child { color: var(--accent); }
 .p6-tab .att { color: var(--encre); font-weight: 700; }
-.p6-plaf { margin: 10px 0 0; font-size: 11.8px; line-height: 1.5; color: var(--encre-3); }
+.p6-plaf { margin: 10px 0 0; font-size: 12.2px; line-height: 1.5; color: var(--encre-3); }
 
-#p6-inev li b { font-family: var(--mono); font-size: 12.5px; color: var(--refute); }
-.p6-note { margin: 12px 0 0; font-size: 12.4px; line-height: 1.55; color: var(--encre-2); }
+#p6-inev li b { font-family: var(--mono); font-size: 12.2px; color: var(--refute); }
+.p6-note { margin: 12px 0 0; font-size: 12.2px; line-height: 1.55; color: var(--encre-2); }
 
 /* ── Le bloc partenaires ─────────────────────────────────────────────────── */
 .p6-partenaires { margin-top: 46px; padding: 24px 26px; background: var(--surface);
@@ -44,8 +44,8 @@
 .p6-intro { margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: var(--encre-2);
             max-width: 82ch; }
 
-.p6-tab-part { width: 100%; border-collapse: collapse; font-size: 13.2px; min-width: 640px; }
-.p6-tab-part th { font-family: var(--mono); font-size: 9.6px; letter-spacing: .09em;
+.p6-tab-part { width: 100%; border-collapse: collapse; font-size: 13px; }
+.p6-tab-part th { font-family: var(--mono); font-size: 9.4px; letter-spacing: .09em;
                   text-transform: uppercase; color: var(--encre-3); font-weight: 600;
                   text-align: left; padding: 0 14px 7px 0;
                   border-bottom: 1px solid var(--trait-fort); }
@@ -65,7 +65,7 @@
             text-transform: uppercase; letter-spacing: .11em; color: var(--accent);
             margin-bottom: 6px; }
 .p6-liv p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--encre-2); }
-.p6-liv code { font-family: var(--mono); font-size: 12px; color: var(--encre); }
+.p6-liv code { font-family: var(--mono); font-size: 12.2px; color: var(--encre); }
 
 /* Les six pratiques : numérotées parce que ce sont six choses distinctes à retenir,
    pas une séquence — la numérotation sert le repérage, pas l'ordre d'exécution. */
@@ -80,8 +80,8 @@
   font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent);
   letter-spacing: .04em; padding-top: 2px;
 }
-.p6-prat b { font-size: 14.2px; font-weight: 640; letter-spacing: -.012em; color: var(--encre); }
-.p6-prat p { margin: 3px 0 0; font-size: 13.2px; line-height: 1.58; color: var(--encre-2); }
+.p6-prat b { font-size: 14px; font-weight: 640; letter-spacing: -.012em; color: var(--encre); }
+.p6-prat p { margin: 3px 0 0; font-size: 13px; line-height: 1.58; color: var(--encre-2); }
 .p6-prat code { font-family: var(--mono); font-size: 12.2px; color: var(--encre); }
 .p6-prat strong { color: var(--encre); font-weight: 600; }
 @media (max-width: 520px) {

@@ -37,6 +37,21 @@ ORDRE = ["NO2", "O3", "PM10", "PM25"]
 # pas : la pile empile TOUS les leviers, GEOS-CF compris, à J+2, sur la fenêtre du flux
 # GEOS-CF v1. La page 04 mesure la même architecture SANS GEOS-CF, à J+1, sur 36 mois.
 # Les deux sont justes ; c'est de les confondre qui serait faux.
+# 🔴 La passe la plus CONTRÔLÉE, jamais la plus ancienne. `_h2.csv` (29 mois) porte un
+# défaut de support reproduit : des familles absentes sur un mois entier donnaient au modèle
+# un indicateur d'époque, alors que le protocole cache les mois. Elle reste comme historique
+# d'audit ; le suffixe `_spe-core7_sc_sans-feux-membres` est le résultat publiable.
+SUFFIXES_PILE = ("_spe-core7_sc_sans-feux-membres", "_spe-core7_sc", "")
+
+
+def chemin_pile(p: str) -> Path:
+    for suf in SUFFIXES_PILE:
+        f = RACINE / f"reports/methode_maximale_{p}_h2{suf}.csv"
+        if f.exists():
+            return f
+    raise SystemExit(f"aucune passe maximale pour {p}")
+
+
 PILE = RACINE / "reports/methode_maximale_{p}_h2.csv"
 SIGNATURE = {"perimetre": "PARTOUT", "epreuve": "double aveugle — station ET mois cachés",
              "echeance": "J+2", "source": "pile complète, tous leviers dont GEOS-CF"}
@@ -51,7 +66,7 @@ def main() -> int:
 
     gains = []
     for p in ORDRE:
-        fp = Path(str(PILE).format(p=p))
+        fp = chemin_pile(p)
         if not fp.exists():
             raise SystemExit(f"{fp.name} absent — la pile complète n'est pas mesurée")
         import pandas as pd  # noqa: PLC0415
