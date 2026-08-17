@@ -1,0 +1,5 @@
+polluant,source,n_plis,n_jours_station,apport_pct,ic_bas_b3,ic_haut_b3,p_b3,positif_b3,ic_bas_b6,ic_haut_b6,p_b6,positif_b6,holm_rejette,declarable,axe,echeance
+NO2,_spe-core7_sc_sans-feux-membres,24,77292,1.5406168508136142,0.8509814824788742,2.189003939313747,0.0,True,0.9019647395313574,2.1172752673826905,0.0,True,True,True,double aveugle,j1
+O3,_spe-core7_sc_sans-feux-membres,24,61517,5.863016881147831,3.3500565741989425,8.336193028380766,0.0,True,3.5349792411323473,7.995819334770064,0.0,True,True,True,double aveugle,j1
+PM10,_spe-core7_sc_sans-feux-membres,24,71117,5.99341004731645,4.223321234728176,7.571285559319438,0.0,True,4.518381972419512,6.959576782402658,0.0,True,True,True,double aveugle,j1
+PM25,_spe-core7_sc_sans-feux-membres,24,52650,4.309831401479802,2.4241914054244154,6.476296418299977,0.0,True,2.537393900735179,6.565345033023185,0.0,True,True,True,double aveugle,j1

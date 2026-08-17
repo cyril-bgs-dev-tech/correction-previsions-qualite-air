@@ -1,0 +1,2 @@
+polluant,n_plis,n_cles,plage_pt,gain_J0,gain_J+1,gain_J+2,gain_J+3,plage_haut95_b3,plage_bas5_b3,stable_b3,refute_b3,plage_haut95_b6,plage_bas5_b6,stable_b6,refute_b6,verdict,axe
+O3,37,278532,2.2499686063910076,9.248547260795782,9.120363431152223,8.532477228855006,6.998578654404774,3.6747775187719527,1.0727734743772883,False,True,3.63458919527849,1.030112878328774,False,True,réfutée,double aveugle
