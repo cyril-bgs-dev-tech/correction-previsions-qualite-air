@@ -702,6 +702,7 @@ figcaption {
       <a href="#decision">06 · Décision réelle</a>
       <a href="#prevair">07 · Barre réelle</a>
       <a href="#degradees">08 · La limite</a>
+      <a href="#horizon2030">09 · L'horizon 2030</a>
     </nav>
   </div>
 </header>
@@ -3915,6 +3916,125 @@ i.d-ex { margin-right: 5px; }
 </section>
 
 <!-- P8-SECTION:FIN -->
+<!-- P9-STYLE:DEBUT -->
+<style>
+/* ── Page 09 · l'horizon 2030 ────────────────────────────────────────── */
+.p9-bloc{border-left:3px solid var(--trait);padding-left:.85rem;margin:0 0 1.15rem}
+.p9-bloc h3{margin:0 0 .12rem;font-size:1rem;letter-spacing:-.01em}
+.p9-bloc .p9-sous{margin:0 0 .5rem;font-size:.82rem;opacity:.72}
+.p9-territoire{margin:.3rem 0 0;font-size:.92rem;line-height:1.5}
+.p9-tab{width:100%;border-collapse:collapse;font-size:.92rem}
+.p9-tab th{text-align:right;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.07em;padding:0 .5rem .35rem;border-bottom:1px solid var(--trait)}
+.p9-tab th:first-child{text-align:left}
+.p9-tab td{padding:.4rem .5rem;border-bottom:1px solid var(--trait);
+  text-align:right;font-variant-numeric:tabular-nums}
+.p9-tab td:first-child{text-align:left;font-weight:600}
+.p9-tab tr:last-child td{border-bottom:0}
+.p9-fort{font-weight:700}
+/* Une valeur POSÉE DANS une réserve ne doit pas hériter de `.reserve > b`, qui est le
+   sélecteur de son CHAPEAU : display block, mono, majuscules, 9,4 px. Chaque nombre
+   devenait sa propre ligne de titre au milieu d'une phrase — visible seulement au rendu,
+   jamais dans le HTML. */
+.p9-val{font-weight:700;font-variant-numeric:tabular-nums}
+/* Conforme / non conforme : la couleur DOUBLE le signe ✓/✗, elle ne le remplace jamais —
+   une information portée par la seule teinte est perdue en impression noir et blanc comme
+   pour un lecteur daltonien. */
+.p9-ok{color:var(--accent);font-weight:700}
+.p9-non{color:var(--refute);font-weight:700}
+.p9-sousmode{display:block;font-size:.68rem;font-weight:400;text-transform:none;
+  letter-spacing:0;opacity:.66;margin-top:.15rem}
+.p9-lectures{display:flex;flex-direction:column;gap:.7rem;margin:1.1rem 0}
+</style>
+<!-- P9-STYLE:FIN -->
+<!-- P9-SECTION:DEBUT -->
+<!-- ══════════════════════ PAGE 9 ══════════════════════════════════════ -->
+<section class="page" id="horizon2030">
+  <div class="chapeau-page">
+    <p class="eyebrow">Page 09 — L'horizon 2030</p>
+    <h1>Ce que la directive rend obligatoire, et le droit d'y servir</h1>
+    <p class="chapeau">
+      La directive <strong>(UE) 2024/2881</strong> fait deux choses que l'on cite toujours
+      séparément&#8239;: elle <strong>divise par deux</strong> les valeurs limites annuelles
+      au 1<sup>er</sup> janvier 2030, et elle rend la <strong>modélisation obligatoire</strong>
+      dans toute zone où un seuil est dépassé. Transposition au plus tard le
+      <strong>11 décembre 2026</strong>.
+    </p>
+    <p class="these">
+      Multipliées, elles donnent l'argument que ni l'une ni l'autre ne porte seule&#8239;:
+      abaisser le seuil <strong>multiplie mécaniquement</strong> le nombre de zones où
+      modéliser devient une obligation légale — <b id="p9-avant">—</b> stations en
+      dépassement aujourd'hui, <b id="p9-apres">—</b> en 2030, un facteur
+      <b id="p9-facteur">—</b>, <strong>sans qu'un gramme de plus ait été émis</strong>.
+      Et là où le modèle devient opposable, sa qualité devient un <strong>point de
+      contrôle</strong>.
+    </p>
+  </div>
+
+  <div class="p9-bloc">
+    <h3>① Le mur, compté sur le parc réel</h3>
+    <p class="p9-sous" id="p9-sous-seuils">—</p>
+    <div class="fig-scroll">
+      <table class="p9-tab" id="p9-tab-seuils"></table>
+    </div>
+  </div>
+
+  <div class="p9-bloc" id="p9-territoire-bloc">
+    <h3>② Le territoire — et l'angle mort que la mesure ne peut pas couvrir</h3>
+    <p class="p9-territoire" id="p9-territoire">—</p>
+  </div>
+
+  <div class="p9-bloc">
+    <h3>③ Le droit d'y servir — le critère de qualité européen</h3>
+    <p class="p9-sous" id="p9-sous-fairmode">—</p>
+    <div class="fig-scroll">
+      <table class="p9-tab" id="p9-tab-fairmode"></table>
+    </div>
+  </div>
+
+  <div class="p9-lectures">
+    <div class="reserve">
+      <b>Le NO₂ est le cas critique, et ce n'est pas une coïncidence.</b> C'est à la fois le
+      polluant dont le produit européen échoue le plus au critère de qualité, et celui dont
+      la valeur limite est <strong>divisée par deux</strong>. Le brut sous-estime de
+      <span class="p9-val" id="p9-biais-raw">—</span>&nbsp;µg/m³&#8239;; la correction ramène ce biais à
+      <span class="p9-val" id="p9-biais-full">—</span>. C'est ce décalage qui le faisait perdre contre une simple
+      répétition de la mesure d'avant-veille.
+    </div>
+    <div class="reserve">
+      <b>Le critère n'est pas franchi partout, et le dire fait partie du résultat.</b>
+      FAIRMODE demande <span class="p9-val" id="p9-seuil">—</span>&nbsp;% de stations conformes. Dans la condition
+      de déploiement — <em>aucune observation du point</em> — le NO₂ reste
+      <strong>sous cette barre</strong>&#8239;; il ne la franchit qu'aux stations
+      instrumentées. <strong>Citer les deux chiffres, jamais un.</strong>
+    </div>
+    <div class="reserve">
+      <b>Deux indicateurs FAIRMODE portent le même sigle, et ce ne sont pas les mêmes.</b>
+      Cette page publie le <code>MQI_f</code> — critère de <strong>prévision</strong>, qui
+      rapporte l'erreur du modèle à celle d'une <strong>persistance</strong>. Le MQI
+      d'<strong>évaluation</strong> (<code>RMSE / (β·RMS_U)</code>, β&nbsp;=&nbsp;2) répond à
+      une autre question et donne d'autres chiffres. Les mélanger produirait une comparaison
+      dont l'axe n'est pas nommé.
+    </div>
+    <div class="reserve">
+      <b>Ce que le comptage 2030 ne dit pas.</b> Les moyennes de 2025 ne sont pas une
+      prévision de 2030 — les émissions baisseront d'ici là. Il mesure une chose et une
+      seule&#8239;: <strong>l'effet du changement de seuil, à air constant</strong>. C'est
+      exactement la question qu'une collectivité doit se poser aujourd'hui pour bâtir sa
+      feuille de route, pas un pronostic.
+    </div>
+  </div>
+
+  <p class="regle">
+    Ce que cette page autorise à dire&#8239;: <em>« la directive multiplie les zones où
+    modéliser devient obligatoire, et le produit européen brut n'y satisfait pas le critère
+    de qualité sur le NO₂&#8239;; une correction apprise l'y amène — complètement aux
+    stations instrumentées, presque partout ailleurs. »</em> Rien de plus.
+  </p>
+  <p class="sig3" id="p9-sig"></p>
+</section>
+
+<!-- P9-SECTION:FIN -->
 </main>
 
 <footer class="pied">
@@ -4906,3 +5026,88 @@ document.documentElement.dataset["pret_p7"] = "1";
 document.documentElement.dataset["pret_p8"] = "1";
 </script>
 <!-- P8-SCRIPT:FIN -->
+
+<!-- P9-SCRIPT:DEBUT -->
+<script id="p9-data" type="application/json">{"genere": "2026-08-18T16:15:37", "annee": 2025, "saisie_min": 0.75, "seuils": {"lignes": [{"polluant": "NO₂", "vl_actuelle": 40, "vl_2030": 20, "evaluees": 341, "depasse_actuel": 5, "depasse_2030": 57, "bascule": 52}, {"polluant": "PM10", "vl_actuelle": 40, "vl_2030": 20, "evaluees": 322, "depasse_actuel": 1, "depasse_2030": 37, "bascule": 36}, {"polluant": "PM2,5", "vl_actuelle": 25, "vl_2030": 10, "evaluees": 243, "depasse_actuel": 0, "depasse_2030": 57, "bascule": 57}], "union_actuel": 6, "union_2030": 109, "parc": 408, "territoire": {"actuel": 2, "en_2030": 5, "evaluees": 25, "depts_total": 13, "depts_sans": 4, "sans": ["09", "11", "46", "48"]}}, "fairmode": {"lignes": [{"polluant": "NO₂", "stations": 338, "RAW": {"part": 41.42011834319527, "mqi": 1.076835529848863, "biais": -14.270772086873412}, "NO_LOCAL_OBS": {"part": 87.86982248520711, "mqi": 0.7421197006354836, "biais": -0.4455848866036406}, "FULL": {"part": 96.15384615384616, "mqi": 0.6916658052645684, "biais": -0.4323287276004069}}, {"polluant": "PM10", "stations": 304, "RAW": {"part": 87.82894736842105, "mqi": 0.755860122542539, "biais": -3.058853855581279}, "NO_LOCAL_OBS": {"part": 98.35526315789474, "mqi": 0.7155776196902137, "biais": -0.0001312964265027}, "FULL": {"part": 100.0, "mqi": 0.636539061752976, "biais": -0.1230341061956536}}, {"polluant": "O₃", "stations": 265, "RAW": {"part": 93.58490566037736, "mqi": 0.5978877428563194, "biais": -3.474812034654246}, "NO_LOCAL_OBS": {"part": 97.35849056603772, "mqi": 0.5715705479419393, "biais": -0.45814269171889}, "FULL": {"part": 99.24528301886792, "mqi": 0.5198549747746312, "biais": -0.2881370211085937}}], "absents": ["PM2,5"], "modes": [{"cle": "RAW", "libelle": "CAMS brut", "sous": "le produit européen tel qu'il est diffusé"}, {"cle": "NO_LOCAL_OBS", "libelle": "corrigé · PARTOUT", "sous": "aucune observation du point, pas même celle de la veille"}, {"cle": "FULL", "libelle": "corrigé · aux stations", "sous": "avec l'historique de la station"}], "seuil": 90.0, "echeance": "J+1"}}</script>
+<script data-page="p9">
+(function(){
+  var d = JSON.parse(document.getElementById("p9-data").textContent);
+  var vf = function(x, n){ return x.toFixed(n === undefined ? 1 : n).replace('.', ','); };
+  var pose = function(id, txt){ var e = document.getElementById(id); if (e) e.textContent = txt; };
+
+  // ── La thèse DÉRIVE du comptage. Écrite en dur, elle se périmerait à la première
+  // re-mesure sans que rien ne le signale — c'est le défaut que ce dossier traque.
+  var s = d.seuils;
+  pose("p9-avant", String(s.union_actuel));
+  pose("p9-apres", String(s.union_2030));
+  pose("p9-facteur", "×" + vf(s.union_2030 / Math.max(s.union_actuel, 1)));
+  pose("p9-sous-seuils",
+       "moyennes annuelles " + d.annee + ", taux de saisie ≥ " + vf(d.saisie_min * 100, 0)
+       + " % · " + s.parc + " stations évaluées · l'ozone est exclu : il n'a pas de valeur "
+       + "limite annuelle mais une valeur cible sur le maximum 8 h");
+
+  var h = "<thead><tr><th>Polluant</th><th>VL en vigueur</th><th>VL 2030</th>"
+        + "<th>Évaluées</th><th>&gt; en vigueur</th><th>&gt; 2030</th><th>Basculent</th>"
+        + "</tr></thead><tbody>";
+  s.lignes.forEach(function(l){
+    h += "<tr><td>" + l.polluant + "</td>"
+       + "<td>" + l.vl_actuelle + " µg/m³</td>"
+       + "<td class=\"p9-fort\">" + l.vl_2030 + " µg/m³</td>"
+       + "<td>" + l.evaluees + "</td>"
+       + "<td>" + l.depasse_actuel + "</td>"
+       + "<td class=\"p9-fort\">" + l.depasse_2030 + "</td>"
+       + "<td class=\"p9-fort\">+" + l.bascule + "</td></tr>";
+  });
+  document.getElementById("p9-tab-seuils").innerHTML = h + "</tbody>";
+
+  // ── Le territoire : publié seulement s'il existe dans les données.
+  var t = s.territoire, bloc = document.getElementById("p9-territoire-bloc");
+  if (!t) { if (bloc) bloc.style.display = "none"; }
+  else {
+    pose("p9-territoire",
+         "En Occitanie, " + t.actuel + " station(s) en dépassement aujourd'hui, " + t.en_2030
+         + " en 2030, sur " + t.evaluees + " évaluées. Et " + t.depts_sans + " des "
+         + t.depts_total + " départements n'ont aucune station retenue (" + t.sans.join(", ")
+         + ") : pour eux, la conformité 2030 ne peut pas être posée depuis la mesure. "
+         + "C'est exactement le cas que la directive confie à la modélisation.");
+  }
+
+  // ── Le critère de qualité, un régime par colonne.
+  var f = d.fairmode;
+  pose("p9-seuil", vf(f.seuil, 0));
+  pose("p9-sous-fairmode",
+       "part des stations satisfaisant MQI_f ≤ 1, échéance " + f.echeance
+       + " · le critère est atteint à partir de " + vf(f.seuil, 0) + " %"
+       + (f.absents.length ? " · non mesuré sur : " + f.absents.join(", ") : ""));
+
+  var g = "<thead><tr><th>Polluant</th><th>Stations</th>";
+  f.modes.forEach(function(m){
+    g += "<th>" + m.libelle + "<span class=\"p9-sousmode\">" + m.sous + "</span></th>";
+  });
+  g += "</tr></thead><tbody>";
+  f.lignes.forEach(function(l){
+    g += "<tr><td>" + l.polluant + "</td><td>" + l.stations + "</td>";
+    f.modes.forEach(function(m){
+      var c = l[m.cle], ok = c.part >= f.seuil;
+      g += "<td class=\"" + (ok ? "p9-ok" : "p9-non") + "\">"
+         + vf(c.part) + " %&#8239;" + (ok ? "✓" : "✗") + "</td>";
+    });
+    g += "</tr>";
+  });
+  document.getElementById("p9-tab-fairmode").innerHTML = g + "</tbody>";
+
+  // ── Le biais NO₂ cité dans la réserve vient de la table, pas d'une saisie.
+  var no2 = f.lignes.filter(function(l){ return l.polluant === "NO₂"; })[0];
+  if (no2) {
+    pose("p9-biais-raw", vf(no2.RAW.biais, 2));
+    pose("p9-biais-full", vf(no2.FULL.biais, 2));
+  }
+
+  pose("p9-sig", "Seuils : directive (UE) 2024/2881, annexe I · comptage sur "
+       + d.annee + " · critère de qualité : MQI_f à l'échéance " + f.echeance
+       + " · généré le " + d.genere.replace("T", " "));
+})();
+
+document.documentElement.dataset["pret_p9"] = "1";
+</script>
+<!-- P9-SCRIPT:FIN -->

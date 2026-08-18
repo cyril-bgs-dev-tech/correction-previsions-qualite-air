@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 17/08/2026 à 20 h 18 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 18/08/2026 à 16 h 18 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -116,7 +116,7 @@ Le tableau ci-dessus est donc une **réplication indépendante** — autre algor
 
 C'est un travail de vérification et de caractérisation opérationnelle. C'est moins qu'une découverte, et c'est exactement le geste attendu d'un service : mesurer ce qu'un produit rend sur le grain qui décide, et dire s'il faut le brancher.
 
-## 5. Conformité FAIRMODE
+## 5. Conformité FAIRMODE — échéance J0
 
 MQI au sens de JRC120649 v3.2 (DOI 10.2760/30226), formule `RMSE / (β · RMS_U)`, β = 2, conformité à **MQI ≤ 1**. Le temps d'agrégation est celui que le tableau 6 impose **par polluant** — et non l'horaire pour les trois, comme le dossier le faisait auparavant.
 
@@ -149,6 +149,23 @@ Valeurs limites en **moyenne annuelle**, année **2025** (dernière année plein
 **Occitanie** : 2 → **5** stations, sur 25 évaluées. Et **4 des 13 départements n'ont aucune station retenue** (09, 11, 46, 48) : pour eux, la conformité 2030 **ne peut pas être posée depuis la mesure**. C'est exactement le cas que la directive confie à la modélisation.
 
 ⚠️ **Ce que ce tableau ne dit pas** : les moyennes de 2025 ne sont pas une prévision de 2030. Les émissions baisseront d'ici là. Il mesure une chose et une seule — **l'effet du changement de seuil, à air constant** — ce qui est exactement la question qu'une collectivité doit se poser aujourd'hui pour préparer sa feuille de route.
+
+## 5 ter. Le critère FAIRMODE de **prévision** — échéance J+1
+
+`MQI_f` compare l'erreur du modèle à celle d'une **persistance** ; une application satisfait le critère si **au moins 90 % des stations** ont `MQI_f ≤ 1`. ⚠️ **Ce n'est pas le MQI du § 5**, qui est celui d'*évaluation* (`RMSE / (β · RMS_U)`) — même sigle, autre question, autres chiffres.
+
+| polluant | stations | CAMS brut | corrigé · PARTOUT | corrigé · aux stations |
+|---|---|---|---|---|
+| NO₂ | 338 | **41,4 %** ✗ | **87,9 %** ✗ | **96,2 %** ✓ |
+| PM10 | 304 | **87,8 %** ✗ | **98,4 %** ✓ | **100,0 %** ✓ |
+| O₃ | 265 | **93,6 %** ✓ | **97,4 %** ✓ | **99,2 %** ✓ |
+
+**Le NO₂ est le cas critique, et ce n'est pas une coïncidence** : c'est à la fois le polluant où le produit brut échoue le plus (41.4 % de stations conformes) et celui dont la valeur limite est **divisée par deux** en 2030 (§ 5 bis). Le biais passe de **-14,27** à **-0,43** µg/m³ — c'est ce décalage qui le faisait perdre contre une simple répétition de la mesure d'avant-veille.
+
+⚠️ **Et le critère n'est pas franchi dans la condition de déploiement.** Sans aucune observation du point, le NO₂ atteint **87,9 %** — **sous la barre des 90 %** ; il ne la franchit qu'aux stations instrumentées (96,2 %). **Citer les deux chiffres, jamais un.**
+
+
+**Non mesuré ici** : PM2,5 — le banc n'existe pas pour ce(s) polluant(s), et un tableau qui ne le dit pas se lit comme un tableau complet.
 
 ## 6. Le plafond de la météo — ce que le modèle se refuse
 
@@ -270,10 +287,10 @@ Aucun confondant d'amont à neutraliser ici : les trois systèmes sont évalués
 
 | polluant | fenêtre | lignes | CAMS brut | **nous** | PREV'AIR | écart PREV'AIR / nous |
 |---|---|---|---|---|---|---|
-| O₃ | 16 j · 2026-07-28→2026-08-15 | 4 062 | 26.61 | **22.10** | 25.17 | **+13.9 %** |
-| NO₂ | 16 j · 2026-07-28→2026-08-15 | 4 975 | 25.66 | **15.15** | 22.21 | **+46.6 %** |
-| PM10 | 17 j · 2026-07-28→2026-08-15 | 4 888 | 8.34 | **5.51** | 8.23 | **+49.5 %** |
-| PM2,5 | 16 j · 2026-07-28→2026-08-15 | 3 488 | 3.08 | **2.81** | 4.54 | **+61.6 %** |
+| O₃ | 17 j · 2026-07-28→2026-08-15 | 4 319 | 26.39 | **22.05** | 25.07 | **+13.7 %** |
+| NO₂ | 17 j · 2026-07-28→2026-08-15 | 5 287 | 25.32 | **13.79** | 22.04 | **+59.8 %** |
+| PM10 | 17 j · 2026-07-28→2026-08-15 | 4 888 | 8.34 | **5.10** | 8.23 | **+61.4 %** |
+| PM2,5 | 17 j · 2026-07-28→2026-08-15 | 3 707 | 3.22 | **2.78** | 4.65 | **+66.9 %** |
 
 🔴 **17 jours NE CONCLUENT RIEN.** C'est un ordre de grandeur, et le script le réaffirme à chaque exécution. PREV'AIR n'expose qu'une fenêtre glissante d'environ six jours et notre archivage quotidien n'a démarré que fin juillet 2026 : **le passé n'est pas récupérable**, cette fenêtre ne grandira que d'un jour par jour.
 

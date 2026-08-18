@@ -1,0 +1,27 @@
+/* ── Page 09 · l'horizon 2030 ────────────────────────────────────────── */
+.p9-bloc{border-left:3px solid var(--trait);padding-left:.85rem;margin:0 0 1.15rem}
+.p9-bloc h3{margin:0 0 .12rem;font-size:1rem;letter-spacing:-.01em}
+.p9-bloc .p9-sous{margin:0 0 .5rem;font-size:.82rem;opacity:.72}
+.p9-territoire{margin:.3rem 0 0;font-size:.92rem;line-height:1.5}
+.p9-tab{width:100%;border-collapse:collapse;font-size:.92rem}
+.p9-tab th{text-align:right;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.07em;padding:0 .5rem .35rem;border-bottom:1px solid var(--trait)}
+.p9-tab th:first-child{text-align:left}
+.p9-tab td{padding:.4rem .5rem;border-bottom:1px solid var(--trait);
+  text-align:right;font-variant-numeric:tabular-nums}
+.p9-tab td:first-child{text-align:left;font-weight:600}
+.p9-tab tr:last-child td{border-bottom:0}
+.p9-fort{font-weight:700}
+/* Une valeur POSÉE DANS une réserve ne doit pas hériter de `.reserve > b`, qui est le
+   sélecteur de son CHAPEAU : display block, mono, majuscules, 9,4 px. Chaque nombre
+   devenait sa propre ligne de titre au milieu d'une phrase — visible seulement au rendu,
+   jamais dans le HTML. */
+.p9-val{font-weight:700;font-variant-numeric:tabular-nums}
+/* Conforme / non conforme : la couleur DOUBLE le signe ✓/✗, elle ne le remplace jamais —
+   une information portée par la seule teinte est perdue en impression noir et blanc comme
+   pour un lecteur daltonien. */
+.p9-ok{color:var(--accent);font-weight:700}
+.p9-non{color:var(--refute);font-weight:700}
+.p9-sousmode{display:block;font-size:.68rem;font-weight:400;text-transform:none;
+  letter-spacing:0;opacity:.66;margin-top:.15rem}
+.p9-lectures{display:flex;flex-direction:column;gap:.7rem;margin:1.1rem 0}

@@ -96,6 +96,67 @@ Ces limites sont documentées au même titre que les résultats favorables — v
 
 ---
 
+## L'horizon réglementaire — pourquoi ce travail a un usage, et pas seulement un score
+
+La directive **(UE) 2024/2881** fait deux choses que l'on cite toujours séparément. Elle
+**divise par deux** les valeurs limites annuelles au 1ᵉʳ janvier 2030 — NO₂ et PM10 de 40 à
+**20 µg/m³**, PM2,5 de 25 à **10**. Et elle rend la **modélisation obligatoire** dans toute
+zone où un seuil est dépassé. Transposition au plus tard le **11 décembre 2026**.
+
+Multipliées, elles donnent l'argument que ni l'une ni l'autre ne porte seule : abaisser le
+seuil **multiplie mécaniquement** le nombre de zones où modéliser devient une obligation
+légale.
+
+**Compté sur le parc réel**, moyennes annuelles 2025, taux de saisie ≥ 75 % :
+
+| polluant | VL en vigueur | VL 2030 | évaluées | > en vigueur | > 2030 | basculent |
+|---|---|---|---|---|---|---|
+| NO₂ | 40 µg/m³ | **20** | 341 | 5 | **57** | +52 |
+| PM10 | 40 µg/m³ | **20** | 322 | 1 | **37** | +36 |
+| PM2,5 | 25 µg/m³ | **10** | 243 | 0 | **57** | +57 |
+
+En union sur les trois polluants : **6 stations en dépassement aujourd'hui, 109 en 2030** —
+un facteur **×18,2** sur 408 évaluées, **sans qu'un gramme de plus ait été émis**. Ce n'est
+pas un pronostic : les émissions baisseront d'ici là. C'est la mesure d'une chose et d'une
+seule, l'effet du changement de seuil **à air constant**.
+
+### Là où le modèle devient opposable, sa qualité devient un point de contrôle
+
+C'est le critère **FAIRMODE** qui en décide. Part des stations satisfaisant `MQI_f ≤ 1` à
+l'échéance **J+1** — le critère est atteint à partir de **90 %** :
+
+| polluant | stations | CAMS brut | corrigé · `PARTOUT` | corrigé · aux stations |
+|---|---|---|---|---|
+| **NO₂** | 338 | **41,4 %** ✗ | 87,9 % ✗ | **96,2 %** ✓ |
+| PM10 | 304 | 87,8 % ✗ | 98,4 % ✓ | **100 %** ✓ |
+| O₃ | 265 | 93,6 % ✓ | 97,4 % ✓ | **99,2 %** ✓ |
+
+**Le NO₂ est le cas critique, et ce n'est pas une coïncidence** : c'est à la fois le polluant
+où le produit européen brut échoue le plus, et celui dont la valeur limite est divisée par
+deux. Son biais passe de **−14,27** à **−0,43 µg/m³**.
+
+🔴 **Et le critère n'est pas franchi partout.** Dans la condition de déploiement — aucune
+observation du point — le NO₂ atteint **87,9 %**, *sous* la barre des 90 %. Il ne la franchit
+qu'aux stations instrumentées. **Citer les deux chiffres, jamais un.**
+
+⚠️ **Deux indicateurs FAIRMODE portent le même sigle.** Ce tableau publie le `MQI_f`, critère
+de **prévision**, qui rapporte l'erreur du modèle à celle d'une **persistance**. Le MQI
+d'**évaluation** (`RMSE / (β·RMS_U)`, β = 2) répond à une autre question — il est en § 5 de
+`reports/VERITE_DOSSIER.md`, à l'échéance J0.
+
+### L'angle mort que la mesure ne peut pas couvrir
+
+En Occitanie, 2 stations en dépassement aujourd'hui, **5 en 2030**, sur 25 évaluées. Et
+**4 des 13 départements n'ont aucune station retenue** (09, 11, 46, 48) : pour eux, la
+conformité 2030 **ne peut pas être posée depuis la mesure**. C'est exactement le cas que la
+directive confie à la modélisation.
+
+*Régénérable : `python3 scripts/seuils_2030.py`, `python3 scripts/banc_lcsqa.py`,
+`python3 scripts/page_horizon_2030.py`. Chiffres gelés en § 5, 5 bis et 5 ter de
+`reports/VERITE_DOSSIER.md`, recalculés par `scripts/verifier_dossier_candidature.py`.*
+
+---
+
 ## Installation
 
 ```bash

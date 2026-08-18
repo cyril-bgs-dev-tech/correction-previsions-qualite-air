@@ -36,6 +36,11 @@ import numpy as np
 import pandas as pd
 
 RACINE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(RACINE / "src"))
+
+# Le libellé d'échéance est DÉRIVÉ, jamais écrit à la main : « J+1 » a désigné du J0 dans ce
+# dossier pendant des semaines, et l'erreur est revenue une seconde fois (§ 0-H, [[j0-nest-pas-j1]]).
+from aq.rapport import libelle_echeance  # noqa: E402
 
 GRAIN_REGLEMENTAIRE = {"O3": "max_8h", "NO2": "max_horaire", "PM25": "moyenne_jour"}
 LIBELLE_GRAIN = {"horaire": "horaire", "max_8h": "max glissant 8 h",
@@ -45,6 +50,10 @@ NOM = {"O3": "O₃", "NO2": "NO₂", "PM25": "PM2,5", "PM10": "PM10"}
 # Seuil d'information français pour le NO₂ : 200 µg/m³ en moyenne horaire
 # (arrêté du 07/04/2016). Le seuil d'alerte est à 400.
 SEUIL_INFO_NO2 = 200.0
+
+# `mqi_bon_grain.py` lit `mos_<P>_J1.csv` : le `J1` d'un nom de fichier est
+# l'HORIZON (heures 1-24 après la sortie 00 UTC), que `libelle_echeance` écrit « J0 ».
+HORIZON_MQI = 1
 
 
 @lru_cache(maxsize=None)          # le panel fait 8,8 M de lignes de NO₂ : une lecture suffit
@@ -353,7 +362,15 @@ def bloc_factoriel(lignes: list[dict]) -> str:
 
 
 def bloc_mqi(lignes: list[dict]) -> str:
-    """La conformité FAIRMODE, au temps d'agrégation que le référentiel impose."""
+    """La conformité FAIRMODE, au temps d'agrégation que le référentiel impose.
+
+    ⚠️ **L'échéance fait partie du chiffre.** `mqi_bon_grain.py` lit `mos_<P>_J1.csv` —
+    et dans ce dépôt le `J<N>` d'un nom de fichier est l'**horizon**, pas le libellé :
+    l'horizon 1 couvre les heures 1-24 après la sortie 00 UTC, donc **J0**. Ce bloc est
+    resté muet sur ce point jusqu'au 18/08/2026, à côté d'un § 5 ter mesuré à J+1 —
+    deux parts de stations conformes qui ne diffèrent que par l'horizon se lisent
+    autrement identiques (§ 0-D, et [[j0-nest-pas-j1]] qui est déjà revenu deux fois).
+    """
     chemin = RACINE / "reports/mqi_bon_grain.csv"
     if not chemin.exists():
         return ""
@@ -361,7 +378,7 @@ def bloc_mqi(lignes: list[dict]) -> str:
     libelles = {"max_8h": "max journalier 8 h", "horaire": "horaire",
                 "moyenne_jour": "moyenne journalière"}
     texte = [
-        "## 5. Conformité FAIRMODE\n",
+        f"## 5. Conformité FAIRMODE — échéance {libelle_echeance(HORIZON_MQI)}\n",
         "MQI au sens de JRC120649 v3.2 (DOI 10.2760/30226), formule `RMSE / (β · RMS_U)`, "
         "β = 2, conformité à **MQI ≤ 1**. Le temps d'agrégation est celui que le tableau 6 "
         "impose **par polluant** — et non l'horaire pour les trois, comme le dossier le "
@@ -396,6 +413,88 @@ def bloc_mqi(lignes: list[dict]) -> str:
         "et c'est une erreur qui a été commise dans ce projet puis corrigée. La v4.0 du "
         "référentiel (mai 2026) refond les β par polluant ; les chiffres ci-dessus sont en "
         "**v3.2**, et le dossier le dit plutôt que de laisser deviner.\n")
+    return "\n".join(texte)
+
+
+def bloc_mqi_prevision(lignes: list[dict]) -> str:
+    """§ 5 ter — le critère FAIRMODE de PRÉVISION, l'autre indicateur du même sigle.
+
+    Pourquoi ce bloc a dû être écrit le 18/08/2026
+    ------------------------------------------------
+    Les parts de stations conformes — 41,4 % pour le NO₂ brut, 96,2 % après correction —
+    portaient l'argument réglementaire du dossier, étaient contrôlées par
+    `verifier_dossier_candidature.py`… et **ne figuraient nulle part dans ce document**.
+    Or l'en-tête d'ici dit : *un chiffre qui n'y figure pas est à retirer ou à re-mesurer*.
+    Publier une page de présentation sur ces chiffres sans les faire entrer ici aurait
+    violé la seule règle que ce fichier impose à tout le reste.
+
+    ⚠️ **Ce n'est PAS le § 5.** `MQI_f` rapporte l'erreur du modèle à celle d'une
+    **persistance** — c'est le critère de *prévision*. Le § 5 porte le MQI d'*évaluation*,
+    `RMSE / (β · RMS_U)`. Deux questions, deux échelles, un seul sigle : les citer côte à
+    côte sans les nommer serait une comparaison sans axe (§ 0-D).
+    """
+    HZ = 2                       # horizon 2 = échéances 25-48 h = J+1, cf. libelle_echeance
+    MODES = [("RAW", "CAMS brut"),
+             ("NO_LOCAL_OBS", "corrigé · PARTOUT"),
+             ("FULL", "corrigé · aux stations")]
+    lues, absents = [], []
+    for p in ("NO2", "PM10", "O3", "PM25"):
+        f = RACINE / f"reports/banc_lcsqa_{p}_h{HZ}_double.csv"
+        if not f.exists():
+            absents.append(NOM.get(p, p))
+            continue
+        t = pd.read_csv(f)
+        if "part_stations_mqi_ok_pct" not in t.columns:
+            absents.append(NOM.get(p, p))
+            continue
+        cell = {}
+        for cle, _ in MODES:
+            r = t[t["mode"] == cle]
+            if not r.empty and pd.notna(r["part_stations_mqi_ok_pct"].iloc[0]):
+                cell[cle] = (float(r["part_stations_mqi_ok_pct"].iloc[0]),
+                             float(r["biais"].iloc[0]))
+        if len(cell) != len(MODES):
+            absents.append(NOM.get(p, p))
+            continue
+        lues.append((p, int(t[t["mode"] == "RAW"]["n_stations"].iloc[0]), cell))
+    if not lues:
+        return ""
+
+    ech = libelle_echeance(HZ)
+    texte = [
+        f"## 5 ter. Le critère FAIRMODE de **prévision** — échéance {ech}\n",
+        "`MQI_f` compare l'erreur du modèle à celle d'une **persistance** ; une application "
+        "satisfait le critère si **au moins 90 % des stations** ont `MQI_f ≤ 1`. "
+        "⚠️ **Ce n'est pas le MQI du § 5**, qui est celui d'*évaluation* "
+        "(`RMSE / (β · RMS_U)`) — même sigle, autre question, autres chiffres.\n",
+        "| polluant | stations | " + " | ".join(l for _, l in MODES) + " |",
+        "|---|---|---|---|---|",
+    ]
+    for p, n, cell in lues:
+        cases = " | ".join(
+            f"**{_p(cell[c][0])} %** {'✓' if cell[c][0] >= 90 else '✗'}" for c, _ in MODES)
+        texte.append(f"| {NOM.get(p, p)} | {n} | {cases} |")
+        lignes.append({"bloc": "MQI_f prévision", "polluant": p, "grain": ech, "n": n,
+                       "gain": cell["FULL"][0], "relatif_pct": cell["RAW"][0]})
+
+    d = dict((p, c) for p, _, c in lues)
+    if "NO2" in d:
+        r, o, f_ = d["NO2"]["RAW"], d["NO2"]["NO_LOCAL_OBS"], d["NO2"]["FULL"]
+        texte.append(
+            f"\n**Le NO₂ est le cas critique, et ce n'est pas une coïncidence** : c'est à la "
+            f"fois le polluant où le produit brut échoue le plus ({r[0]:.1f} % de stations "
+            f"conformes) et celui dont la valeur limite est **divisée par deux** en 2030 "
+            f"(§ 5 bis). Le biais passe de **{_v(r[1], 2)}** à **{_v(f_[1], 2)}** µg/m³ — "
+            f"c'est ce décalage qui le faisait perdre contre une simple répétition de la "
+            f"mesure d'avant-veille.\n"
+            f"\n⚠️ **Et le critère n'est pas franchi dans la condition de déploiement.** Sans "
+            f"aucune observation du point, le NO₂ atteint **{_p(o[0])} %** — **sous la barre "
+            f"des 90 %** ; il ne la franchit qu'aux stations instrumentées "
+            f"({_p(f_[0])} %). **Citer les deux chiffres, jamais un.**\n")
+    if absents:
+        texte.append(f"\n**Non mesuré ici** : {', '.join(absents)} — le banc n'existe pas "
+                     f"pour ce(s) polluant(s), et un tableau qui ne le dit pas se lit comme "
+                     f"un tableau complet.\n")
     return "\n".join(texte)
 
 
@@ -1937,8 +2036,18 @@ def bloc_stations_degradees(lignes: list[dict]) -> str:
 
 
 def _v(x: float, n: int = 2) -> str:
-    """Un nombre à la française — le dossier écrit « +17,90 », pas « +17.90 »."""
+    """Un **écart** à la française — le dossier écrit « +17,90 », pas « +17.90 ».
+
+    ⚠️ Le signe est FORCÉ : réservé aux gains, biais et différences. Pour une **part**,
+    utiliser `_p` — « +41,4 % de stations conformes » affirmerait une hausse là où il
+    n'y a qu'une proportion.
+    """
     return f"{x:+.{n}f}".replace(".", ",")
+
+
+def _p(x: float, n: int = 1) -> str:
+    """Une **part** à la française : décimale virgule, aucun signe imposé."""
+    return f"{x:.{n}f}".replace(".", ",")
 
 
 def bloc_intervalle_apport(lignes: list[dict]) -> str:
@@ -2634,6 +2743,7 @@ def main() -> int:
         bloc_factoriel(lignes),
         bloc_mqi(lignes),
         bloc_seuils_2030(lignes),
+        bloc_mqi_prevision(lignes),
         bloc_meteo(lignes),
         bloc_perimetres(lignes),
         bloc_reconciliation(lignes),

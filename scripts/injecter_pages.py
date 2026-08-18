@@ -44,6 +44,9 @@ PAGES_INJECTEES = [
     {"prefixe": "p8", "ident": "degradees", "libelle": "08 · La limite",
      "ancre_section": "</main>",
      "ancre_nav": '<a href="#prevair">07 · Barre réelle</a>', "avant": False},
+    {"prefixe": "p9", "ident": "horizon2030", "libelle": "09 · L'horizon 2030",
+     "ancre_section": "</main>",
+     "ancre_nav": '<a href="#degradees">08 · La limite</a>', "avant": False},
 ]
 
 
