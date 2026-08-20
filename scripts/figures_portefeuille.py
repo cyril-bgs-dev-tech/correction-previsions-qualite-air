@@ -313,13 +313,18 @@ FIGURES = {
         # est donc de tracer la DIFFÉRENCE elle-même, contre le meilleur détecteur unique.
         fn=barres_signees,
         args=dict(
-            valeurs=[("oracle — plafond de sélection", 8.9), ("routeur source-strict", 3.0),
-                     ("spécialisation par domaine", 2.5)],
-            dec=1, zero="le meilleur détecteur unique",
+            # ⚠️ Tous les écarts viennent du MÊME fichier, `router_lodosrc_actions_strict.csv`.
+            # La version précédente opposait le routeur strict (72,79) à un « meilleur détecteur
+            # unique » de 69,81 qui vient d'un AUTRE protocole — le LODO standard. Deux régimes
+            # dans une même figure, sans que rien ne le dise : le défaut exact que ce dossier
+            # traque. Ici, la référence est l'ensemble fixe, mesuré sous le même protocole.
+            valeurs=[("plafond — sélection parfaite", 5.92), ("routeur source-strict", 1.48),
+                     ("spécialisation par domaine", 1.00)],
+            dec=2, zero="l'ensemble fixe de 18 détecteurs (71,31)",
             titre="Choisir le détecteur rapporte — modestement, et c'est mesuré",
-            sous_titre="Points d'AUROC gagnés sur le meilleur détecteur unique (69,8) · 502 jeux · LODO par source",
-            alt=("Contre le meilleur détecteur unique, le routeur source-strict gagne 3,0 points "
-                 "d'AUROC, la spécialisation par domaine 2,5, et l'oracle 8,9."))),
+            sous_titre="Points d'AUROC · 502 jeux · LODO groupé par source · un seul protocole, un seul fichier",
+            alt=("Contre l'ensemble fixe de 18 détecteurs, le routeur source-strict gagne 1,48 point "
+                 "d'AUROC, la spécialisation par domaine 1,00, et la sélection parfaite 5,92."))),
     "v3_fairmode_no2": dict(
         fn=jalons,
         args=dict(
