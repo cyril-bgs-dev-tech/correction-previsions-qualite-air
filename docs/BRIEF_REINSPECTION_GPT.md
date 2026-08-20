@@ -18,6 +18,10 @@ que les corrections ont **réellement** corrigé, et surtout **débusquer ce qu'
 > avec des étiquettes déplacées par une conversion de décimale appliquée aux coordonnées. Huit
 > images ont été référencées par un chemin qui ne se résolvait pas. **C'est cette classe de
 > défauts que je te demande de chercher.**
+>
+> **Et une révision du 21/08 en a trouvé un de plus, dans une figure produite pour corriger un
+> défaut d'affichage** : elle opposait deux protocoles d'évaluation sans le dire. Il n'a été vu
+> qu'en croisant chaque chiffre publié avec le fichier qui le porte. **Fais ce croisement.**
 
 ---
 
@@ -72,6 +76,18 @@ collatéral ?
 14. `vigilance` : diagramme ASCII → **Mermaid**, implémentation repliée.
 15. Dépôt qualité de l'air : installation, commandes, protocole et organisation **repliés**.
 16. Les sept `::: {.panel-tabset}` → `<details>` avec `<summary>`.
+
+### Corrections du 21/08 — postérieures à la première version de ce brief
+
+17. **La figure V7 opposait deux protocoles d'évaluation.** Elle comparait le routeur
+    source-strict (72,79) à un « meilleur détecteur unique » de 69,81 qui appartient au LODO
+    **standard** — le fichier source-strict ne contient aucun détecteur unique. Refaite sur des
+    écarts internes à un seul fichier : +1,48 · +1,00 · +5,92 contre l'ensemble fixe (71,31).
+18. **Les artefacts des chiffres publiés étaient absents.** `72,8` venait d'un fichier non
+    publié ; seul un fichier d'un **autre** protocole l'était. Six artefacts ajoutés, et une
+    section « Reproduire » qui dit lequel fait foi.
+19. **`auroc_par_domaine.md` retiré** : il annonçait « 336 datasets, 20 domaines » sous un
+    README qui en revendique 502 et 19, et n'existait dans aucun résultat du projet.
 
 ### Visuels ajoutés — sept figures SVG et deux flux Mermaid
 
@@ -2538,7 +2554,7 @@ reconstituent depuis leurs sources.
 
 ### 📄 `anomaly_tabular/README.md (dépôt de code)`
 
-*69 lignes · 654 mots*
+*82 lignes · 764 mots*
 
 ````markdown
 # Détecter l'anomalie sans nouveau modèle — reproduire, spécialiser, mesurer
@@ -2608,14 +2624,27 @@ Contre **OUTFORMER**, modèle fondation récent, comparaison tentée sur le sous
 
 ## Reproduire
 
-Résultats bruts versionnés : [`results/router_v5.csv`](results/router_v5.csv) — 502 jeux, colonnes `router`, `ens18`, `knn_rail`, `tuned_dom`, `oracle`.
-Tableau par domaine : [`results/auroc_par_domaine.md`](results/auroc_par_domaine.md).
+Le chiffre du titre, **72,8**, vient de
+[`results/router_lodosrc_actions_strict.csv`](results/router_lodosrc_actions_strict.csv) —
+502 jeux, LODO groupé par source, colonnes `router_src`, `ens18`, `tuned_dom`, `oracle`. C'est
+lui qui fait foi ; les moyennes de ses colonnes redonnent 72,79 · 71,31 · 72,31 · 78,71.
+
+| fichier | ce qu'il porte |
+|---|---|
+| [`router_lodosrc_actions_strict.csv`](results/router_lodosrc_actions_strict.csv) | **le protocole du titre** — source-strict, 502 jeux |
+| [`router_v5.csv`](results/router_v5.csv) | la variante LODO standard, pour comparaison |
+| [`router_vs_outformer_v2.csv`](results/router_vs_outformer_v2.csv) | le duel contre OUTFORMER, 25 jeux communs |
+| [`metaod_verdict.csv`](results/metaod_verdict.csv) | la comparaison à MetaOD |
+
+⚠️ **Les deux fichiers de routeur ne décrivent pas le même protocole**, et leurs moyennes
+diffèrent de deux dixièmes de point. `router_src` est le régime **strict** — regroupement par
+source, plus dur, et c'est celui que ce dépôt publie comme résultat.
 
 ````
 
 ### 📄 `anomaly_tsad/README.md (dépôt de code)`
 
-*94 lignes · 907 mots*
+*109 lignes · 1025 mots*
 
 ````markdown
 # Le SOTA d'un benchmark généralise-t-il hors de son cadre ?
@@ -2705,6 +2734,21 @@ Sur **l'ensemble** du multivarié, le routage **ne bat pas** le meilleur modèle
 - **La rigueur du protocole change les conclusions** : deux biais silencieux — fuite de découpage temporel, normalisation transductive — ont chacun déplacé des résultats déjà tenus pour acquis.
 - **La donnée native, diverse par mécanisme, reste le vrai goulot** — plus que le modèle.
 
+## Reproduire
+
+| fichier | ce qu'il porte |
+|---|---|
+| [`paano_ranks_U.csv`](results/paano_ranks_U.csv) · [`_M.csv`](results/paano_ranks_M.csv) | les classements qui établissent le #1 sur TSB-AD |
+| [`router_scorecard_fullres.csv`](results/router_scorecard_fullres.csv) | **le gain par catégorie**, refait en pleine résolution |
+| [`axonad_vs_paano_fullres_certified.csv`](results/axonad_vs_paano_fullres_certified.csv) | AxonAD contre PaAno, 200 séries certifiées |
+| [`tuned_categorie_v1.csv`](results/tuned_categorie_v1.csv) | la table par catégorie, 401 séries |
+
+⚠️ **Le scorecard a été refait.** Une première version reposait sur un PaAno décimé par un
+plafonnement à 20 000 points ; les classements absolus qui en sortaient étaient des artefacts.
+La version publiée ici est celle en pleine résolution. Les conclusions **relatives** — quel
+membre gagne sur quelle catégorie — ont survécu à la correction ; les chiffres absolus ont
+bougé.
+
 ## Prochaines actions
 
 1. Benchmark et routeur **« multivarié pur »** (d ≥ 8), là où le signal est démontré
@@ -2719,7 +2763,7 @@ Sur **l'ensemble** du multivarié, le routage **ne bat pas** le meilleur modèle
 
 ## Annexe — Les figures produites *(source SVG, thème clair)*
 
-Chaque figure existe aussi en version sombre, servie par `<picture>` avec `prefers-color-scheme`. Vérifie surtout la **concordance entre la figure et le paragraphe qui la précède**, et l'exactitude des textes alternatifs.
+Chaque figure existe aussi en version sombre, servie par `<picture>`. Vérifie la **concordance entre la figure et le paragraphe qui la précède**, l'exactitude des textes alternatifs, et surtout que **tous les chiffres d'une même figure viennent du même protocole** — c'est le défaut trouvé le 21/08.
 
 
 ### 📄 `v1_gain_polluants_clair.svg`
@@ -2859,25 +2903,25 @@ Chaque figure existe aussi en version sombre, servie par `<picture>` avec `prefe
 
 ### 📄 `v7_routeur_tabulaire_clair.svg`
 
-*17 lignes · 151 mots*
+*17 lignes · 156 mots*
 
 ````markdown
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 210" width="800" height="210" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
-<title>Contre le meilleur détecteur unique, le routeur source-strict gagne 3,0 points d'AUROC, la spécialisation par domaine 2,5, et l'oracle 8,9.</title>
+<title>Contre l'ensemble fixe de 18 détecteurs, le routeur source-strict gagne 1,48 point d'AUROC, la spécialisation par domaine 1,00, et la sélection parfaite 5,92.</title>
 
 <text x="0" y="22" font-size="16" font-weight="600" fill="#1f2328">Choisir le détecteur rapporte — modestement, et c'est mesuré</text>
-<text x="0" y="43" font-size="12.5" fill="#57606a">Points d'AUROC gagnés sur le meilleur détecteur unique (69,8) · 502 jeux · LODO par source</text>
+<text x="0" y="43" font-size="12.5" fill="#57606a">Points d'AUROC · 502 jeux · LODO groupé par source · un seul protocole, un seul fichier</text>
 <line x1="224.0" y1="56" x2="224.0" y2="188" stroke="#57606a" stroke-width="1.4"/>
 <rect x="224.0" y="62" width="468.0" height="28" rx="2" fill="#0969da"/>
-<text x="214" y="82" font-size="12.5" text-anchor="end" fill="#1f2328">oracle — plafond de sélection</text>
-<text x="701.0" y="82" font-size="12.5" font-weight="600" text-anchor="start" fill="#1f2328">+8,9</text>
-<rect x="224.0" y="104" width="157.8" height="28" rx="2" fill="#0969da"/>
+<text x="214" y="82" font-size="12.5" text-anchor="end" fill="#1f2328">plafond — sélection parfaite</text>
+<text x="701.0" y="82" font-size="12.5" font-weight="600" text-anchor="start" fill="#1f2328">+5,92</text>
+<rect x="224.0" y="104" width="117.0" height="28" rx="2" fill="#0969da"/>
 <text x="214" y="124" font-size="12.5" text-anchor="end" fill="#1f2328">routeur source-strict</text>
-<text x="390.8" y="124" font-size="12.5" font-weight="600" text-anchor="start" fill="#1f2328">+3,0</text>
-<rect x="224.0" y="146" width="131.5" height="28" rx="2" fill="#0969da"/>
+<text x="350.0" y="124" font-size="12.5" font-weight="600" text-anchor="start" fill="#1f2328">+1,48</text>
+<rect x="224.0" y="146" width="79.1" height="28" rx="2" fill="#0969da"/>
 <text x="214" y="166" font-size="12.5" text-anchor="end" fill="#1f2328">spécialisation par domaine</text>
-<text x="364.5" y="166" font-size="12.5" font-weight="600" text-anchor="start" fill="#1f2328">+2,5</text>
-<text x="224.0" y="206" font-size="11.5" text-anchor="middle" fill="#57606a">0 — le meilleur détecteur unique</text>
+<text x="312.1" y="166" font-size="12.5" font-weight="600" text-anchor="start" fill="#1f2328">+1,00</text>
+<text x="224.0" y="206" font-size="11.5" text-anchor="middle" fill="#57606a">0 — l'ensemble fixe de 18 détecteurs (71,31)</text>
 </svg>
 ````
 
