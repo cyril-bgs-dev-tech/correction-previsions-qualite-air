@@ -84,3 +84,24 @@ Ces questions ne sont pas décoratives : leurs réponses changent la conception.
 4. « Dans votre bilan, quelle métrique déclenche réellement une remise en cause de la chaîne ? »
 5. « Préféreriez-vous que je poursuive ce prototype sur les observations récentes, la météo prévue ou l’analyse des jours où les modèles divergent ? »
 
+## « Concrètement, à quoi ça sert chez nous ? »
+
+> « La directive de 2024 divise les valeurs limites annuelles par deux au 1ᵉʳ janvier 2030 **et** rend la modélisation obligatoire là où un seuil est dépassé. Sur le parc réel, à pollution inchangée, les stations en dépassement passent de 6 à 109. En Occitanie, quatre départements sur treize n’ont aucune station pour le constater : pour eux, la conformité 2030 ne peut pas être posée depuis la mesure. C’est exactement le cas que la directive confie à la modélisation. »
+
+**Si on pousse** : « Et là où le modèle devient opposable, sa qualité devient un point de contrôle. À J+1, le produit européen brut ne satisfait le critère FAIRMODE que sur 41,4 % des stations de NO₂ ; la correction l’y porte à 96,2 %. »
+
+**La réserve à donner sans qu’on la demande** : « Sans aucune observation du point, le NO₂ plafonne à 87,9 % — sous la barre des 90 %. Il ne la franchit qu’aux stations instrumentées. »
+
+## « Comment savez-vous que votre dernier levier n’est pas un artefact ? »
+
+> « Parce que je l’ai testé de façon réfutatoire. J’ai permuté la composition à l’intérieur de chaque couple station-mois : cette permutation conserve exactement l’histogramme par site et par saison, et ne détruit que l’appariement au jour. Si le gain venait d’un encodage du lieu ou de la saison, il aurait survécu. Il disparaît en totalité, sur les quatre polluants. »
+
+**Ce que ça permet d’affirmer** : le modèle exploite l’écart du jour à la composition habituelle du lieu — pas une identité de site déguisée.
+
+## « Et contre le système réellement en service ? »
+
+> « L’archive de PREV’AIR porte dans sa métadonnée qu’il s’agit de CHIMERE combiné aux observations : c’est AS-CHI, leur adaptation statistique. Sur les mêmes stations et les mêmes jours, l’écart va de +13,7 % sur l’ozone à +66,9 % sur les PM2,5. »
+
+**Réserve obligatoire, à énoncer dans la même phrase** : « Dix-sept jours seulement. Leur archive n’expose que six jours glissants et ne peut pas remonter le temps. C’est un ordre de grandeur, pas une conclusion. »
+
+**Et le point d’honnêteté qui vaut mieux qu’un chiffre** : « Leur méthode fonctionne, et il faut le dire : le krigeage retire jusqu’à 27 % de la RMSE de CHIMERE. Ce que je montre, c’est qu’à départ égal l’apprentissage bat l’interpolation — sur quatre polluants sur quatre. »

@@ -1,6 +1,11 @@
-# Trame de présentation — 10 écrans
+# Trame de présentation — 12 écrans
 
-Format recommandé : 10 à 12 minutes, puis discussion. Un message et un visuel par écran. Les titres sont des conclusions, pas des rubriques.
+> **Mise à jour du 20/08/2026.** L'écran 4 s'arrêtait au creux (+1,5 %) sans dire que les
+> leviers trouvés depuis le comblent ; l'écran 9 décrivait une architecture qui n'est plus
+> celle du système (membres et feux ont été **retirés** de la pile) ; et l'horizon
+> réglementaire, qui est l'argument le plus direct pour une AASQA, était absent.
+
+Format recommandé : 12 à 14 minutes, puis discussion. Un message et un visuel par écran. Les titres sont des conclusions, pas des rubriques.
 
 ## Écran 1 — « Une meilleure moyenne peut encore manquer l’épisode »
 
@@ -32,7 +37,17 @@ Format recommandé : 10 à 12 minutes, puis discussion. Un message et un visuel 
 
 **À dire.** « C’est la slide de vérité. Le modèle transfère bien dans l’espace du réseau, mais sa robustesse à un mois nouveau n’est pas démontrée. »
 
-**Effet recherché.** Installer la confiance avant les résultats favorables.
+**Effet recherché.** Installer la confiance avant les résultats favorables — et poser la question à laquelle l’écran suivant répond.
+
+## Écran 4 bis — « Ce qui manquait était une information, pas un algorithme »
+
+**Visuel.** Une flèche du `+1,5 %` de l’écran précédent vers quatre barres : O₃ `+17,9 %`, NO₂ `+39,6 %`, PM10 `+20,2 %`, PM2,5 `+11,8 %`. Mention obligatoire sous le visuel : **même protocole, station ET mois cachés, J+1**.
+
+**À dire.** « Le levier décisif est arrivé tard : sept traceurs de composition du champ CAMS que le dépôt ne téléchargeait pas. Ils apportent de 1,5 % sur le NO₂ à 6 % sur les PM10, avec un intervalle qui exclut zéro sur les quatre polluants, après correction de Holm. »
+
+**Et le mécanisme, si on vous le demande.** « J’ai permuté la composition à l’intérieur de chaque couple station-mois : ça conserve l’histogramme par site et par saison, et ne détruit que l’appariement au jour. Le gain disparaît en totalité, sur les quatre polluants. Ce n’est donc ni un encodeur de site, ni un proxy de saison : c’est l’écart du jour à la composition habituelle du lieu. »
+
+**À éviter.** Montrer ce résultat avant l’écran 4. L’ordre fait toute la démonstration.
 
 ## Écran 5 — « La cible compte vingt fois plus que la bibliothèque »
 
@@ -70,11 +85,35 @@ Format recommandé : 10 à 12 minutes, puis discussion. Un message et un visuel 
 
 ## Écran 9 — « Les prochains leviers sont opérationnels, pas architecturaux »
 
-**Visuel.** Trois marches : observations J−2 ; météo prévue IFS/AIFS ; dispersion CAMS et feux en compléments.
+**Visuel.** Trois marches : observations J−2 ; météo prévue IFS/AIFS ; spéciation et typologie déjà intégrées.
 
 **À dire.** « Les observations passées sont le levier déployable le plus fort, notamment `+21,9 %` sur le NO₂ en RMSE. ERA5 donne un plafond, pas une performance ; l’étape correcte est de mesurer ce qu’IFS/AIFS en récupèrent à l’émission. »
 
+**⚠️ Ce qui a été RETIRÉ de la pile, et pourquoi c’est une bonne histoire.** Les membres d’ensemble et les feux en faisaient partie jusqu’au 17/08. Quand une famille de variables manque sur un mois entier, l’algorithme apprend une direction par défaut pour les valeurs absentes — donc il apprend **la date**. Le protocole cachant les mois, c’est une fuite. Trois occurrences trouvées, deux étages retirés. **Ne pas décrire l’architecture avec des étages qui n’y sont plus.**
+
 **À éviter.** Présenter des pistes comme des gains acquis.
+
+## Écran 9 bis — « L'échéance 2030 rend la modélisation obligatoire, et le produit brut n'y passe pas »
+
+**Visuel.** À gauche, deux barres : stations en dépassement `6` aujourd'hui, `109` en 2030 — même air, seuil divisé par deux. À droite, le critère FAIRMODE sur le NO₂ : `41,4 %` brut, `96,2 %` corrigé, avec la barre des 90 % tracée.
+
+**À dire.** « La directive de 2024 fait deux choses qu'on cite toujours séparément : elle divise les valeurs limites annuelles par deux au 1ᵉʳ janvier 2030, et elle rend la modélisation obligatoire dans toute zone où un seuil est dépassé. Multipliées, elles signifient que le nombre de zones où modéliser devient une obligation légale augmente mécaniquement. Et là où le modèle devient opposable, sa qualité devient un point de contrôle. »
+
+**Le chiffre qui parle à une AASQA d'Occitanie.** Quatre départements sur treize n'ont **aucune station** retenue au seuil 2030 : pour eux, la conformité ne peut pas être posée depuis la mesure. C'est exactement le cas que la directive confie à la modélisation.
+
+**Nuance obligatoire.** Les moyennes 2025 ne sont pas une prévision de 2030 — les émissions baisseront. Cette mesure isole l'effet du **changement de seuil, à air constant**.
+
+**Et le chiffre qui ne passe pas, à dire aussi.** Sans aucune observation du point, le NO₂ atteint 87,9 % — **sous** la barre des 90 %. Il ne la franchit qu'aux stations instrumentées.
+
+## Écran 9 ter — « Contre le produit réellement diffusé »
+
+**Visuel.** Trois paires de barres, mêmes stations et mêmes jours : O₃ `+13,7 %`, NO₂ `+59,8 %`, PM2,5 `+66,9 %`. En bas, en gros : **17 jours**.
+
+**À dire.** « L'archive de PREV'AIR porte dans sa métadonnée qu'il s'agit de CHIMERE combiné aux observations — c'est-à-dire AS-CHI, leur adaptation statistique. C'est donc bien le produit en service, pas une reconstruction. »
+
+**Réserve à énoncer AVANT qu'on la demande.** « Dix-sept jours ne concluent rien. Leur archive n'expose que six jours glissants et ne peut pas remonter le temps ; je l'ai constituée jour après jour. C'est un ordre de grandeur. »
+
+**Effet recherché.** Montrer qu'on connaît la valeur exacte de son propre chiffre.
 
 ## Écran 10 — « Trois choix métier décideront du bon système »
 
@@ -104,7 +143,7 @@ Si le temps tombe à cinq minutes :
 
 1. paradoxe RMSE / épisode ;
 2. protocole stations exclues ;
-3. spatial `+29,7 %` versus double aveugle `+1,5 %` ;
-4. rappel `0,184 → 0,656` à FAR ≤ 30 % ;
+3. le creux et sa sortie : double aveugle `+1,5 %` en base, `+17,9 %` O₃ et `+39,6 %` NO₂ avec la pile complète ;
+4. l'usage : `6 → 109` stations en dépassement en 2030, et FAIRMODE `41,4 % → 96,2 %` sur le NO₂ ;
 5. trois limites et trois questions métier.
 
