@@ -24,7 +24,7 @@
 ---
 
 Post-traitement des prévisions **CAMS Europe** aux stations de mesure françaises. Le modèle
-apprend le **résidu** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h) et le retranche.
+apprend la **correction** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h), puis l'**ajoute** à la prévision CAMS.
 
 Corpus : **36 mois** (2023-08 → 2026-07), **28,0 M d'enregistrements horaires**, observations réglementaires
 LCSQA, cible journalière. Prévisions extraites à 476 points ; **438 stations effectivement
