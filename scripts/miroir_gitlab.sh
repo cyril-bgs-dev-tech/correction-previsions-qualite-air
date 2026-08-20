@@ -98,7 +98,14 @@ for CHEMIN in "${DEPOTS[@]}"; do
     continue
   fi
 
-  NOM="$(basename "$CHEMIN")"
+  # Le nom du projet GitLab ne se déduit PAS du dossier local. Le 20/08, ce raccourci a
+  # recréé « Projet_Air_Quality » à côté de « correction-previsions-qualite-air » : deux
+  # projets pour un dépôt, et la lettre de candidature citait celui qui n'était plus mis à
+  # jour. Un push qui réussit sur la mauvaise cible est un échec silencieux.
+  case "$(basename "$CHEMIN")" in
+    Projet_Air_Quality) NOM="correction-previsions-qualite-air" ;;
+    *)                  NOM="$(basename "$CHEMIN")" ;;
+  esac
   BRANCHE="$(git -C "$CHEMIN" branch --show-current)"
   echo "── $NOM (branche $BRANCHE) ──"
 
