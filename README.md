@@ -37,11 +37,15 @@ LCSQA, cible journalière. Prévisions extraites à 476 points ; **438 stations 
 Évaluation avec **station et mois cachés simultanément** — la condition de déploiement :
 une station nouvelle, une date future.
 
+Échéance **J+1**, les trois polluants au même horizon.
+
 | polluant | CAMS brut | biais glissant 7 j *(sans apprentissage)* | modèle complet |
 |---|---|---|---|
-| NO₂ | référence | **+43,1 %** | +44,6 % |
-| PM10 | référence | **+18,2 %** | +22,9 % |
-| O₃ | référence | **+15,9 %** | +20,4 % |
+| NO₂ | référence | **+42,88 %** | +44,28 % |
+| PM10 | référence | **+18,63 %** | +23,63 % |
+| O₃ | référence | **+16,09 %** | +20,52 % |
+
+*Régénérable : `python3 scripts/isoler_persistance.py --polluant <P> --horizon 2`. Les six valeurs sont recalculées par `scripts/verifier_dossier_candidature.py`.*
 
 ### La pile complète, en double aveugle
 

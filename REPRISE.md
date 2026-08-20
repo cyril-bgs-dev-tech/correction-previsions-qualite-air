@@ -1,8 +1,81 @@
 # Reprise — l'état du projet
 
-> **Écrit le 11/08/2026 à 14 h 30, mis à jour le 17/08 au petit matin.** Si la date ci-dessus a plus de deux jours, **méfie-toi de ce
-> fichier** : sur ce projet il a déjà été périmé de dix jours tout en s'annonçant comme l'état
-> courant. Vérifie par `git log --oneline -5` et `ls -lt reports/` avant de croire ce qui suit.
+> **Mis à jour le 20/08/2026 à 11 h 30.** Si la date ci-dessus a plus de deux jours,
+> **méfie-toi de ce fichier** : sur ce projet il a déjà été périmé de dix jours tout en
+> s'annonçant comme l'état courant. Vérifie par `git log --oneline -5` et `ls -lt reports/`
+> avant de croire ce qui suit.
+
+---
+
+## ⛔ 20/08 — LE BLOCAGE QUI PRIME SUR TOUT LE RESTE
+
+**Le compte GitHub `cyril-bgs-dev-tech` rend 404 à tout visiteur non authentifié**, profil
+compris. Mesuré depuis **deux réseaux indépendants**, avec témoins (`octocat`, `defunkt` →
+200 depuis la même machine, à la même seconde). L'en-tête du 404 porte `server: github.com`
+et un `x-github-request-id` : c'est GitHub qui répond, pas un cache. Quota anonyme à 57/60,
+donc pas un 403 déguisé.
+
+Trois faits qui s'ajoutent : Actions est désactivé **au niveau utilisateur**
+(« Actions has been disabled for this user »), **zéro** exécution de workflow depuis la
+création du compte le 31/05, et `cyril-bgs-dev-tech.github.io/Portfolio/` n'a **jamais** été
+construit. Avec le jeton du propriétaire, tout existe et est marqué `public`.
+
+**Conséquence : `docs/LETTRE_ATMO_OCCITANIE.md` renvoie deux fois à un dépôt qu'aucun
+recruteur ne peut ouvrir** (l. 85 et la signature l. 96). La cause exacte n'est pas
+observable — l'API n'expose aucun champ d'état au propriétaire ; « compte signalé » est une
+**inférence** tirée de la signature, pas une déclaration de GitHub.
+
+**Action, et elle n'appartient qu'à Cyril** : `support.github.com/contact/reinstatement`,
+7 à 10 jours ouvrés annoncés. Prévoir une variante de lettre sans dépendance GitHub.
+
+---
+
+## ✅ 18-20/08 — CE QUI A ÉTÉ FAIT
+
+**Tout est commité et poussé, des deux côtés.** L'avertissement « rien n'est commité » des
+versions précédentes de ce fichier est périmé.
+
+### L'argument réglementaire, qui n'était dans aucune pièce publiée
+
+Mesuré le 18/08 : la présentation contenait **zéro** occurrence de « directive »,
+« FAIRMODE », « MQI » ou « valeur limite ». Ses huit « 2030 » étaient des fragments de codes
+station dans le JSON embarqué. Le README public non plus.
+
+**Page 09 « L'horizon 2030 »** créée — `scripts/page_horizon_2030.py`, présentation à
+**63 pages** :
+
+- la directive **(UE) 2024/2881** divise les seuils par deux au 01/01/2030 *et* rend la
+  modélisation obligatoire là où un seuil est dépassé — donc elle **multiplie** les zones où
+  modéliser devient une obligation ;
+- comptage à air constant : **6 stations en dépassement aujourd'hui → 109 en 2030**, ×18,2
+  sur 408 évaluées. Occitanie 2 → 5, et **4 des 13 départements sans aucune station** (09, 11,
+  46, 48) — le cas que la directive confie à la modélisation ;
+- critère FAIRMODE de prévision à J+1 : NO₂ **41,4 %** brut → **96,2 %** corrigé ; PM10
+  87,8 → 100 ; O₃ 93,6 → 99,2. **Publié avec ce qui ne passe pas** : sans observation du
+  point, le NO₂ plafonne à **87,9 %**, sous la barre des 90 %.
+
+Deux précisions mécanisées au passage : **§ 5 ter** entre dans `VERITE_DOSSIER` (ces parts
+portaient l'argument sans y figurer), et **§ 5 porte enfin son échéance** — il est calculé
+depuis `mos_<P>_J1.csv`, où le `J1` est l'**horizon**, donc **J0**, à côté d'un § 5 ter à J+1.
+
+⚠️ **`MQI_f` ≠ MQI d'évaluation** : le premier rapporte l'erreur à une **persistance**, le
+second vaut `RMSE / (β·RMS_U)`. Même sigle, deux questions. Ne jamais les citer côte à côte
+sans les nommer.
+
+### Le portefeuille GitHub, repris en profondeur
+
+Voir la fiche mémoire dédiée. En bref : fiche qualité de l'air créée puis réécrite pour un
+lecteur non spécialiste, volume corrigé (**213 M → 28 M**, le premier chiffre n'avait aucune
+source), Master 2 à **7 projets** et non 8, DELTAMU doté de son impact et de son retour,
+stack complétée, étiquettes GitHub posées sur les trois dépôts qui n'en avaient aucune.
+
+🔴 **Reste ouvert** : 7 des 9 fiches contiennent `::: {.panel-tabset}`, syntaxe Quarto que
+**GitHub affiche en clair** — et comme le site n'est pas construit, GitHub est le seul rendu.
+
+### Un brief d'audit externe est prêt
+
+`docs/BRIEF_AUDIT_PORTFOLIO_GPT.md` — 115 ko, **contenu intégral embarqué** parce que les URL
+rendent 404. Huit familles de défaut pré-enregistrées, format de réponse imposé.
 
 ---
 
