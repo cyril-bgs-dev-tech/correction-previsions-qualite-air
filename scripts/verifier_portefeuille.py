@@ -172,6 +172,45 @@ def main() -> int:
             print(f"        ⚠️  absentes de VERITE_DOSSIER : {hors}")
             ecarts += 1
 
+    print("\n── ③ bis · Les barres d'une figure partent-elles TOUTES du zéro annoncé ? ──")
+    # Le défaut du 21/08 : V7 affichait trois barres, deux mesurées depuis l'ensemble fixe et
+    # une depuis le routeur, sous un seul zéro annoncé. Corriger un mélange de PROTOCOLES en
+    # laissant un mélange de RÉFÉRENCES ne corrige rien. Ici on recalcule depuis l'artefact.
+    fichier = pathlib.Path(
+        "/tmp/claude-1000/-mnt-d-Projet-Air-Quality/cc5a18df-0869-40c7-94c2-0447503f9cfd"
+        "/scratchpad/depots/anomaly_tabular/results/router_lodosrc_actions_strict.csv")
+    svg = RACINE / "reports/figures/portefeuille/v7_routeur_tabulaire_clair.svg"
+    if fichier.exists() and svg.exists():
+        import csv as _csv
+        cols = {}
+        with fichier.open(encoding="utf-8") as fh:
+            r = _csv.DictReader(fh)
+            # Le CSV porte des cellules vides : les compter comme zéro fausserait la moyenne
+            # de la colonne, donc chaque colonne a son propre dénominateur.
+            acc, n = {}, {}
+            for ligne in r:
+                for c in ("router_src", "ens18", "tuned_dom", "oracle"):
+                    v = (ligne.get(c) or "").strip()
+                    if not v:
+                        continue
+                    acc[c] = acc.get(c, 0.0) + float(v)
+                    n[c] = n.get(c, 0) + 1
+            cols = {c: 100 * acc[c] / n[c] for c in acc}
+        base = cols["ens18"]
+        attendu = sorted([cols["oracle"] - base, cols["router_src"] - base,
+                          cols["tuned_dom"] - base], reverse=True)
+        lus = sorted((float(x.replace(",", "."))
+                      for x in re.findall(r">\+([\d,]+)</text>", svg.read_text(encoding="utf-8"))),
+                     reverse=True)
+        ok = len(lus) == len(attendu) and all(abs(l - v) < 0.02 for l, v in zip(lus, attendu))
+        print(f"  {'✓' if ok else '✗'} v7_routeur_tabulaire · figure {lus} · artefact "
+              f"{[round(v, 2) for v in attendu]}")
+        if not ok:
+            print("        ⚠️  au moins une barre ne part pas du zéro annoncé")
+            ecarts += 1
+    else:
+        print("  · artefact ou figure absent — contrôle non exécuté")
+
     print("\n── ④ Un même fait porte-t-il deux valeurs selon la page ? ──")
     for cite, quoi, _, _ in ATTENDUS:
         pages_ou = {p.relative_to(PORTEFEUILLE) for p, s in pages.items() if cite in s}

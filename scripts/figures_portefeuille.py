@@ -325,13 +325,19 @@ FIGURES = {
             # unique » de 69,81 qui vient d'un AUTRE protocole — le LODO standard. Deux régimes
             # dans une même figure, sans que rien ne le dise : le défaut exact que ce dossier
             # traque. Ici, la référence est l'ensemble fixe, mesuré sous le même protocole.
-            valeurs=[("plafond — sélection parfaite", 5.92), ("routeur source-strict", 1.48),
+            # ⚠️ DEUXIÈME correction de la même figure, et le défaut était le même déguisé.
+            # La version du 21/08 matin affichait +5,92 pour le plafond — mais 5,92 vaut
+            # oracle − ROUTEUR, quand les deux autres barres valent « − ensemble fixe ». Trois
+            # barres, deux références, un seul zéro annoncé. Depuis le zéro affiché (71,31), le
+            # plafond vaut +7,40. Corriger un mélange de protocoles en laissant un mélange de
+            # RÉFÉRENCES ne corrige rien : c'est le même défaut, un cran plus bas.
+            valeurs=[("plafond — sélection parfaite", 7.40), ("routeur source-strict", 1.48),
                      ("spécialisation par domaine", 1.00)],
             dec=2, zero="l'ensemble fixe de 18 détecteurs (71,31)",
             titre="Choisir le détecteur rapporte — modestement, et c'est mesuré",
             sous_titre="Points d'AUROC · 502 jeux · LODO groupé par source · un seul protocole, un seul fichier",
             alt=("Contre l'ensemble fixe de 18 détecteurs, le routeur source-strict gagne 1,48 point "
-                 "d'AUROC, la spécialisation par domaine 1,00, et la sélection parfaite 5,92."))),
+                 "d'AUROC, la spécialisation par domaine 1,00, et la sélection parfaite 7,40."))),
     "v3_fairmode_no2": dict(
         fn=jalons,
         args=dict(
