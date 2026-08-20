@@ -197,6 +197,72 @@ def pente(series, titre, sous_titre, alt, c) -> str:
     return "\n".join(s)
 
 
+def etapes(pile, titre, sous_titre, alt, c) -> str:
+    """V6 — ce que chaque étage AJOUTE. Barres empilées horizontalement, apport annoté.
+
+    Ni courbe ni camembert : la grandeur est un cumul ordonné, et c'est l'apport de chaque
+    étage — pas le total — qui justifie sa présence dans la pile.
+    """
+    L, marge_g, h, pas = 820, 196, 26, 38
+    H = 62 + pas * len(pile) + 14
+    m = max(v for _, v in pile)
+    piste = L - marge_g - 150
+    s = [_entete(L, H, alt)]
+    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    prec = 0.0
+    for i, (nom, v) in enumerate(pile):
+        y = 62 + i * pas
+        larg, base = piste * v / m, piste * prec / m
+        s.append(f'<rect x="{marge_g}" y="{y}" width="{base:.1f}" height="{h}" rx="2" '
+                 f'fill="{c["trait"]}"/>')
+        s.append(f'<rect x="{marge_g + base:.1f}" y="{y}" width="{larg - base:.1f}" height="{h}" '
+                 f'rx="2" fill="{c["barre"]}"/>')
+        s.append(f'<text x="{marge_g - 10}" y="{y + h * 0.7:.0f}" font-size="12.5" '
+                 f'text-anchor="end" fill="{c["encre"]}">{nom}</text>')
+        delta = f' <tspan fill="{c["attenue"]}">(+{_fr(v - prec)})</tspan>' if i else ""
+        s.append(f'<text x="{marge_g + larg + 10:.0f}" y="{y + h * 0.7:.0f}" font-size="12.5" '
+                 f'font-weight="600" fill="{c["encre"]}">{_fr(v)}&#8239;%{delta}</text>')
+        prec = v
+    s.append("</svg>")
+    return "\n".join(s)
+
+
+def barres_signees(valeurs, titre, sous_titre, alt, c) -> str:
+    """V8 — des valeurs qui peuvent être NÉGATIVES : l'axe zéro doit être visible."""
+    L, marge_g, h, pas = 800, 224, 28, 42
+    H = 62 + pas * len(valeurs) + 22
+    lo = min(0.0, min(v for _, v in valeurs))
+    hi = max(v for _, v in valeurs)
+    piste = L - marge_g - 108
+    x0 = marge_g + piste * (0 - lo) / (hi - lo)
+    s = [_entete(L, H, alt)]
+    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    bas = 62 + pas * len(valeurs)
+    s.append(f'<line x1="{x0:.1f}" y1="56" x2="{x0:.1f}" y2="{bas}" stroke="{c["attenue"]}" stroke-width="1.4"/>')
+    for i, (nom, v) in enumerate(valeurs):
+        y = 62 + i * pas
+        xv = marge_g + piste * (v - lo) / (hi - lo)
+        gauche, larg = (min(x0, xv), abs(xv - x0))
+        col = c["barre"] if v >= 0 else c["alerte"]
+        s.append(f'<rect x="{gauche:.1f}" y="{y}" width="{max(larg, 2):.1f}" height="{h}" rx="2" fill="{col}"/>')
+        s.append(f'<text x="{marge_g - 10}" y="{y + h * 0.7:.0f}" font-size="12.5" '
+                 f'text-anchor="end" fill="{c["encre"]}">{nom}</text>')
+        signe = "+" if v >= 0 else "−"
+        # Une valeur négative écrite à GAUCHE de sa barre percute le libellé de catégorie :
+        # la barre part du bord de la piste, il n'y a plus de place. On l'écrit donc à droite
+        # de l'axe zéro, où la ligne est libre — la couleur et le signe portent déjà le sens.
+        xt = (xv + 9) if v >= 0 else (x0 + 9)
+        anc = "start"
+        s.append(f'<text x="{xt:.1f}" y="{y + h * 0.7:.0f}" font-size="12.5" font-weight="600" '
+                 f'text-anchor="{anc}" fill="{c["encre"]}">{signe}{_fr(abs(v), 2)}</text>')
+    s.append(f'<text x="{x0:.1f}" y="{bas + 18}" font-size="11.5" text-anchor="middle" '
+             f'fill="{c["attenue"]}">0 — le meilleur modèle seul</text>')
+    s.append("</svg>")
+    return "\n".join(s)
+
+
 FIGURES = {
     "v1_gain_polluants": dict(
         fn=barres,
@@ -223,6 +289,24 @@ FIGURES = {
             sous_titre="Réduction d'erreur, de J0 à J+3 · la dernière échéance que CAMS Europe produise",
             alt=("De J0 à J+3, le gain sur le NO₂ reste stable de 37,1 % à 36,7 % (0,38 point), "
                  "tandis que celui sur l'ozone tombe de 9,3 % à 7,0 % (2,25 points)."))),
+    "v6_pile_no2": dict(
+        fn=etapes,
+        args=dict(
+            pile=[("base", 26.6), ("+ typologie de station", 35.6),
+                  ("+ GEOS-CF", 38.7), ("+ tendance récente", 38.9), ("+ spéciation", 40.2)],
+            titre="NO₂ — ce que chaque étage ajoute",
+            sous_titre="Double aveugle, J+1 · l'ordre des étages est déclaré avant la mesure",
+            alt=("Sur le NO₂, la pile passe de 26,6 % pour la base à 40,2 % avec la spéciation, "
+                 "la typologie de station apportant le plus gros saut."))),
+    "v8_routage_dimension": dict(
+        fn=barres_signees,
+        args=dict(
+            valeurs=[("tout le multivarié (d ≥ 2)", -0.01), ("multivarié réel (d ≥ 8)", 0.03),
+                     ("haute dimension (d ≥ 20)", 0.07)],
+            titre="Le routage ne devient utile qu'en dimension suffisante",
+            sous_titre="Gain VUS-PR du routage sur le meilleur modèle seul · protocole LODO",
+            alt=("Le routage perd 0,01 sur l'ensemble du multivarié, gagne 0,03 à partir de huit "
+                 "variables et 0,07 au-delà de vingt."))),
     "v3_fairmode_no2": dict(
         fn=jalons,
         args=dict(

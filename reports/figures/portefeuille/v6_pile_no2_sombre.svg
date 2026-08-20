@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 266" width="820" height="266" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+<title>Sur le NO₂, la pile passe de 26,6 % pour la base à 40,2 % avec la spéciation, la typologie de station apportant le plus gros saut.</title>
+
+<text x="0" y="22" font-size="16" font-weight="600" fill="#e6edf3">NO₂ — ce que chaque étage ajoute</text>
+<text x="0" y="43" font-size="12.5" fill="#9198a1">Double aveugle, J+1 · l'ordre des étages est déclaré avant la mesure</text>
+<rect x="196" y="62" width="0.0" height="26" rx="2" fill="#30363d"/>
+<rect x="196.0" y="62" width="313.6" height="26" rx="2" fill="#4493f8"/>
+<text x="186" y="80" font-size="12.5" text-anchor="end" fill="#e6edf3">base</text>
+<text x="520" y="80" font-size="12.5" font-weight="600" fill="#e6edf3">26,6&#8239;%</text>
+<rect x="196" y="100" width="313.6" height="26" rx="2" fill="#30363d"/>
+<rect x="509.6" y="100" width="106.1" height="26" rx="2" fill="#4493f8"/>
+<text x="186" y="118" font-size="12.5" text-anchor="end" fill="#e6edf3">+ typologie de station</text>
+<text x="626" y="118" font-size="12.5" font-weight="600" fill="#e6edf3">35,6&#8239;% <tspan fill="#9198a1">(+9,0)</tspan></text>
+<rect x="196" y="138" width="419.8" height="26" rx="2" fill="#30363d"/>
+<rect x="615.8" y="138" width="36.6" height="26" rx="2" fill="#4493f8"/>
+<text x="186" y="156" font-size="12.5" text-anchor="end" fill="#e6edf3">+ GEOS-CF</text>
+<text x="662" y="156" font-size="12.5" font-weight="600" fill="#e6edf3">38,7&#8239;% <tspan fill="#9198a1">(+3,1)</tspan></text>
+<rect x="196" y="176" width="456.3" height="26" rx="2" fill="#30363d"/>
+<rect x="652.3" y="176" width="2.4" height="26" rx="2" fill="#4493f8"/>
+<text x="186" y="194" font-size="12.5" text-anchor="end" fill="#e6edf3">+ tendance récente</text>
+<text x="665" y="194" font-size="12.5" font-weight="600" fill="#e6edf3">38,9&#8239;% <tspan fill="#9198a1">(+0,2)</tspan></text>
+<rect x="196" y="214" width="458.7" height="26" rx="2" fill="#30363d"/>
+<rect x="654.7" y="214" width="15.3" height="26" rx="2" fill="#4493f8"/>
+<text x="186" y="232" font-size="12.5" text-anchor="end" fill="#e6edf3">+ spéciation</text>
+<text x="680" y="232" font-size="12.5" font-weight="600" fill="#e6edf3">40,2&#8239;% <tspan fill="#9198a1">(+1,3)</tspan></text>
+</svg>
