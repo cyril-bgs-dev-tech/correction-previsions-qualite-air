@@ -119,7 +119,12 @@ for CHEMIN in "${DEPOTS[@]}"; do
     --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$API/projects/$CIBLE")"
 
   if [ "$EXISTE" != "200" ]; then
-    DESCR="$(git -C "$CHEMIN" log -1 --format=%s | cut -c1-180)"
+    # ⚠️ NE PAS dériver la description du dernier sujet de commit : le 20/08, le projet
+    #    Portfolio s'est retrouvé décrit par « Le compte des notebooks passe à 1 050, et la
+    #    réserve de trop disparaît » — un message de commit, lisible comme une description.
+    #    Trouvé par capture d'écran, pas par relecture du code. Sans description explicite,
+    #    mieux vaut n'en poser aucune : GitLab affiche alors le README, qui est le bon texte.
+    DESCR="${DESCRIPTION:-}"
     CREE="$(curl -s -X POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
       --data-urlencode "name=$NOM" \
       --data-urlencode "path=$NOM" \
