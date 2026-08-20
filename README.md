@@ -107,6 +107,11 @@ La directive **(UE) 2024/2881** fait deux choses que l'on cite toujours séparé
 **20 µg/m³**, PM2,5 de 25 à **10**. Et elle rend la **modélisation obligatoire** dans toute
 zone où un seuil est dépassé. Transposition au plus tard le **11 décembre 2026**.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="reports/figures/portefeuille/v4_seuil_2030_sombre.svg">
+  <img alt="Le nombre de stations en dépassement passe de 6 aujourd'hui à 109 en 2030, soit un facteur 18,2, sans qu'aucune émission n'ait changé." src="reports/figures/portefeuille/v4_seuil_2030_clair.svg" width="100%">
+</picture>
+
 Multipliées, elles donnent l'argument que ni l'une ni l'autre ne porte seule : abaisser le
 seuil **multiplie mécaniquement** le nombre de zones où modéliser devient une obligation
 légale.
@@ -160,6 +165,9 @@ directive confie à la modélisation.
 `reports/VERITE_DOSSIER.md`, recalculés par `scripts/verifier_dossier_candidature.py`.*
 
 ---
+
+<details>
+<summary><strong>Installer, vérifier, reproduire</strong> — et le protocole d'évaluation en détail</summary>
 
 ## Installation
 
@@ -267,6 +275,8 @@ faites et la règle qui empêche chacune de revenir. Il vaut d'être lu avant d'
 d'entrée/sortie ou de lancer un traitement long.
 
 ---
+
+</details>
 
 ## Sources et attribution
 

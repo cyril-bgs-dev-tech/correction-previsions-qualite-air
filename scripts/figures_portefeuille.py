@@ -228,7 +228,7 @@ def etapes(pile, titre, sous_titre, alt, c) -> str:
     return "\n".join(s)
 
 
-def barres_signees(valeurs, titre, sous_titre, alt, c) -> str:
+def barres_signees(valeurs, titre, sous_titre, alt, c, dec=2, zero="le meilleur modèle seul") -> str:
     """V8 — des valeurs qui peuvent être NÉGATIVES : l'axe zéro doit être visible."""
     L, marge_g, h, pas = 800, 224, 28, 42
     H = 62 + pas * len(valeurs) + 22
@@ -256,9 +256,9 @@ def barres_signees(valeurs, titre, sous_titre, alt, c) -> str:
         xt = (xv + 9) if v >= 0 else (x0 + 9)
         anc = "start"
         s.append(f'<text x="{xt:.1f}" y="{y + h * 0.7:.0f}" font-size="12.5" font-weight="600" '
-                 f'text-anchor="{anc}" fill="{c["encre"]}">{signe}{_fr(abs(v), 2)}</text>')
+                 f'text-anchor="{anc}" fill="{c["encre"]}">{signe}{_fr(abs(v), dec)}</text>')
     s.append(f'<text x="{x0:.1f}" y="{bas + 18}" font-size="11.5" text-anchor="middle" '
-             f'fill="{c["attenue"]}">0 — le meilleur modèle seul</text>')
+             f'fill="{c["attenue"]}">0 — {zero}</text>')
     s.append("</svg>")
     return "\n".join(s)
 
@@ -307,6 +307,19 @@ FIGURES = {
             sous_titre="Gain VUS-PR du routage sur le meilleur modèle seul · protocole LODO",
             alt=("Le routage perd 0,01 sur l'ensemble du multivarié, gagne 0,03 à partir de huit "
                  "variables et 0,07 au-delà de vingt."))),
+    "v7_routeur_tabulaire": dict(
+        # Des barres partant de zéro sur des valeurs entre 69,8 et 78,7 rendent l'écart
+        # invisible — or l'écart EST le message. Tronquer l'axe l'exagérerait. La forme juste
+        # est donc de tracer la DIFFÉRENCE elle-même, contre le meilleur détecteur unique.
+        fn=barres_signees,
+        args=dict(
+            valeurs=[("oracle — plafond de sélection", 8.9), ("routeur source-strict", 3.0),
+                     ("spécialisation par domaine", 2.5)],
+            dec=1, zero="le meilleur détecteur unique",
+            titre="Choisir le détecteur rapporte — modestement, et c'est mesuré",
+            sous_titre="Points d'AUROC gagnés sur le meilleur détecteur unique (69,8) · 502 jeux · LODO par source",
+            alt=("Contre le meilleur détecteur unique, le routeur source-strict gagne 3,0 points "
+                 "d'AUROC, la spécialisation par domaine 2,5, et l'oracle 8,9."))),
     "v3_fairmode_no2": dict(
         fn=jalons,
         args=dict(
