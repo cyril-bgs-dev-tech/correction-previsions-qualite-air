@@ -129,7 +129,7 @@ for CHEMIN in "${DEPOTS[@]}"; do
       --data-urlencode "name=$NOM" \
       --data-urlencode "path=$NOM" \
       --data-urlencode "visibility=public" \
-      --data-urlencode "description=Miroir. $DESCR" \
+      --data-urlencode "description=$DESCR" \
       "$API/projects" | python3 -c 'import json,sys
 try:
     print(json.load(sys.stdin).get("path_with_namespace", ""))
