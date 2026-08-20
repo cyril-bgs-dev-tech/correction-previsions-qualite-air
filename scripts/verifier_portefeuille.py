@@ -39,6 +39,8 @@ from __future__ import annotations
 
 import pathlib
 import re
+import urllib.error
+import urllib.request
 import sys
 
 RACINE = pathlib.Path(__file__).resolve().parents[1]
@@ -217,6 +219,71 @@ def main() -> int:
         if len(pages_ou) > 1:
             print(f"  · {cite:>6} répété sur {len(pages_ou)} pages — {quoi}")
     print("  (répétition ≠ défaut, mais chaque répétition est une occasion de diverger)")
+
+    print("\n── ⑤ Un lien publié répond-il à un visiteur ANONYME ? ──")
+    # Le 21/08, les 24 liens « 💻 Code » du portefeuille rendaient 404 sans session : le compte
+    # GitHub n'est plus servi aux visiteurs non connectés. Aucune relecture ne peut voir ça —
+    # l'auteur est authentifié, donc la page s'ouvre pour lui. Seule une requête sans jeton
+    # tranche. C'est le contrôle du miroir GitLab (§ ⑥) appliqué aux liens du portefeuille.
+    #
+    # Ce contrôle NE fait PAS échouer sur les liens déjà connus morts : une vérification
+    # perpétuellement rouge cesse d'être lue. Il échoue sur un lien mort NOUVEAU — c'est-à-dire
+    # sur une régression, jamais sur l'état de fait qu'on subit (`CLAUDE.md` § 2 quinquies :
+    # comparer à l'état précédent, pas à une constante).
+    # Les Pages du compte rendent 404 elles aussi, RACINE COMPRISE : c'est la même
+    # suspension, pas un second défaut. Un site jamais construit et un site rendu invisible
+    # donnent le même code — mais ici la racine tombe, ce qui tranche pour la suspension.
+    TOLERES = ("https://github.com/cyril-bgs-dev-tech",
+               "https://cyril-bgs-dev-tech.github.io")
+
+    # Un hôte qui refuse les robots ne dit RIEN de la validité du lien. Le compter comme
+    # vivant serait faux, le compter comme mort le serait aussi : il lui faut sa propre
+    # catégorie, sinon le contrôle affirme ce qu'il n'a pas mesuré (`CLAUDE.md` § 4 bis).
+    # LinkedIn rend 999 quel que soit l'agent — vérifié aux deux en-têtes le 21/08.
+    MURS_ANTI_ROBOT = {999, 403, 429}
+
+    liens = set()
+    for f in pages:
+        for u in re.findall(r"\]\((https?://[^)\s]+)\)", f.read_text(encoding="utf-8")):
+            liens.add(u.rstrip(".,;"))
+
+    # Un « 0 lien mort » obtenu hors ligne est indiscernable d'un « 0 lien mort » réel
+    # (`CLAUDE.md` § 4 bis). On établit donc d'abord que le réseau répond.
+    def code(u: str) -> int:
+        try:
+            r = urllib.request.Request(u, method="GET",
+                                       headers={"User-Agent": "verificateur-portefeuille"})
+            with urllib.request.urlopen(r, timeout=20) as rep:
+                return rep.status
+        except urllib.error.HTTPError as e:
+            return e.code
+        except Exception:
+            return 0
+
+    if code("https://gitlab.com") != 200:
+        print("  · réseau indisponible — contrôle NON exécuté (et ce n'est pas un succès)")
+    else:
+        morts, tolere, opaques = [], 0, []
+        for u in sorted(liens):
+            c = code(u)
+            if c == 200:
+                continue
+            if u.startswith(TOLERES):
+                tolere += 1
+            elif c in MURS_ANTI_ROBOT:
+                opaques.append((u, c))
+            else:
+                morts.append((u, c))
+        print(f"  {len(liens)} lien(s) · {len(liens) - tolere - len(opaques) - len(morts)} vivant(s) "
+              f"· {tolere} mort(s) toléré(s) · {len(opaques)} non concluant(s) · {len(morts)} mort(s) inattendu(s)")
+        for u, c in opaques:
+            print(f"  ? HTTP {c} · {u} — l'hôte refuse les robots, VALIDITÉ NON MESURÉE")
+        if tolere:
+            print(f"        ⚠️  {tolere} lien(s) vers un compte GitHub invisible aux anonymes —")
+            print("            état subi, recours en cours ; à retirer de TOLERES une fois rétabli")
+        for u, c in morts:
+            print(f"  ✗ HTTP {c or 'injoignable'} · {u}")
+            ecarts += 1
 
     print("\n" + "─" * 76)
     if ecarts:
