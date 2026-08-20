@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 262" width="720" height="262" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+<title>Réduction de l'erreur CAMS à J+1 sans observation locale : NO₂ 39,6 %, PM10 20,2 %, ozone 17,9 % et PM2,5 11,8 %.</title>
+
+<text x="0" y="22" font-size="16" font-weight="600" fill="#e6edf3">Réduction de l'erreur, sans aucune observation du lieu corrigé</text>
+<text x="0" y="43" font-size="12.5" fill="#9198a1">Échéance J+1 · station ET mois cachés · contre la prévision européenne brute</text>
+<text x="82" y="82" font-size="13.5" text-anchor="end" fill="#e6edf3">NO₂</text>
+<rect x="92" y="62" width="532.0" height="30" rx="3" fill="#4493f8"/>
+<text x="633" y="82" font-size="13.5" font-weight="600" fill="#e6edf3">39,6&#8239;%</text>
+<text x="82" y="128" font-size="13.5" text-anchor="end" fill="#e6edf3">PM10</text>
+<rect x="92" y="108" width="271.4" height="30" rx="3" fill="#4493f8"/>
+<text x="372" y="128" font-size="13.5" font-weight="600" fill="#e6edf3">20,2&#8239;%</text>
+<text x="82" y="174" font-size="13.5" text-anchor="end" fill="#e6edf3">O₃</text>
+<rect x="92" y="154" width="240.5" height="30" rx="3" fill="#4493f8"/>
+<text x="341" y="174" font-size="13.5" font-weight="600" fill="#e6edf3">17,9&#8239;%</text>
+<text x="82" y="220" font-size="13.5" text-anchor="end" fill="#e6edf3">PM2,5</text>
+<rect x="92" y="200" width="158.5" height="30" rx="3" fill="#4493f8"/>
+<text x="260" y="220" font-size="13.5" font-weight="600" fill="#e6edf3">11,8&#8239;%</text>
+</svg>
