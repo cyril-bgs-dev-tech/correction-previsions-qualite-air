@@ -65,7 +65,7 @@ POLICE = ("-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-seri
 def _entete(largeur: int, hauteur: int, titre: str) -> str:
     """Le `<title>` est lu par les lecteurs d'écran — c'est le texte alternatif interne."""
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {largeur} {hauteur}" '
-            f'width="{largeur}" height="{hauteur}" role="img" '
+            f'preserveAspectRatio="xMinYMin meet" role="img" '
             f'font-family="{POLICE}">\n<title>{titre}</title>\n')
 
 
@@ -75,22 +75,22 @@ def barres(valeurs, titre, sous_titre, alt, c) -> str:
     Barres et non camembert : les catégories sont nominales et c'est l'amplitude qu'on compare.
     Horizontales et non verticales : les libellés sont des mots, pas des dates.
     """
-    L, marge_g, h_barre, pas = 720, 92, 30, 46
-    H = 62 + pas * len(valeurs) + 16
+    L, marge_g, h_barre, pas = 700, 104, 34, 52
+    H = 74 + pas * len(valeurs) + 18
     m = max(v for _, v in valeurs)
     piste = L - marge_g - 96
     s = [_entete(L, H, alt)]
-    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
-    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    s.append(f'<text x="0" y="22" font-size="20" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="15.5" fill="{c["attenue"]}">{sous_titre}</text>')
     for i, (nom, v) in enumerate(sorted(valeurs, key=lambda x: -x[1])):
-        y = 62 + i * pas
+        y = 74 + i * pas
         larg = max(2, piste * v / m)
-        s.append(f'<text x="{marge_g - 10}" y="{y + h_barre * 0.68:.0f}" font-size="13.5" '
+        s.append(f'<text x="{marge_g - 10}" y="{y + h_barre * 0.68:.0f}" font-size="17" '
                  f'text-anchor="end" fill="{c["encre"]}">{nom}</text>')
         s.append(f'<rect x="{marge_g}" y="{y}" width="{larg:.1f}" height="{h_barre}" rx="3" '
                  f'fill="{c["barre"]}"/>')
         # La valeur est ÉCRITE : la longueur seule ne se lit pas sur un petit écran.
-        s.append(f'<text x="{marge_g + larg + 9:.0f}" y="{y + h_barre * 0.68:.0f}" font-size="13.5" '
+        s.append(f'<text x="{marge_g + larg + 9:.0f}" y="{y + h_barre * 0.68:.0f}" font-size="17" '
                  f'font-weight="600" fill="{c["encre"]}">{_fr(v)}&#8239;%</text>')
     s.append("</svg>")
     return "\n".join(s)
@@ -107,8 +107,8 @@ def jalons(points, seuil, titre, sous_titre, alt, c) -> str:
     piste = L - marge_g - marge_d
     x = lambda v: marge_g + piste * v / 100.0
     s = [_entete(L, H, alt)]
-    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
-    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    s.append(f'<text x="0" y="22" font-size="20" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="15.5" fill="{c["attenue"]}">{sous_titre}</text>')
     s.append(f'<line x1="{marge_g}" y1="{y_axe}" x2="{L - marge_d}" y2="{y_axe}" '
              f'stroke="{c["trait"]}" stroke-width="2"/>')
     # Le seuil d'abord, pour que les points passent au-dessus.
@@ -132,9 +132,9 @@ def jalons(points, seuil, titre, sous_titre, alt, c) -> str:
             s.append(f'<circle cx="{xv:.1f}" cy="{y_axe}" r="8.5" fill="{couleur}"/>')
         haut = i % 2 == 0
         yv = y_axe - 20 if haut else y_axe + 34
-        s.append(f'<text x="{xv:.1f}" y="{yv}" font-size="13.5" font-weight="600" '
+        s.append(f'<text x="{xv:.1f}" y="{yv}" font-size="17" font-weight="600" '
                  f'text-anchor="middle" fill="{c["encre"]}">{_fr(v)}&#8239;%</text>')
-        s.append(f'<text x="{xv:.1f}" y="{yv + (-17 if haut else 17)}" font-size="11.5" '
+        s.append(f'<text x="{xv:.1f}" y="{yv + (-17 if haut else 17)}" font-size="14" '
                  f'text-anchor="middle" fill="{c["attenue"]}">{nom}</text>')
     s.append("</svg>")
     return "\n".join(s)
@@ -144,8 +144,8 @@ def avant_apres(paires, titre, sous_titre, alt, c) -> str:
     """V4 — deux états d'une même grandeur, reliés. Le message est le SAUT, pas les niveaux."""
     L, H = 720, 200
     s = [_entete(L, H, alt)]
-    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
-    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    s.append(f'<text x="0" y="22" font-size="20" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="15.5" fill="{c["attenue"]}">{sous_titre}</text>')
     m = max(v for _, v in paires)
     base_y, haut = 168, 96
     for i, (nom, v) in enumerate(paires):
@@ -153,9 +153,9 @@ def avant_apres(paires, titre, sous_titre, alt, c) -> str:
         h = max(4, haut * v / m)
         rempli = c["barre"] if i else c["attenue"]
         s.append(f'<rect x="{x - 52}" y="{base_y - h:.0f}" width="104" height="{h:.0f}" rx="3" fill="{rempli}"/>')
-        s.append(f'<text x="{x}" y="{base_y - h - 12:.0f}" font-size="19" font-weight="700" '
+        s.append(f'<text x="{x}" y="{base_y - h - 12:.0f}" font-size="23" font-weight="700" '
                  f'text-anchor="middle" fill="{c["encre"]}">{v}</text>')
-        s.append(f'<text x="{x}" y="{base_y + 20}" font-size="12.5" text-anchor="middle" '
+        s.append(f'<text x="{x}" y="{base_y + 20}" font-size="15.5" text-anchor="middle" '
                  f'fill="{c["attenue"]}">{nom}</text>')
     # La flèche porte le facteur : c'est lui le message, pas les deux hauteurs.
     f = paires[1][1] / max(paires[0][1], 1)
@@ -163,7 +163,7 @@ def avant_apres(paires, titre, sous_titre, alt, c) -> str:
              f'marker-end="url(#p)"/>')
     s.append(f'<defs><marker id="p" markerWidth="9" markerHeight="9" refX="8" refY="4.5" '
              f'orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="{c["encre"]}"/></marker></defs>')
-    s.append(f'<text x="301" y="98" font-size="17" font-weight="700" text-anchor="middle" '
+    s.append(f'<text x="301" y="98" font-size="21" font-weight="700" text-anchor="middle" '
              f'fill="{c["encre"]}">×{_fr(f)}</text>')
     s.append("</svg>")
     return "\n".join(s)
@@ -173,8 +173,8 @@ def pente(series, titre, sous_titre, alt, c) -> str:
     """V5 — deux séries sur un axe d'échéance. La PENTE est le message, pas le niveau."""
     L, H, g, d, ht, hb = 780, 210, 60, 215, 66, 168
     s = [_entete(L, H, alt)]
-    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
-    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    s.append(f'<text x="0" y="22" font-size="20" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="15.5" fill="{c["attenue"]}">{sous_titre}</text>')
     n = len(next(iter(series.values()))[1])
     xs = [g + (L - g - d) * i / (n - 1) for i in range(n)]
     toutes = [v for _, vs in series.values() for v in vs]
@@ -188,10 +188,10 @@ def pente(series, titre, sous_titre, alt, c) -> str:
             s.append(f'<circle cx="{xs[k]:.0f}" cy="{y(v):.0f}" r="4" fill="{col}"/>')
         s.append(f'<text x="{xs[-1] + 12:.0f}" y="{y(vs[-1]) + 4:.0f}" font-size="13" '
                  f'font-weight="600" fill="{c["encre"]}">{nom} · {etiq}</text>')
-        s.append(f'<text x="{xs[0] - 10:.0f}" y="{y(vs[0]) + 4:.0f}" font-size="12.5" '
+        s.append(f'<text x="{xs[0] - 10:.0f}" y="{y(vs[0]) + 4:.0f}" font-size="15.5" '
                  f'text-anchor="end" fill="{c["attenue"]}">{_fr(vs[0])}&#8239;%</text>')
     for k, lab in enumerate(("J0", "J+1", "J+2", "J+3")[:n]):
-        s.append(f'<text x="{xs[k]:.0f}" y="{hb + 24}" font-size="12" text-anchor="middle" '
+        s.append(f'<text x="{xs[k]:.0f}" y="{hb + 24}" font-size="15" text-anchor="middle" '
                  f'fill="{c["attenue"]}">{lab}</text>')
     s.append("</svg>")
     return "\n".join(s)
@@ -203,25 +203,25 @@ def etapes(pile, titre, sous_titre, alt, c) -> str:
     Ni courbe ni camembert : la grandeur est un cumul ordonné, et c'est l'apport de chaque
     étage — pas le total — qui justifie sa présence dans la pile.
     """
-    L, marge_g, h, pas = 820, 196, 26, 38
-    H = 62 + pas * len(pile) + 14
+    L, marge_g, h, pas = 760, 212, 30, 44
+    H = 76 + pas * len(pile) + 16
     m = max(v for _, v in pile)
     piste = L - marge_g - 150
     s = [_entete(L, H, alt)]
-    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
-    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    s.append(f'<text x="0" y="22" font-size="20" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="15.5" fill="{c["attenue"]}">{sous_titre}</text>')
     prec = 0.0
     for i, (nom, v) in enumerate(pile):
-        y = 62 + i * pas
+        y = 74 + i * pas
         larg, base = piste * v / m, piste * prec / m
         s.append(f'<rect x="{marge_g}" y="{y}" width="{base:.1f}" height="{h}" rx="2" '
                  f'fill="{c["trait"]}"/>')
         s.append(f'<rect x="{marge_g + base:.1f}" y="{y}" width="{larg - base:.1f}" height="{h}" '
                  f'rx="2" fill="{c["barre"]}"/>')
-        s.append(f'<text x="{marge_g - 10}" y="{y + h * 0.7:.0f}" font-size="12.5" '
+        s.append(f'<text x="{marge_g - 10}" y="{y + h * 0.7:.0f}" font-size="15.5" '
                  f'text-anchor="end" fill="{c["encre"]}">{nom}</text>')
         delta = f' <tspan fill="{c["attenue"]}">(+{_fr(v - prec)})</tspan>' if i else ""
-        s.append(f'<text x="{marge_g + larg + 10:.0f}" y="{y + h * 0.7:.0f}" font-size="12.5" '
+        s.append(f'<text x="{marge_g + larg + 10:.0f}" y="{y + h * 0.7:.0f}" font-size="15.5" '
                  f'font-weight="600" fill="{c["encre"]}">{_fr(v)}&#8239;%{delta}</text>')
         prec = v
     s.append("</svg>")
@@ -230,24 +230,24 @@ def etapes(pile, titre, sous_titre, alt, c) -> str:
 
 def barres_signees(valeurs, titre, sous_titre, alt, c, dec=2, zero="le meilleur modèle seul") -> str:
     """V8 — des valeurs qui peuvent être NÉGATIVES : l'axe zéro doit être visible."""
-    L, marge_g, h, pas = 800, 224, 28, 42
-    H = 62 + pas * len(valeurs) + 22
+    L, marge_g, h, pas = 760, 246, 32, 48
+    H = 76 + pas * len(valeurs) + 26
     lo = min(0.0, min(v for _, v in valeurs))
     hi = max(v for _, v in valeurs)
     piste = L - marge_g - 108
     x0 = marge_g + piste * (0 - lo) / (hi - lo)
     s = [_entete(L, H, alt)]
-    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
-    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
-    bas = 62 + pas * len(valeurs)
+    s.append(f'<text x="0" y="22" font-size="20" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="15.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    bas = 76 + pas * len(valeurs)
     s.append(f'<line x1="{x0:.1f}" y1="56" x2="{x0:.1f}" y2="{bas}" stroke="{c["attenue"]}" stroke-width="1.4"/>')
     for i, (nom, v) in enumerate(valeurs):
-        y = 62 + i * pas
+        y = 74 + i * pas
         xv = marge_g + piste * (v - lo) / (hi - lo)
         gauche, larg = (min(x0, xv), abs(xv - x0))
         col = c["barre"] if v >= 0 else c["alerte"]
         s.append(f'<rect x="{gauche:.1f}" y="{y}" width="{max(larg, 2):.1f}" height="{h}" rx="2" fill="{col}"/>')
-        s.append(f'<text x="{marge_g - 10}" y="{y + h * 0.7:.0f}" font-size="12.5" '
+        s.append(f'<text x="{marge_g - 10}" y="{y + h * 0.7:.0f}" font-size="15.5" '
                  f'text-anchor="end" fill="{c["encre"]}">{nom}</text>')
         signe = "+" if v >= 0 else "−"
         # Une valeur négative écrite à GAUCHE de sa barre percute le libellé de catégorie :
@@ -255,9 +255,9 @@ def barres_signees(valeurs, titre, sous_titre, alt, c, dec=2, zero="le meilleur 
         # de l'axe zéro, où la ligne est libre — la couleur et le signe portent déjà le sens.
         xt = (xv + 9) if v >= 0 else (x0 + 9)
         anc = "start"
-        s.append(f'<text x="{xt:.1f}" y="{y + h * 0.7:.0f}" font-size="12.5" font-weight="600" '
+        s.append(f'<text x="{xt:.1f}" y="{y + h * 0.7:.0f}" font-size="15.5" font-weight="600" '
                  f'text-anchor="{anc}" fill="{c["encre"]}">{signe}{_fr(abs(v), dec)}</text>')
-    s.append(f'<text x="{x0:.1f}" y="{bas + 18}" font-size="11.5" text-anchor="middle" '
+    s.append(f'<text x="{x0:.1f}" y="{bas + 18}" font-size="14" text-anchor="middle" '
              f'fill="{c["attenue"]}">0 — {zero}</text>')
     s.append("</svg>")
     return "\n".join(s)
@@ -292,12 +292,19 @@ FIGURES = {
     "v6_pile_no2": dict(
         fn=etapes,
         args=dict(
-            pile=[("base", 26.6), ("+ typologie de station", 35.6),
-                  ("+ GEOS-CF", 38.7), ("+ tendance récente", 38.9), ("+ spéciation", 40.2)],
+            # ⚠️ SEPT étages, pas cinq. La version du 20/08 en montrait cinq : « membres » et
+            # « feux » avaient été retirés parce qu'ils ne sont plus dans la pile publiée — mais
+            # leurs valeurs CUMULÉES étaient restées, si bien que GEOS-CF affichait un apport de
+            # +3,1 quand le sien vaut +2,33. Retirer une ligne d'un cumul sans recalculer les
+            # suivantes attribue à l'étage d'après ce que les précédents avaient gagné.
+            pile=[("base", 26.6), ("+ typologie de station", 35.6), ("+ membres", 36.1),
+                  ("+ feux", 36.4), ("+ GEOS-CF", 38.7), ("+ tendance récente", 38.9),
+                  ("+ spéciation", 40.2)],
             titre="NO₂ — ce que chaque étage ajoute",
-            sous_titre="Double aveugle, J+1 · l'ordre des étages est déclaré avant la mesure",
-            alt=("Sur le NO₂, la pile passe de 26,6 % pour la base à 40,2 % avec la spéciation, "
-                 "la typologie de station apportant le plus gros saut."))),
+            sous_titre="Double aveugle, J+1 · ordre déclaré avant la mesure · membres et feux ont depuis été retirés de la pile",
+            alt=("Sur le NO₂, la pile passe de 26,6 % pour la base à 40,2 % avec la spéciation ; "
+                 "la typologie de station apporte le plus gros saut, +9,0 points, GEOS-CF +2,3 "
+                 "et la spéciation +1,3."))),
     "v8_routage_dimension": dict(
         fn=barres_signees,
         args=dict(
