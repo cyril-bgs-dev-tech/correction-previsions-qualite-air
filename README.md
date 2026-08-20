@@ -24,7 +24,10 @@
 ---
 
 Post-traitement des prévisions **CAMS Europe** aux stations de mesure françaises. Le modèle
-apprend la **correction** `observation − CAMS` à l'échéance **J0** (échéances 1-24 h ; le J+1 réel est 25-48 h), puis l'**ajoute** à la prévision CAMS.
+apprend la **correction** `observation − CAMS`, puis l'**ajoute** à la prévision CAMS.
+**Tous les résultats de ce document sont à l'échéance J+1** — les heures 25-48 d'une sortie
+00 UTC, ce que le code nomme `horizon=2`. Les heures 1-24 (`horizon=1`) sont J0, et servent
+de comparaison là où c'est écrit.
 
 Corpus : **36 mois** (2023-08 → 2026-07), **28,0 M d'enregistrements horaires**, observations réglementaires
 LCSQA, cible journalière. Prévisions extraites à 476 points ; **438 stations effectivement
