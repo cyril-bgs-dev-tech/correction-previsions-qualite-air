@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 210" width="780" height="210" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+<title>De J0 à J+3, le gain sur le NO₂ reste stable de 37,1 % à 36,7 % (0,38 point), tandis que celui sur l'ozone tombe de 9,3 % à 7,0 % (2,25 points).</title>
+
+<text x="0" y="22" font-size="16" font-weight="600" fill="#e6edf3">Tenue du gain avec l'échéance — l'affirmation du dossier, réfutée sur l'ozone</text>
+<text x="0" y="43" font-size="12.5" fill="#9198a1">Réduction d'erreur, de J0 à J+3 · la dernière échéance que CAMS Europe produise</text>
+<polyline points="60,71 228,71 397,71 565,72" fill="none" stroke="#4493f8" stroke-width="2.6"/>
+<circle cx="60" cy="71" r="4" fill="#4493f8"/>
+<circle cx="228" cy="71" r="4" fill="#4493f8"/>
+<circle cx="397" cy="71" r="4" fill="#4493f8"/>
+<circle cx="565" cy="72" r="4" fill="#4493f8"/>
+<text x="577" y="76" font-size="13" font-weight="600" fill="#e6edf3">NO₂ · stable, 0,38 pt</text>
+<text x="50" y="75" font-size="12.5" text-anchor="end" fill="#9198a1">37,1&#8239;%</text>
+<polyline points="60,159 228,160 397,161 565,166" fill="none" stroke="#f85149" stroke-width="2.6"/>
+<circle cx="60" cy="159" r="4" fill="#f85149"/>
+<circle cx="228" cy="160" r="4" fill="#f85149"/>
+<circle cx="397" cy="161" r="4" fill="#f85149"/>
+<circle cx="565" cy="166" r="4" fill="#f85149"/>
+<text x="577" y="170" font-size="13" font-weight="600" fill="#e6edf3">O₃ · se dégrade, 2,25 pt</text>
+<text x="50" y="163" font-size="12.5" text-anchor="end" fill="#9198a1">9,3&#8239;%</text>
+<text x="60" y="192" font-size="12" text-anchor="middle" fill="#9198a1">J0</text>
+<text x="228" y="192" font-size="12" text-anchor="middle" fill="#9198a1">J+1</text>
+<text x="397" y="192" font-size="12" text-anchor="middle" fill="#9198a1">J+2</text>
+<text x="565" y="192" font-size="12" text-anchor="middle" fill="#9198a1">J+3</text>
+</svg>

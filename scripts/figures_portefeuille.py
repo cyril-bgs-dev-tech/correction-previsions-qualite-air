@@ -140,6 +140,63 @@ def jalons(points, seuil, titre, sous_titre, alt, c) -> str:
     return "\n".join(s)
 
 
+def avant_apres(paires, titre, sous_titre, alt, c) -> str:
+    """V4 — deux états d'une même grandeur, reliés. Le message est le SAUT, pas les niveaux."""
+    L, H = 720, 200
+    s = [_entete(L, H, alt)]
+    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    m = max(v for _, v in paires)
+    base_y, haut = 168, 96
+    for i, (nom, v) in enumerate(paires):
+        x = 150 + i * 300
+        h = max(4, haut * v / m)
+        rempli = c["barre"] if i else c["attenue"]
+        s.append(f'<rect x="{x - 52}" y="{base_y - h:.0f}" width="104" height="{h:.0f}" rx="3" fill="{rempli}"/>')
+        s.append(f'<text x="{x}" y="{base_y - h - 12:.0f}" font-size="19" font-weight="700" '
+                 f'text-anchor="middle" fill="{c["encre"]}">{v}</text>')
+        s.append(f'<text x="{x}" y="{base_y + 20}" font-size="12.5" text-anchor="middle" '
+                 f'fill="{c["attenue"]}">{nom}</text>')
+    # La flèche porte le facteur : c'est lui le message, pas les deux hauteurs.
+    f = paires[1][1] / max(paires[0][1], 1)
+    s.append(f'<path d="M 214 108 L 388 108" stroke="{c["encre"]}" stroke-width="2" '
+             f'marker-end="url(#p)"/>')
+    s.append(f'<defs><marker id="p" markerWidth="9" markerHeight="9" refX="8" refY="4.5" '
+             f'orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="{c["encre"]}"/></marker></defs>')
+    s.append(f'<text x="301" y="98" font-size="17" font-weight="700" text-anchor="middle" '
+             f'fill="{c["encre"]}">×{_fr(f)}</text>')
+    s.append("</svg>")
+    return "\n".join(s)
+
+
+def pente(series, titre, sous_titre, alt, c) -> str:
+    """V5 — deux séries sur un axe d'échéance. La PENTE est le message, pas le niveau."""
+    L, H, g, d, ht, hb = 780, 210, 60, 215, 66, 168
+    s = [_entete(L, H, alt)]
+    s.append(f'<text x="0" y="22" font-size="16" font-weight="600" fill="{c["encre"]}">{titre}</text>')
+    s.append(f'<text x="0" y="43" font-size="12.5" fill="{c["attenue"]}">{sous_titre}</text>')
+    n = len(next(iter(series.values()))[1])
+    xs = [g + (L - g - d) * i / (n - 1) for i in range(n)]
+    toutes = [v for _, vs in series.values() for v in vs]
+    lo, hi = min(toutes) * 0.92, max(toutes) * 1.04
+    y = lambda v: hb - (hb - ht) * (v - lo) / (hi - lo)
+    for i, (nom, (etiq, vs)) in enumerate(series.items()):
+        col = c["barre"] if i == 0 else c["alerte"]
+        pts = " ".join(f"{xs[k]:.0f},{y(v):.0f}" for k, v in enumerate(vs))
+        s.append(f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="2.6"/>')
+        for k, v in enumerate(vs):
+            s.append(f'<circle cx="{xs[k]:.0f}" cy="{y(v):.0f}" r="4" fill="{col}"/>')
+        s.append(f'<text x="{xs[-1] + 12:.0f}" y="{y(vs[-1]) + 4:.0f}" font-size="13" '
+                 f'font-weight="600" fill="{c["encre"]}">{nom} · {etiq}</text>')
+        s.append(f'<text x="{xs[0] - 10:.0f}" y="{y(vs[0]) + 4:.0f}" font-size="12.5" '
+                 f'text-anchor="end" fill="{c["attenue"]}">{_fr(vs[0])}&#8239;%</text>')
+    for k, lab in enumerate(("J0", "J+1", "J+2", "J+3")[:n]):
+        s.append(f'<text x="{xs[k]:.0f}" y="{hb + 24}" font-size="12" text-anchor="middle" '
+                 f'fill="{c["attenue"]}">{lab}</text>')
+    s.append("</svg>")
+    return "\n".join(s)
+
+
 FIGURES = {
     "v1_gain_polluants": dict(
         fn=barres,
@@ -149,6 +206,23 @@ FIGURES = {
             sous_titre="Échéance J+1 · station ET mois cachés · contre la prévision européenne brute",
             alt=("Réduction de l'erreur CAMS à J+1 sans observation locale : "
                  "NO₂ 39,6 %, PM10 20,2 %, ozone 17,9 % et PM2,5 11,8 %."))),
+    "v4_seuil_2030": dict(
+        fn=avant_apres,
+        args=dict(
+            paires=[("aujourd'hui", 6), ("en 2030", 109)],
+            titre="Stations en dépassement — à pollution inchangée",
+            sous_titre="Moyennes annuelles 2025 · 408 stations évaluées · seul le seuil réglementaire change",
+            alt=("Le nombre de stations en dépassement passe de 6 aujourd'hui à 109 en 2030, "
+                 "soit un facteur 18,2, sans qu'aucune émission n'ait changé."))),
+    "v5_echeances": dict(
+        fn=pente,
+        args=dict(
+            series={"NO₂": ("stable, 0,38 pt", [37.1, 37.1, 36.9, 36.7]),
+                    "O₃": ("se dégrade, 2,25 pt", [9.3, 9.1, 8.5, 7.0])},
+            titre="Tenue du gain avec l'échéance — l'affirmation du dossier, réfutée sur l'ozone",
+            sous_titre="Réduction d'erreur, de J0 à J+3 · la dernière échéance que CAMS Europe produise",
+            alt=("De J0 à J+3, le gain sur le NO₂ reste stable de 37,1 % à 36,7 % (0,38 point), "
+                 "tandis que celui sur l'ozone tombe de 9,3 % à 7,0 % (2,25 points)."))),
     "v3_fairmode_no2": dict(
         fn=jalons,
         args=dict(
