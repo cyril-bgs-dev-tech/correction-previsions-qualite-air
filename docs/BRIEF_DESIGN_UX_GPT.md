@@ -132,6 +132,7 @@ Une proposition sans fiche complète n'est pas actionnable. Sept champs, sans ex
 - ❌ **les illustrations décoratives** — bannières, icônes, photos d'ambiance, images générées ;
 - ❌ **les remarques sur le fond scientifique** — audité ailleurs, avec les données ;
 - ❌ **ce qui découle du blocage du compte** — badges dynamiques muets, liens `github.io` morts, site absent : connu, traité ;
+- ❌ **les écarts de chiffres entre pages sur les deux projets `anomaly_*`** — un audit du 20/08 les a déjà relevés et ils sont en cours d'arbitrage : « routage par domaine 72,5 » sur la page d'accueil désigne en réalité un autre système que le routeur (72,8 ou 73,0 selon la variante), et l'`index.html` de `anomaly_tsad` décrit une expérience étendue (1082 séries, AxonAD) absente des README. **Connu, traité.** En revanche, si la *façon* dont ces chiffres sont présentés te pose un problème de lisibilité ou de confiance (famille K), dis-le : c'est dans le périmètre ;
 - ❌ **les propositions qui ne font qu'ajouter** — ces pages doivent **maigrir**. Tout ajout nomme ce qu'il remplace.
 
 ---
