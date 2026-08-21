@@ -133,3 +133,9 @@ reunions/
 # Repère de campagne : datation LOCALE d'un lot régénérant, jamais partagée.
 # Le committer ferait croire à un clone que la campagne a déjà eu lieu.
 logs/.*_campagne
+
+# Stratégie de candidature — même famille que les lettres ci-dessus : ces pièces disent
+# comment la candidature se présente, et l'une d'elles nomme la suspension du compte GitHub.
+# Publiées le 21/08 par omission, retirées le jour même.
+docs/LINKEDIN_MATIERE.md
+docs/NOTE_CV_LIENS_VERIFIES.md
