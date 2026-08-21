@@ -231,6 +231,8 @@ trois colonnes côte à côte suffisent à recalculer RMSE, biais, corrélation,
 dépassement — **ou votre propre critère**, sans nous croire sur parole, et à regarder les cas
 où la correction échoue autant que ceux où elle réussit.
 
+⚠️ **Ces valeurs viennent du protocole *spatial* et du modèle de base** — station cachée, mois connu, sans les leviers de la pile complète. Le `resume.csv` y annonce donc **+19,2 %** sur le NO₂ là où l'épreuve principale du dossier donne +39,6 % : deux épreuves, deux chiffres, tous deux justes. Le README de la matrice détaille lequel répond à quoi.
+
 Format Parquet, un fichier par polluant, plus un extrait CSV lisible sans outil.
 **Pas besoin de cloner** : GitLab sert chaque fichier séparément. Le détail des colonnes et
 des réserves est dans le [README de la matrice](reports/matrice_predictions_2026/README.md).

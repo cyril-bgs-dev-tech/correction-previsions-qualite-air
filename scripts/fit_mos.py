@@ -22,6 +22,7 @@ RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 
 from aq.eval import comparaison as cmp  # noqa: E402
+from aq.rapport import libelle_echeance
 from aq.harmonize.timegrid import mois_couverts  # noqa: E402
 from aq.models import mos  # noqa: E402
 
@@ -188,7 +189,7 @@ def main(polluant: str, horizon: int, n_plis: int) -> int:
     # finie et interprétable vaut mieux qu'un infini que l'arbre traiterait à part.
     jeu[colonnes] = jeu[colonnes].replace([np.inf, -np.inf], 30_000.0)
 
-    print(f"{polluant} J+{horizon} · {len(jeu):,} paires · "
+    print(f"{polluant} {libelle_echeance(horizon)} · {len(jeu):,} paires · "
           f"{jeu['station_id'].nunique()} stations · {len(colonnes)} variables",
           flush=True)
 
