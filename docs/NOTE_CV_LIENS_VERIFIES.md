@@ -9,7 +9,7 @@ demandé **sans session et sans compte**, c'est-à-dire dans les conditions du r
 |---|---:|---|
 | `gitlab.com/cyril.bgs.dev` | **200** | ✅ **oui** — c'est là que vit le travail récent |
 | `kaggle.com/cyrilbourgeois` | **200** | ✅ oui |
-| `github.com/InProgress63` | **200** | 🟠 à toi, vivant, mais **dernier push mars 2024** |
+| `github.com/InProgress63` | **200** | 🟠 à toi et vivant, mais ce n'est **pas le compte à mettre en avant** |
 | `github.com/cyril-bgs-dev-tech` | **404** | ⛔ **non** — compte suspendu, recours en cours |
 | `github.com/cyril-bourgeois` | 200 | ⛔ **non** — aucun nom, un dépôt « MHE » : probablement pas toi |
 | `github.com/cyrbourgeois` | **404** | ⛔ non — n'existe pas |
@@ -27,12 +27,17 @@ cyril.bgs.dev@gmail.com · 06 89 44 81 36
 gitlab.com/cyril.bgs.dev · kaggle.com/cyrilbourgeois · linkedin.com/in/<à confirmer>
 ```
 
-**Pourquoi GitLab et pas GitHub.** Le compte qui porte le travail récent — correction des
-prévisions de qualité de l'air, aegis-rca, vigilance, recherche anomalies — est
-`cyril-bgs-dev-tech`, et il rend **404** aux visiteurs non connectés. `InProgress63` est bien
-à toi et répond, mais ses 4 dépôts publics datent de mars 2024 et ne montrent que les projets
-de formation : y renvoyer donnerait de ton niveau actuel une image nettement en dessous du
-vrai. **Ajouter GitHub le jour du rétablissement**, pas avant.
+**Pourquoi GitLab, et GitHub seulement après rétablissement.** Le compte qui porte le travail
+récent — qualité de l'air, aegis-rca, vigilance, recherche anomalies — est
+`cyril-bgs-dev-tech`, et il rend **404** aux visiteurs non connectés. `InProgress63` répond et
+t'appartient, mais ses 4 dépôts datent de mars 2024 et ne montrent que la formation : ce n'est
+pas l'identité que le CV doit porter, décision prise le 21/08.
+
+Donc **GitLab sur le CV aujourd'hui**, et GitHub ajouté le jour où
+`github.com/cyril-bgs-dev-tech` s'ouvre en navigation privée — pas sur la promesse du recours,
+sur la vérification. `scripts/miroir_github.sh` republiera dessus ce jour-là : il prend son
+compte du jeton, donc il vise le compte rétabli sans être modifié, et il **refuse d'annoncer
+un succès si l'anonyme n'obtient pas le contenu**.
 
 ## Les deux liens à trancher toi-même
 
