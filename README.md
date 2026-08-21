@@ -118,30 +118,42 @@ Le fichier archivé de PREV'AIR porte dans sa métadonnée `CHIMERE combined to 
 observations` — c'est **AS-CHI**, leur adaptation statistique, à **1,7 km**, avec assimilation et
 krigeage. Nous corrigeons un ensemble européen à **10 km**.
 
-Mêmes stations, mêmes jours, échéance **J+1**, du **2026-07-28** au **2026-08-15**.
+Mêmes stations, mêmes jours, échéance **J+1**, du **2026-07-28** au **2026-08-20** — **22 jours**.
 
-| polluant | grain | CAMS brut | **PREV'AIR** | **nous** | leur RMSE dépasse la nôtre de | n |
+**RMSE en µg/m³**, plus bas est meilleur :
+
+| polluant | grain | stations | CAMS brut | **PREV'AIR** | **nous** | leur RMSE dépasse la nôtre de |
 |---|---|---:|---:|---:|---:|---:|
-| **NO₂** | max horaire | 25.32 | **22.04** | **13.79** | **+59.8 %** | 5 287 |
-| **O₃** | max horaire | 26.39 | **25.07** | **22.05** | **+13.7 %** | 4 319 |
-| **PM10** | moyenne jour | 8.34 | **8.23** | **5.10** | **+61.4 %** | 4 888 |
-| **PM2,5** | moyenne jour | 3.22 | **4.65** | **2.78** | **+66.9 %** | 3 707 |
+| **NO₂** | max horaire | 318 | 23.70 | **20.88** | **12.91** | **+61.8 %** |
+| **O₃** | max horaire | 257 | 25.81 | **24.49** | **21.43** | **+14.3 %** |
+| **PM10** | moyenne jour | 295 | 8.36 | **8.36** | **5.46** | **+53.1 %** |
+| **PM2,5** | moyenne jour | 225 | 3.54 | **4.93** | **3.21** | **+53.9 %** |
 
-RMSE en µg/m³. **La colonne d'écart se lit dans un seul sens** — de combien *leur* RMSE
-dépasse la nôtre. Rapportée à la leur, la même réduction s'écrirait autrement : un chiffre
-de comparaison sans son sens de lecture est indéfendable.
+**La colonne d'écart se lit dans un seul sens** — de combien *leur* RMSE dépasse la nôtre.
+Rapportée à la leur, la même réduction s'écrirait autrement : un pourcentage de comparaison sans
+son dénominateur est indéfendable.
 
 **Le biais est le second écart, et il parle davantage** : sur le NO₂, PREV'AIR sous-estime de
-**-12.3 µg/m³** là où nous sommes à **-4.3**.
+**-11.1 µg/m³** là où nous sommes à **-3.1**.
+
+### La base appariée, pour que ce tableau soit vérifiable
+
+`reports/comparaison_prevair/` porte les valeurs **alignées** — une ligne par station et par jour,
+les quatre colonnes `observe`, `cams`, `prevair`, `corrige` côte à côte, avec la commune, la
+position et la typologie. Soit **23 554 lignes** sur les quatre polluants.
+
+> Une AASQA peut ainsi refaire le calcul **sur son propre périmètre** — ses départements, ses
+> typologies, ses seuils — au lieu de croire le nôtre. C'est la différence entre un score qu'on
+> lit et un score qu'on vérifie.
 
 > ⚠️ **Ce que ces chiffres ne disent pas.** PREV'AIR n'expose que **six jours glissants** :
-> cette archive s'est constituée jour après jour et ne peut pas remonter le temps.
-> **17 jours ne concluent pas.** C'est un ordre de grandeur, mesuré à armes égales sur
-> la période disponible, pas une supériorité établie. Et les deux systèmes connaissent leurs
-> stations : les nôtres par l'entraînement, les leurs par le krigeage.
+> l'archive s'est constituée jour après jour et ne peut pas remonter le temps.
+> **22 jours ne concluent pas** — c'est un ordre de grandeur, mesuré à armes égales sur la
+> période disponible. Et les deux systèmes connaissent leurs stations : les nôtres par
+> l'entraînement, les leurs par le krigeage.
 
-Régénérable : `python3 scripts/archiver_prevair.py` puis
-`python3 scripts/duel_prevair.py --polluant <P> --horizon 2` · artefacts `reports/duel_prevair_<P>.csv`.
+Régénérable : `python3 scripts/archiver_prevair.py` (quotidien, sinon le jour est perdu) puis
+`python3 scripts/duel_prevair.py --polluant <P> --horizon 2`.
 
 ---
 
@@ -234,7 +246,8 @@ où la correction échoue autant que ceux où elle réussit.
 ⚠️ **Ces valeurs viennent du protocole *spatial* et du modèle de base** — station cachée, mois connu, sans les leviers de la pile complète. Le `resume.csv` y annonce donc **+19,2 %** sur le NO₂ là où l'épreuve principale du dossier donne +39,6 % : deux épreuves, deux chiffres, tous deux justes. Le README de la matrice détaille lequel répond à quoi.
 
 Format Parquet, un fichier par polluant, plus un extrait CSV lisible sans outil.
-**Pas besoin de cloner** : GitLab sert chaque fichier séparément. Le détail des colonnes et
+**Pas besoin de cloner** : GitLab sert chaque fichier séparément. La comparaison à PREV'AIR
+est publiée de la même façon dans [`reports/comparaison_prevair/`](reports/comparaison_prevair/README.md) — **23 554 lignes appariées, quatre systèmes côte à côte. Le détail des colonnes et
 des réserves est dans le [README de la matrice](reports/matrice_predictions_2026/README.md).
 
 ---

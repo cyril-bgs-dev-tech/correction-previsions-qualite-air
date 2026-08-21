@@ -328,6 +328,27 @@ def main(polluant: str, horizon: int, produit: str = "prevision") -> int:
     suf = "" if produit == "prevision" else f"_{produit}"
     sortie = RACINE / f"reports/duel_prevair_{polluant}{suf}.csv"
     pd.DataFrame(lignes).to_csv(sortie, index=False)
+
+    # ── La base APPARIÉE, et c'est elle qui rend le tableau vérifiable ──────────
+    # L'agrégat en trois lignes dit qui gagne ; il ne permet de recalculer RIEN. Les
+    # valeurs alignées — mêmes stations, mêmes jours, les trois systèmes côte à côte —
+    # permettent à une AASQA de refaire le calcul sur SON périmètre : ses départements,
+    # ses typologies, ses seuils. C'est la différence entre un score qu'on croit et un
+    # score qu'on vérifie.
+    base = m.rename(columns={"valeur": "observe", "cams_jour": "cams",
+                             "nous": "corrige", "prevair": "prevair"}).copy()
+    base.insert(0, "polluant", polluant)
+    base.insert(1, "echeance", ech)
+    base.insert(2, "grain", grain)
+    st_meta = pd.read_parquet(RACINE / "data/processed/stations.parquet")
+    garde = [c for c in ("station_id", "nom", "commune", "lat_wgs84", "lon_wgs84",
+                         "typologie_zone", "type_station") if c in st_meta.columns]
+    base = base.merge(st_meta[garde].drop_duplicates("station_id"), on="station_id", how="left")
+    dest = RACINE / "reports/comparaison_prevair"
+    dest.mkdir(parents=True, exist_ok=True)
+    f_base = dest / f"{polluant}{suf}_apparie.csv"
+    base.sort_values(["station_id", "jour"]).to_csv(f_base, index=False)
+    print(f"Écrit : {f_base.relative_to(RACINE)} · {len(base):,} lignes appariées")
     print(f"\nÉcrit : {sortie.relative_to(RACINE)} · {time.time() - depart:.0f}s")
     return 0
 

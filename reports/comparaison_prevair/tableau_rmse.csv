@@ -1,0 +1,5 @@
+polluant,echeance,grain,jours,debut,fin,n_lignes,stations,rmse_cams_brut,rmse_prevair,rmse_nous,biais_cams_brut,biais_prevair,biais_nous,mae_prevair,mae_nous,corr_prevair,corr_nous,exces_rmse_prevair_sur_nous_pct
+NO₂,MAXJ1,max_horaire,22,2026-07-28,2026-08-20,6845,318,23.696,20.88,12.909,-15.882,-11.124,-3.142,14.435,8.128,0.524,0.788,61.76
+O₃,MAXJ1,max_horaire,22,2026-07-28,2026-08-20,5581,257,25.812,24.492,21.432,-19.645,-14.645,-15.913,19.737,17.75,0.695,0.847,14.27
+PM10,MOYJ1,moyenne_jour,22,2026-07-28,2026-08-20,6323,295,8.363,8.36,5.461,-5.765,-2.776,-0.452,6.006,3.462,0.32,0.684,53.09
+"PM2,5",MOYJ1,moyenne_jour,22,2026-07-28,2026-08-20,4805,225,3.544,4.935,3.208,-1.058,-2.371,-0.168,3.406,1.803,0.333,0.687,53.85
