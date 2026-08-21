@@ -1,28 +1,5 @@
 # Correction statistique des prévisions de qualité de l'air
 
-> **État au 18 août 2026.** Les mesures principales ont été **refaites** après qu'une revue
-> externe eut trouvé un défaut de support : quand une famille de prédicteurs manque sur un
-> mois entier, le modèle apprend « absente » = « nous sommes en ce mois-là », et le
-> protocole cache justement les mois. Trois familles étaient concernées. La pile publiée est
-> désormais **identique pour les quatre polluants**, sur un support vérifié sans mois troué.
->
-> **Le dossier a pour la première fois un intervalle** sur son épreuve principale — bootstrap
-> circulaire par blocs de mois sur les différences appariées pli à pli, parce que les plis ne
-> sont pas indépendants : les groupes de stations tournent et deux plis partagent 93 % de
-> leur apprentissage.
->
-> **Et une affirmation de ce dépôt a été réfutée par sa propre mesure.** Nous écrivions que
-> les leviers ne se dégradent pas avec l'échéance. Poussé jusqu'à **J+3**, c'est vrai sur le
-> NO₂ (0,38 point de plage) et **faux sur l'ozone** (−2,25 points). Le classement suit le
-> mécanisme invoqué : le polluant dont le résidu est attaché au **site** résiste, celui qui
-> ne l'est pas se dégrade.
->
-> ⚠️ **Une erreur d'étiquette corrigée, qui nous flattait** : l'échéance publiée était J+2
-> alors que la mesure est **J+1**. `horizon=2` couvre les heures 25-48 d'une sortie 00 UTC.
-> Vérifié dans les données — le premier jour couvert passe du 1ᵉʳ au 2 août selon l'horizon.
-
----
-
 Post-traitement des prévisions **CAMS Europe** aux stations de mesure françaises. Le modèle
 apprend la **correction** `observation − CAMS`, puis l'**ajoute** à la prévision CAMS.
 **Tous les résultats de ce document sont à l'échéance J+1** — les heures 25-48 d'une sortie
@@ -34,6 +11,17 @@ LCSQA, cible journalière. Prévisions extraites à 476 points ; **438 stations 
 évaluées**, de 236 (PM2,5) à 344 (NO₂) selon le polluant.
 
 ---
+
+
+## Aperçu de la démonstration
+
+![Vue de la démonstration Streamlit](reports/figures/captures/app0.png)
+
+L'interface s'appuie sur des artefacts de démonstration **générés localement et non
+versionnés** : les captures montrent le rendu, tandis que les chiffres de ce document se
+régénèrent par les scripts nommés plus bas. `streamlit run app.py` suppose donc d'avoir
+d'abord reconstruit `data/demo/` — la commande seule ne suffit pas, et le dire évite une
+promesse que le clone ne tient pas.
 
 ## Le résultat, et sa réserve
 
@@ -82,6 +70,31 @@ réentraînement et sans maintenance. Le modèle appris ajoute **2,7 à 5,7 poin
 
 Et ce n'est pas de la persistance : répéter l'observation de l'avant-veille est **pire que
 CAMS** sur l'ozone (−42,5 %) et les PM10 (−22,5 %).
+
+### Rectifications qui ont changé le verdict
+
+> **État au 18 août 2026.** Les mesures principales ont été **refaites** après qu'une revue
+> externe eut trouvé un défaut de support : quand une famille de prédicteurs manque sur un
+> mois entier, le modèle apprend « absente » = « nous sommes en ce mois-là », et le
+> protocole cache justement les mois. Trois familles étaient concernées. La pile publiée est
+> désormais **identique pour les quatre polluants**, sur un support vérifié sans mois troué.
+>
+> **Le dossier a pour la première fois un intervalle** sur son épreuve principale — bootstrap
+> circulaire par blocs de mois sur les différences appariées pli à pli, parce que les plis ne
+> sont pas indépendants : les groupes de stations tournent et deux plis partagent 93 % de
+> leur apprentissage.
+>
+> **Et une affirmation de ce dépôt a été réfutée par sa propre mesure.** Nous écrivions que
+> les leviers ne se dégradent pas avec l'échéance. Poussé jusqu'à **J+3**, c'est vrai sur le
+> NO₂ (0,38 point de plage) et **faux sur l'ozone** (−2,25 points). Le classement suit le
+> mécanisme invoqué : le polluant dont le résidu est attaché au **site** résiste, celui qui
+> ne l'est pas se dégrade.
+>
+> ⚠️ **Une erreur d'étiquette corrigée, qui nous flattait** : l'échéance publiée était J+2
+> alors que la mesure est **J+1**. `horizon=2` couvre les heures 25-48 d'une sortie 00 UTC.
+> Vérifié dans les données — le premier jour couvert passe du 1ᵉʳ au 2 août selon l'horizon.
+
+---
 
 ### Ce que ce dépôt ne démontre pas
 
@@ -282,6 +295,9 @@ d'entrée/sortie ou de lancer un traitement long.
 </details>
 
 ## Sources et attribution
+
+Le **code** de ce dépôt est publié sous licence **MIT** (`LICENSE`). Les **données** restent
+soumises aux conditions de leurs producteurs respectifs et ne sont pas redistribuées ici.
 
 - **CAMS Europe** — Copernicus Atmosphere Monitoring Service, ECMWF
 - **ERA5** — Copernicus Climate Change Service *(réanalyse : plafond, non déployable)*
