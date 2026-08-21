@@ -14,8 +14,8 @@
     var t = document.getElementById(id); if (!t) return;
     t.innerHTML = '<thead><tr>' + entetes + '</tr></thead><tbody>' + corps + '</tbody>';
   }
-  function num(v, n){ return v.toFixed(n === undefined ? 2 : n).replace('.', ','); }
-  function signe(v, n){ return (v > 0 ? '+' : '') + v.toFixed(n === undefined ? 2 : n).replace('.', ',') + ' %'; }
+  function num(v, n){ return v.toFixed(n === undefined ? 2 : n); }
+  function signe(v, n){ return (v > 0 ? '+' : '') + v.toFixed(n === undefined ? 2 : n) + ' %'; }
 
   // ── ① leur produit ──────────────────────────────────────────────────────────
   tableau("p7-tab",
@@ -28,7 +28,7 @@
         + '<td>' + num(l.cams) + '</td>'
         + '<td class="nous">' + num(l.nous) + '</td>'
         + '<td>' + num(l.prevair) + '</td>'
-        + '<td class="ecart">+' + l.ecart.toFixed(1).replace('.', ',') + ' %</td></tr>';
+        + '<td class="ecart">+' + l.ecart.toFixed(1) + ' %</td></tr>';
     }).join(""));
 
   // ── ② leur méthode ──────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@
     '<b>Le point de départ pèse autant que la méthode.</b> CHIMERE brut est plus mauvais '
     + 'que la <strong>médiane de l\u2019ensemble dont il est membre</strong> sur '
     + '<strong>' + me.n_depart_perdant + ' polluants sur ' + me.n_total + '</strong> — '
-    + 'jusqu\u2019à <strong>' + Math.abs(me.pire_depart).toFixed(0).replace('.', ',') + ' %</strong>. '
+    + 'jusqu\u2019à <strong>' + Math.abs(me.pire_depart).toFixed(0) + ' %</strong>. '
     + 'Moyenner sept modèles vaut mieux que le meilleur d\u2019entre eux, et aucune '
     + 'comparaison de méthodes ne le montre si les deux partent du même endroit.';
 
@@ -79,13 +79,13 @@
   var c3 = document.getElementById("p7-cle3");
   if (c3) {
     var t = '<b>Le figeage ne décide de rien.</b> Réglé par polluant sur son propre '
-      + 'départ, leur krigeage gagne <strong>au plus ' + rg.leur_max.toFixed(2).replace('.', ',')
+      + 'départ, leur krigeage gagne <strong>au plus ' + rg.leur_max.toFixed(2)
       + ' %</strong>, et il <strong>perd</strong> sur ' + rg.leur_negatifs + ' polluants '
       + 'sur ' + rg.lignes.length + ' — régler une interpolation sur le passé ne dit pas '
       + 'qu\u2019elle sera meilleure ensuite.';
     if (rg.mesures > 0) {
       t += ' Notre méthode gagne <strong>'
-        + rg.notre_min.toFixed(2).replace('.', ',') + ' à ' + rg.notre_max.toFixed(2).replace('.', ',') + ' %</strong> sur '
+        + rg.notre_min.toFixed(2) + ' à ' + rg.notre_max.toFixed(2) + ' %</strong> sur '
         + 'l\u2019axe <strong>spatial</strong>'
         + (rg.mesures < rg.attendus
             ? ' (mesuré sur ' + rg.mesures + ' polluants sur ' + rg.attendus + ')' : '')
@@ -96,7 +96,7 @@
         t += ' <strong>Mais les deux colonnes ne se comparent pas terme à terme :</strong> '
           + 'la leur est un hors-échantillon <strong>temporel</strong>, la nôtre '
           + '<strong>spatial</strong>. Rejoué sur <em>leur</em> axe, notre réglage vaut '
-          + '<strong>' + rg.tempo_min.toFixed(2).replace('.', ',') + ' à ' + rg.tempo_max.toFixed(2).replace('.', ',')
+          + '<strong>' + rg.tempo_min.toFixed(2) + ' à ' + rg.tempo_max.toFixed(2)
           + ' %</strong> — <strong>du même ordre que le leur</strong>. Le gain du réglage '
           + 'est un phénomène de l\u2019axe spatial ; ce qui se compare à armes égales est '
           + 'la colonne de droite.';

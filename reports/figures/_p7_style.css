@@ -2,7 +2,7 @@
 .p7-src{font-size:.92rem;line-height:1.6;margin:0 0 1.1rem}
 .p7-h2{font-size:1.02rem;letter-spacing:.01em;margin:1.6rem 0 .7rem;
   display:flex;align-items:baseline;gap:.5rem}
-.p7-h2 span{font-family:var(--mono);font-size:.86rem;opacity:.6}
+.p7-h2 span{font-family:var(--mono,monospace);font-size:.86rem;opacity:.6}
 .p7-tab{width:100%;border-collapse:collapse;font-size:.94rem}
 .p7-tab th{text-align:right;font-size:.74rem;text-transform:uppercase;
   letter-spacing:.07em;padding:0 .55rem .5rem;border-bottom:1px solid var(--trait)}
@@ -13,10 +13,10 @@
 .p7-tab tr:last-child td{border-bottom:0}
 .p7-tab .nous{font-weight:700}
 .p7-tab .ecart{font-weight:700}
-.p7-tab .perd{color:var(--refute)}
+.p7-tab .perd{color:#b4342b}
 .p7-tab .sep{border-left:1px solid var(--trait)}
 .p7-fen{font-size:.8rem;opacity:.72;font-variant-numeric:tabular-nums}
 .p7-reserves{display:flex;flex-direction:column;gap:.7rem;margin:1.2rem 0}
 .p7-cle{font-size:.94rem;line-height:1.62;margin:.9rem 0 0;padding:.7rem .9rem;
-  border-left:3px solid var(--accent);background:var(--accent-pale)}
+  border-left:3px solid var(--accent,#2f6f8f);background:var(--accent-pale,#eef4f8)}
 .p7-attente{font-size:.84rem;opacity:.72;font-style:italic}

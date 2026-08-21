@@ -357,16 +357,16 @@ STYLE = """/* ── Page 07 · duel PREV'AIR ───────────�
 .p7-h2 span{font-family:var(--mono,monospace);font-size:.86rem;opacity:.6}
 .p7-tab{width:100%;border-collapse:collapse;font-size:.94rem}
 .p7-tab th{text-align:right;font-size:.74rem;text-transform:uppercase;
-  letter-spacing:.07em;padding:0 .55rem .5rem;border-bottom:1px solid var(--bord,#d3dbe1)}
+  letter-spacing:.07em;padding:0 .55rem .5rem;border-bottom:1px solid var(--trait)}
 .p7-tab th:first-child{text-align:left}
-.p7-tab td{padding:.55rem;border-bottom:1px solid var(--bord,#d3dbe1);
+.p7-tab td{padding:.55rem;border-bottom:1px solid var(--trait);
   text-align:right;font-variant-numeric:tabular-nums}
 .p7-tab td:first-child{text-align:left;font-weight:600}
 .p7-tab tr:last-child td{border-bottom:0}
 .p7-tab .nous{font-weight:700}
 .p7-tab .ecart{font-weight:700}
 .p7-tab .perd{color:#b4342b}
-.p7-tab .sep{border-left:1px solid var(--bord,#d3dbe1)}
+.p7-tab .sep{border-left:1px solid var(--trait)}
 .p7-fen{font-size:.8rem;opacity:.72;font-variant-numeric:tabular-nums}
 .p7-reserves{display:flex;flex-direction:column;gap:.7rem;margin:1.2rem 0}
 .p7-cle{font-size:.94rem;line-height:1.62;margin:.9rem 0 0;padding:.7rem .9rem;
