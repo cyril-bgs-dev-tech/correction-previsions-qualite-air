@@ -13,7 +13,7 @@ demandé **sans session et sans compte**, c'est-à-dire dans les conditions du r
 | `github.com/cyril-bgs-dev-tech` | **404** | ⛔ **non** — compte suspendu, recours en cours |
 | `github.com/cyril-bourgeois` | 200 | ⛔ **non** — aucun nom, un dépôt « MHE » : probablement pas toi |
 | `github.com/cyrbourgeois` | **404** | ⛔ non — n'existe pas |
-| `linkedin.com/in/…` | **999** | ⚠️ **à vérifier au navigateur** — voir plus bas |
+| `linkedin.com/in/cyril-bourgeois-65a739150` | 999 | ✅ **oui** — donné par Cyril le 21/08 ; 999 = mur anti-robot, pas un lien mort |
 
 > ⛔ **Le piège à ne pas commettre : un 404 sur un CV.** Une lettre vit le temps d'une
 > candidature ; un CV circule pendant des mois, chez des gens qu'on ne connaît pas. Un lien
@@ -24,7 +24,8 @@ demandé **sans session et sans compte**, c'est-à-dire dans les conditions du r
 ```
 cyril.bgs.dev@gmail.com · 06 89 44 81 36
 42 bd côte blatin, 63000 Clermont-Ferrand
-gitlab.com/cyril.bgs.dev · kaggle.com/cyrilbourgeois · linkedin.com/in/<à confirmer>
+gitlab.com/cyril.bgs.dev · kaggle.com/cyrilbourgeois
+linkedin.com/in/cyril-bourgeois-65a739150
 ```
 
 **Pourquoi GitLab, et GitHub seulement après rétablissement.** Le compte qui porte le travail
@@ -39,14 +40,19 @@ sur la vérification. `scripts/miroir_github.sh` republiera dessus ce jour-là :
 compte du jeton, donc il vise le compte rétabli sans être modifié, et il **refuse d'annoncer
 un succès si l'anonyme n'obtient pas le contenu**.
 
-## Les deux liens à trancher toi-même
+## Résolu le 21/08 — et les DEUX pseudos étaient faux
 
-1. **LinkedIn.** `in/cyrbourgeois` (dans la lettre) contre `in/cyril-bourgeois` (40 fois dans
-   le portefeuille). LinkedIn rend **999 aux deux**, page identique de 1 530 octets, quel que
-   soit l'agent — testé 3 fois chacun. **Aucune mesure ne peut trancher d'ici** : ouvrir les
-   deux dans un navigateur.
-2. **Faut-il citer GitHub malgré tout ?** Certains recruteurs filtrent sur le mot. Si oui,
-   `InProgress63` — jamais `cyril-bgs-dev-tech` tant qu'il rend 404.
+Le vrai profil est `linkedin.com/in/**cyril-bourgeois-65a739150**`. Ni `in/cyrbourgeois`
+(les lettres) ni `in/cyril-bourgeois` (le portefeuille) n'existaient : le suffixe numérique
+manquait aux deux. **42 liens morts corrigés**, dont la signature des deux lettres.
+
+> Le contrôle automatique ne pouvait pas trouver ça : LinkedIn rend **999 à toute URL**,
+> valide ou non, page identique de 1 530 octets. Un vérificateur qui aurait tranché depuis ce
+> code aurait validé les 42 liens faux avec la même assurance. C'est pourquoi le contrôle ⑤
+> les classe « non concluants » et écrit VALIDITÉ NON MESURÉE au lieu de conclure.
+
+**Reste GitHub** : ne pas écrire `github.com/cyril-bgs-dev-tech` tant qu'il ne s'ouvre pas en
+navigation privée.
 
 ## Comment revérifier, en une commande
 

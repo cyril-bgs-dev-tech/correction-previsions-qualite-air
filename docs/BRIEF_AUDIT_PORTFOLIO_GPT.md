@@ -148,7 +148,7 @@ Ce qui suit est le contenu exact des fichiers, tel qu'il est publié. Les `index
 [![Portfolio](https://img.shields.io/badge/Portfolio-en%20ligne-2563eb?style=for-the-badge&logo=quarto)](https://cyril-bgs-dev-tech.github.io/Portfolio/)
 ![License](https://img.shields.io/badge/License-MIT-10B981?style=for-the-badge)
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/cyril-bourgeois/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/cyril-bourgeois-65a739150/)
 [![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail)](mailto:cyril.bgs.dev.tech@gmail.com)
 [![Kaggle](https://img.shields.io/badge/Kaggle-Top%201%25-20BEFF?style=for-the-badge&logo=kaggle)](https://www.kaggle.com/cyrilbourgeois)
 
@@ -467,7 +467,7 @@ Data Scientist passionné avec **double compétence modélisation + production**
 <div align="center">
 
 **📧 Email** : [cyril.bgs.dev.tech@gmail.com](mailto:cyril.bgs.dev.tech@gmail.com)  
-**💼 LinkedIn** : [linkedin.com/in/cyril-bourgeois](https://www.linkedin.com/in/cyril-bourgeois/)  
+**💼 LinkedIn** : [linkedin.com/in/cyril-bourgeois-65a739150](https://www.linkedin.com/in/cyril-bourgeois-65a739150/)  
 **🏆 Kaggle** : [kaggle.com/cyrilbourgeois](https://www.kaggle.com/cyrilbourgeois)  
 **🐙 GitHub** : [github.com/cyril-bgs-dev-tech](https://github.com/cyril-bgs-dev-tech)
 
@@ -706,7 +706,7 @@ Ce parcours m'a apporté :
 
 **Email** : [cyril.bgs.dev.tech@gmail.com](mailto:cyril.bgs.dev.tech@gmail.com)  
 **GitHub** : [github.com/cyril-bgs-dev-tech](https://github.com/cyril-bgs-dev-tech)  
-**LinkedIn** : [linkedin.com/in/cyril-bourgeois](https://www.linkedin.com/in/cyril-bourgeois/)
+**LinkedIn** : [linkedin.com/in/cyril-bourgeois-65a739150](https://www.linkedin.com/in/cyril-bourgeois-65a739150/)
 
 ---
 
@@ -1051,7 +1051,7 @@ about:
       href: https://github.com/cyril-bgs-dev-tech
     - icon: linkedin
       text: LinkedIn
-      href: https://www.linkedin.com/in/cyril-bourgeois/
+      href: https://www.linkedin.com/in/cyril-bourgeois-65a739150/
     - icon: envelope
       text: Email
       href: mailto:cyril.bgs.dev.tech@gmail.com
@@ -1221,7 +1221,7 @@ Claude Code · Codex · OpenCode
 
 **Email** : [cyril.bgs.dev.tech@gmail.com](mailto:cyril.bgs.dev.tech@gmail.com)  
 **GitHub** : [github.com/cyril-bgs-dev-tech](https://github.com/cyril-bgs-dev-tech)  
-**LinkedIn** : [linkedin.com/in/cyril-bourgeois](https://www.linkedin.com/in/cyril-bourgeois/)
+**LinkedIn** : [linkedin.com/in/cyril-bourgeois-65a739150](https://www.linkedin.com/in/cyril-bourgeois-65a739150/)
 
 ---
 
