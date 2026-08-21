@@ -48,7 +48,7 @@ une station nouvelle, une date future.
 | PM10 | référence | **+18,63 %** | +23,63 % |
 | O₃ | référence | **+16,09 %** | +20,52 % |
 
-*Régénérable : `python3 scripts/isoler_persistance.py --polluant <P> --horizon 2`. Les six valeurs sont recalculées par `scripts/verifier_dossier_candidature.py`.*
+*Régénérable : `python3 scripts/isoler_persistance.py --polluant <P> --horizon 2`.*
 
 ### La pile complète, en double aveugle
 
@@ -165,7 +165,7 @@ directive confie à la modélisation.
 
 *Régénérable : `python3 scripts/seuils_2030.py`, `python3 scripts/banc_lcsqa.py`,
 `python3 scripts/page_horizon_2030.py`. Chiffres gelés en § 5, 5 bis et 5 ter de
-`reports/VERITE_DOSSIER.md`, recalculés par `scripts/verifier_dossier_candidature.py`.*
+`reports/VERITE_DOSSIER.md`, régénéré par `scripts/verite_dossier.py`.*
 
 ---
 

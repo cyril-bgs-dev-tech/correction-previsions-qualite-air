@@ -22,7 +22,7 @@ une valeur juste, attachée au mauvais objet ou recopiée depuis un état périm
 | le libellé d'échéance est **écrit**, pas dérivé | 10 occurrences à la main dans le seul README |
 | **aucun contrôle** ne croise le portefeuille avec la source | 28 contrôles côté dossier, **0** côté portefeuille |
 
-Le dépôt qualité de l'air a `verifier_dossier_candidature.py` et n'a pas connu ce genre de
+Le dépôt qualité de l'air a `verite_dossier.py` et n'a pas connu ce genre de
 dérive depuis. Le portefeuille n'avait rien. Ce script comble exactement cet écart.
 
 Ce qu'il vérifie, et ce qu'il ne peut pas vérifier
