@@ -291,3 +291,59 @@ d'entrée/sortie ou de lancer un traitement long.
 
 Les données ne sont pas versionnées dans ce dépôt. Les scripts d'ingestion les
 reconstituent depuis leurs sources.
+
+---
+
+## Comment ce projet a été conduit
+
+Ce projet a été mené en **orchestration de modèles**, et le dire fait partie du travail.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🎯 Orchestration et conduite
+
+**Claude Code** — *Fable · Opus 5.0 max*
+
+Conception, implémentation, exécution des lots,
+tenue du registre d'erreurs et des garde-fous.
+Un seul fil de décision, du protocole au chiffre
+publié.
+
+</td>
+<td width="50%" valign="top">
+
+### 🔍 Conseils externes
+
+**GPT 5.6 Sol** — *raisonnement très élevé*
+**Kimi K3 max**
+**Grok 4.5**
+
+Revue adverse, falsification, sourcing.
+Consultés sur brief écrit, jamais en pilotage.
+
+</td>
+</tr>
+</table>
+
+### Ce que la revue externe a réellement trouvé
+
+Elle n'est pas décorative. En une nuit, sur cinq pièces du dossier :
+
+| trouvaille | conséquence |
+|---|---|
+| le PDF exporté **ne contenait pas** le chiffre que le document désignait comme le seul citable | tableau de 805 px dans une colonne de 615 — 6 défauts de rendu corrigés |
+| une colonne nommée `rmse_realmlp` **contenant du LightGBM** | « RealMLP bat de **9 %** » redevenait **2,65 %** |
+| une variable absente avant 2024-12, **servie sans lever** | contrôle de schéma ajouté à l'ingestion |
+| une comparaison entre une base à **J0** et une mesure à **J+1** | ablation refaite |
+
+> **Et la limite, mesurée elle aussi.** Un relecteur a recommandé une clé d'API qui **n'existe
+> pas** au catalogue du fournisseur. Lancée telle quelle, elle aurait produit exactement le
+> défaut qu'il venait de signaler — le service sert le reste sans erreur. **Chaque
+> recommandation externe est vérifiée avant d'être suivie**, y compris quand elle est bonne
+> par ailleurs.
+
+C'est le principe qui gouverne toute la collaboration, et il est le même que pour les données :
+*une source plausible n'est pas une source vérifiée.*
+

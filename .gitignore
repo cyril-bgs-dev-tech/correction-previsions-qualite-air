@@ -139,3 +139,27 @@ logs/.*_campagne
 # Publiées le 21/08 par omission, retirées le jour même.
 docs/LINKEDIN_MATIERE.md
 docs/NOTE_CV_LIENS_VERIFIES.md
+
+# ── Matière de travail : prompts, réponses des conseils externes, plans internes ──
+# 112 fichiers retirés de la vue publique le 21/08/2026. La collaboration avec les modèles
+# externes n'est pas cachée pour autant : elle est CRÉDITÉE dans le README, avec ce qu'elle a
+# produit. Ce qui disparaît, c'est le journal de bord — pas la méthode.
+docs/PROMPT_*.md
+docs/PROMPTS_*.md
+docs/BRIEF_*.md
+docs/MISSION_*.md
+docs/QUESTIONS_*.md
+docs/REPONSE_*.md
+docs/REPONSES_*.md
+docs/GPT_*.md
+docs/GROK_*.md
+docs/GROK4-5_*.md
+docs/*KIMI*.md
+docs/CRITIQUE_ADVERSE.md
+docs/TRENTE_ACTIONS.md
+docs/TROIS_MATINS.md
+docs/R17_ACTIONS.md
+docs/RESULTATS_NUIT_30_07.md
+docs/PLAN_10_ACTIONS_EXTREMES.md
+docs/TACHES_GROK_CREATIVITE.md
+docs/REVUE_2_DESIGN.md
