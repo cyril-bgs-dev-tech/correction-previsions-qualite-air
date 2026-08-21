@@ -102,17 +102,46 @@ CAMS** sur l'ozone (−42,5 %) et les PM10 (−22,5 %).
   50 µg/m³, intervalle de confiance contenant zéro. L'avantage est significatif quand le
   mois est connu (×1,82), pas quand il est caché.
 - **La supériorité sur la chaîne opérationnelle n'est mesurée que sur dix-sept jours.**
-  Cette réserve disait auparavant « aucune supériorité démontrée » : c'est devenu faux. Le
-  produit archivé de PREV'AIR porte dans sa métadonnée `CHIMERE combined to surface real
-  time observations` — c'est **AS-CHI**, leur adaptation statistique. Mesuré à J+1 sur les
-  mêmes stations et les mêmes jours, l'écart est de **+13,7 %** (O₃) à **+66,9 %** (PM2,5)
-  à notre avantage. Mais **dix-sept jours ne concluent rien** : PREV'AIR n'expose que six
-  jours glissants, l'archive s'est constituée jour après jour et ne peut pas remonter le
-  temps.
+  Le résultat est réel et favorable — voir « Contre la chaîne en service » ci-dessus — mais
+  PREV'AIR n'expose que six jours glissants : l'archive ne peut pas remonter le temps.
 - Au seuil réglementaire ozone de 180 µg/m³, **3 dépassements détectés sur 32**.
 
 Ces limites sont documentées au même titre que les résultats favorables — voir
 `reports/`.
+
+---
+
+## Contre la chaîne en service — PREV'AIR
+
+La référence honnête n'est pas CAMS brut : c'est le produit **réellement diffusé** en France.
+Le fichier archivé de PREV'AIR porte dans sa métadonnée `CHIMERE combined to surface real time
+observations` — c'est **AS-CHI**, leur adaptation statistique, à **1,7 km**, avec assimilation et
+krigeage. Nous corrigeons un ensemble européen à **10 km**.
+
+Mêmes stations, mêmes jours, échéance **J+1**, du **2026-07-28** au **2026-08-15**.
+
+| polluant | grain | CAMS brut | **PREV'AIR** | **nous** | leur RMSE dépasse la nôtre de | n |
+|---|---|---:|---:|---:|---:|---:|
+| **NO₂** | max horaire | 25.32 | **22.04** | **13.79** | **+59.8 %** | 5 287 |
+| **O₃** | max horaire | 26.39 | **25.07** | **22.05** | **+13.7 %** | 4 319 |
+| **PM10** | moyenne jour | 8.34 | **8.23** | **5.10** | **+61.4 %** | 4 888 |
+| **PM2,5** | moyenne jour | 3.22 | **4.65** | **2.78** | **+66.9 %** | 3 707 |
+
+RMSE en µg/m³. **La colonne d'écart se lit dans un seul sens** — de combien *leur* RMSE
+dépasse la nôtre. Rapportée à la leur, la même réduction s'écrirait autrement : un chiffre
+de comparaison sans son sens de lecture est indéfendable.
+
+**Le biais est le second écart, et il parle davantage** : sur le NO₂, PREV'AIR sous-estime de
+**-12.3 µg/m³** là où nous sommes à **-4.3**.
+
+> ⚠️ **Ce que ces chiffres ne disent pas.** PREV'AIR n'expose que **six jours glissants** :
+> cette archive s'est constituée jour après jour et ne peut pas remonter le temps.
+> **17 jours ne concluent pas.** C'est un ordre de grandeur, mesuré à armes égales sur
+> la période disponible, pas une supériorité établie. Et les deux systèmes connaissent leurs
+> stations : les nôtres par l'entraînement, les leurs par le krigeage.
+
+Régénérable : `python3 scripts/archiver_prevair.py` puis
+`python3 scripts/duel_prevair.py --polluant <P> --horizon 2` · artefacts `reports/duel_prevair_<P>.csv`.
 
 ---
 
@@ -184,6 +213,29 @@ directive confie à la modélisation.
 
 <details>
 <summary><strong>Installer, vérifier, reproduire</strong> — et le protocole d'évaluation en détail</summary>
+
+## Les valeurs prédites, pas seulement les scores
+
+Un pourcentage dit *combien* le système gagne ; il ne dit pas *ce qu'il prédit*. La matrice
+`reports/matrice_predictions_2026/` porte les valeurs elles-mêmes — **station par station,
+heure par heure, sur 2026** :
+
+| | |
+|---|---|
+| `observe` | la mesure de référence |
+| `cams` | la prévision européenne brute, telle que reçue |
+| **`corrige`** | **notre sortie**, celle qu'on propose d'utiliser |
+
+Avec le nom de la commune, la position, la typologie et l'échéance de chaque point. Les
+trois colonnes côte à côte suffisent à recalculer RMSE, biais, corrélation, taux de
+dépassement — **ou votre propre critère**, sans nous croire sur parole, et à regarder les cas
+où la correction échoue autant que ceux où elle réussit.
+
+Format Parquet, un fichier par polluant, plus un extrait CSV lisible sans outil.
+**Pas besoin de cloner** : GitLab sert chaque fichier séparément. Le détail des colonnes et
+des réserves est dans le [README de la matrice](reports/matrice_predictions_2026/README.md).
+
+---
 
 ## Installation
 

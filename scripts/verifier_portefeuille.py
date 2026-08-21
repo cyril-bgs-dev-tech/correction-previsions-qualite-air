@@ -285,6 +285,53 @@ def main() -> int:
             print(f"  ✗ HTTP {c or 'injoignable'} · {u}")
             ecarts += 1
 
+    print("\n── ⑥ Un CHEMIN cité en `code` existe-t-il, et est-il PUBLIÉ ? ──")
+    # Le 21/08, le README public citait `scripts/verifier_dossier_candidature.py` trois fois.
+    # Le fichier existe sur le disque mais il est gitignoré — à raison : il NOMME les pièces de
+    # candidature dans son code. Un lecteur suivait la référence et obtenait un 404.
+    #
+    # Le contrôle ⑤ ne pouvait pas le voir : il teste les LIENS, or ce chemin est écrit entre
+    # accents graves. **Un chemin cité dans une phrase est une promesse au même titre qu'un
+    # lien** — la seule différence est que rien ne la vérifiait. Deux façons de mentir :
+    # le fichier n'existe pas, ou il existe et n'est pas servi.
+    import subprocess
+    # Le défaut visé vivait dans le README du dépôt PHARE, pas dans le portefeuille : borner
+    # le balayage à `pages` rendait « 0 chemin cité », c'est-à-dire un zéro de non-lecture
+    # indiscernable d'un zéro de non-occurrence (`CLAUDE.md` § 4 bis).
+    balayees = dict(pages)
+    for f in sorted(RACINE.glob("*.md")) + sorted((RACINE / "reports").rglob("*.md")):
+        if f.name in ("CLAUDE.md",):        # registre interne, cite des chemins d'exemple
+            continue
+        balayees[f] = f.read_text(encoding="utf-8")
+    suivis = set(subprocess.run(["git", "-c", "core.quotePath=false", "ls-files"],
+                                cwd=RACINE, capture_output=True, text=True).stdout.split("\n"))
+    MOTIF = re.compile(r"`((?:scripts|src|reports|data|docs)/[\w./-]+\.\w{1,6})`")
+    absents, caches, vus = [], [], 0
+    for f, texte in balayees.items():
+        for m in MOTIF.finditer(texte):
+            chemin = m.group(1)
+            vus += 1
+            if not (RACINE / chemin).exists():
+                absents.append((f.name, chemin))
+            elif chemin not in suivis:
+                caches.append((f.name, chemin))
+    print(f"  {len(balayees)} page(s) · {vus} chemin(s) cité(s) · {len(absents)} inexistant(s) · {len(caches)} non publié(s)")
+    if vus == 0:
+        print("  ⚠️  AUCUN chemin trouvé — le motif ou le périmètre est en cause, pas le dépôt")
+        ecarts += 1
+    # Toutes les pages ne portent pas le même risque. Un README que lit un recruteur qui cite
+    # un fichier absent est un défaut ; une note de travail interne qui référence une pièce
+    # volontairement privée est une trace de méthode. On échoue sur la première, on signale
+    # la seconde — un contrôle qui crie pareil dans les deux cas cesse d'être lu.
+    LUES = {"README.md", "index.qmd", "about.qmd", "VERITE_DOSSIER.md"}
+    for quoi, liste in (("le fichier N'EXISTE PAS", absents),
+                        ("existe mais N'EST PAS publié → 404 pour le lecteur", caches)):
+        for nom, c in liste:
+            lue = nom in LUES
+            print(f"  {'✗' if lue else '·'} {nom} cite `{c}` — {quoi}")
+            if lue:
+                ecarts += 1
+
     print("\n" + "─" * 76)
     if ecarts:
         print(f"❌ {ecarts} écart(s) — le portefeuille et la source ne disent pas la même chose.")

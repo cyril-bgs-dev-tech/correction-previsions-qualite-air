@@ -488,7 +488,7 @@ Les blocs précédents mesurent des erreurs. Celui-ci compte ce qu'un service au
 
 ⚠️ **La comparaison lui est favorable sur un point** : nos prédictions sont hors échantillon, chaque station prédite par un modèle qui ne l'a jamais vue, tandis que le produit officiel utilise les observations récentes de ces mêmes stations.
 
-Figures : `reports/figures/calendrier_france.html` et `calendrier_occitanie.html`.
+Figures : `reports/figures/calendrier_france_<polluant>.html` et `calendrier_occitanie_<polluant>.html` — un fichier par polluant (`no2`, `o3`, `pm25`).
 
 ## 10. Le front précision–rappel — à qualité d'annonce identique
 
