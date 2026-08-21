@@ -595,6 +595,13 @@ figcaption {
   .bandeau { position: static; }
   .page { page-break-after: always; padding-top: 24px; }
   .src, .lev, figure.fig, .regle, .note { break-inside: avoid; }
+
+  /* Une consigne de survol est inexécutable sur du papier. Le PDF demandait au lecteur de
+     survoler une case, une station et une barre — trois instructions impossibles, pages 30,
+     39 et 43. Le taux de remplissage ne pouvait pas voir ce défaut : la page était pleine,
+     elle disait seulement quelque chose d'infaisable. */
+  .infob-aide { display: none !important; }
+
 }
 </style>
 
