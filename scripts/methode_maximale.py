@@ -198,7 +198,15 @@ def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[s
 
 def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
          speciation: str = "brute", support_complet: bool = False,
-         exclure: tuple[str, ...] = (), precurseurs: str = "completes") -> int:
+         exclure: tuple[str, ...] = (), precurseurs: str = "completes",
+         fenetre: str = "geoscf") -> int:
+    # Le garde à l'ENTRÉE, avant tout chargement : refuser après deux minutes de lecture
+    # de parquets est un refus tardif, et le coût est payé pour rien.
+    if fenetre == "complete" and "geoscf" not in exclure:
+        raise SystemExit(
+            "--fenetre complete exige --exclure geoscf : garder les colonnes GEOS-CF hors "
+            "de leur couverture donne au modèle un indicateur d'année déguisé — « geoscf "
+            "est absent » vaut exactement « nous sommes après 2025-12 ».")
     depart = time.time()
     jeu = charger(polluant, horizon)
     base_cols = colonnes_admises(jeu)
@@ -264,7 +272,23 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     couvert = d[familles["geoscf"][0]].notna()
     if not couvert.any():
         raise SystemExit("GEOS-CF ne couvre aucune ligne — jointure à vérifier")
-    mois_ok = sorted(d.loc[couvert, "mois"].unique())
+    # 🔴 `--fenetre complete` échange GEOS-CF contre huit mois — ouvert le 23/08/2026.
+    #
+    # La restriction ci-dessous s'applique AVANT `--exclure` : retirer geoscf des colonnes
+    # ne libère donc PAS la fenêtre, et c'est voulu — sinon deux piles comparées auraient
+    # des fenêtres différentes, ce qui n'est plus une comparaison (l'erreur du 23/08 au
+    # matin). Ouvrir la fenêtre est un geste distinct, qui doit être demandé.
+    #
+    # L'arbitrage qu'il rend mesurable : GEOS-CF v1 vaut +0,48 pt démontrés mais borne le
+    # corpus à 29 mois, soit 9 blocs, où le plancher de `p_PC` vaut 0,0059. À 37 mois le
+    # plan a 12 blocs et ce plancher tombe à 0,0007 — et trois familles échouent
+    # aujourd'hui par PUISSANCE, pas par absence d'effet.
+    if fenetre == "complete":
+        mois_ok = sorted(d["mois"].unique())
+        print(f"\n  fenêtre COMPLÈTE demandée : {mois_ok[0]} → {mois_ok[-1]} "
+              f"({len(mois_ok)} mois) au lieu de la couverture GEOS-CF", flush=True)
+    else:
+        mois_ok = sorted(d.loc[couvert, "mois"].unique())
     avant = len(d)
     d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
     print(f"\n  fenêtre d'évaluation = couverture GEOS-CF v1 : {mois_ok[0]} → {mois_ok[-1]}"
@@ -492,6 +516,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # Le suffixe porte la variante : sans lui, deux piles différentes écriraient le même
     # fichier et la seconde effacerait la première sans que rien ne lève (§ 4).
     suff += "_pre-moyennes" if precurseurs == "moyennes" else ""
+    suff += "_fenetre-complete" if fenetre == "complete" else ""
     partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv.partiel"
 
     # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
@@ -672,6 +697,10 @@ if __name__ == "__main__":
     a.add_argument("--support-complet", action="store_true",
                    help="écarter toute famille ayant au moins un MOIS entièrement absent — "
                         "sinon le modèle apprend la date par le motif de manque")
+    a.add_argument("--fenetre", default="geoscf", choices=("geoscf", "complete"),
+                   help="« geoscf » borne l'évaluation à la couverture de GEOS-CF v1 "
+                        "(29 mois) ; « complete » prend tout le corpus apparié et EXIGE "
+                        "--exclure geoscf")
     a.add_argument("--precurseurs", default="completes",
                    choices=("completes", "moyennes"),
                    help="« moyennes » retient les 4 moyennes ; « completes » y ajoute les "
@@ -684,4 +713,5 @@ if __name__ == "__main__":
     n = a.parse_args()
     raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.ablation,
                           n.speciation, n.support_complet,
-                          tuple(x for x in n.exclure.split(',') if x), n.precurseurs))
+                          tuple(x for x in n.exclure.split(',') if x), n.precurseurs,
+                          n.fenetre))
