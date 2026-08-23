@@ -25,13 +25,36 @@ R=$(bash -c 'bash -c "scripts/pids_de.sh temoin_lointain_xyz"' | wc -l)
 verifier "ne voit pas un ancêtre à deux niveaux" "0" "$R"
 
 # ④ Il trouve tout de même un processus réel — un garde qui ne rend jamais rien est inutile.
-sleep 47 & DORMEUR=$!
-sleep 0.3
-R=$(scripts/pids_de.sh "sleep 47" | grep -c "^${DORMEUR}$")
-verifier "trouve un processus réel" "1" "$R"
-kill "$DORMEUR" 2>/dev/null
+#    Le témoin est un CHEMIN DE SCRIPT, c'est-à-dire le vrai cas d'usage : le motif doit
+#    être un argument entier. « sleep 47 » n'en est pas un — c'est deux — et la première
+#    version de ce test l'attendait, parce qu'elle avait été écrite pour le matcher
+#    laxiste. Elle a échoué au premier passage du matcher strict, ce qui est exactement
+#    son travail.
+TEMOIN=$(mktemp -d)/temoin_pids_de.sh
+printf '#!/usr/bin/env bash\nsleep 47\n' > "$TEMOIN"; chmod +x "$TEMOIN"
+"$TEMOIN" & DORMEUR=$!
+sleep 0.4
+R=$(scripts/pids_de.sh "temoin_pids_de.sh" | grep -c "^${DORMEUR}$")
+verifier "trouve un processus réel par son chemin d'argument" "1" "$R"
 
-# ⑤ Sans motif, il refuse plutôt que de tout rendre.
+# ⑤ Et il ne rend PAS une commande qui se contente de MENTIONNER le motif — le défaut du
+#    24/08, un shell orphelin dont la ligne portait « scripts/methode_maximale.py » au
+#    milieu d'une liste de tâches.
+# ⚠️ Une commande APRÈS le `sleep`, sinon bash optimise la DERNIÈRE commande d'un `-c` en
+#    `exec` : sa ligne de commande devient « sleep 43 », le témoin ne mentionne plus rien,
+#    et le test passe pour une mauvaise raison. Les deux premières versions de ce test
+#    l'ont fait, dont une avec un `: ;` en tête qui ne changeait rien — c'est la dernière
+#    commande qui est exécutée en place, pas la première.
+bash -c "sleep 43; true # $TEMOIN dans un commentaire" & BAVARD=$!
+sleep 0.4
+R=$(scripts/pids_de.sh "temoin_pids_de.sh" | grep -c "^${BAVARD}$")
+verifier "ignore une commande qui mentionne le motif" "0" "$R"
+R=$(scripts/pids_de.sh "temoin_pids_de.sh" --contient | grep -c "^${BAVARD}$")
+verifier "--contient la voit, lui" "1" "$R"
+kill "$DORMEUR" "$BAVARD" 2>/dev/null
+rm -rf "$(dirname "$TEMOIN")"
+
+# ⑥ Sans motif, il refuse plutôt que de tout rendre.
 scripts/pids_de.sh >/dev/null 2>&1 && { echo "  ❌ accepte l'absence de motif"; ECHECS=$((ECHECS+1)); } \
   || echo "  ✅ refuse l'absence de motif"
 
