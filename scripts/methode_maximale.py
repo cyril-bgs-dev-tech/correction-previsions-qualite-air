@@ -196,6 +196,28 @@ def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[s
     return _fusion(d, g, "geoscf"), cols
 
 
+def trier_couverture(couv, familles: dict, seuil_mois: float = 0.8,
+                     seuil_colonne: float = 0.01):
+    """Sépare les colonnes d'ÉPOQUE des mois AMPUTÉS. Fonction pure, donc testable.
+
+    `couv` : table mois × colonne des taux de présence (0 à 1).
+    Rend `(colonnes_epoque, mois_amputes)`.
+
+    🔴 L'ordre des deux passes décide, et une première version les confondait — voir le
+    commentaire de l'appelant. Une colonne absente de mois ENTIERS est elle-même
+    l'indicateur d'époque et doit sortir ; un mois où une colonne CONSERVÉE n'est qu'à
+    moitié servie est un mois amputé et doit sortir. Juger les mois avant d'avoir retiré
+    les colonnes d'époque fait supprimer seize mois pour en gagner huit.
+    """
+    cols = [c for cols in familles.values() for c in cols if c in couv.columns]
+    epoque = [c for c in cols if (couv[c] < seuil_colonne).any()]
+    restantes = [c for c in cols if c not in set(epoque)]
+    if not restantes:
+        return epoque, []
+    amputes = sorted(m for m in couv.index if couv.loc[m, restantes].min() < seuil_mois)
+    return epoque, amputes
+
+
 def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
          speciation: str = "brute", support_complet: bool = False,
          exclure: tuple[str, ...] = (), precurseurs: str = "completes",
@@ -517,7 +539,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         toutes_cols = [c for cols in familles.values() for c in cols if c in d.columns]
         couv = d.groupby("mois")[toutes_cols].apply(lambda b: b.notna().mean())
 
-        epoque = [c for c in toutes_cols if (couv[c] < 0.01).any()]
+        epoque, maigres = trier_couverture(couv, familles)
         if epoque:
             print(f"  {len(epoque)} colonne(s) retirée(s) — absentes de mois ENTIERS, donc "
                   f"indicateurs d'époque : {', '.join(epoque[:8])}"
@@ -531,8 +553,6 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
             toutes_cols = [c for c in toutes_cols if c not in garde]
 
         if toutes_cols:
-            maigres = sorted(m for m in couv.index
-                             if couv.loc[m, toutes_cols].min() < 0.8)
             if maigres:
                 print(f"  mois écartés — une colonne CONSERVÉE y est partielle : "
                       + ", ".join(f"{m} ({100 * couv.loc[m, toutes_cols].min():.0f} %)"
