@@ -68,13 +68,27 @@ HORIZON = 2      # TRANCHES[2] = (25, 48) — J+1, l'échéance de la spéciatio
 #   construction, ce qui est plus grave qu'incomplète par manque de temps ;
 # * `ectot_conc` (carbone élémentaire total) — sans le total, `ecres_conc` n'est pas
 #   interprétable : on ne peut pas distinguer « chauffage résidentiel » de « combustion ».
-SOCLE = ["dust", "ecres_conc", "pm2p5_total_om_conc", "pmwf_conc", "sia_conc",
-         "ectot_conc", "pm10_ss_conc"]
+# 🔴 `pm2p5_total_om_conc` a QUITTÉ le socle le 23/08/2026 : elle est absente de 2023-08,
+# 09 et 10, donc tardive. SOCLE et TARDIVES sont disjoints par définition — l'un est ce
+# qui est toujours là, l'autre ce qui manque parfois.
+SOCLE = ["dust", "ecres_conc", "pmwf_conc", "sia_conc", "ectot_conc", "pm10_ss_conc"]
+
 # 🔴 Une leçon vit à UN endroit ; les autres la CITENT (§ 0-J). Cette liste existait ici
-# ET dans `extraire_speciation.py`, et le 23/08 seule la seconde a été mise à jour quand
-# `pm2p5_total_om_conc` s'est révélée absente de 2023-08, 09 et 10. Deux listes, une
-# vérité, et rien ne signalait l'écart : `core7` continuait d'écarter le seul nitrate.
+# ET dans `extraire_speciation.py`, et le 23/08 seule la seconde avait été mise à jour :
+# `core7` continuait d'écarter le seul nitrate.
+#
+# ⚠️ Et l'unification a d'abord CASSÉ la chaîne, parce que la matière organique figurait
+# encore dans SOCLE : `SOCLE + TARDIVES` la contenait deux fois, et `pd.concat` refuse un
+# index non unique. Deux listes qui se ressemblent ne veulent pas forcément dire la même
+# chose — ici l'une décrit ce que le FOURNISSEUR sert, l'autre ce que la pile ÉCARTE. Les
+# fusionner exigeait de vérifier qu'elles restent disjointes, pas seulement qu'elles
+# existent en un exemplaire.
 from extraire_speciation import TARDIVES  # noqa: E402
+
+if set(SOCLE) & set(TARDIVES):  # pragma: no cover — un garde, pas une branche
+    raise SystemExit(f"SOCLE et TARDIVES se chevauchent : "
+                     f"{sorted(set(SOCLE) & set(TARDIVES))} — une colonne est soit "
+                     f"toujours présente, soit tardive, jamais les deux.")
 N_FILS = 4
 
 
