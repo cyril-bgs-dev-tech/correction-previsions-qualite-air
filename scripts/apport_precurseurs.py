@@ -87,6 +87,33 @@ GAZ = ["nh3_conc", "so2_conc", "pans_conc", "nmvoc_conc"]
 CHIMIE = ["hcho_conc", "chocho_conc", "no_conc", "co_conc"]
 POLLENS = ["bpg_conc", "gpg_conc"]
 
+# ── Le criblage IFS, ouvert le 23/08/2026 ─────────────────────────────────────────────
+#
+# La pile ne porte AUCUNE météo — l'objection ERA5 ne s'y applique pas, mais la question de
+# ce qu'une météo PRÉVUE (donc déployable, contrairement à la réanalyse) apporterait reste
+# ouverte. Mesurée le 31/07 sur une pile bien plus faible : +2,2 % NO₂, +5,5 % O₃,
+# +4,7 % PM2,5 — et sur PM2,5 l'IFS BAT ERA5.
+#
+# 🔴 Onze mois sont extraits (2024-02 → 2024-12) et les 104 colonnes ne se valent pas.
+# Couverture comptée mois par mois :
+#
+#   t2m · tp · u10 · v10 · temperature_c · precipitation_mm · vent_vitesse_m_s ·
+#   vent_direction_deg                                   100 % sur les 11 mois ✅
+#   d2m · point_rosee_c · rayonnement_w_m2 · ssrd        absentes de 2024-02, 100 % ensuite
+#   les ~60 champs en niveaux de pression                25 à 90 % selon le MOIS, nulles
+#                                                        en 2024-12 — code d'époque pur
+#   mn2t3 · mx2t3 · mucape · q200 · q500 · sot           SEULEMENT en 2024-11 et 12
+#
+# La famille criblable est donc les huit champs de surface complets, et c'est précisément
+# ce que le dépôt a déjà mesuré comme porteur : « pluie, vent, rayonnement portent la
+# météo », et « sur NO₂ tout vient de la pluie ».
+#
+# ⚠️ Onze mois font trois blocs de trois : le criblage DIMENSIONNE l'effet, il ne le
+# démontre pas. Sa seule fonction est de décider si l'acquisition des 26 mois manquants
+# vaut d'être lancée.
+IFS_SURFACE = ["t2m", "tp", "u10", "v10", "temperature_c", "precipitation_mm",
+               "vent_vitesse_m_s", "vent_direction_deg"]
+
 LOTS_MESURABLES = {
     # lot : (variables, préfixe de colonne, libellé humain)
     "precurseurs": (GAZ, "pre", "précurseurs"),
@@ -95,6 +122,7 @@ LOTS_MESURABLES = {
     # de MESURE ne sont pas la même chose, et les confondre ferait chercher des fichiers
     # `pollens_metropole_*` qui n'existent pas.
     "pollens": (POLLENS, "pol", "pollens"),
+    "ifs": (IFS_SURFACE, "ifs", "météo prévue IFS (surface)"),
 }
 
 # Le fichier extrait dont un lot de mesure tire ses colonnes, quand ce n'est pas son nom.
