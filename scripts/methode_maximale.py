@@ -502,14 +502,43 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # Le seuil ne coûte rien ici : 2023-09 → 2026-08 fait 36 mois, soit 12 blocs de trois
     # — exactement autant que 37, dont le reliquat serait jeté de toute façon.
     if fenetre == "complete":
+        # 🔴 Deux passes, et l'ORDRE décide — corrigé le 23/08/2026, avant tout lancement.
+        #
+        # La première version prenait le minimum de couverture sur TOUTES les colonnes de
+        # famille et écartait le mois s'il tombait sous 80 %. Elle aurait vidé le corpus :
+        # `pm2p5_no3_conc` est absent avant 2024-12, donc son minimum vaut zéro sur trente
+        # mois, et la règle censée GAGNER des mois en aurait supprimé seize. Un garde-fou
+        # qui détruit ce qu'il protège est pire que pas de garde-fou.
+        #
+        # La bonne lecture distingue deux objets. Une COLONNE absente de mois entiers est
+        # elle-même l'indicateur d'époque : elle sort de la pile, et le mois reste. Un MOIS
+        # où une colonne conservée n'est qu'à moitié servie est un mois amputé : il sort, et
+        # la colonne reste. Traiter les deux par le même seuil confond la cause et l'effet.
         toutes_cols = [c for cols in familles.values() for c in cols if c in d.columns]
-        couv = d.groupby("mois")[toutes_cols].apply(lambda b: float(b.notna().mean().min()))
-        maigres = sorted(couv[couv < 0.8].index)
-        if maigres:
-            print(f"  mois écartés pour couverture partielle (<80 %) : "
-                  + ", ".join(f"{m} ({100 * couv[m]:.0f} %)" for m in maigres), flush=True)
-            mois_ok = [m for m in mois_ok if m not in set(maigres)]
-            d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
+        couv = d.groupby("mois")[toutes_cols].apply(lambda b: b.notna().mean())
+
+        epoque = [c for c in toutes_cols if (couv[c] < 0.01).any()]
+        if epoque:
+            print(f"  {len(epoque)} colonne(s) retirée(s) — absentes de mois ENTIERS, donc "
+                  f"indicateurs d'époque : {', '.join(epoque[:8])}"
+                  + (" …" if len(epoque) > 8 else ""), flush=True)
+            garde = set(epoque)
+            for nom in list(familles):
+                familles[nom] = [c for c in familles[nom] if c not in garde]
+                if not familles[nom]:
+                    del familles[nom]
+                    print(f"    famille « {nom} » vidée par ce retrait", flush=True)
+            toutes_cols = [c for c in toutes_cols if c not in garde]
+
+        if toutes_cols:
+            maigres = sorted(m for m in couv.index
+                             if couv.loc[m, toutes_cols].min() < 0.8)
+            if maigres:
+                print(f"  mois écartés — une colonne CONSERVÉE y est partielle : "
+                      + ", ".join(f"{m} ({100 * couv.loc[m, toutes_cols].min():.0f} %)"
+                                  for m in maigres), flush=True)
+                mois_ok = [m for m in mois_ok if m not in set(maigres)]
+                d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
 
     avant_fenetre = len(mois_ok)
     mois_ok = [m for m in mois_ok if m in set(d["mois"])]
