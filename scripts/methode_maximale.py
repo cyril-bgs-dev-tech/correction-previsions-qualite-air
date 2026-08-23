@@ -66,6 +66,9 @@ sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
 from apport_geoscf import charger_geoscf  # noqa: E402
+from apport_fourier_profil import harmoniques  # noqa: E402
+from apport_precurseurs import charger_precurseurs  # noqa: E402
+from cible_journaliere import profil_horaire  # noqa: E402
 from aq.rapport import libelle_echeance  # noqa: E402
 from double_aveugle_journalier import (  # noqa: E402
     DEFAUT, GRAINE, GRANDEUR_PAR_POLLUANT, agreger_journalier, ajuster, charger,
@@ -99,9 +102,31 @@ from leviers_36mois import (  # noqa: E402
 # trous épars de quelques pour cent de l'autre.
 TAUX_MANQUE_MAX = 0.5
 
-ORDRE = ["typologie", "membres", "feux", "geoscf", "tendance", "speciation"]
+# ⚠️ `profil` ajoutée le 23/08/2026, en DERNIER — après la spéciation, donc à la place la
+# plus dure : elle n'hérite que de ce que les six autres n'ont pas pris. Mesurée à part
+# contre une base portant déjà `tendance`, la forme du profil horaire rend +0,70 à +1,21 %
+# en écart apparié et TIENT sur les quatre polluants (p ≤ 0,011). Ici on demande autre
+# chose : ce qu'elle ajoute à une pile DÉJÀ complète. Le gain mesuré ailleurs est un
+# majorant, celui-ci est le chiffre publiable.
+# ⚠️ `fourier` ajoutée le 23/08/2026, APRÈS `profil` — donc la place la plus dure de toutes :
+# elle n'hérite que de ce que sept familles, forme du jour comprise, n'ont pas pris. Mesurée
+# à part, la question posée était « remplace-t-elle les descripteurs à la main, ou s'y
+# ajoute-t-elle ? » : remplacer ne TIENT pas (1 polluant sur 4), **ajouter TIENT sur 3/4**
+# (NO₂ p<10⁻⁴, O₃ p=0,003, PM10 p=0,020). Les deux encodages portent des choses
+# différentes — l'ampleur de l'excursion d'un côté, la phase et la structure harmonique de
+# l'autre. D'où deux familles distinctes, et non huit colonnes dans une seule : c'est la
+# seule forme qui permette à l'ablation de dire ce que chacune vaut.
+# ⚠️ `precurseurs` ajoutée le 23/08/2026, en NEUVIÈME et dernière position. Quatre gaz que
+# le dépôt n'avait jamais téléchargés — ammoniac, SO₂, PAN, COV non méthaniques — mesurés à
+# part contre la pile à huit familles moins GEOS-CF, sur 32 plis : ils TIENNENT sur O₃
+# (+1,34 pt, p=0,020), PM10 (+0,74, p=0,0005) et PM2,5 (+1,07, p<10⁻⁴), et **rien sur le
+# NO₂** — qui est lui-même un précurseur, donc exempté par la chimie et non par la mesure.
+# Ici on demande ce qu'ils ajoutent avec GEOS-CF PRÉSENT : c'est l'amplitude publiable.
+ORDRE = ["typologie", "membres", "feux", "geoscf", "tendance", "speciation", "profil",
+         "fourier", "precurseurs"]
 PERIMETRE = {"typologie": "PARTOUT", "membres": "PARTOUT", "feux": "PARTOUT",
              "geoscf": "PARTOUT", "tendance": "PARTOUT", "speciation": "PARTOUT",
+             "profil": "PARTOUT", "fourier": "PARTOUT", "precurseurs": "PARTOUT",
              "veille": "AUX STATIONS", "era5": "— (plafond)"}
 
 
@@ -179,6 +204,10 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     base_cols = colonnes_admises(jeu)
     jeu[base_cols] = jeu[base_cols].replace([np.inf, -np.inf], 30_000.0)
     jeu = jeu.dropna(subset=["valeur"])
+    # La forme du profil horaire se lit sur les 24 valeurs de CAMS. `agreger_journalier`
+    # les réduit à deux nombres : après lui, elle n'existe plus. Donc avant.
+    prof, cols_prof = profil_horaire(jeu)
+    fou, cols_fou = harmoniques(jeu)
     j = agreger_journalier(jeu, base_cols, GRANDEUR_PAR_POLLUANT[polluant])
     base = [c for c in base_cols if c != "cams"] + ["cams_moy_jour", "cams_jour"]
     d = j.rename(columns={"obs_jour": "valeur"}).reset_index(drop=True)
@@ -186,6 +215,26 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     d["mois"] = d["jour"].dt.strftime("%Y-%m")
 
     familles: dict[str, list[str]] = {}
+    prof["jour"] = pd.to_datetime(prof["jour"]).dt.tz_localize(None)
+    avant_prof = len(d)
+    d = d.merge(prof, on=["station_id", "jour"], how="left")
+    if len(d) != avant_prof:
+        raise SystemExit(f"jointure du profil : {avant_prof:,} → {len(d):,} lignes — "
+                         f"doublons de clé (station, jour)")
+    familles["profil"] = cols_prof
+    fou["jour"] = pd.to_datetime(fou["jour"]).dt.tz_localize(None)
+    avant_fou = len(d)
+    d = d.merge(fou, on=["station_id", "jour"], how="left")
+    if len(d) != avant_fou:
+        raise SystemExit(f"jointure des harmoniques : {avant_fou:,} → {len(d):,} lignes")
+    familles["fourier"] = cols_fou
+
+    pre, moy_pre, max_pre = charger_precurseurs(GRANDEUR_PAR_POLLUANT[polluant])
+    avant_pre = len(d)
+    d = d.merge(pre, on=["station_id", "jour"], how="left")
+    if len(d) != avant_pre:
+        raise SystemExit(f"jointure des précurseurs : {avant_pre:,} → {len(d):,} lignes")
+    familles["precurseurs"] = moy_pre + max_pre
     # ⚠️ La dynamique de CAMS se calcule **avant** toute restriction de fenêtre. Elle
     # décale la série d'un jour par station : la calculer après le filtrage sur la
     # couverture GEOS-CF ferait sauter le décalage par-dessus le bord de fenêtre, et la

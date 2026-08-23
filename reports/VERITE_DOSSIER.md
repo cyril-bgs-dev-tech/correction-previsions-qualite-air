@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 18/08/2026 à 16 h 18 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 23/08/2026 à 13 h 05 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -287,12 +287,12 @@ Aucun confondant d'amont à neutraliser ici : les trois systèmes sont évalués
 
 | polluant | fenêtre | lignes | CAMS brut | **nous** | PREV'AIR | écart PREV'AIR / nous |
 |---|---|---|---|---|---|---|
-| O₃ | 17 j · 2026-07-28→2026-08-15 | 4 319 | 26.39 | **22.05** | 25.07 | **+13.7 %** |
-| NO₂ | 17 j · 2026-07-28→2026-08-15 | 5 287 | 25.32 | **13.79** | 22.04 | **+59.8 %** |
-| PM10 | 17 j · 2026-07-28→2026-08-15 | 4 888 | 8.34 | **5.10** | 8.23 | **+61.4 %** |
-| PM2,5 | 17 j · 2026-07-28→2026-08-15 | 3 707 | 3.22 | **2.78** | 4.65 | **+66.9 %** |
+| O₃ | 22 j · 2026-07-28→2026-08-20 | 5 581 | 25.81 | **21.43** | 24.49 | **+14.3 %** |
+| NO₂ | 22 j · 2026-07-28→2026-08-20 | 6 845 | 23.70 | **12.91** | 20.88 | **+61.8 %** |
+| PM10 | 22 j · 2026-07-28→2026-08-20 | 6 323 | 8.36 | **5.46** | 8.36 | **+53.1 %** |
+| PM2,5 | 22 j · 2026-07-28→2026-08-20 | 4 805 | 3.54 | **3.21** | 4.93 | **+53.9 %** |
 
-🔴 **17 jours NE CONCLUENT RIEN.** C'est un ordre de grandeur, et le script le réaffirme à chaque exécution. PREV'AIR n'expose qu'une fenêtre glissante d'environ six jours et notre archivage quotidien n'a démarré que fin juillet 2026 : **le passé n'est pas récupérable**, cette fenêtre ne grandira que d'un jour par jour.
+🔴 **22 jours NE CONCLUENT RIEN.** C'est un ordre de grandeur, et le script le réaffirme à chaque exécution. PREV'AIR n'expose qu'une fenêtre glissante d'environ six jours et notre archivage quotidien n'a démarré que fin juillet 2026 : **le passé n'est pas récupérable**, cette fenêtre ne grandira que d'un jour par jour.
 
 ⚠️ **Deux réserves qui jouent dans des sens opposés, et il faut les dire ensemble.** *Contre nous* : PREV'AIR tourne à 1,7 km **avec assimilation et krigeage**, nous corrigeons un ensemble à 10 km. *Pour nous* : nos stations sont connues de notre modèle — mais les leurs le sont aussi de leur krigeage, donc l'avantage n'est pas unilatéral.
 
@@ -451,7 +451,7 @@ Sur l'ozone, **3,5 fois le CAMS brut** à 30 % de budget, **5,6 fois** à 20 %. 
 | **PM2,5** | 25 µg/m³ (moyenne jour) | 1 844 sur 105 744 (1,74 %) | **0,485** — le brut n'atteint pas ce budget |
 | **NO₂** | 120 µg/m³ (max horaire) | **270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable** ; 0,044 à 40 % |
 
-**Le NO₂ n'est pas détectable à ce grain**, et ce n'est pas un défaut de méthode : l'événement est dix fois plus rare que pour les deux autres. Au seuil d'information horaire de 200 µg/m³, le panel unifié ne compte que **6 dépassements** sur 371,436 jours-station (2023-06 → 2026-08, 344 stations, règle des 75 %) — le problème n'existe pas. Ce constat confirme, avec un protocole plus net, ce que le projet avait déjà mesuré (POD 0,084, Brier skill +0,017).
+**Le NO₂ n'est pas détectable à ce grain**, et ce n'est pas un défaut de méthode : l'événement est dix fois plus rare que pour les deux autres. Au seuil d'information horaire de 200 µg/m³, le panel unifié ne compte que **6 dépassements** sur 372,994 jours-station (2023-06 → 2026-08, 344 stations, règle des 75 %) — le problème n'existe pas. Ce constat confirme, avec un protocole plus net, ce que le projet avait déjà mesuré (POD 0,084, Brier skill +0,017).
 
 *Un seuil sans événements ne mesure pas une incapacité à détecter : il mesure l'absence de ce qu'on cherche. Compter les positifs avant de conclure.*
 
@@ -624,7 +624,7 @@ Ventilation par zone, O₃ puis NO₂ — RMSE (biais) :
 
 Deux lectures opposées, et les deux comptent. Sur l'**ozone**, le rural est la zone la moins bien traitée — CAMS y sous-estime de 2,5 µg/m³ et la correction, qui efface ce biais, y reste la moins performante ; ce sont les stations les plus isolées, donc celles où le voisinage n'aide pas, ce que la validation par plis bloqués (§ 11) mesure par ailleurs. Sur le **NO₂ en rural**, à l'inverse, **la correction n'apporte rien** (5,142 contre 5,130) et dégrade légèrement le biais : là où CAMS est déjà juste — niveau bas, aucune source locale —, il n'y a rien à corriger.
 
-⚠️ **Les seuils d'information français ne sont pas évaluables sur cette fenêtre.** À 180 µg/m³ en maximum horaire, l'ozone compte **32 dépassements sur 60 400 jours-station** : CAMS en détecte 3, notre correction 2 à J+1, et **aucun des deux à J+3**. Le NO₂ à 200 µg/m³ en compte **6 sur 371,436** — mesurés sur le panel unifié, et non sur la fenêtre de cette section —, aucun détecté. Un modèle entraîné **directement** sur le maximum horaire donne le même résultat qu'une transposition depuis le grain 8 h : l'échec est mécanique, pas méthodologique. **Et il n'est pas une affaire de calibration** : mesurée, la pente de régression de l'observé sur le prédit vaut **1,007** — le modèle n'est pas contracté, son échelle est juste. Une calibration isotone du score vers les bandes de l'indice, décidée au coût attendu minimal avec pénalité asymétrique, n'apporte que **+1,2 point** de rappel contre un simple abaissement de seuil à budget de fausses annonces égal — sous la barre de bruit de ±2 points. Le rang du régresseur porte déjà toute la décision disponible. Ce qui manque est de l'**information** : 53 prédicteurs qui ne contiennent rien distinguant un jour à 175 µg/m³ d'un jour à 185, et 32 événements pour l'apprendre. **Notre facteur 3,6× porte sur la valeur cible européenne (120 µg/m³, max 8 h), jamais sur le seuil de procédure.**
+⚠️ **Les seuils d'information français ne sont pas évaluables sur cette fenêtre.** À 180 µg/m³ en maximum horaire, l'ozone compte **32 dépassements sur 60 400 jours-station** : CAMS en détecte 3, notre correction 2 à J+1, et **aucun des deux à J+3**. Le NO₂ à 200 µg/m³ en compte **6 sur 372,994** — mesurés sur le panel unifié, et non sur la fenêtre de cette section —, aucun détecté. Un modèle entraîné **directement** sur le maximum horaire donne le même résultat qu'une transposition depuis le grain 8 h : l'échec est mécanique, pas méthodologique. **Et il n'est pas une affaire de calibration** : mesurée, la pente de régression de l'observé sur le prédit vaut **1,007** — le modèle n'est pas contracté, son échelle est juste. Une calibration isotone du score vers les bandes de l'indice, décidée au coût attendu minimal avec pénalité asymétrique, n'apporte que **+1,2 point** de rappel contre un simple abaissement de seuil à budget de fausses annonces égal — sous la barre de bruit de ±2 points. Le rang du régresseur porte déjà toute la décision disponible. Ce qui manque est de l'**information** : 53 prédicteurs qui ne contiennent rien distinguant un jour à 175 µg/m³ d'un jour à 185, et 32 événements pour l'apprendre. **Notre facteur 3,6× porte sur la valeur cible européenne (120 µg/m³, max 8 h), jamais sur le seuil de procédure.**
 
 ⚠️ **PM10 : lacune de périmètre, pas de donnée.** Le projet n'a jamais ingéré les PM10, ni en observation ni en prévision. Or sur les **52 vigilances réellement déclarées** par ATMO Occitanie entre janvier 2025 et mars 2026, **40 portent sur les PM10** et 12 sur l'ozone. Le déclenchement opérationnel se fait donc aux trois quarts sur un polluant hors de notre périmètre. Les PM2,5 à 25 µg/m³ répondent à une autre question et ne les remplacent pas.
 
@@ -740,22 +740,28 @@ Double aveugle **station ET mois cachés**, J+1, fenêtre du flux GEOS-CF v1. L'
 
 | étage | NO₂ | O₃ | PM10 | PM2,5 |
 |---|---|---|---|---|
-| base (CAMS, terrain, calendrier) | +26.61 % | +7.01 % | +8.52 % | +2.08 % |
-| + typologie | +35.58 % *(+8.97)* | +6.88 % *(-0.13)* | +10.12 % *(+1.61)* | +2.23 % *(+0.15)* |
-| + membres | +36.13 % *(+0.55)* | +9.83 % *(+2.95)* | +14.20 % *(+4.07)* | +5.76 % *(+3.53)* |
-| + feux | +36.38 % *(+0.24)* | +11.93 % *(+2.10)* | +15.09 % *(+0.89)* | +7.80 % *(+2.05)* |
-| + geoscf | +38.71 % *(+2.33)* | +13.75 % *(+1.82)* | +17.43 % *(+2.34)* | +9.90 % *(+2.10)* |
-| + tendance | +38.86 % *(+0.16)* | +15.83 % *(+2.09)* | +17.88 % *(+0.45)* | +10.03 % *(+0.12)* |
-| + speciation | +40.16 % *(+1.30)* | +18.19 % *(+2.35)* | +20.72 % *(+2.84)* | +12.49 % *(+2.46)* |
-| ★ MAXIMALE — PARTOUT | **+40.16 %** *(-0.00)* | **+18.17 %** *(-0.01)* | **+20.71 %** *(-0.00)* | **+12.49 %** *(-0.00)* |
-| − typologie (ablation) | +30.43 % | +17.87 % | +18.10 % | +12.34 % |
-| − membres (ablation) | +39.94 % | +17.42 % | +20.10 % | +11.79 % |
-| − feux (ablation) | +39.98 % | +18.33 % | +20.05 % | +12.75 % |
-| − geoscf (ablation) | +38.93 % | +17.21 % | +19.67 % | +11.79 % |
-| − tendance (ablation) | +39.97 % | +17.76 % | +20.27 % | +12.67 % |
-| − speciation (ablation) | +38.86 % | +15.83 % | +17.88 % | +10.03 % |
-| ★ MAXIMALE — AUX STATIONS (+ veille) | **+46.81 %** *(+7.94)* | **+24.26 %** *(+8.43)* | **+26.47 %** *(+8.59)* | **+21.34 %** *(+11.31)* |
-| plafond ERA5 (NON déployable) | +49.70 % *(+10.84)* | +27.36 % *(+11.53)* | +26.73 % *(+8.85)* | +23.53 % *(+13.50)* |
+| base (CAMS, terrain, calendrier) | +26.47 % | +7.62 % | +8.58 % | +3.27 % |
+| + typologie | +35.44 % *(+8.97)* | +7.54 % *(-0.08)* | +10.46 % *(+1.87)* | +3.34 % *(+0.08)* |
+| + membres | +36.06 % *(+0.62)* | +10.63 % *(+3.10)* | +13.97 % *(+3.52)* | +5.64 % *(+2.29)* |
+| + feux | +36.23 % *(+0.17)* | +12.39 % *(+1.76)* | +15.03 % *(+1.05)* | +8.26 % *(+2.62)* |
+| + geoscf | +38.79 % *(+2.56)* | +14.76 % *(+2.37)* | +17.68 % *(+2.66)* | +10.37 % *(+2.11)* |
+| + tendance | +38.79 % *(+0.00)* | +16.31 % *(+1.55)* | +18.01 % *(+0.32)* | +10.44 % *(+0.07)* |
+| + speciation | +39.83 % *(+1.03)* | +18.57 % *(+2.26)* | +20.04 % *(+2.03)* | +12.20 % *(+1.76)* |
+| + profil | +40.14 % *(+0.32)* | +19.12 % *(+0.54)* | +20.66 % *(+0.62)* | +12.80 % *(+0.61)* |
+| + fourier | +40.96 % *(+0.81)* | +19.26 % *(+0.14)* | +20.52 % *(-0.14)* | +12.63 % *(-0.18)* |
+| + precurseurs | +41.23 % *(+0.28)* | +20.52 % *(+1.26)* | +21.12 % *(+0.61)* | +13.65 % *(+1.02)* |
+| ★ MAXIMALE — PARTOUT | **+41.23 %** *(-0.00)* | **+20.51 %** *(-0.00)* | **+21.13 %** *(+0.01)* | **+13.65 %** *(-0.00)* |
+| − typologie (ablation) | +31.39 % | +20.42 % | +19.01 % | +13.61 % |
+| − membres (ablation) | +41.21 % | +19.88 % | +20.89 % | +13.49 % |
+| − feux (ablation) | +41.37 % | +20.27 % | +21.52 % | +13.89 % |
+| − geoscf (ablation) | +40.88 % | +19.59 % | +21.06 % | +13.56 % |
+| − tendance (ablation) | +41.46 % | +20.49 % | +21.02 % | +14.41 % |
+| − speciation (ablation) | +40.50 % | +19.85 % | +19.43 % | +12.68 % |
+| − profil (ablation) | +41.32 % | +20.18 % | +21.14 % | +13.76 % |
+| − fourier (ablation) | +40.73 % | +20.06 % | +21.19 % | +13.39 % |
+| − precurseurs (ablation) | +40.96 % | +19.26 % | +20.52 % | +12.63 % |
+| ★ MAXIMALE — AUX STATIONS (+ veille) | **+47.82 %** *(+6.86)* | **+25.86 %** *(+6.60)* | **+27.29 %** *(+6.77)* | **+22.22 %** *(+9.59)* |
+| plafond ERA5 (NON déployable) | +50.13 % *(+9.18)* | +28.55 % *(+9.29)* | +27.16 % *(+6.64)* | +24.40 % *(+11.77)* |
 
 ⚠️ **Les fenêtres diffèrent selon le polluant** : NO₂ 29 mois (2023-08→2025-12) · O₃ 29 mois (2023-08→2025-12) · PM10 24 mois (2024-01→2025-12) · PM2,5 29 mois (2023-08→2025-12). Seuls les **écarts entre étages** se comparent d'un polluant à l'autre, jamais les niveaux.
 
@@ -868,13 +874,13 @@ Chaque ligne retire **une seule** famille de la pile complète, toutes les autre
 
 | famille retirée | O₃ | NO₂ | PM10 | PM2,5 |
 |---|---|---|---|---|
-| − typologie | **+0.30** *(-0.13)* | **+9.73** *(+8.97)* | **+2.62** *(+1.61)* | **+0.15** *(+0.15)* |
-| − membres | **+0.76** *(+2.95)* | **+0.22** *(+0.55)* | **+0.62** *(+4.07)* | **+0.70** *(+3.53)* |
-| − feux | **-0.16** *(+2.10)* | **+0.18** *(+0.24)* | **+0.66** *(+0.89)* | **-0.26** *(+2.05)* |
-| − geoscf | **+0.97** *(+1.82)* | **+1.23** *(+2.33)* | **+1.04** *(+2.34)* | **+0.70** *(+2.10)* |
-| − tendance | **+0.41** *(+2.09)* | **+0.19** *(+0.16)* | **+0.45** *(+0.45)* | **-0.18** *(+0.12)* |
+| − typologie | **+0.09** *(-0.08)* | **+9.84** *(+8.97)* | **+2.12** *(+1.87)* | **+0.04** *(+0.08)* |
+| − membres | **+0.64** *(+3.10)* | **+0.02** *(+0.62)* | **+0.24** *(+3.52)* | **+0.16** *(+2.29)* |
+| − feux | **+0.25** *(+1.76)* | **-0.14** *(+0.17)* | **-0.39** *(+1.05)* | **-0.24** *(+2.62)* |
+| − geoscf | **+0.93** *(+2.37)* | **+0.36** *(+2.56)* | **+0.07** *(+2.66)* | **+0.09** *(+2.11)* |
+| − tendance | **+0.02** *(+1.55)* | **-0.23** *(+0.00)* | **+0.11** *(+0.32)* | **-0.75** *(+0.07)* |
 
-Les deux lectures **se contredisent en signe** sur **typologie** sur O₃ (*-0.13* → **+0.30**) · **feux** sur O₃ (*+2.10* → **-0.16**) · **feux** sur PM2,5 (*+2.05* → **-0.26**) · **tendance** sur PM2,5 (*+0.12* → **-0.18**). Là où elles divergent, c'est l'ablation qui fait foi : la lecture cumulative attribue à un étage ce que sa **position** lui a donné, pas ce qu'il apporte.
+Les deux lectures **se contredisent en signe** sur **typologie** sur O₃ (*-0.08* → **+0.09**) · **feux** sur NO₂ (*+0.17* → **-0.14**) · **feux** sur PM10 (*+1.05* → **-0.39**) · **feux** sur PM2,5 (*+2.62* → **-0.24**) · **tendance** sur NO₂ (*+0.00* → **-0.23**) · **tendance** sur PM2,5 (*+0.07* → **-0.75**). Là où elles divergent, c'est l'ablation qui fait foi : la lecture cumulative attribue à un étage ce que sa **position** lui a donné, pas ce qu'il apporte.
 
 
 ⚠️ Un apport d'ablation faible ne veut pas dire « famille inutile » : il veut dire **redondante avec le reste de la pile**. Deux familles qui captent la même information s'annulent mutuellement à l'ablation alors que retirer les deux coûterait cher. Ce tableau ne se lit jamais comme une liste de coupes à opérer.
