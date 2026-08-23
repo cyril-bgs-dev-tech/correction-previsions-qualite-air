@@ -1,17 +1,17 @@
-prefixe,axe,configuration,polluant,n_plis,ecart_apparie_moyen_pct,part_plis_positifs,p_signe,verdict_groupe
-apport_forme_familles,double,② + forme membres (4),NO2,23,0.7822866566916838,0.782608695652174,0.010622024536132812,positif
-apport_forme_familles,double,② + forme membres (4),O3,23,0.3686582191121772,0.6521739130434783,0.21003961563110352,hasard
-apport_forme_familles,double,② + forme membres (4),PM10,12,-0.11486593858195389,0.5,1.0,hasard
-apport_forme_familles,double,② + forme membres (4),PM25,24,0.45162967802103343,0.5833333333333334,0.5412561893463135,hasard
-apport_forme_familles,double,② + forme geoscf (4),NO2,23,-0.01751867817015186,0.5217391304347826,1.0,hasard
-apport_forme_familles,double,② + forme geoscf (4),O3,23,0.31996767105390495,0.4782608695652174,1.0,hasard
-apport_forme_familles,double,② + forme geoscf (4),PM10,12,0.014998907125878405,0.3333333333333333,0.3876953125,hasard
-apport_forme_familles,double,② + forme geoscf (4),PM25,24,0.3814900534904117,0.5833333333333334,0.5412561893463135,hasard
-apport_forme_familles,double,② + forme speciation (4),NO2,23,-0.0655824183714981,0.5217391304347826,1.0,hasard
-apport_forme_familles,double,② + forme speciation (4),O3,23,0.36733055360748024,0.6521739130434783,0.21003961563110352,hasard
-apport_forme_familles,double,② + forme speciation (4),PM10,12,-0.4317378440300927,0.4166666666666667,0.7744140625,hasard
-apport_forme_familles,double,② + forme speciation (4),PM25,24,0.017609722326927812,0.5,1.0,hasard
-apport_forme_familles,double,③ + les 3 formes,NO2,23,0.5061193490873295,0.782608695652174,0.010622024536132812,positif
-apport_forme_familles,double,③ + les 3 formes,O3,23,0.4097967097108268,0.6521739130434783,0.21003961563110352,hasard
-apport_forme_familles,double,③ + les 3 formes,PM10,12,-0.28411643951464505,0.4166666666666667,0.7744140625,hasard
-apport_forme_familles,double,③ + les 3 formes,PM25,24,0.16830580287084299,0.4583333333333333,0.8388197422027588,hasard
+prefixe,axe,configuration,polluant,n_plis,n_blocs_3mois,blocs_positifs,ecart_apparie_moyen_pct,p_signe_blocs,p_conjonction_partielle,p_PC_2mois,p_PC_4mois
+apport_forme_familles,double,② + forme membres (4),NO2,23,7,6,0.7822866566916838,0.125,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme membres (4),O3,23,7,4,0.3686582191121772,1.0,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme membres (4),PM10,12,4,2,-0.11486593858195389,1.0,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme membres (4),PM25,24,8,6,0.45162967802103343,0.2890625,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme geoscf (4),NO2,23,7,4,-0.01751867817015186,1.0,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme geoscf (4),O3,23,7,6,0.31996767105390495,0.125,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme geoscf (4),PM10,12,4,2,0.014998907125878405,1.0,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme geoscf (4),PM25,24,8,6,0.3814900534904117,0.2890625,0.8671875,1.0,1.0
+apport_forme_familles,double,② + forme speciation (4),NO2,23,7,5,-0.0655824183714981,0.453125,1.0,1.0,1.0
+apport_forme_familles,double,② + forme speciation (4),O3,23,7,4,0.36733055360748024,1.0,1.0,1.0,1.0
+apport_forme_familles,double,② + forme speciation (4),PM10,12,4,2,-0.4317378440300927,1.0,1.0,1.0,1.0
+apport_forme_familles,double,② + forme speciation (4),PM25,24,8,5,0.017609722326927812,0.7265625,1.0,1.0,1.0
+apport_forme_familles,double,③ + les 3 formes,NO2,23,7,7,0.5061193490873295,0.015625,1.0,0.65625,1.0
+apport_forme_familles,double,③ + les 3 formes,O3,23,7,4,0.4097967097108268,1.0,1.0,0.65625,1.0
+apport_forme_familles,double,③ + les 3 formes,PM10,12,4,1,-0.28411643951464505,1.0,1.0,0.65625,1.0
+apport_forme_familles,double,③ + les 3 formes,PM25,24,8,4,0.16830580287084299,1.0,1.0,0.65625,1.0
