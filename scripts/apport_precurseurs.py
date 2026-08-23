@@ -70,13 +70,35 @@ GAZ = ["nh3_conc", "so2_conc", "pans_conc", "nmvoc_conc"]
 # (fenêtre restreinte, jointure comptée, couverture imprimée, colonnes attendues, § 4 bis).
 #
 # Les noms sont ceux que CAMS LIVRE, jamais ceux demandés à l'API — contrôlés sur fichier.
-CHIMIE = ["hcho_conc", "chocho_conc", "no_conc", "co_conc", "bpg_conc", "gpg_conc"]
+#
+# 🔴 Les POLLENS sortent de la famille mesurable — mesuré le 23/08/2026, avant de lancer
+# les quatre exécutions qui les auraient consommés. Le fichier `chimie_*` porte six
+# variables ; le contrôle de couverture mois par mois en écarte deux :
+#
+#   hcho_conc, chocho_conc, no_conc, co_conc   0,00 % manquant · 100 % sur les 37 mois ✅
+#   bpg_conc                                   2023-08, 09, 10 VIDES · 2023-11 à 30 %
+#   gpg_conc                                   2023-10 VIDE · 2023-09 à 3 %, 2023-11 à 30 %
+#
+# Un mois entièrement absent est un **code d'époque** : sous validation mois-caché,
+# « famille absente » équivaut à « on est dans ces mois-là », et le modèle peut apprendre
+# la date au lieu de la chimie. Les pollens sont donc un lot SÉPARÉ, à mesurer sur sa
+# propre fenêtre contiguë — ils avaient d'ailleurs été acquis comme assurance, l'archive se
+# refermant, et non comme piste prioritaire.
+CHIMIE = ["hcho_conc", "chocho_conc", "no_conc", "co_conc"]
+POLLENS = ["bpg_conc", "gpg_conc"]
 
 LOTS_MESURABLES = {
     # lot : (variables, préfixe de colonne, libellé humain)
     "precurseurs": (GAZ, "pre", "précurseurs"),
     "chimie": (CHIMIE, "chi", "chimie"),
+    # ⚠️ « pollens » lit les mêmes fichiers `chimie_*` : le lot de TÉLÉCHARGEMENT et le lot
+    # de MESURE ne sont pas la même chose, et les confondre ferait chercher des fichiers
+    # `pollens_metropole_*` qui n'existent pas.
+    "pollens": (POLLENS, "pol", "pollens"),
 }
+
+# Le fichier extrait dont un lot de mesure tire ses colonnes, quand ce n'est pas son nom.
+FICHIER_SOURCE = {"pollens": "chimie"}
 
 
 def charger_lot(lot: str) -> tuple[pd.DataFrame, list[str], list[str]]:
@@ -92,10 +114,11 @@ def charger_lot(lot: str) -> tuple[pd.DataFrame, list[str], list[str]]:
     lignes qu'elle n'en reçoit.
     """
     variables, prefixe, libelle = LOTS_MESURABLES[lot]
-    fs = sorted(glob.glob(str(RACINE / f"data/processed/meteo/{lot}_metropole_*.parquet")))
+    source = FICHIER_SOURCE.get(lot, lot)
+    fs = sorted(glob.glob(str(RACINE / f"data/processed/meteo/{source}_metropole_*.parquet")))
     if not fs:
         raise SystemExit(f"aucun mois du lot « {lot} » extrait — lancer "
-                         f"scripts/extraire_speciation.py --lot {lot}")
+                         f"scripts/extraire_speciation.py --lot {source}")
     t = pd.concat([pd.read_parquet(f) for f in fs], ignore_index=True)
     manque = [c for c in variables if c not in t.columns]
     if manque:
