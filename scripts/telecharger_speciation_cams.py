@@ -137,6 +137,28 @@ CIBLES = ["ozone", "nitrogen_dioxide", "particulate_matter_10um", "particulate_m
 
 # {nom du lot : (espèces, niveaux)} — le nom du lot entre dans le nom du fichier, donc dans
 # la reprise : deux jeux d'espèces ne peuvent pas se confondre.
+# 🔴 Les lots VERTICAUX sont bloqués côté service — mesuré le 23/08/2026
+# ---------------------------------------------------------------------------------------
+# Dix requêtes `vertical100` ont échoué d'affilée, ~9 min chacune, pendant que `cdsapi`
+# réessayait en silence : le processus était vivant, connecté, et n'écrivait rien. Ce sont
+# les journaux du SERVICE, pas les nôtres, qui donnent la cause :
+#
+#     « Failed to retrieve data from archived remote server. Please try again later.
+#       The job failed with: RuntimeError »
+#
+# Test contrôlé — même mois (2024-06), mêmes espèces, mêmes échéances, **une seule variable
+# changée** :
+#
+#     niveau   0 m : ✅ 190 Mo en 275 s
+#     niveau 100 m : ❌ HTTP 400
+#
+# Ce n'est donc ni l'année, ni une panne générale du service, ni notre client : l'archive
+# ne sert pas les niveaux non-surface en ce moment. Rien à corriger ici — à réessayer.
+#
+# ⚠️ En attendant, `vertical100` et `vertical500` ont un TROU AU MILIEU (2023-08→10 et
+# 2024-03→09 manquants). Les utiliser tels quels serait le défaut « un mois absent est un
+# code d'époque » : sous validation mois-caché, « famille absente » ≡ « on est dans ces
+# mois-là ». La seule fenêtre contiguë exploitable est **2024-10 → 2026-08, 23 mois**.
 LOTS = {
     "speciation": (ESPECES, ["0"]),
     "precurseurs": (PRECURSEURS, ["0"]),
