@@ -71,7 +71,15 @@ HORIZON = 2      # TRANCHES[2] = (25, 48) — J+1, l'échéance de la spéciatio
 # 🔴 `pm2p5_total_om_conc` a QUITTÉ le socle le 23/08/2026 : elle est absente de 2023-08,
 # 09 et 10, donc tardive. SOCLE et TARDIVES sont disjoints par définition — l'un est ce
 # qui est toujours là, l'autre ce qui manque parfois.
-SOCLE = ["dust", "ecres_conc", "pmwf_conc", "sia_conc", "ectot_conc", "pm10_ss_conc"]
+# 🔴 `ectot_conc` et `pm10_ss_conc` ont quitté le socle le 24/08/2026 : mesurées sur les
+# 37 mois extraits, elles n'en couvrent que **32** — elles viennent du lot COMPLÉMENT, dont
+# l'archive commence en 2024-01. Elles étaient donc des indicateurs d'époque classés parmi
+# les colonnes « toujours présentes », et `core7` — la variante censée n'en porter aucun —
+# les gardait.
+#
+# C'est la troisième fois cette nuit que cette liste ment. D'où le garde ci-dessous : la
+# classification est vérifiée CONTRE LES DONNÉES à chaque chargement, au lieu d'être crue.
+SOCLE = ["dust", "ecres_conc", "pmwf_conc", "sia_conc"]
 
 # 🔴 Une leçon vit à UN endroit ; les autres la CITENT (§ 0-J). Cette liste existait ici
 # ET dans `extraire_speciation.py`, et le 23/08 seule la seconde avait été mise à jour :
@@ -83,7 +91,11 @@ SOCLE = ["dust", "ecres_conc", "pmwf_conc", "sia_conc", "ectot_conc", "pm10_ss_c
 # chose — ici l'une décrit ce que le FOURNISSEUR sert, l'autre ce que la pile ÉCARTE. Les
 # fusionner exigeait de vérifier qu'elles restent disjointes, pas seulement qu'elles
 # existent en un exemplaire.
-from extraire_speciation import TARDIVES  # noqa: E402
+from extraire_speciation import TARDIVES as _TARDIVES_EXTRACTION  # noqa: E402
+
+# Les tardives de la MESURE : celles de l'extraction, plus les deux du lot complément, dont
+# l'archive est plus courte que celle du lot principal.
+TARDIVES = list(_TARDIVES_EXTRACTION) + ["ectot_conc", "pm10_ss_conc"]
 
 if set(SOCLE) & set(TARDIVES):  # pragma: no cover — un garde, pas une branche
     raise SystemExit(f"SOCLE et TARDIVES se chevauchent : "
@@ -119,6 +131,24 @@ def charger_speciation() -> pd.DataFrame:
         garde = ["station_id", "jour"] + (["echeance_h"] if "echeance_h" in t.columns else [])
         morceaux.append(t[garde + [c for c in SOCLE + TARDIVES if c in t.columns]])
     brut = pd.concat(morceaux, ignore_index=True)
+    # 🔴 La classification se VÉRIFIE contre les données, elle ne se croit pas. Elle a
+    # menti trois fois en une nuit : la matière organique, puis le chevauchement
+    # SOCLE/TARDIVES, puis les deux colonnes du lot complément. Une colonne du socle
+    # absente de mois entiers est un indicateur d'époque déguisé en variable stable.
+    mois_brut = pd.to_datetime(brut["jour"]).dt.strftime("%Y-%m")
+    traitres = []
+    for c in SOCLE:
+        if c not in brut.columns:
+            traitres.append(f"{c} (absente)")
+            continue
+        vus = mois_brut[brut[c].notna()].nunique()
+        if vus < mois_brut.nunique():
+            traitres.append(f"{c} ({vus}/{mois_brut.nunique()} mois)")
+    if traitres:
+        raise SystemExit(
+            "❌ colonne(s) du SOCLE absente(s) de mois entiers : " + ", ".join(traitres)
+            + "\n   Le socle est ce qui est TOUJOURS là. Une colonne trouée y est un "
+              "indicateur d'époque déguisé : la déplacer dans TARDIVES.")
     cols = [c for c in SOCLE + TARDIVES if c in brut.columns]
     g = brut.groupby(["station_id", "jour"])[cols].agg(["mean", "max"])
     g.columns = [f"spe_{a}_{b}" for a, b in g.columns]
