@@ -181,6 +181,42 @@ référence d'abord.** Mesurer un apport sur une base périmée, c'est deux mesu
 
 ---
 
+## 5 quinquies. 0,14 % de données déplacent le chiffre publié de 0,3 point
+
+Les quatre piles ont été refaites sur le corpus corrigé. Trois montent, l'ozone ne bouge
+pas :
+
+| | avant | après | Δ |
+|---|---|---|---|
+| NO₂ | 41,23 % | **41,52 %** | +0,28 |
+| O₃ | 20,51 % | 20,51 % | −0,01 |
+| PM10 | 21,13 % | **21,36 %** | +0,23 |
+| PM2,5 | 13,65 % | **13,96 %** | +0,32 |
+
+PM10 n'aurait pas dû bouger : sa fenêtre commence en 2024-01, où la spéciation était déjà
+complète. Mesuré, l'écart d'entrée vaut **476 jours-station sur 347 956, soit 0,14 %** — le
+seul 2024-01-01, qui n'existait pas avant que le fichier de 2023-12 ne soit téléchargé.
+Et `n_test` est **identique sur les 24 plis**, ce qui exclut un changement de découpage.
+
+Ce que cela dit du protocole, et c'est le point :
+
+| | |
+|---|---|
+| variabilité à données **identiques** | **≤ 0,039 pt** par pli (rejeu PM2,5, 29 plis) |
+| déplacement après **0,14 %** de données en plus | **jusqu'à 2,56 pt** par pli, +0,23 en agrégé |
+
+Soit **65 fois** le bruit d'exécution pour un quatorze-millième du corpus. Le gradient
+boosting n'est pas stable au sens de Lipschitz : une décision de coupe bascule, et l'écart
+se propage. **Le chiffre publié est donc sensible à une perturbation de 0,1 % des données à
+peu près autant qu'à la résolution du plan** (±0,36 à ±0,48 %).
+
+Conséquence pratique : la deuxième décimale d'un gain n'a pas de sens, et la première n'est
+pas robuste. Les comparaisons **appariées** — même plis, même graine, même découpage — ne
+sont pas touchées : c'est précisément pour cela qu'elles portent toutes les conclusions de
+ce document.
+
+---
+
 ## 6. Ce qui reste ouvert
 
 1. **Trois prédictions scellées** attendent leurs mesures — ablations jointes
