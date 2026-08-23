@@ -111,6 +111,14 @@ POLLENS = ["bpg_conc", "gpg_conc"]
 # ⚠️ Onze mois font trois blocs de trois : le criblage DIMENSIONNE l'effet, il ne le
 # démontre pas. Sa seule fonction est de décider si l'acquisition des 26 mois manquants
 # vaut d'être lancée.
+# ⚠️ Et la restriction est devenue OBLIGATOIRE le 23/08/2026, pas seulement prudente :
+# ramener la tolérance de regroupement des plages de 20 Mo à 1 Mo a cessé de tirer les
+# champs superflus voisins, donc de les décoder. Les mois téléchargés AVANT portent
+# 104 colonnes, ceux d'APRÈS en portent 39. Le schéma dépend désormais de la date de
+# téléchargement — un code d'époque d'un genre nouveau, créé par une optimisation.
+#
+# Les huit champs ci-dessous sont présents des deux côtés, à 100 %. Toute colonne prise
+# hors de cette liste séparerait les mois anciens des récents.
 IFS_SURFACE = ["t2m", "tp", "u10", "v10", "temperature_c", "precipitation_mm",
                "vent_vitesse_m_s", "vent_direction_deg"]
 
