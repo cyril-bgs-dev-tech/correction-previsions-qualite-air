@@ -13,6 +13,10 @@ data/
 reports/mos_*.csv
 reports/queue_predictions_*.csv
 reports/*_predictions.csv
+# Les tables de prédictions ligne à ligne des bancs d'apport — 51 Mo pour une nuit de
+# mesures, et leur diff n'a aucun sens. Elles se recalculent par le script qui les écrit,
+# et servent d'entrée au bootstrap apparié, jamais de référence.
+reports/predictions_*.parquet
 reports/log_*.txt
 reports/optuna/
 reports/figures/*.html
@@ -152,6 +156,10 @@ docs/QUESTIONS_*.md
 docs/REPONSE_*.md
 docs/REPONSES_*.md
 docs/GPT_*.md
+# Les réponses de conseil externe ne portent pas toutes le préfixe : `LEVIERS_GPT_REVUE.md`
+# y échappait par son nom seul, alors qu'elle relève exactement de la même catégorie.
+docs/*_GPT_*.md
+docs/*_REVUE.md
 docs/GROK_*.md
 docs/GROK4-5_*.md
 docs/*KIMI*.md
@@ -163,3 +171,10 @@ docs/RESULTATS_NUIT_30_07.md
 docs/PLAN_10_ACTIONS_EXTREMES.md
 docs/TACHES_GROK_CREATIVITE.md
 docs/REVUE_2_DESIGN.md
+
+# ── Notebooks Kaggle : hors GitHub, versionnés sur GitLab ──────────────────────
+#
+# Retirés de tout l'historique GitHub le 21 août 2026 (git-filter-repo + force-push).
+# Ils restent sur le disque pour le travail local. Ne jamais les remettre ici.
+kaggle/*.ipynb
+/ps-s6-e7-realmlp-pytorch.ipynb

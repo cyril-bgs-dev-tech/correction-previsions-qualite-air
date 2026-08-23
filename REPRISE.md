@@ -1,9 +1,107 @@
 # Reprise — l'état du projet
 
-> **Mis à jour le 20/08/2026 à 11 h 30.** Si la date ci-dessus a plus de deux jours,
+> **Mis à jour le 23/08/2026 à 04 h 30.** Si la date ci-dessus a plus de deux jours,
 > **méfie-toi de ce fichier** : sur ce projet il a déjà été périmé de dix jours tout en
 > s'annonçant comme l'état courant. Vérifie par `git log --oneline -5` et `ls -lt reports/`
 > avant de croire ce qui suit.
+
+---
+
+## 🔴 23/08 — DEUX DÉFAUTS DE PRÉTRAITEMENT CORRIGÉS : LES CHIFFRES ONT BOUGÉ
+
+**À lire avant de citer un chiffre du dossier.** Le détail complet, avec ses mesures, est dans
+`reports/CORRECTIF_PRETRAITEMENT.md`.
+
+### ① La clé d'appariement n'était pas unique
+
+`fit_mos.paires_cams_observations` rendait **5 à 6 % de lignes en double** — 467 326 sur NO₂,
+375 294 sur O₃, 418 039 sur PM10, 302 815 sur PM2,5. Copies **strictement identiques**, toutes
+sur **2024-01, 2024-02 et le 1er mars 2024** : janvier et février 2024 avaient été téléchargés
+deux fois, une fois seuls et une fois groupés.
+
+⚠️ **Le nettoyage évident était faux** : supprimer le fichier groupé aurait retiré **331 296
+lignes qu'aucun autre ne porte**. C'est l'union **dédoublonnée** qui est juste, et le
+correctif est au point d'entrée — avec un refus de trancher si deux copies divergent.
+
+### ② La moyenne glissante 8 h comptait des LIGNES, pas des HEURES
+
+Un trou l'étalait au-delà de 8 h, un doublon la resserrait à 4 h. Sur l'ozone, **7,96 % des
+jours-station** portaient une cible différente de la bonne — et **98,6 % de 2024-01, 99,9 % de
+2024-02**, où la duplication faisait une « moyenne 8 h » sur 4 heures réelles. La grandeur
+produite n'était alors ni la valeur cible européenne, ni le MQI FAIRMODE, ni le sous-indice
+ATMO.
+
+### Ce que ça déplace — mêmes plis, mêmes graines, mêmes colonnes
+
+| configuration de base | avant | après | Δ |
+|---|---|---|---|
+| NO₂ | +27,895 % | +27,782 % | −0,113 |
+| O₃ | +5,719 % | **+6,117 %** | +0,398 |
+| PM10 | +12,722 % | **+13,040 %** | +0,317 |
+| PM2,5 | +4,489 % | **+5,581 %** | **+1,092** |
+
+**Les chiffres publiés étaient sous-estimés sur trois polluants sur quatre**, de près d'un
+quart en relatif sur PM2,5.
+
+---
+
+## ⭐ 23/08 — UN LEVIER GRATUIT DÉMONTRÉ : LA FORME DU JOUR
+
+`agreger_journalier` écrase les 24 valeurs horaires de CAMS en deux nombres. Quatre
+descripteurs restituent ce qu'elle détruit — amplitude, dispersion intra-jour, **heure** du
+maximum, pic sur moyenne — sans aucune observation, donc **périmètre PARTOUT**.
+
+| | NO₂ | O₃ | PM10 | PM2,5 |
+|---|---|---|---|---|
+| apport en dernier étage de la pile | +0,31 | +0,55 | +0,62 | +0,59 |
+| **coût à l'ablation** | +0,32 | +0,54 | +0,62 | +0,60 |
+
+🔑 **Les deux lectures coïncident à 0,02 pt près sur les quatre polluants** — ce qui n'arrive
+jamais ailleurs dans ce tableau. Cela signifie qu'**aucune autre famille ne porte cette
+information**. Elle arrive septième et garde tout.
+
+### La pile complète, refaite
+
+| ★ MAXIMALE — PARTOUT | publié | refait |
+|---|---|---|
+| NO₂ | +40,16 % | **+40,14 %** |
+| O₃ | +18,17 % | **+19,12 %** |
+| PM10 | +20,71 % | **+20,66 %** |
+| PM2,5 | +12,49 % | **+12,80 %** |
+
+AUX STATIONS : NO₂ +47,03 · O₃ +24,60 · PM10 +26,48 · PM2,5 +21,16.
+
+⚠️ **`reports/VERITE_DOSSIER.md` est en retard sur ses propres sources** — son § 12 cite les
+anciennes valeurs. Régénérer par `python3 scripts/verite_dossier.py`.
+
+### 🔴 Et la pile AUDITABLE dit autre chose
+
+`--support-complet` écarte toute famille ayant un mois entièrement absent — donc tout
+indicateur d'époque implicite. Sur l'ozone : **+14,38 % au lieu de +19,12 %**. Les 4,74 points
+d'écart ne sont attribués à rien : ni à l'information réelle de la spéciation, des feux et des
+membres, ni à ce que leur motif d'absence encodait. **Les séparer est le test n° 3 de la
+feuille de route.**
+
+### Ce qui a été réfuté proprement
+
+**Les ratios d'échelle** (forme du profil spatial au lieu du niveau) : non établi, le signe
+change avec le polluant, et sur PM10 la version à 28 colonnes **nuit** (p = 0,002).
+
+---
+
+## 🗺️ 23/08 — LA FEUILLE DE ROUTE DES VINGT PROCHAINS TESTS
+
+Publiée : https://claude.ai/code/artifact/69b9eed7-1444-4a0c-a995-a0f97c94b3b9
+
+Cinq paliers, classés par valeur attendue sur coût, chacun avec son ancrage mesuré et le
+critère qui le tranchera. Trois recadrages que la nuit a imposés :
+
+- **la marge météo était surestimée** — +0,69 à +3,27 pt sur un réseau instrumenté, et non
+  +8,85 à +13,50 ; le grand chiffre ne vaut que pour la spatialisation et recouvre la veille ;
+- **l'écart réseau ↔ spatialisation est la plus grosse marge du projet** — +5,48 à +8,36 pt,
+  et la version naïve de sa fermeture est déjà réfutée (+0,28 pt) ;
+- **la typologie est la première famille de la pile** (+9,61 pt sur NO₂ à l'ablation) **et
+  c'est un label à 4 classes fait à la main** — nos tables ne portent aucune donnée bâtiment.
 
 ---
 
