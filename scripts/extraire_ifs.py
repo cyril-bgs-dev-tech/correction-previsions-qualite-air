@@ -301,17 +301,43 @@ def main(annee: int, mois: int, jours: int) -> int:
     print(f"IFS · {len(dates)} jours × {len(ECHEANCES)} échéances · "
           f"{len(CHAMPS_SFC)} champs · {len(stations)} stations", flush=True)
 
-    fichiers, echecs = [], 0
+    fichiers, rates = [], []
     for date in dates:
         for e in ECHEANCES:
             cible = CACHE / f"ifs_{date}_{e:03d}h.grib2"
             if telecharger_pas(date, e, cible):
                 fichiers.append(cible)
             else:
-                echecs += 1
+                rates.append((date, e, cible))
         volume = sum(f.stat().st_size for f in fichiers) / 1e6
         print(f"  {date} · {len(fichiers)} pas · {volume:.0f} Mo · "
-              f"{time.time() - depart:.0f}s · {echecs} échec(s)", flush=True)
+              f"{time.time() - depart:.0f}s · {len(rates)} échec(s)", flush=True)
+
+    # 🔴 UNE SECONDE PASSE sur les pas ratés — ajoutée le 24/08/2026.
+    #
+    # Le contrôle des heures par jour a refusé 2025-04 pour deux jours à 6 h sur 8, soit
+    # quatre pas perdus sur 240. Les heures manquantes sont ALÉATOIRES d'un jour à l'autre
+    # — 12 h, 3 h, 6 h, 0 h, 18 h sur mars — donc ce ne sont pas des trous d'archive : ce
+    # sont des rejets pris pendant que le frein montait. Une fois le mois fini, le frein
+    # est retombé et le service répond.
+    #
+    # Sans cette passe, presque chaque mois serait refusé pour trois ou quatre pas, et il
+    # faudrait relancer le lot autant de fois qu'il y a de mois. Le garde aurait raison à
+    # chaque fois, et le travail n'avancerait pas.
+    if rates:
+        print(f"\n  seconde passe sur {len(rates)} pas raté(s) — le frein est retombé "
+              f"(pause {_PAUSE:.2f}s)", flush=True)
+        encore = []
+        for date, e, cible in rates:
+            if telecharger_pas(date, e, cible):
+                fichiers.append(cible)
+            else:
+                encore.append((date, e))
+        print(f"  seconde passe : {len(rates) - len(encore)} récupéré(s) sur {len(rates)}"
+              + (f" · restent {', '.join(f'{d}/{h:03d}h' for d, h in encore[:6])}"
+                 if encore else ""), flush=True)
+        rates = [(d, e, CACHE / f"ifs_{d}_{e:03d}h.grib2") for d, e in encore]
+    echecs = len(rates)
 
     if not fichiers:
         print("aucun pas téléchargé — vérifier l'accès avant d'insister")
