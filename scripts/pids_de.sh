@@ -62,11 +62,15 @@ for d in /proc/[0-9]*; do
   if [ "${LAXISTE:-}" = "1" ]; then
     case "$cmd" in *"$MOTIF"*) trouve=1 ;; esac
   else
-    while IFS= read -r -d '' arg; do
-      case "$arg" in
-        "$MOTIF"|*/"$MOTIF") trouve=1; break ;;
-      esac
-    done < "$d/cmdline" 2>/dev/null
+    # ⚠️ La redirection porte le `2>/dev/null`, pas la boucle : un processus qui meurt
+    # pendant le balayage est normal — /proc change sous nos pieds — et une erreur affichée
+    # pour cela masquerait les vraies. Sans ce garde, la sortie standard du lot se
+    # remplissait de « No such file or directory ».
+    { while IFS= read -r -d '' arg; do
+        case "$arg" in
+          "$MOTIF"|*/"$MOTIF") trouve=1; break ;;
+        esac
+      done < "$d/cmdline"; } 2>/dev/null
   fi
   case "$trouve" in
     1)
