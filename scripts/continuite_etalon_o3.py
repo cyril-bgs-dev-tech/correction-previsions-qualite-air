@@ -222,24 +222,48 @@ def main() -> int:
     sortie = RACINE / "reports/continuite_etalon_o3.csv"
     t.to_csv(sortie, index=False)
 
+    # 🔴 Le seuil ne s'écrit pas en dur — il se calcule sur la dispersion de CETTE
+    # exécution (§ 0-A). L'ancienne version décidait sur `abs(effet) >= 3.0`, un nombre
+    # qui ne regardait pas la variabilité mensuelle : avec un seul mois de chaque côté il
+    # aurait fallu 3 points pour conclure alors que la résolution valait ~7, et avec douze
+    # mois il en faut 3 alors que la résolution vaut ~2,7. Le même chiffre disait deux
+    # choses opposées selon la taille du corpus.
+    v = pivot["ozone_propre"].dropna().to_numpy()
+    ec = float(np.std(v, ddof=1)) if len(v) > 1 else float("nan")
+    se = ec / np.sqrt(len(v)) if len(v) > 1 else float("nan")
+    demi = 1.96 * se
+    # Ce que la métrologie annonce, et donc ce que le corpus doit savoir résoudre pour
+    # avoir le droit d'écrire « écarté » plutôt que « non détecté ».
+    ATTENDU_LITTERATURE_PCT = 1.0
+
     print(f"\n{'─' * 78}")
     print(f"  Effet propre à l'ozone, moyenné sur {n_mois} mois calendaire(s) : "
           f"**{effet:+.2f} points**")
+    if len(v) > 1:
+        print(f"  Dispersion mensuelle {ec:.2f} pt · IC95 [{effet - demi:+.2f} ; "
+              f"{effet + demi:+.2f}] · RÉSOLUTION ±{demi:.2f} pt")
     if n_mois < 3:
-        print(f"\n  → **INCONCLUSIF, et c'est le résultat.** Un seul ou deux mois")
-        print(f"    calendaires sont disponibles des deux côtés, et l'écart interannuel")
-        print(f"    qui les sépare est du même ordre que l'effet cherché. La littérature")
-        print(f"    métrologique situe le décalage CCQM.O3.2019 autour du pour-cent —")
-        print(f"    **sous le pouvoir de résolution de ce corpus.**")
-        print(f"\n    Décision opérationnelle : agréger les deux périodes, en DISANT que")
-        print(f"    la continuité n'a pas pu être vérifiée faute de prévisions CAMS entre")
-        print(f"    2025-08 et 2026-06. Ne pas prétendre l'avoir écartée.")
-    elif abs(effet) >= 3.0:
-        print(f"\n  → MARCHE PROPRE À L'OZONE de {effet:+.2f} points, témoin déduit.")
-        print(f"    Documenter la rupture avant tout entraînement à cheval sur la date.")
+        print("\n  → **INCONCLUSIF, et c'est le résultat.** Un seul ou deux mois")
+        print("    calendaires sont disponibles des deux côtés, et l'écart interannuel")
+        print("    qui les sépare est du même ordre que l'effet cherché.")
+    elif abs(effet) > demi:
+        print(f"\n  → MARCHE PROPRE À L'OZONE de {effet:+.2f} pt, témoin déduit — l'IC95")
+        print("    exclut zéro. Documenter la rupture avant tout entraînement à cheval")
+        print("    sur la date.")
+    elif demi <= ATTENDU_LITTERATURE_PCT:
+        print(f"\n  → ÉCARTÉ : {effet:+.2f} pt, IC95 entièrement sous le "
+              f"{ATTENDU_LITTERATURE_PCT:.0f} % attendu de la")
+        print("    littérature métrologique. Les deux périodes s'agrègent, et cette fois")
+        print("    l'effet est bien exclu, pas seulement non vu.")
     else:
-        print(f"\n  → Pas de marche propre à l'ozone : {effet:+.2f} points, témoin déduit.")
-        print(f"    Les deux périodes s'agrègent. Résultat négatif, à publier comme les autres.")
+        print(f"\n  → NON DÉTECTÉ, et ce n'est PAS « écarté » : {effet:+.2f} pt, mais la")
+        print(f"    résolution du corpus (±{demi:.2f} pt) reste plus large que le "
+              f"{ATTENDU_LITTERATURE_PCT:.0f} % que la")
+        print("    littérature métrologique attribue à CCQM.O3.2019. Un décalage de cet")
+        print("    ordre passerait sous ce test sans y laisser de trace.")
+        print("\n    Décision opérationnelle : agréger les deux périodes — le risque est")
+        print("    borné à quelques points et ne penche pas d'un côté — en écrivant que")
+        print("    la continuité est NON DÉTECTÉE à ±{:.1f} pt, jamais « vérifiée ».".format(demi))
     print(f"\nÉcrit : {sortie.relative_to(RACINE)}")
     return 0
 

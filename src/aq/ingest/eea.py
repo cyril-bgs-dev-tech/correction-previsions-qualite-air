@@ -62,6 +62,30 @@ NOTATION_API = {
 # silencieusement toute statistique : neutralisée dès l'ingestion.
 SENTINELLE = -999.0
 
+# 🔴 Le vocabulaire EIONET compte CINQ codes valides, pas un — et le filtrer à 1 a déjà
+# coûté treize mois d'ozone dans la chaîne LCSQA, corrigés le 01/08/2026.
+#
+#   dd.eionet.europa.eu/vocabulary/aq/observationvalidity
+#     −99  Not valid due to station maintenance or calibration   → invalide
+#      −1  Not valid                                             → invalide
+#       1  Valid                                                 → valide
+#     2, 3  Valid, but below detection limit (et sa variante)     → valide
+#       4  Valid (Ozone only) using CCQM.O3.2019                  → valide
+#
+# Le code 4 est entré au vocabulaire en juillet 2024 et la France y a basculé le
+# 01/07/2025 : TOUT l'ozone français porte 4 depuis cette date. Un filtre `== 1` le jette
+# intégralement, sans lever et avant écriture — le fichier produit ne porte alors aucune
+# trace de ce qu'il a perdu.
+#
+# Ce module alimente les panels EEA, aujourd'hui remplacés par `panel_unifie_lcsqa` : le
+# défaut y est donc DORMANT, pas actif. Il est corrigé quand même, parce qu'un jumeau
+# dormant est exactement ce qu'une régénération réveille (§ 4 bis).
+#
+# La règle générale, et elle vaut au-delà de ce fichier : **un code de qualité inconnu se
+# résout dans le vocabulaire normatif, jamais par l'exclusion prudente.** L'exclusion
+# prudente est ce qui a coûté les treize mois.
+# Conservée pour la lisibilité du commentaire ci-dessus ; le filtre porte sur le
+# SIGNE, pas sur cette valeur.
 VALIDITE_VALIDE = 1
 
 
@@ -132,11 +156,13 @@ def lire_fichier(url: str, timeout: int = 120) -> pd.DataFrame:
     # Neutralisation conjointe du flag et de la sentinelle. Les deux critères sont
     # appliqués : ils coïncident sur l'échantillon observé, mais s'appuyer sur une
     # coïncidence non documentée serait imprudent.
-    # `fillna(False)` : une validité absente n'est pas une validité acquise.
+    # Le test porte sur le SIGNE — tout code positif est valide au vocabulaire EIONET,
+    # voir le commentaire de `VALIDITE_VALIDE`. Un `!= 1` jetterait 2, 3 et 4.
+    # `fillna(True)` : une validité absente n'est pas une validité acquise.
     # Sans cela, la comparaison sur un Int32 nullable produit <NA>, que le masque
     # traiterait comme faux — donc comme une donnée valide.
     invalide = (
-        (df["validite"] != VALIDITE_VALIDE).fillna(True)
+        (df["validite"] <= 0).fillna(True)
         | (df["valeur"] <= SENTINELLE)
     )
     df.loc[invalide, "valeur"] = pd.NA
