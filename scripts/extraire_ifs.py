@@ -183,7 +183,17 @@ def plages_regroupees(champs: list[dict]) -> list[tuple[int, int]]:
 # rejet et se relâche à chaque succès. Il se calibre donc sur le service tel qu'il est ce
 # jour-là, au lieu de reprendre un chiffre d'une autre exécution.
 _PAUSE = 0.0
-_PLAFOND_PAUSE = 4.0
+# 🔴 Plafond ramené de 4 s à 2 s, et décroissance de 3 % à 20 % par succès — 23/08/2026.
+#
+# Le frein a saturé pendant une vraie limitation, puis n'est jamais redescendu : à 3 % par
+# succès, revenir de 4 s à 0,5 s demande **68 succès**, soit plus d'une journée de données.
+# Mesuré à ce moment-là, les deux miroirs répondaient pourtant à 6,6 et 2,7 Mo/s avec 11
+# réussites sur 12 — le service allait bien, le frein l'ignorait.
+#
+# **Un frein qui met plus longtemps à se relâcher qu'à se serrer devient la panne qu'il
+# corrigeait.** À 20 % par succès, il revient de 2 s à 0,1 s en quinze succès, soit environ
+# trois pas de téléchargement.
+_PLAFOND_PAUSE = 2.0
 
 
 def _rejet(erreur: BaseException | None = None) -> str:
@@ -208,9 +218,11 @@ def _rejet(erreur: BaseException | None = None) -> str:
 
 
 def _succes() -> None:
-    """Une réussite le relâche, lentement : redescendre trop vite rappelle le rejet."""
+    """Une réussite le relâche franchement — voir le commentaire de `_PLAFOND_PAUSE`."""
     global _PAUSE
-    _PAUSE *= 0.97
+    _PAUSE *= 0.8
+    if _PAUSE < 0.01:
+        _PAUSE = 0.0
 
 
 def _freiner() -> None:
