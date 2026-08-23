@@ -133,6 +133,54 @@ le même sens, et le second ne dépend pas de la résolution du premier.
 
 ---
 
+## 5 ter. Ce que les ablations jointes ont tranché
+
+Écart apparié pli à pli entre la pile complète et la pile réduite, IC95 par bootstrap,
+`p` par permutation exacte. Le signe est celui du **coût** : positif, la pile perd à
+retirer.
+
+| groupe retiré | NO₂ | O₃ | PM10 | PM2,5 |
+|---|---|---|---|---|
+| **feux + tendance** | +0,007 | +0,352 | −0,047 | **−0,715** ✅ |
+| **geoscf + membres** | **+0,545** ✅ | **+1,173** ✅ | **+0,850** ✅ | *en cours* |
+
+**Les deux familles réfutées ne coûtent rien à perdre — et sur PM2,5 la pile y gagne
+0,71 point**, IC95 [−1,324 ; −0,064]. Sur les trois autres le plan ne voit pas de
+différence. Combiné aux 34 % d'absence de `feux`, score et hygiène pointent dans le même
+sens.
+
+**GEOS-CF et les membres, eux, coûtent systématiquement** — trois polluants sur trois
+résolus. `membres` paraissait inutile seul (+0,43 pt, non confirmé) parce qu'il est mesuré
+en présence de GEOS-CF.
+
+⚠️ **Leur structure interne reste indécidable.** Les écarts entre le retrait joint et la
+somme des retraits individuels valent 0,17 · 0,39 · 0,29 pt pour des résolutions de
+0,27 · 1,06 · 0,67. Additif, redondant et substituable sont indiscernables ici — et une
+première lecture avait annoncé « REDONDANTES » en comparant ces quantités à 0,05 près,
+une constante devinée.
+
+---
+
+## 5 quater. Compléter la spéciation déplace la base
+
+Les cinq mois de 2023 manquants ont été téléchargés. Mesuré par accident, un script ayant
+refait une mesure sur le corpus corrigé :
+
+| | 32 mois de spéciation | 37 mois |
+|---|---|---|
+| base NO₂ | 41,336 % | **41,508 %** |
+| apport apparié des précurseurs, moyennes | −0,071 | **−0,273** |
+| moyennes et maxima | +0,080 | **−0,115** |
+
+**La base gagne ~0,17 pt et l'apport marginal des précurseurs diminue d'autant.** Ce n'est
+pas du bruit : c'est la disparition d'un code d'époque — la spéciation était absente de
+cinq mois entiers dans la fenêtre — qui valait de la performance apparente.
+
+Conséquence de méthode : **toute la chaîne se régénère sur le corpus corrigé, piles de
+référence d'abord.** Mesurer un apport sur une base périmée, c'est deux mesures.
+
+---
+
 ## 6. Ce qui reste ouvert
 
 1. **Trois prédictions scellées** attendent leurs mesures — ablations jointes
