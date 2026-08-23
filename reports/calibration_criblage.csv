@@ -1,0 +1,11 @@
+axe,prefixe,config,p_PC_observe,seuil_apres_criblage,n_configurations_criblees,taille_reelle_une_config,taille_apres_criblage,libelle,p_PC_bootstrap_verdict,tient_apres_criblage
+double,apport_fourier_profil,rmse_config3,0.0022494376405898524,0.09743814046488379,10,0.001475,0.01375,③ pile + les deux (8),0.0042,True
+double,apport_leviers_gratuits,rmse_config5,0.0022494376405898524,0.09743814046488379,10,0.001475,0.01375,⑤ + les trois,0.0021,True
+double,apport_leviers_gratuits,rmse_config3,0.004498875281179705,0.09743814046488379,10,0.001475,0.01375,③ + forme du profil horaire (4),0.003,True
+double,apport_leviers_gratuits,rmse_config2,0.010497375656085979,0.09743814046488379,10,0.001475,0.01375,② + climatologie du point (4),0.0141,True
+double,apport_precurseurs,rmse_config2,0.03899025243689078,0.09743814046488379,10,0.001475,0.01375,"② + précurseurs, moyennes (4)",0.0339,True
+double,apport_precurseurs,rmse_config3,0.10647338165458636,0.09743814046488379,10,0.001475,0.01375,"③ + précurseurs, moyennes et maxima (8)",0.1185,False
+double,apport_leviers_gratuits,rmse_config4,0.36365908522869284,0.09743814046488379,10,0.001475,0.01375,④ + ensemble décalé (4),0.3615,False
+double,apport_fourier_profil,rmse_config2,0.6043489127718071,0.09743814046488379,10,0.001475,0.01375,② pile + Fourier à la place (4),0.5985,False
+double,apport_ratios_echelle,rmse_config2,1.0,0.09743814046488379,10,0.001475,0.01375,② + ratios ROUTE (4),1.0,False
+double,apport_ratios_echelle,rmse_config3,1.0,0.09743814046488379,10,0.001475,0.01375,③ + ratios des 5 familles (28),1.0,False

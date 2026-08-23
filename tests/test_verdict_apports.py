@@ -51,6 +51,22 @@ def test_la_refutation_prime_sur_une_conjonction_parfaite():
     assert "RÉFUTÉ" in verdit
 
 
+def test_un_echec_par_PUISSANCE_se_distingue_d_une_absence_d_effet():
+    """Le cas réel du 23/08 : spéciation p_PC=0,065 avec quatre groupes positifs contre
+    feux p_PC=1,0 avec trois négatifs. Les deux disaient « NON CONFIRMÉ »."""
+    faible = (+1.2, -0.3, +2.7, 0.09, 0.91, 6, 9)
+    puissance = {"NO2": PORTE, "O3": faible, "PM10": faible, "PM25": faible}
+    v, _ = rendre_verdict(puissance, {2: 0.065, 3: 0.065, 4: 0.065},
+                          {L: dict.fromkeys(puissance, 1) for L in (2, 3, 4)})
+    assert "PUISSANCE" in v and "🟠" in v
+
+    negatif = (-0.5, -1.1, +0.2, 0.80, 0.20, 3, 9)
+    vide = {"NO2": negatif, "O3": negatif, "PM10": negatif, "PM25": MUET}
+    v, _ = rendre_verdict(vide, {2: 1.0, 3: 1.0, 4: 1.0},
+                          {L: dict.fromkeys(vide, -1) for L in (2, 3, 4)})
+    assert "NON CONFIRMÉ" in v and "PUISSANCE" not in v
+
+
 def test_quatre_groupes_positifs_tiennent():
     """Le témoin : sans groupe en sens inverse, la conjonction décide seule."""
     detail = {p: PORTE for p in ("NO2", "O3", "PM10", "PM25")}

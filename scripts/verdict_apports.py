@@ -119,6 +119,46 @@ def bootstrap_blocs(valeurs: list[float], longueur: int, tirages: int = 9999,
     return float(np.mean(b)), float(bas), float(haut), float(p_plus), float(p_moins)
 
 
+def permutation_blocs(valeurs: list[float], longueur: int, tirages: int = 9999,
+                      graine: int = 20260823) -> tuple[float, float]:
+    """Test de permutation par RETOURNEMENT DE SIGNE des blocs. Rend `(p_plus, p_moins)`.
+
+    Pourquoi il remplace le bootstrap comme porteur du `p` — mesuré le 23/08/2026
+    ----------------------------------------------------------------------------
+    Le `p` bootstrap est la part de rééchantillons dont la moyenne passe de l'autre côté
+    de zéro. Avec 8 à 12 blocs et un effet régulier, **aucun** rééchantillon ne traverse :
+    le `p` tombe à son plancher `1/(B+1)` et y reste. Mesuré sur les dix configurations
+    criblées, cinq rendaient exactement 0,0003 après conjonction — le bootstrap ne les
+    classait plus, il les saturait.
+
+    Sous H₀ « cette configuration n'apporte rien », l'écart d'un bloc est aussi plausible
+    en positif qu'en négatif : son signe est **échangeable**. Le test exact consiste donc
+    à retourner ces signes au hasard et à regarder où tombe la moyenne observée. Il est
+    exact sous cette seule hypothèse, là où le bootstrap est asymptotique — et sur neuf
+    blocs, « asymptotique » ne veut pas dire grand-chose.
+
+    ⚠️ Il ne rend PAS d'intervalle : la permutation teste une hypothèse, elle n'estime pas
+    une amplitude. L'IC95 reste au bootstrap, qui est bon à cela. Chacun ce qu'il sait
+    faire, et le désaccord entre les deux est une information, pas un défaut à cacher.
+
+    ⚠️ Son plancher est `max(1/2ⁿ, 1/(tirages+1))` : sur huit blocs, aucun `p` ne peut
+    descendre sous 1/256 = 0,0039, soit 0,0117 après conjonction partielle. Un effet réel
+    mais modeste ne PEUT donc pas y être déclaré significatif — c'est une limite du plan,
+    pas du test.
+    """
+    b = np.asarray(blocs_de(valeurs, longueur), dtype=float)
+    if len(b) < 2:
+        return 1.0, 1.0
+    rng = np.random.default_rng(graine)
+    tires = rng.choice([-1.0, 1.0], size=(tirages, len(b))) @ b / len(b)
+    obs = float(b.mean())
+    # `(1 + #{au moins aussi extrême}) / (tirages + 1)` : la forme qui n'atteint jamais
+    # zéro, et qui reste valide quand l'observé est lui-même l'un des tirages possibles.
+    p_plus = float((1 + np.sum(tires >= obs)) / (tirages + 1))
+    p_moins = float((1 + np.sum(tires <= obs)) / (tirages + 1))
+    return p_plus, p_moins
+
+
 def signe(k: int, n: int) -> float:
     """Test de signe bilatéral. Rend 1,0 sous six points : `p` ne peut pas y descendre
     sous 0,05 même parfait, donc annoncer « non significatif » y serait un artefact de
@@ -171,6 +211,23 @@ def rendre_verdict(detail: dict, pcs: dict, signes: dict, alpha: float = 0.05):
         return (f"🔴 RÉFUTÉ — effet significativement NÉGATIF sur {noms}. "
                 f"Un groupe en sens inverse n'est pas un silence."), porteurs
     if pcs[3] >= alpha:
+        # 🔴 « Non confirmé » recouvre deux situations que rien ne distinguait, et elles
+        # appellent des décisions opposées. Mesuré le 23/08 : la spéciation rend
+        # p_PC=0,0648 avec les QUATRE polluants positifs et deux significatifs, tandis que
+        # les feux rendent p_PC=1,0 avec trois polluants sur quatre négatifs. Le premier
+        # est un défaut de PUISSANCE — le plan a 8 à 9 blocs, la réponse est d'en gagner ;
+        # le second est une absence d'effet, et la réponse est de retirer la famille.
+        #
+        # Le plancher atteignable le dit sans ambiguïté : sur huit blocs, aucun `p_PC` de
+        # permutation ne peut descendre sous 0,0117, quel que soit l'effet.
+        tous_positifs = all(d[0] > 0 for d in detail.values())
+        plancher = min(1.0, (len(detail) - 1) * sorted(
+            2.0 ** -max(d[6], 1) for d in detail.values())[1]) if len(detail) >= 2 else 1.0
+        if tous_positifs:
+            return (f"🟠 NON CONFIRMÉ, mais par PUISSANCE — p_PC={pcs[3]:.4f} et les "
+                    f"{len(detail)} groupes vont TOUS dans le même sens. Plancher "
+                    f"atteignable à ce nombre de blocs : {plancher:.4f}. Gagner des mois, "
+                    f"pas retirer la famille."), porteurs
         return f"🔴 NON CONFIRMÉ — p_PC={pcs[3]:.4f}, il faut < 0,05", porteurs
     if not stable:
         inv = ", ".join(f"{p_} : " + "/".join(f"{signes[L][p_]:+.0f}" for L in sorted(signes))
@@ -210,7 +267,9 @@ def main(prefixe: str, horizon: int, axe: str) -> int:
         for L in (2, 3, 4):
             ps = {}
             for p, v in par_polluant.items():
-                moy, bas, haut, p_plus, p_moins = bootstrap_blocs(v, L)
+                # Le bootstrap porte l'INTERVALLE, la permutation porte le `p`.
+                moy, bas, haut, _, _ = bootstrap_blocs(v, L)
+                p_plus, p_moins = permutation_blocs(v, L)
                 b = blocs_de(v, L)
                 k = int(sum(1 for x in b if x > 0))
                 ps[p] = (moy, bas, haut, p_plus, p_moins, k, len(b))
@@ -230,8 +289,8 @@ def main(prefixe: str, horizon: int, axe: str) -> int:
                            "n_plis": len(par_polluant[p]), "n_blocs_3mois": n_b,
                            "blocs_positifs": k, "ecart_apparie_moyen_pct": moy,
                            "ic95_bas": bas, "ic95_haut": haut,
-                           "p_bootstrap_positif": p_plus,
-                           "p_bootstrap_negatif": p_moins, "p_conjonction_partielle": pcs[3],
+                           "p_permutation_positif": p_plus,
+                           "p_permutation_negatif": p_moins, "p_conjonction_partielle": pcs[3],
                            "p_PC_2mois": pcs[2], "p_PC_4mois": pcs[4],
                            "p_conjonction_test_de_signe": controle_signe})
         # ── Ce que la sensibilité doit vérifier : le SIGNE, pas la significativité ──

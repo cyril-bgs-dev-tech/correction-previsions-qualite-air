@@ -36,7 +36,8 @@ import pandas as pd
 RACINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RACINE / "scripts"))
 from verdict_apports import (blocs_de, bootstrap_blocs,  # noqa: E402
-                            conjonction_partielle, rendre_verdict)
+                            conjonction_partielle, permutation_blocs,
+                            rendre_verdict)
 
 POLLUANTS = ("NO2", "O3", "PM10", "PM25")
 REFERENCE = "★ MAXIMALE — PARTOUT"
@@ -95,7 +96,10 @@ def main(suffixe: str = "") -> int:
             ps = {}
             for p, s in par_famille[fam].items():
                 v = list(s.to_numpy())
-                moy, bas, haut, p_plus, p_moins = bootstrap_blocs(v, L)
+                # Le bootstrap porte l'INTERVALLE, la permutation porte le `p` — voir
+                # `permutation_blocs`, qui saturait autrement à son plancher.
+                moy, bas, haut, _, _ = bootstrap_blocs(v, L)
+                p_plus, p_moins = permutation_blocs(v, L)
                 b = blocs_de(v, L)
                 ps[p] = (moy, bas, haut, p_plus, p_moins,
                          int(sum(1 for x in b if x > 0)), len(b))
@@ -120,8 +124,8 @@ def main(suffixe: str = "") -> int:
                   f"p⁺={p_plus:.4f} · ({k}/{n_b} blocs){sous}{nuit}")
             lignes.append({"pile": suffixe or "reference", "famille": fam, "polluant": p,
                            "apport_derniere_position_pt": moy, "ic95_bas": bas,
-                           "ic95_haut": haut, "p_bootstrap_positif": p_plus,
-                           "p_bootstrap_negatif": p_moins, "n_blocs": n_b,
+                           "ic95_haut": haut, "p_permutation_positif": p_plus,
+                           "p_permutation_negatif": p_moins, "n_blocs": n_b,
                            "blocs_positifs": k, "non_resolu_ic_contient_zero": bool(bas <= 0.0 <= haut),
                            "resolution_typique_protocole_pct": seuil,
                            "p_conjonction_partielle": pcs[BLOC], "verdict": verdit})
