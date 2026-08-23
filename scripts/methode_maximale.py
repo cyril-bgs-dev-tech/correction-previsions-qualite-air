@@ -487,6 +487,30 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # annoncer « 2023-08→2025-12 · 29 mois » à des rapports portant 24 plis de 2024-01 à
     # 2025-12. Le « 5 écartés » était exact, la fenêtre mentait — et une revue externe l'a
     # relevé. On recalcule depuis les données effectivement retenues.
+    # 🔴 Sous `--fenetre complete`, un mois PARTIELLEMENT couvert est écarté — 23/08/2026.
+    #
+    # La restriction GEOS-CF masquait le problème en bornant à sa propre fenêtre. Sans
+    # elle, le corpus reprend des mois où une famille n'est présente qu'à moitié :
+    #
+    #     2023-08 : CAMS de base 31 jours · précurseurs 14 · chimie 13
+    #
+    # Le service a livré la moitié du mois sans le dire, et `OK 89 Mo` s'est lu comme un
+    # succès. C'est le même défaut qu'un mois entièrement absent, en version partielle :
+    # « les précurseurs sont vides » vaut « nous sommes après le 14 août 2023 ». Un mois
+    # entier lève un garde ; une demi-couverture ne levait rien.
+    #
+    # Le seuil ne coûte rien ici : 2023-09 → 2026-08 fait 36 mois, soit 12 blocs de trois
+    # — exactement autant que 37, dont le reliquat serait jeté de toute façon.
+    if fenetre == "complete":
+        toutes_cols = [c for cols in familles.values() for c in cols if c in d.columns]
+        couv = d.groupby("mois")[toutes_cols].apply(lambda b: float(b.notna().mean().min()))
+        maigres = sorted(couv[couv < 0.8].index)
+        if maigres:
+            print(f"  mois écartés pour couverture partielle (<80 %) : "
+                  + ", ".join(f"{m} ({100 * couv[m]:.0f} %)" for m in maigres), flush=True)
+            mois_ok = [m for m in mois_ok if m not in set(maigres)]
+            d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
+
     avant_fenetre = len(mois_ok)
     mois_ok = [m for m in mois_ok if m in set(d["mois"])]
     if len(mois_ok) != avant_fenetre:
