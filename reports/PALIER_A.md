@@ -62,17 +62,24 @@ La colonne `apport_marginal_pct` mesure un apport **dans l'ordre d'empilement** 
 famille placée tôt encaisse ce qu'elle partage avec les suivantes. Le seul apport
 interprétable est celui de la **dernière position** — la pile complète moins la famille.
 
+*Mesuré sur le corpus corrigé — spéciation complète à 37 mois. Les valeurs entre
+parenthèses sont celles d'avant, sur 32 mois.*
+
 | | famille | apport | lecture |
 |---|---|---|---|
-| ✅ | **typologie** | +3,39 pt | démontrée |
-| ✅ | **geoscf** | +0,48 pt | démontrée |
-| ✅ | **fourier** | +0,28 pt | démontrée |
-| 🟠 | **speciation** | +1,25 pt | p_PC = 0,065 · **les 4 polluants positifs** |
-| 🟠 | **precurseurs** | +0,64 pt | p_PC = 0,095 · les 4 positifs |
-| 🟠 | **membres** | +0,43 pt | les 4 positifs |
-| 🔴 | **profil** | +0,01 pt | rien |
-| 🔴 | **tendance** | −0,07 pt | **réfutée** — nuit au NO₂, −0,22 pt |
-| 🔴 | **feux** | −0,17 pt | 3 polluants sur 4 négatifs |
+| ✅ | **typologie** | +3,53 pt *(+3,39)* | démontrée |
+| ✅ | **geoscf** | +0,51 pt *(+0,48)* | démontrée |
+| 🟠 | **speciation** | +1,46 pt *(+1,25)* | les 4 polluants positifs |
+| 🟠 | **precurseurs** | +0,76 pt *(+0,64)* | les 4 positifs |
+| 🟠 | **membres** | +0,40 pt *(+0,43)* | les 4 positifs |
+| 🟠 | **profil** | +0,17 pt *(+0,01)* | les 4 positifs |
+| 🔴 | **fourier** | +0,13 pt *(+0,28 ✅)* | **perd son statut démontré** |
+| 🔴 | **tendance** | +0,15 pt *(−0,07 réfutée)* | n'est plus réfutée |
+| 🔴 | **feux** | −0,09 pt *(−0,17)* | rien |
+
+🔴 **Cinq mois de spéciation en plus font tomber `fourier` de « démontré » à « non
+confirmé », et lèvent la réfutation de `tendance`.** Deux des trois familles établies n'en
+sont plus. Il ne reste que `typologie` et `geoscf`.
 
 **🟠 n'est pas 🔴, et les confondre coûterait cher.** Sur huit blocs, aucun `p_PC` de
 permutation ne peut descendre sous **0,0117**, quel que soit l'effet. La spéciation à
@@ -133,7 +140,11 @@ le même sens, et le second ne dépend pas de la résolution du premier.
 
 ---
 
-## 5 ter. Ce que les ablations jointes ont tranché
+## 5 ter. Ce que les ablations jointes ont tranché — ⚠️ à re-mesurer
+
+⚠️ **Ces huit mesures datent de l'ancien corpus**, avant la complétion de la spéciation.
+Elles sont en file de reprise. Le déplacement de la base ayant fait tomber `fourier` et
+levé la réfutation de `tendance`, il n'y a aucune raison de croire ces conclusions stables.
 
 Écart apparié pli à pli entre la pile complète et la pile réduite, IC95 par bootstrap,
 `p` par permutation exacte. Le signe est celui du **coût** : positif, la pile perd à
