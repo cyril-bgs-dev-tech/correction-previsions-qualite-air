@@ -29,7 +29,7 @@ d'un facteur 2 à 4.
 l'intérêt d'avoir téléchargé 37 mois plutôt que 32.
 
 Usage  : python3 scripts/apport_precurseurs.py --polluant NO2
-Sortie : reports/apport_precurseurs_<polluant>_h<n>_<axe>.csv
+Sortie : reports/apport_<lot>_<polluant>_h<n>_<axe>.csv
 """
 
 from __future__ import annotations
@@ -344,7 +344,10 @@ def main(polluant: str, horizon: int, n_spa: int, axe: str,
     tp = pd.DataFrame(par_pli)
     ref_pli = tp["rmse_config1"].to_numpy()
 
-    print(f"\n{'═' * 96}\nAPPORT DES PRÉCURSEURS GAZEUX · {polluant} · "
+    # 🔴 Le titre nommait « PRÉCURSEURS GAZEUX » quel que soit le lot mesuré — et il l'a
+    # fait, en clair, sur une exécution `--lot chimie`. Une étiquette qui affirme une
+    # identité survit à la généralisation ; ce qu'elle affirme, non (§ 0-H).
+    print(f"\n{'═' * 96}\nAPPORT · {libelle_lot.upper()} · {polluant} · "
           f"{libelle_echeance(horizon)} · {int(ok.sum()):,} prédictions\n{'═' * 96}")
     print(f"  {'configuration':44s} {'RMSE':>8s} {'gain/CAMS':>10s} {'vs pile':>8s} "
           f"{'σ plis':>7s} {'plis>0':>8s}")
