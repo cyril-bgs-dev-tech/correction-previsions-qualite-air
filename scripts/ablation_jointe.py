@@ -130,16 +130,34 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
     moy, bas, haut, _, _ = bootstrap_blocs(ecart, 3)
     p_plus, p_moins = permutation_blocs(ecart, 3)
     resolu = not (bas <= 0.0 <= haut)
+    # 🔴 La marge n'est pas une constante devinée (§ 0-A) : c'est la demi-largeur de l'IC95
+    # de CETTE mesure. Comparer `somme` et `moy` à 0,05 près revenait à trancher sous la
+    # résolution — le défaut même que ce script a corrigé une heure plus tôt sur son
+    # verdict principal, et que j'avais laissé dans la comparaison des deux quantités.
+    marge = (haut - bas) / 2.0
     if not resolu:
         lecture = (f"NON RÉSOLU — l'écart apparié vaut {moy:+.3f} pt, IC95 "
                    f"[{bas:+.3f} ; {haut:+.3f}], qui contient zéro. Retirer "
                    f"{' et '.join(fam)} ne change rien que ce plan sache voir.")
-    elif moy > 0 and somme < moy - 0.05:
-        lecture = ("REDONDANTES — le retrait joint coûte plus que la somme des retraits "
-                   "individuels : chaque famille masque l'autre à l'ablation.")
+    elif moy > 0 and somme < moy - marge:
+        lecture = (f"REDONDANTES — le retrait joint ({moy:+.2f}) coûte PLUS que la somme "
+                   f"des retraits individuels ({somme:+.2f}) : chacune masque l'autre à "
+                   f"l'ablation, et prise seule elle paraît inutile.")
+    elif moy > 0 and somme > moy + marge:
+        lecture = (f"SUBSTITUABLES — la somme des retraits individuels ({somme:+.2f}) "
+                   f"SURESTIME le retrait joint ({moy:+.2f}) : les deux portent en partie "
+                   f"la même information, et l'addition la compte deux fois.")
     elif moy > 0:
-        lecture = ("ADDITIVES — le retrait joint coûte ce que les retraits individuels "
-                   "annoncent : les familles portent de l'information disjointe.")
+        # 🔴 Ni redondance ni substitution DÉMONTRÉE n'est la même chose qu'additivité
+        # démontrée. L'écart |somme − joint| est sous la résolution : le plan ne les
+        # sépare pas, et l'écrire « information disjointe » affirmerait un troisième
+        # résultat qu'on n'a pas mesuré. C'est la § 4 ter — signaler une limite ne
+        # dispense pas de la nommer correctement.
+        lecture = (f"GROUPE RÉEL, STRUCTURE NON DISCRIMINÉE — le retrait joint "
+                   f"({moy:+.2f}) est résolu, mais son écart à la somme des individuels "
+                   f"({somme:+.2f}) vaut {abs(somme - moy):.2f} pour une résolution de "
+                   f"±{marge:.2f} : additif, redondant et substituable sont indiscernables "
+                   f"ici.")
     else:
         lecture = ("LA PILE GAGNE À LES PERDRE — le retrait joint AMÉLIORE le score, et "
                    "l'écart est résolu.")

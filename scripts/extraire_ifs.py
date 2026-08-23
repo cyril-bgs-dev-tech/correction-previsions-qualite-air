@@ -91,6 +91,7 @@ ECHEANCES = [24, 27, 30, 33, 36, 39, 42, 45]
 
 def index_du_pas(date: str, echeance: int) -> list[dict]:
     url = f"{BASE}/{date}/00z/ifs/0p25/oper/{date}000000-{echeance}h-oper-fc.index"
+    _derniere: BaseException | None = None
     for essai in range(6):
         try:
             _freiner()
@@ -99,8 +100,8 @@ def index_du_pas(date: str, echeance: int) -> list[dict]:
             if brut[:1] == b"{":
                 _succes()
                 return [json.loads(l) for l in brut.decode().splitlines() if l.strip()]
-        except Exception:  # noqa: BLE001
-            pass
+        except Exception as ex:  # noqa: BLE001
+            _derniere = ex
         # **Le code de sortie ne suffit pas** : un appel limité rend du XML d'erreur avec un
         # statut apparemment normal. On contrôle le contenu.
         #
@@ -108,8 +109,9 @@ def index_du_pas(date: str, echeance: int) -> list[dict]:
         # requêtes par minute sans un seul rejet », tirée de HUIT requêtes du 31/07. La
         # passe unitaire du 23/08 l'a réfutée : 62 échecs sur 240, tous groupés en fin de
         # lot, et des 503 encore servis une minute plus tard. Voir `_freiner`.
-        _rejet()
-        time.sleep(min(30.0, 2.0 ** essai))
+        nature = _rejet(_derniere)
+        time.sleep(min(4.0, 0.5 * (essai + 1)) if nature == "lent"
+                   else min(30.0, 2.0 ** essai))
     return []
 
 
@@ -154,10 +156,25 @@ _PAUSE = 0.0
 _PLAFOND_PAUSE = 4.0
 
 
-def _rejet() -> None:
-    """Un rejet allonge le frein — et l'attente qui suit croît avec lui."""
+def _rejet(erreur: BaseException | None = None) -> str:
+    """Un rejet allonge le frein — mais PAS de la même façon selon sa nature.
+
+    🔴 La première version traitait toutes les erreurs à l'identique, et c'est faux — vu
+    sur juin 2024, où un jour a coûté 426 s pour sept pas. Un **503 SlowDown** de S3 dit
+    « tu vas trop vite » et se résorbe en quelques secondes ; un délai d'attente ou une
+    coupure disent « le lien est mauvais » et méritent un recul franc. Les confondre fait
+    reculer de 30 s là où 1 s suffisait, et le lot passe de 3 h à 60 h.
+
+    Rend le type de rejet, pour que l'appelant choisisse son attente.
+    """
     global _PAUSE
+    code = getattr(erreur, "code", None)
+    if code in (503, 429):
+        # Ralentir un peu et souvent, plutôt que beaucoup et rarement.
+        _PAUSE = min(_PLAFOND_PAUSE, _PAUSE * 1.4 + 0.05)
+        return "lent"
     _PAUSE = min(_PLAFOND_PAUSE, _PAUSE * 2 + 0.05)
+    return "dur"
 
 
 def _succes() -> None:
@@ -193,10 +210,13 @@ def telecharger_pas(date: str, echeance: int, cible: Path) -> bool:
                     morceaux.append(brut)
                     _succes()
                     break
-                _rejet()
-            except Exception:  # noqa: BLE001
-                _rejet()
-            time.sleep(min(30.0, 2.0 ** essai))
+                nature = _rejet()
+            except Exception as ex:  # noqa: BLE001
+                nature = _rejet(ex)
+            # Un « tu vas trop vite » se résorbe vite : on réessaie tôt et souvent. Une
+            # panne de lien mérite le recul exponentiel.
+            time.sleep(min(4.0, 0.5 * (essai + 1)) if nature == "lent"
+                       else min(30.0, 2.0 ** essai))
         else:
             return False
     provisoire = cible.with_suffix(".grib2.partiel")
