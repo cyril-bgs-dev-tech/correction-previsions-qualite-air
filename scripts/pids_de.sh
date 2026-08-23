@@ -17,11 +17,28 @@
 #
 # Une règle violée deux fois après avoir été écrite devient du code, ou elle disparaît.
 #
-# Usage :  kill $(scripts/pids_de.sh "extraire_ifs")
-#          scripts/pids_de.sh "methode_maximale" --details
+# 🔴 Et exclure ses ancêtres ne suffisait pas — trouvé en le testant, le 24/08.
+#
+# Le premier essai a rendu un shell orphelin d'une commande antérieure, dont la ligne
+# contenait `scripts/methode_maximale.py` au milieu d'une liste de tâches. Ce n'était ni
+# un ancêtre ni un faux positif sur soi : c'était un VRAI processus qui MENTIONNE le
+# motif. Un garde-jumeau qui compte les commandes parlant du script est aussi faux qu'un
+# garde qui se voit lui-même — il bloque le travail en annonçant un jumeau inexistant,
+# ce que le 08/08 et le 17/08 ont déjà coûté.
+#
+# La comparaison porte donc sur les ARGUMENTS pris un par un, pas sur la ligne recollée.
+# Un vrai lot a `scripts/methode_maximale.py` comme argument entier ; un shell qui en
+# parle l'a enfoui dans un `-c "…"`, qui est un seul argument gigantesque.
+#
+# Usage :  kill $(scripts/pids_de.sh "extraire_ifs.py")
+#          scripts/pids_de.sh "scripts/methode_maximale.py" --details
+#          scripts/pids_de.sh "quelque-chose" --contient   # ancien comportement, laxiste
 set -uo pipefail
 [ $# -ge 1 ] || { echo "usage: $0 <motif> [--details]" >&2; exit 2; }
 MOTIF="$1"
+LAXISTE=0
+for a in "$@"; do [ "$a" = "--contient" ] && LAXISTE=1; done
+export LAXISTE
 
 # La chaîne complète des ancêtres, jusqu'à init. Un `$(...)` s'exécute dans un enfant du
 # shell appelant : exclure le seul $$ laisserait passer le parent, qui porte le motif.
@@ -38,9 +55,22 @@ for d in /proc/[0-9]*; do
   case "$EXCLUS" in *" $p "*) continue ;; esac
   cmd=$(tr '\0' ' ' < "$d/cmdline" 2>/dev/null) || continue
   [ -n "$cmd" ] || continue
-  case "$cmd" in
-    *"$MOTIF"*)
-      if [ "${2:-}" = "--details" ]; then
+  # Chaque argument séparément : le motif doit ÊTRE un argument, ou en être le suffixe
+  # après un « / ». « scripts/x.py » matche « /chemin/scripts/x.py » et « scripts/x.py »,
+  # jamais un `bash -c "… scripts/x.py …"` dont c'est un fragment.
+  trouve=""
+  if [ "${LAXISTE:-}" = "1" ]; then
+    case "$cmd" in *"$MOTIF"*) trouve=1 ;; esac
+  else
+    while IFS= read -r -d '' arg; do
+      case "$arg" in
+        "$MOTIF"|*/"$MOTIF") trouve=1; break ;;
+      esac
+    done < "$d/cmdline" 2>/dev/null
+  fi
+  case "$trouve" in
+    1)
+      if [ "${2:-}" = "--details" ] || [ "${3:-}" = "--details" ]; then
         printf '%s\t%s\n' "$p" "${cmd:0:110}"
       else
         printf '%s\n' "$p"

@@ -28,8 +28,10 @@ cible="${1:-lot_ablation.sh}"
 motif="bash scripts/[${cible:0:1}]${cible:1}"
 motif="${motif//./\\.}"
 
-sortie=$(pgrep -af "$motif" 2>/dev/null \
-         | awk -v moi="$$" -v pere="$PPID" '$1 != moi && $1 != pere')
+# 🔴 Exclure $$ et $PPID ne suffit pas : un `$(...)` s'exécute dans un petit-enfant du
+# shell qui porte le motif, et le grand-parent restait visible. `pids_de.sh` exclut la
+# chaîne ENTIÈRE des ancêtres — c'est la seule forme qui ne puisse pas se voir.
+sortie=$("$(dirname "${BASH_SOURCE[0]}")/pids_de.sh" "bash scripts/${cible}" --details)
 
 if [ -n "$sortie" ]; then
   echo "lot en cours :"

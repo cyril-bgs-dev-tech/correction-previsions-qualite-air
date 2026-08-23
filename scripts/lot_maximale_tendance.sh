@@ -31,8 +31,13 @@ mkdir -p logs
 # annonçant un jumeau inexistant. Un garde qui produit un faux positif est pire qu'un
 # garde absent : il bloque le travail et son message affirme le contraire de la réalité.
 # Exiger `python3 -u scripts/...` restreint le match à l'invocation réelle.
-if pgrep -f "python3 -u scripts/[m]ethode_maximale\.py" > /dev/null; then
-  echo "✗ un lot methode_maximale tourne déjà — arrêt"; exit 1
+# 🔴 Le motif ancré ne suffisait pas non plus — voir le récit ci-dessus, et sa récidive du
+# 17/08. `pids_de.sh` exclut ses ancêtres, donc il ne peut pas se voir, quel que soit ce
+# que la commande appelante contient.
+if [ -n "$("$(dirname "${BASH_SOURCE[0]}")/pids_de.sh" "scripts/methode_maximale.py")" ]; then
+  echo "✗ un lot methode_maximale tourne déjà — arrêt"
+  "$(dirname "${BASH_SOURCE[0]}")/pids_de.sh" "scripts/methode_maximale.py" --details | sed 's/^/  /'
+  exit 1
 fi
 
 PY=/home/cyril/miniforge3/envs/llm-agent/bin/python3   # jamais `python3` nu
