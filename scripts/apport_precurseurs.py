@@ -397,5 +397,13 @@ if __name__ == "__main__":
                         "tout retirer rend la mesure ININTERPRÉTABLE (substitution). "
                         "Le nom de l'artefact porte la liste.")
     n = a.parse_args()
-    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.axe,
-                          tuple(x for x in n.retirer.split(',') if x)))
+    # 🔴 `--lot` avait été ajouté à l'analyseur mais PAS à l'appel — 23/08/2026. Argparse
+    # l'acceptait, `main` gardait son défaut, et le script refaisait la mesure des
+    # précurseurs en écrasant leur fichier. Rien n'a levé : le lot demandé n'existe que
+    # dans le nom de l'artefact attendu, et c'est la file qui l'a vu.
+    #
+    # Passer par mot-clé plutôt que par position : une signature qui s'allonge ne peut
+    # alors plus perdre un argument en silence.
+    raise SystemExit(main(polluant=n.polluant, horizon=n.horizon,
+                          n_spa=n.plis_spatiaux, axe=n.axe, lot=n.lot,
+                          retirer=tuple(x for x in n.retirer.split(',') if x)))
