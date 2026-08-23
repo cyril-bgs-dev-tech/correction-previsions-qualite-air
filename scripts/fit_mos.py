@@ -130,6 +130,43 @@ def paires_cams_observations(polluant: str, horizon: int) -> pd.DataFrame:
 
     jeu = pd.concat(blocs, ignore_index=True).rename(columns={colonne: "cams"})
 
+    # ── Les COPIES EXACTES, et pourquoi elles existaient — trouvé le 22/08/2026 ──────
+    #
+    # La clé (station, heure, échéance) n'était pas unique : **375 294 couples de l'ozone
+    # et 418 039 des PM10** portaient deux lignes, soit 10,5 % du corpus horaire. Toutes
+    # strictement identiques — même échéance, même valeur CAMS, même observation — et
+    # toutes concentrées sur **2024-01, 2024-02 et le 1er mars 2024** : la fenêtre où le
+    # panel recolle EEA et LCSQA, qui livrent la même mesure (mesuré à 100 % d'égalité sur
+    # les treize mois de recouvrement) et dont l'union avait gardé les deux copies.
+    #
+    # Ce que ça faussait, et ce n'est pas anodin :
+    #   * chaque ligne de ces deux mois pesait **double** à l'apprentissage comme au score ;
+    #   * `n_heures` doublait, donc le filtre des 75 % ne filtrait plus rien ;
+    #   * et surtout la moyenne glissante « 8 h », qui comptait alors **8 lignes = 4 heures
+    #     réelles** : la cible ozone de 2024-01 et 2024-02 était un maximum de moyennes 4 h.
+    #     98,6 % et 99,9 % des jours-station de ces deux mois en sortaient faux.
+    #
+    # On dédoublonne donc au **point d'entrée unique de l'appariement**, et l'on REFUSE de
+    # le faire en silence si deux copies divergent : des lignes identiques se jettent sans
+    # rien perdre, des lignes contradictoires posent une question de source qu'aucun
+    # `drop_duplicates` ne doit trancher tout seul.
+    cle = ["station_id", "timestamp_utc", "echeance_h"]
+    doubles = jeu.duplicated(cle, keep=False)
+    if doubles.any():
+        divergents = jeu[doubles].groupby(cle)[["cams", "valeur"]].nunique().max()
+        if (divergents > 1).any():
+            raise SystemExit(
+                f"{polluant} : des lignes partagent (station, heure, échéance) avec des "
+                f"valeurs DIFFÉRENTES — {divergents.to_dict()} valeurs distinctes au pire. "
+                f"Ce n'est plus un doublon, c'est un conflit de source : le trancher exige "
+                f"de savoir laquelle fait foi.")
+        mois_doubles = sorted(jeu.loc[doubles, "timestamp_utc"].dt.strftime("%Y-%m").unique())
+        avant = len(jeu)
+        jeu = jeu[~jeu.duplicated(cle)].reset_index(drop=True)
+        print(f"doublons · {avant - len(jeu):,} copies exactes retirées sur {avant:,} "
+              f"({100 * (avant - len(jeu)) / avant:.2f} %) · mois concernés : "
+              f"{', '.join(mois_doubles)}", flush=True)
+
     # **Rendre la couverture visible.** Un mois de prévisions sans observation en face
     # disparaît du jeu sans lever d'erreur ; c'est légitime pour 2025, dont les
     # observations n'existent pas, et c'était un défaut pour les mois groupés. Dans les
@@ -163,7 +200,49 @@ def charger(polluant: str, horizon: int) -> pd.DataFrame:
     jeu = jeu.merge(geo, on="station_id").merge(relief, on="station_id").merge(
         stations, on="station_id"
     )
-    return pd.concat([jeu, mos.variables_calendaires(jeu["timestamp_utc"])], axis=1)
+    jeu = pd.concat([jeu, mos.variables_calendaires(jeu["timestamp_utc"])], axis=1)
+    return neutraliser_infinis(jeu)
+
+
+def neutraliser_infinis(jeu: pd.DataFrame, plafond: float = 30_000.0) -> pd.DataFrame:
+    """Remplace l'infini **là où il a un sens**, et refuse de le faire ailleurs.
+
+    Une quarantaine de scripts portent la ligne
+    ``jeu[colonnes] = jeu[colonnes].replace([np.inf, -np.inf], 30_000.0)``. Elle a été
+    écrite pour une raison juste : une **distance** au plus proche objet vaut `inf` quand le
+    rayon d'interrogation ne contient rien, et une valeur finie et interprétable vaut mieux
+    qu'un infini que l'arbre rangerait dans une branche à part.
+
+    Mais elle s'applique à **toutes** les colonnes admises. Le jour où une variable dérivée
+    divise par zéro — un rapport d'échelles, un ratio pic/moyenne —, son infini deviendrait
+    silencieusement `30 000`. Plausible pour une distance en mètres, absurde pour un
+    rapport, et rien ne le dirait : c'est le même défaut que la sentinelle qui ment.
+
+    ⚠️ **Aujourd'hui la sentinelle ne remplace rien** — vérifié le 22/08/2026 sur O₃ et
+    PM2,5 : **zéro** valeur infinie sur les 53 colonnes admises, distances comprises. Ce
+    n'est donc pas un défaut réalisé mais une mine dormante ; on la rend bruyante plutôt que
+    de réécrire quarante appels qui ne changeraient aucun chiffre.
+    """
+    remplacees = {}
+    for c in jeu.columns:
+        v = jeu[c].to_numpy()
+        if v.dtype.kind != "f":
+            continue
+        n = int(np.isinf(v).sum())
+        if not n:
+            continue
+        if not c.endswith("_dist_min_m"):
+            raise SystemExit(
+                f"colonne « {c} » : {n:,} valeurs infinies, et ce n'est pas une distance. "
+                f"La sentinelle {plafond:g} a un sens pour « aucun objet dans le rayon », "
+                f"aucun pour un rapport ou une concentration — la remplacer en silence "
+                f"produirait une valeur plausible et fausse. Traiter la cause.")
+        jeu[c] = np.where(np.isinf(v), plafond, v)
+        remplacees[c] = n
+    if remplacees:
+        print(f"distances infinies neutralisées à {plafond:g} m : "
+              + ", ".join(f"{c} ({n:,})" for c, n in remplacees.items()), flush=True)
+    return jeu
 
 
 def colonnes_admises(jeu: pd.DataFrame) -> list[str]:

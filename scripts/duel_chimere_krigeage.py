@@ -73,7 +73,7 @@ def chimere_journalier(polluant: str, grandeur: str, debut: str, fin: str) -> pd
     t["jour"] = pd.to_datetime(t["timestamp_utc"]).dt.floor("D").dt.tz_localize(None)
     # Mêmes helpers que `agreger_journalier` : la préparation horaire (moyenne glissante
     # 8 h pour l'ozone) PUIS l'agrégation du jour.
-    t["_prep"] = _preparer(t.groupby("station_id")["chimere"], grandeur)
+    t["_prep"] = _preparer(t, "chimere", grandeur)
     agr = (t.groupby(["station_id", "jour"])["_prep"].agg(_agregation(grandeur))
              .reset_index().rename(columns={"_prep": "chimere_jour"}))
     return agr

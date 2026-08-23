@@ -61,16 +61,104 @@ GRANDEUR_PAR_POLLUANT = {"O3": "max_8h", "NO2": "max_horaire", "PM25": "moyenne_
                          "PM10": "moyenne_jour"}
 
 
+def moyenne_glissante_8h(d: pd.DataFrame, colonne: str,
+                         temps: str = "timestamp_utc",
+                         cle: str = "station_id") -> pd.Series:
+    """Moyenne glissante sur 8 **heures d'horloge**, station par station.
+
+    🔴 Le défaut que cette fonction remplace — mesuré le 22/08/2026
+    ---------------------------------------------------------------
+    La version précédente faisait `serie.rolling(8, min_periods=6)` : une fenêtre de
+    **8 LIGNES**, sur une série qui n'est pas réindexée sur une grille horaire continue.
+    Dès qu'une heure manque, la « moyenne 8 h » s'étale sur plus de 8 heures ; dès qu'une
+    ligne est en double, elle se resserre sur moins. Aucune exception ne lève, et la valeur
+    reste plausible — mais ce n'est plus la grandeur du texte réglementaire, qui est définie
+    sur **8 heures d'horloge** (valeur cible européenne de l'ozone, MQI FAIRMODE,
+    sous-indice ATMO).
+
+    Ce que ça coûtait, mesuré sur l'ozone du corpus, à filtre de couverture identique :
+
+    * **7,96 % des jours-station** portaient une cible différente de la bonne ;
+    * sur ces jours-là, écart absolu médian **2,17 µg/m³**, p99 15,3, max 46,2, et un biais
+      moyen de **+1,99 µg/m³** — la version en lignes **surestime** le maximum ;
+    * et la casse n'était pas diffuse : **98,6 % des jours de 2024-01 et 99,9 % de 2024-02**
+      étaient touchés, parce que le panel y porte chaque observation en double (cf.
+      `fit_mos.paires_cams_observations`). Sur ces deux mois, la fenêtre couvrait donc
+      **4 heures réelles** et la « moyenne 8 h » était une moyenne 4 h.
+
+    Sur une grille propre et continue, `rolling("8h")` rend **exactement** ce que rendait
+    `rolling(8)` : le correctif ne déplace que ce qui était faux.
+
+    `min_periods=6` conserve la règle des 75 % : six valeurs au moins dans la fenêtre.
+    """
+    try:
+        r = (d.set_index(temps).groupby(cle)[colonne]
+              .rolling("8h", min_periods=6).mean())
+    except ValueError as e:
+        # pandas refuse un groupe non monotone, et son message renvoie dans ses propres
+        # entrailles. On le retraduit en consigne : le lecteur doit savoir QUOI faire.
+        raise SystemExit(
+            f"moyenne_glissante_8h : l'ordre du glissement ne suit pas la table — "
+            f"trier par [{cle}, {temps}] avant d'appeler ({e})") from e
+    # Le résultat sort dans l'ordre (clé, temps). Il coïncide avec celui de `d` **parce
+    # que** `d` est trié ainsi — ce que l'on VÉRIFIE plutôt que de le supposer : un appelant
+    # qui aurait oublié le tri obtiendrait sinon des valeurs décalées d'une station à
+    # l'autre, plausibles et fausses.
+    if len(r) != len(d) or not np.array_equal(
+            r.index.get_level_values(-1).to_numpy(), d[temps].to_numpy()):
+        raise SystemExit(
+            f"moyenne_glissante_8h : l'ordre du glissement ne suit pas la table "
+            f"({len(r)} valeurs pour {len(d)} lignes). Trier par [{cle}, {temps}] avant "
+            f"d'appeler.")
+    return pd.Series(r.to_numpy(), index=d.index)
+
+
 def max_glissant_8h(serie: pd.Series) -> pd.Series:
-    """Moyenne glissante sur 8 heures. `min_periods=6` applique la règle des 75 %."""
-    return serie.rolling(8, min_periods=6).mean()
+    """⛔ Retirée le 22/08/2026 — elle comptait 8 LIGNES au lieu de 8 HEURES.
+
+    Elle lève au lieu de disparaître : un appelant oublié doit **échouer**, pas retomber en
+    silence sur la grandeur fausse. Voir `moyenne_glissante_8h` pour le remplaçant et pour
+    ce que le défaut coûtait.
+    """
+    raise SystemExit(
+        "max_glissant_8h est retirée : sa fenêtre comptait 8 lignes, pas 8 heures. "
+        "Utiliser moyenne_glissante_8h(d, colonne, temps=…, cle=…), qui prend la table "
+        "et non la série, parce qu'une fenêtre temporelle a besoin des horodatages.")
 
 
-def _preparer(serie_groupee, grandeur: str) -> pd.Series:
+def _preparer(d: pd.DataFrame, colonne: str, grandeur: str,
+              temps: str = "timestamp_utc", cle: str = "station_id") -> pd.Series:
     """Transformation horaire préalable à l'agrégation du jour."""
     if grandeur == "max_8h":
-        return serie_groupee.transform(max_glissant_8h)
-    return serie_groupee.transform(lambda s: s)
+        return moyenne_glissante_8h(d, colonne, temps, cle)
+    return d[colonne]
+
+
+def profil_horaire(jeu: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+    """La FORME du profil horaire CAMS, que l'agrégation journalière détruit.
+
+    `agreger_journalier` réduit les 24 valeurs horaires de CAMS à deux nombres — le max 8 h
+    et la moyenne. Une journée plate à 60 et une journée qui monte à 110 l'après-midi
+    peuvent avoir la même moyenne ; leur mécanisme n'est pas le même, et le biais de CAMS
+    non plus.
+
+    Quatre descripteurs, aucun n'exigeant d'observation : amplitude, dispersion intra-jour,
+    **heure** du maximum, et rapport pic/moyenne.
+    """
+    d = jeu[["station_id", "timestamp_utc", "cams"]].copy()
+    d["jour"] = d["timestamp_utc"].dt.floor("D")
+    d["heure"] = d["timestamp_utc"].dt.hour
+    g = d.groupby(["station_id", "jour"], sort=False)
+    p = g.agg(prof_max=("cams", "max"), prof_min=("cams", "min"),
+              prof_sigma=("cams", "std"), prof_moy=("cams", "mean"),
+              prof_n=("cams", "count")).reset_index()
+    idx = d.loc[g["cams"].idxmax()]
+    p = p.merge(idx[["station_id", "jour", "heure"]].rename(
+        columns={"heure": "prof_heure_max"}), on=["station_id", "jour"], how="left")
+    p["prof_amplitude"] = p["prof_max"] - p["prof_min"]
+    p["prof_pic_sur_moy"] = p["prof_max"] / p["prof_moy"].replace(0, np.nan)
+    cols = ["prof_amplitude", "prof_sigma", "prof_heure_max", "prof_pic_sur_moy"]
+    return p[["station_id", "jour"] + cols], cols
 
 
 def _agregation(grandeur: str) -> str:
@@ -89,7 +177,7 @@ def agreger_journalier(jeu: pd.DataFrame, colonnes: list[str],
     d["jour"] = d["timestamp_utc"].dt.floor("D")
 
     for source, cible in (("valeur", "obs_prep"), ("cams", "cams_prep")):
-        d[cible] = _preparer(d.groupby("station_id")[source], grandeur)
+        d[cible] = _preparer(d, source, grandeur)
     agr = _agregation(grandeur)
 
     # `cams` figure **parmi les prédicteurs** : agréger sous ce nom entrerait en collision
@@ -107,8 +195,20 @@ def agreger_journalier(jeu: pd.DataFrame, colonnes: list[str],
         **{c: (c, "mean") for c in autres},
     ).reset_index()
 
+    # § 2 quater — une condition de DISPONIBILITÉ qui ne se compte pas change le périmètre
+    # en silence. Ce filtre-ci écarte 1,15 % des jours-station de l'ozone (mesuré le
+    # 22/08/2026), jusqu'à 5,6 % sur un mois de bord, et rien ne l'imprimait.
+    avant = len(journalier)
     journalier = journalier[journalier["n_heures"] >= 24 * COUVERTURE_MIN]
-    return journalier.dropna(subset=["obs_jour", "cams_jour"])
+    sans_couverture = avant - len(journalier)
+    journalier = journalier.dropna(subset=["obs_jour", "cams_jour"])
+    sans_valeur = avant - sans_couverture - len(journalier)
+    if sans_couverture or sans_valeur:
+        print(f"  agrégation journalière · {len(journalier):,} jours-station retenus sur "
+              f"{avant:,} — écartés : {sans_couverture:,} sous "
+              f"{COUVERTURE_MIN:.0%} de couverture horaire"
+              + (f", {sans_valeur:,} sans cible" if sans_valeur else ""), flush=True)
+    return journalier
 
 
 def voie_horaire(polluant: str, horizon: int, jours_valides: pd.DataFrame,
@@ -123,7 +223,7 @@ def voie_horaire(polluant: str, horizon: int, jours_valides: pd.DataFrame,
     p = p.sort_values(["station_id", "timestamp_utc"])
     p["jour"] = p["timestamp_utc"].dt.floor("D")
     for source, cible in (("observe", "obs_prep"), ("corrige", "corr_prep")):
-        p[cible] = _preparer(p.groupby("station_id")[source], grandeur)
+        p[cible] = _preparer(p, source, grandeur)
     agr = _agregation(grandeur)
 
     agrege = (p.groupby(["station_id", "jour"], sort=False)

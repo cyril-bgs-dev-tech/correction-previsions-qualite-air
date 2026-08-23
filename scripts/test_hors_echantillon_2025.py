@@ -45,7 +45,7 @@ sys.path.insert(0, str(RACINE / "scripts"))
 from aq.eval import comparaison as cmp  # noqa: E402
 from aq.models import mos  # noqa: E402
 from aq.models.moteur import modele_mos  # noqa: E402
-from cible_journaliere import agreger_journalier, max_glissant_8h  # noqa: E402
+from cible_journaliere import agreger_journalier, moyenne_glissante_8h  # noqa: E402
 from comparer_mos_officiel import lire_officiel  # noqa: E402
 from fit_mos import ESPECES, TRANCHES, charger, colonnes_admises  # noqa: E402
 from modele_final import REGLE  # noqa: E402
@@ -145,7 +145,7 @@ def main(polluant: str, horizon: int) -> int:
         off = off.sort_values(["station_id", "datetime"])
         off["jour"] = off["datetime"].dt.floor("D")
         for c in ("officiel_mos", "officiel_raw"):
-            off[c + "_8h"] = off.groupby("station_id")[c].transform(max_glissant_8h)
+            off[c + "_8h"] = moyenne_glissante_8h(off, c, temps="datetime")
         officiel_j = (off.groupby(["station_id", "jour"])
                         .agg(officiel_mos=("officiel_mos_8h", "max"),
                              officiel_raw=("officiel_raw_8h", "max"),

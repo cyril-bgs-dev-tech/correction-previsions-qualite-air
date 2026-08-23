@@ -44,7 +44,7 @@ sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
 from aq.eval import comparaison as cmp  # noqa: E402
-from cible_journaliere import max_glissant_8h  # noqa: E402
+from cible_journaliere import moyenne_glissante_8h  # noqa: E402
 from scores_episodes import scores  # noqa: E402
 
 SEUILS = {"O3": 120.0}
@@ -86,7 +86,7 @@ def journalier(d: pd.DataFrame, colonnes: list[str],
 
     if grandeur == "max_8h":
         for c in colonnes:
-            d[c] = d.groupby("station_id")[c].transform(max_glissant_8h)
+            d[c] = moyenne_glissante_8h(d, c, temps="datetime")
     agregation = "mean" if grandeur == "moyenne_jour" else "max"
 
     agr = d.groupby(["station_id", "jour"]).agg(

@@ -55,7 +55,7 @@ def agreger(d: pd.DataFrame, grandeur: str) -> pd.DataFrame:
     d["jour"] = d["timestamp_utc"].dt.floor("D")
     colonnes = ["observe", "cams", "corrige"]
     for c in colonnes:
-        d[c + "_p"] = _preparer(d.groupby("station_id")[c], grandeur)
+        d[c + "_p"] = _preparer(d, c, grandeur)
     agr = _agregation(grandeur)
     j = (d.groupby(["station_id", "jour"])
            .agg(**{c: (c + "_p", agr) for c in colonnes},

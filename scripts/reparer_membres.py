@@ -61,7 +61,13 @@ def derivees(t: pd.DataFrame, presents: list[str]) -> pd.DataFrame:
 
 
 def main(seulement: str | None) -> int:
-    motif = re.compile(r"membres_metropole_([a-z][a-z0-9]*)_(\d{6})\.parquet$")
+    # ⚠️ § 4 bis — l'expression capture TOUS les jetons de mois, pas le dernier. Ancrée à
+    # droite sur un seul `(\d{6})`, elle ne matchait pas un nom groupé
+    # `..._o3_202308_202309.parquet` : ici elle levait (« nom non conforme »), donc sans
+    # perte silencieuse — mais le motif restait celui qui a déjà coûté 35 % d'un jeu
+    # d'entraînement ailleurs. On le corrige à la source plutôt que d'attendre le jumeau.
+    motif = re.compile(
+        r"membres_metropole_([a-z][a-z0-9]*)_(\d{6}(?:_\d{6})*)\.parquet$")
     fichiers = sorted(glob.glob(str(DOSSIER / "membres_metropole_*.parquet")))
     total, touches = 0, 0
     for f in fichiers:
