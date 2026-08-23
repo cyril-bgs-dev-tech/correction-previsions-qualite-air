@@ -109,6 +109,30 @@ avant d'écrire un CSV n'étant pas comptées.
 
 ---
 
+## 5 bis. Un code d'époque dans la pile publiée — et qui ne paie rien
+
+`feux` couvre 2023-08 → 2025-05 et la fenêtre de la pile va jusqu'à 2025-12. Compté mois
+par mois : **la famille est absente de 10 mois sur 29, soit 34 % de la fenêtre — et les
+dix sont en 2025.**
+
+Sous validation mois-caché, « feux absent » équivaut donc à « on est en 2025 ». Le modèle
+peut apprendre la date au lieu des feux, et rien ne lève. C'est la raison d'être de la
+variante *auditable* (`--support-complet`), qui écarte les familles trouées ; la variante
+*comparable*, elle, les garde.
+
+Ce qui est nouveau ici est la conjonction : **cette famille porte un code d'époque ET rend
+−0,17 pt en dernière position.** L'argument d'hygiène et l'argument de score pointent dans
+le même sens, et le second ne dépend pas de la résolution du premier.
+
+| famille | couverture | absent de la fenêtre | apport |
+|---|---|---|---|
+| geoscf v1 | 2023-08 → 2025-12 | 0 % — **c'est elle qui borne** | +0,48 pt ✅ |
+| speciation | 2024-01 → 2026-08 | 17 % (les 5 mois de 2023) | +1,25 pt 🟠 |
+| **feux** | 2023-08 → 2025-05 | **34 %, tous en 2025** | **−0,17 pt** 🔴 |
+| precurseurs · chimie | 2023-08 → 2026-08 | 0 % | +0,64 pt 🟠 · à mesurer |
+
+---
+
 ## 6. Ce qui reste ouvert
 
 1. **Trois prédictions scellées** attendent leurs mesures — ablations jointes
@@ -116,5 +140,9 @@ avant d'écrire un CSV n'étant pas comptées.
 2. **`precurseurs` à 4 colonnes plutôt que 8** — à mesurer, pas à décider ici : choisir
    après avoir vu les résultats est du criblage, et le score d'une pile élaguée se
    re-mesure sur des plis qui n'ont pas servi à la choisir.
-3. **Gagner des blocs.** Trois familles sont hors de portée par manque de mois, pas par
-   absence d'effet. C'est le levier qui débloque le plus de questions à la fois.
+3. **Gagner des blocs — et le chemin est identifié.** GEOS-CF v1 borne la fenêtre à
+   29 mois (9 blocs, plancher de `p_PC` à 0,0059). Sans lui ni `feux`, le corpus va à
+   37 mois (12 blocs, plancher 0,0007), une fois complétés les cinq mois de spéciation de
+   2023 — des requêtes de surface, que le test contrôlé de ce soir montre fonctionnelles
+   quand les niveaux verticaux échouent. L'arbitrage est explicite : **+0,48 pt démontrés
+   contre huit mois de corpus**, et la prédiction est scellée (`a2706756`).
