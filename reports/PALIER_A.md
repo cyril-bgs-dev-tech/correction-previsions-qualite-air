@@ -140,7 +140,31 @@ le même sens, et le second ne dépend pas de la résolution du premier.
 2. **`precurseurs` à 4 colonnes plutôt que 8** — à mesurer, pas à décider ici : choisir
    après avoir vu les résultats est du criblage, et le score d'une pile élaguée se
    re-mesure sur des plis qui n'ont pas servi à la choisir.
-3. **Gagner des blocs — et le chemin est identifié.** GEOS-CF v1 borne la fenêtre à
+3. **La propreté d'époque de la pile publiée** — le chantier que le palier a ouvert sans
+   le chercher. La pile imprime son propre diagnostic à chaque exécution, et personne ne
+   l'avait lu :
+
+   ```
+   precurseurs  28/29 mois · troués : 2023-08 (54 %)
+   speciation   13/29 mois · troués : 2023-08 à 2023-11 (100 %) …
+   membres      28/29 mois · troués : 2023-11 (97 %)
+   feux         (mesuré à part) : absent de 10 mois sur 29, tous en 2025
+   ⚠️ CONSERVÉES : la mesure porte un indicateur d'époque implicite.
+   ```
+
+   Trois gestes le referment, et les trois sont mesurables séparément :
+
+   | geste | effet attendu | coût |
+   |---|---|---|
+   | spéciation 2023 complétée *(téléchargée, en attente)* | 13/29 → 18/29 | aucun |
+   | nitrate et matière organique hors de la famille | 18/29 → **29/29** | une colonne redondante de `sia_conc` |
+   | `feux` retiré | supprime 34 % d'absence | −0,17 pt, donc négatif |
+
+   Au bout, la pile *comparable* et la pile *auditable* n'ont plus de raison de différer —
+   et l'écart actuel est de **4,74 points sur l'ozone**. C'est la mesure qui tranchera si
+   les chiffres publiés doivent changer.
+
+4. **Gagner des blocs — et le chemin est identifié.** GEOS-CF v1 borne la fenêtre à
    29 mois (9 blocs, plancher de `p_PC` à 0,0059). Sans lui ni `feux`, le corpus va à
    37 mois (12 blocs, plancher 0,0007), une fois complétés les cinq mois de spéciation de
    2023 — des requêtes de surface, que le test contrôlé de ce soir montre fonctionnelles
