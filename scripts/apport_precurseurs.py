@@ -372,6 +372,19 @@ def main(polluant: str, horizon: int, n_spa: int, axe: str,
                        "n_lignes": int(ok.sum()),
                        "fenetre": f"{mois[0]}→{mois[-1]}", "n_mois": len(mois)})
 
+    # L'empreinte du CORPUS — indépendante du polluant, donc comparable entre les quatre.
+    # Sans elle, un verdict combine sans broncher trois fichiers d'un corpus et un d'un
+    # autre : c'est arrivé ce soir.
+    from aq.ingest.controle import empreinte_corpus  # noqa: PLC0415
+    emp = empreinte_corpus([
+        "data/processed/meteo/speciation_metropole_*.parquet",
+        "data/processed/meteo/precurseurs_metropole_*.parquet",
+        "data/processed/meteo/chimie_metropole_*.parquet",
+        "data/processed/meteo/geoscf_metropole_*.parquet",
+    ], RACINE)
+    for r in lignes:
+        r["empreinte_corpus"] = emp
+    print(f"  empreinte du corpus : {emp}", flush=True)
     contexte = {"polluant": polluant, "axe": axe, "echeance": libelle_echeance(horizon)}
     suff = f"{polluant}_h{horizon}_{axe}"
     if retirer:

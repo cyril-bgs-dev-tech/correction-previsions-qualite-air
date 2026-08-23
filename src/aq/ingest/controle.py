@@ -141,3 +141,41 @@ def resume_chargement(tableau: pd.DataFrame, quoi: str, cles: Iterable[str] = ()
     if constantes:
         details.append(f"⚠️ constantes : {constantes[:4]}")
     return f"{quoi} · " + " · ".join(details)
+
+
+def empreinte_corpus(motifs: Iterable[str], racine: Path | None = None) -> str:
+    """Une empreinte des FICHIERS d'entrée, indépendante du polluant mesuré.
+
+    Le défaut qu'elle supprime — mesuré trois fois le 23/08/2026
+    ------------------------------------------------------------
+    Trois mesures ont été rendues ce soir en comparant des résultats issus de corpus
+    différents, et aucune n'a levé :
+
+    * une pile de 21 h 59 opposée à une variante de 16 h 23, la spéciation ayant été
+      complétée entre les deux ;
+    * un fichier d'apport écrasé sur les 37 mois quand ses trois jumeaux tenaient les 32 ;
+    * un verdict combinant quatre polluants dont un seul était périmé.
+
+    Ni la fenêtre, ni le nombre de mois, ni le nombre de colonnes, ni `n_test` par pli ne
+    voient la différence : compléter une famille jointe en `left` ne change pas le nombre
+    de lignes du modèle, **seulement leurs valeurs**.
+
+    Ce que l'empreinte compte est donc l'ÉTAT DES ENTRÉES sur disque — nom et taille de
+    chaque fichier apparié — et non le résultat. Deux exécutions du même corpus la
+    partagent quel que soit le polluant ; deux corpus différents ne peuvent pas.
+
+    ⚠️ Elle ne remplace pas l'empreinte des données JOINTES, qui compte les cellules
+    renseignées : celle-ci voit un fichier ajouté, celle-là voit ce qui en arrive
+    réellement dans le modèle. Les deux répondent à des questions distinctes.
+    """
+    import hashlib  # noqa: PLC0415
+
+    base = Path(racine) if racine else Path(__file__).resolve().parents[3]
+    pieces: list[str] = []
+    for motif in sorted(motifs):
+        for f in sorted(base.glob(motif)):
+            pieces.append(f"{f.name}:{f.stat().st_size}")
+    if not pieces:
+        raise ValueError(f"aucun fichier pour {list(motifs)} sous {base} — "
+                         "une empreinte sur rien passerait pour une empreinte")
+    return hashlib.sha256("|".join(pieces).encode()).hexdigest()[:12]

@@ -240,6 +240,7 @@ def rendre_verdict(detail: dict, pcs: dict, signes: dict, alpha: float = 0.05):
 def main(prefixe: str, horizon: int, axe: str) -> int:
     series: dict[str, dict[str, list[float]]] = {}
     libelles: dict[str, str] = {}
+    empreintes: dict[str, str] = {}
     for p in POLLUANTS:
         f = RACINE / f"reports/{prefixe}_{p}_h{horizon}_{axe}_par_pli.csv"
         if not f.exists():
@@ -252,10 +253,31 @@ def main(prefixe: str, horizon: int, axe: str) -> int:
         r = RACINE / f"reports/{prefixe}_{p}_h{horizon}_{axe}.csv"
         if r.exists():
             t = pd.read_csv(r)
+            # 🔴 Quatre polluants, un seul corpus. Sans ce contrôle, le verdict combine
+            # sans broncher trois fichiers régénérés et un qui date d'avant une correction
+            # de données — c'est arrivé ce soir, la spéciation ayant été complétée en
+            # cours de route.
+            empreintes[p] = (str(t["empreinte_corpus"].iloc[0])
+                             if "empreinte_corpus" in t.columns else "")
             for k, nom in enumerate(t["configuration"], start=1):
                 libelles[f"rmse_config{k}"] = str(nom)
     if not series:
         raise SystemExit(f"aucun fichier « {prefixe}_*_h{horizon}_{axe}_par_pli.csv »")
+
+    connues = {e for e in empreintes.values() if e}
+    if len(connues) > 1:
+        raise SystemExit(
+            "❌ CORPUS DIFFÉRENTS entre polluants : "
+            + " · ".join(f"{p_}={e or '—'}" for p_, e in sorted(empreintes.items()))
+            + "\n   Un verdict qui combine deux corpus n'est pas un verdict. "
+              "Régénérer les apports en retard.")
+    if empreintes and not connues:
+        print("  ⚠️ aucun fichier ne porte d'empreinte de corpus (antérieurs au 24/08) : "
+              "l'identité des entrées n'est PAS vérifiée.", flush=True)
+    elif len(empreintes) != len(connues) and connues:
+        sans = sorted(p_ for p_, e in empreintes.items() if not e)
+        print(f"  ⚠️ empreinte absente pour {', '.join(sans)} — non vérifiés contre "
+              f"{connues.pop()}.", flush=True)
 
     print(f"\n{'═' * 96}")
     print(f"VERDICT · {prefixe} · axe {axe} · bootstrap par blocs de 3 mois · conjonction partielle r=2")
