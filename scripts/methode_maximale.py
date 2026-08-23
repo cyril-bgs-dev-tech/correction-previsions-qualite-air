@@ -347,15 +347,22 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # Le nitrate est écarté pour la même raison : il n'existe qu'à partir de 2024-12, donc
     # sa seule absence date le mois à l'intérieur même de la fenêtre commune.
     if speciation == "core7":
-        nitrate = [c for c in cols_spe if "no3" in c]
+        # 🔴 Le test portait sur la sous-chaîne « no3 », donc sur UNE tardive nommée à la
+        # main. Depuis le 23/08 la matière organique en est une aussi — absente de
+        # 2023-08, 09 et 10 — et `core7` la gardait, laissant trois mois datables au
+        # milieu d'une pile censée être propre. On écarte par la LISTE, qui a une seule
+        # source de vérité.
+        from extraire_speciation import TARDIVES as _TARDIVES  # noqa: PLC0415
+        nitrate = [c for c in cols_spe if any(t in c for t in _TARDIVES)]
         cols_spe = [c for c in cols_spe if c not in nitrate]
         spe = spe.drop(columns=nitrate)
         mois_spe = set(pd.to_datetime(spe["jour"]).dt.strftime("%Y-%m"))
         avant_sc = sorted(set(d["mois"]))
         d = d[d["mois"].isin(mois_spe)].reset_index(drop=True)
         garde = sorted(set(d["mois"]))
-        print(f"  SUPPORT COMMUN : {len(cols_spe)} colonnes (nitrate écarté : "
-              f"{len(nitrate)}) · fenêtre {len(avant_sc)} → {len(garde)} mois "
+        print(f"  SUPPORT COMMUN : {len(cols_spe)} colonnes (tardives écartées : "
+              f"{len(nitrate)} — {', '.join(nitrate)}) · fenêtre {len(avant_sc)} → "
+              f"{len(garde)} mois "
               f"({garde[0]} → {garde[-1]})", flush=True)
     if speciation == "anomalie":
         print(f"  spéciation en ANOMALIE : les {len(cols_spe)} colonnes seront remplacées, "

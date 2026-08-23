@@ -70,7 +70,11 @@ HORIZON = 2      # TRANCHES[2] = (25, 48) — J+1, l'échéance de la spéciatio
 #   interprétable : on ne peut pas distinguer « chauffage résidentiel » de « combustion ».
 SOCLE = ["dust", "ecres_conc", "pm2p5_total_om_conc", "pmwf_conc", "sia_conc",
          "ectot_conc", "pm10_ss_conc"]
-TARDIVES = ["pm2p5_no3_conc"]
+# 🔴 Une leçon vit à UN endroit ; les autres la CITENT (§ 0-J). Cette liste existait ici
+# ET dans `extraire_speciation.py`, et le 23/08 seule la seconde a été mise à jour quand
+# `pm2p5_total_om_conc` s'est révélée absente de 2023-08, 09 et 10. Deux listes, une
+# vérité, et rien ne signalait l'écart : `core7` continuait d'écarter le seul nitrate.
+from extraire_speciation import TARDIVES  # noqa: E402
 N_FILS = 4
 
 
