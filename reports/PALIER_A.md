@@ -242,6 +242,32 @@ mesuré à **+0,545 à +1,393 pt** selon le polluant, tous résolus.
 
 ---
 
+## 5 septies. Chimie et précurseurs partagent la moitié de leur variance
+
+Les deux nouvelles familles de chimie CAMS sont mesurées **contre la même base**, celle à
+huit familles. Leurs apports ne s'additionnent donc pas — et sur l'ozone la tentation
+serait forte : +1,63 pt pour les précurseurs, +1,17 pour la chimie.
+
+Mesuré sur 524 552 jours-station communs :
+
+| variable de chimie | R² sur TOUTES les précurseurs |
+|---|---|
+| `chi_chocho_conc` (glyoxal) | 0,58 |
+| `chi_no_conc` (monoxyde d'azote) | 0,62 |
+| `chi_co_conc` (monoxyde de carbone) | 0,56 |
+| `chi_hcho_conc` (formaldéhyde) | **0,42** |
+
+Corrélation par paires maximale : **0,76**, entre le NO et les COV non méthaniques — deux
+traceurs de la même combustion.
+
+**Corrélées, donc, mais pas redondantes** : 38 à 58 % de chaque variable reste hors de
+portée des précurseurs, et le formaldéhyde est la plus indépendante des quatre. Ce qui
+est exclu, c'est l'addition — l'apport conjoint sera inférieur à la somme, et il se mesure
+en promouvant la chimie dans la pile puis en relançant l'ablation, qui juge chaque famille
+**en présence** des autres.
+
+---
+
 ## 6. Ce qui reste ouvert
 
 1. **Trois prédictions scellées** attendent leurs mesures — ablations jointes
