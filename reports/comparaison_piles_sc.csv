@@ -1,0 +1,3 @@
+variante,polluant,perimetre,fenetre,n_mois,n_plis,ecart_apparie_pt,ic95_bas,ic95_haut,p_permutation_positif,p_permutation_negatif,resolu,verdict
+_sc,NO2,PARTOUT,2023-08→2025-12,29,29,-1.5772577941162267,-2.2198296894768603,-0.9682726471610418,1.0,0.0021,True,🔴 la variante fait MOINS BIEN
+_sc,NO2,AUX STATIONS,2023-08→2025-12,29,29,-0.5008916376218351,-0.9110151495411359,-0.15034313303862334,0.9833,0.0188,True,🔴 la variante fait MOINS BIEN

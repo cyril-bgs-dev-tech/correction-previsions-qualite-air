@@ -588,6 +588,26 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         print(f"  fenêtre recalculée après restriction de support : {avant_fenetre} → "
               f"{len(mois_ok)} mois ({mois_ok[0]} → {mois_ok[-1]})", flush=True)
 
+    # 🔴 L'EMPREINTE DES ENTRÉES — 24/08/2026, après une comparaison entre deux corpus.
+    #
+    # Deux exécutions peuvent porter la même fenêtre, le même nombre de mois, le même
+    # nombre de colonnes ET le même `n_test` par pli, tout en reposant sur des données
+    # différentes : la spéciation se joint en `left`, donc la compléter ne change pas le
+    # nombre de lignes du modèle, seulement leurs VALEURS. Aucune statistique de résumé
+    # déjà écrite ne le voyait, et une comparaison appariée a été rendue ce soir entre une
+    # référence de 21 h 59 et une variante de 16 h 23, sans un mot.
+    #
+    # L'empreinte compte les cellules RENSEIGNÉES par famille : c'est exactement ce qu'un
+    # remplissage déplace, et cela reste stable au bruit d'exécution puisque aucune valeur
+    # n'y entre.
+    import hashlib  # noqa: PLC0415
+    corps = "|".join(
+        f"{nom}:{len(cols)}:{int(d[cols].notna().to_numpy().sum())}"
+        for nom, cols in sorted(familles.items()) if all(c in d.columns for c in cols))
+    empreinte = hashlib.sha256(f"{len(d)}|{corps}".encode()).hexdigest()[:12]
+    print(f"  empreinte des entrées : {empreinte} · {len(d):,} lignes · "
+          f"{len(familles)} familles", flush=True)
+
     # ── Le protocole : double aveugle, station ET mois cachés ────────────────────────
     rng = np.random.default_rng(GRAINE)
     ids = np.sort(d["station_id"].unique())
@@ -717,7 +737,8 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
                        "apport_marginal_pct": marge, "ecart_type": float(np.std(gains)),
                        "n_plis_negatifs": neg, "n_plis": len(gains),
                        "n_plis_prevus": n_prevus, "n_plis_ecartes": len(ecartes),
-                       "fenetre": f"{mois_ok[0]}→{mois_ok[-1]}", "n_mois": len(mois_ok)})
+                       "fenetre": f"{mois_ok[0]}→{mois_ok[-1]}", "n_mois": len(mois_ok),
+                       "empreinte_entrees": empreinte})
         pd.DataFrame(lignes).to_csv(partiel, index=False)   # jamais le nom définitif
 
         # ── A01 — les pertes appariées LIGNE À LIGNE ────────────────────────────────
