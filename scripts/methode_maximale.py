@@ -67,7 +67,7 @@ sys.path.insert(0, str(RACINE / "scripts"))
 
 from apport_geoscf import charger_geoscf  # noqa: E402
 from apport_fourier_profil import harmoniques  # noqa: E402
-from apport_precurseurs import charger_precurseurs  # noqa: E402
+from apport_precurseurs import charger_lot  # noqa: E402
 from cible_journaliere import profil_horaire  # noqa: E402
 from aq.rapport import libelle_echeance  # noqa: E402
 from double_aveugle_journalier import (  # noqa: E402
@@ -229,7 +229,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         raise SystemExit(f"jointure des harmoniques : {avant_fou:,} → {len(d):,} lignes")
     familles["fourier"] = cols_fou
 
-    pre, moy_pre, max_pre = charger_precurseurs(GRANDEUR_PAR_POLLUANT[polluant])
+    pre, moy_pre, max_pre = charger_lot("precurseurs")
     avant_pre = len(d)
     d = d.merge(pre, on=["station_id", "jour"], how="left")
     if len(d) != avant_pre:
@@ -513,6 +513,15 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # `.partiel` écrit par une version antérieure n'a pas les mêmes étages, et un compte
     # ne le dirait pas. Et elle est invalidée si la fenêtre du corpus a changé — sinon on
     # recollerait des mesures faites sur deux périmètres différents.
+    atomes = RACINE / f"reports/predictions_methode_maximale_{polluant}_h{horizon}{suff}.parquet"
+    # La reprise porte sur les COLONNES déjà écrites, jamais sur leur nombre : un partiel
+    # d'une version antérieure n'a pas les mêmes étages, et un compte ne le dirait pas.
+    atomiques = None
+    if atomes.with_suffix(".parquet.partiel").exists():
+        atomiques = pd.read_parquet(atomes.with_suffix(".parquet.partiel"))
+        print(f"  ↷ prédictions atomiques reprises : "
+              f"{len([c for c in atomiques.columns if c.startswith('pred__')])} configuration(s)",
+              flush=True)
     lignes, precedent = [], None
     # ⚠️ Le CSV ne portait que l'écart-type inter-plis et le compte de plis négatifs. Deux
     # résumés ne permettent PAS de calculer un intervalle sur la DIFFÉRENCE APPARIÉE entre
@@ -546,7 +555,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         if nom in faites:
             continue
         t0 = time.time()
-        obs, cams, pred, gains = [], [], [], []
+        obs, cams, pred, gains, cles = [], [], [], [], []
         for mm, m_te, m_tr in plis:
             te, tr = d[m_te], d[m_tr]
             if len(te) < 200 or len(tr) < 1000:
@@ -558,6 +567,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
             o, c = te["valeur"].to_numpy(), te["cams_jour"].to_numpy()
             gains.append(gain(o, c, p))
             obs.append(o); cams.append(c); pred.append(p)
+            cles.append(te[["station_id", "jour"]])
             par_pli.append({
                 "polluant": polluant, "configuration": nom, "mois": mm,
                 "n_test": len(te), "n_train": len(tr),
@@ -580,6 +590,36 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
                        "n_plis_prevus": n_prevus, "n_plis_ecartes": len(ecartes),
                        "fenetre": f"{mois_ok[0]}→{mois_ok[-1]}", "n_mois": len(mois_ok)})
         pd.DataFrame(lignes).to_csv(partiel, index=False)   # jamais le nom définitif
+
+        # ── A01 — les pertes appariées LIGNE À LIGNE ────────────────────────────────
+        #
+        # 🔴 Ce que leur absence coûtait : une RMSE déjà moyennée par pli a **détruit la
+        # covariance** entre deux séries de prédictions sur les mêmes lignes — précisément
+        # ce que l'appariement exploite. Sans les prédictions atomiques, tout intervalle
+        # robuste, toute ablation jointe et toute mesure de redondance entre familles exige
+        # de **recalculer** la pile entière : vingt-cinq à cinquante minutes par polluant et
+        # par configuration.
+        #
+        # On écrit donc une colonne par configuration, avec sa clé (station, jour), et on le
+        # fait APRÈS CHAQUE configuration — même discipline que le `.partiel` du CSV : un
+        # fichier écrit seulement à la fin transforme n'importe quelle interruption en zéro
+        # résultat, et cette machine plante une fois sur deux au chargement.
+        cle_col = "".join(ch if ch.isalnum() else "_" for ch in nom).strip("_").lower()
+        bloc = pd.concat(cles, ignore_index=True)
+        bloc["obs"] = np.concatenate(obs)
+        bloc["cams_jour"] = np.concatenate(cams)
+        bloc[f"pred__{cle_col}"] = np.concatenate(pred)
+        if atomiques is None:
+            atomiques = bloc
+        else:
+            avant_at = len(atomiques)
+            atomiques = atomiques.merge(
+                bloc[["station_id", "jour", f"pred__{cle_col}"]],
+                on=["station_id", "jour"], how="outer")
+            if len(atomiques) < avant_at:
+                raise SystemExit(f"la jointure atomique a PERDU des lignes "
+                                 f"({avant_at:,} → {len(atomiques):,})")
+        atomiques.to_parquet(atomes.with_suffix(".parquet.partiel"), index=False)
         if not nom.startswith("★") and not nom.startswith("plafond"):
             precedent = g
 
@@ -596,6 +636,14 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         pd.DataFrame(par_pli).to_csv(fp, index=False)
         print(f"Écrit : {fp.relative_to(RACINE)} · {len(par_pli)} lignes "
               f"({len(set(x['configuration'] for x in par_pli))} configurations)", flush=True)
+    if atomiques is not None:
+        atomiques.to_parquet(atomes, index=False)
+        prov_at = atomes.with_suffix(".parquet.partiel")
+        prov_at.unlink(missing_ok=True)
+        n_conf = len([c for c in atomiques.columns if c.startswith("pred__")])
+        print(f"Écrit : {atomes.relative_to(RACINE)} · {len(atomiques):,} lignes × "
+              f"{n_conf} configurations — pertes appariées reconstructibles sans recalcul",
+              flush=True)
     partiel.unlink(missing_ok=True)   # le nom définitif ne paraît qu'une fois complet
     print(f"\nÉcrit : {f.relative_to(RACINE)} · {(time.time() - depart) / 60:.1f} min")
     return 0

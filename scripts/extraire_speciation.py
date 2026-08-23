@@ -85,9 +85,28 @@ TARDIVES = ["pm2p5_no3_conc"]
 GAZ = ["nh3_conc", "nmvoc_conc", "pans_conc", "so2_conc"]
 AEROSOLS_TARDIFS = ["pm2p5_nh4_conc", "pm2p5_so4_conc"]
 
+# ── Le lot « chimie », ouvert le 23/08/2026 ────────────────────────────────────────────
+#
+# Six variables demandées, six reçues sur les 37 mois — **aucune tardive**, contrôlé sur
+# fichier avant d'écrire une ligne d'extraction, en comptant la présence mois par mois.
+# C'est la troisième fois que ce contrôle se fait ; les deux premières, il a trouvé.
+#
+# Les noms sont ceux que CAMS LIVRE, jamais ceux demandés à l'API — `formaldehyde` arrive
+# en `hcho_conc`, `glyoxal` en `chocho_conc`, les pollens en `bpg_conc` / `gpg_conc`.
+#
+#   hcho_conc, chocho_conc   produits d'oxydation des COV — plus près de la production
+#                            d'ozone et d'aérosol organique secondaire que la masse de COV
+#   no_conc                  la titration locale de l'ozone, que le NO₂ seul ne dit pas
+#   co_conc                  traceur de combustion fraîche, longue durée de vie : sépare
+#                            l'apport local du transporté
+#   bpg_conc, gpg_conc       les pollens SONT de la matière particulaire, et pèsent sur les
+#                            PM10 au printemps. Pris comme assurance, l'archive se refermant
+CHIMIE = ["bpg_conc", "chocho_conc", "co_conc", "gpg_conc", "hcho_conc", "no_conc"]
+
 LOTS = {
     "speciation": (ATTENDUES, TARDIVES),
     "precurseurs": (GAZ, AEROSOLS_TARDIFS),
+    "chimie": (CHIMIE, []),
 }
 
 
@@ -202,7 +221,9 @@ def main(scope: str, lot: str = "speciation") -> int:
     print(f"\n{len(ecrits)} mois sur disque ({faits} écrits, {sautes} déjà à jour) · "
           f"{(time.time()-t0)/60:.1f} min", flush=True)
     print(f"  socle : {len(attendues)} variables sur les {len(ecrits)} mois", flush=True)
-    if avec_tardives:
+    if not tardives:
+        pass                      # lot sans variable tardive déclarée : rien à dire
+    elif avec_tardives:
         print(f"  tardives {tardives} : {len(avec_tardives)} mois sur {faits} traités "
               f"— de {min(avec_tardives)} à {max(avec_tardives)}", flush=True)
     elif faits:

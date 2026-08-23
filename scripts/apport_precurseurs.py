@@ -61,9 +61,26 @@ TAUX_MANQUE_MAX = 0.5
 
 GAZ = ["nh3_conc", "so2_conc", "pans_conc", "nmvoc_conc"]
 
+# ── Les lots mesurables par ce script, ouverts le 23/08/2026 ──────────────────────────
+#
+# Le script mesurait les quatre gaz précurseurs. Sa mécanique — charger un lot extrait aux
+# stations, agréger au jour en moyenne ET maximum, l'empiler en DERNIÈRE position sur la
+# pile complète — ne doit rien à ces gaz-là. Elle est donc paramétrée plutôt que clonée :
+# une copie de 321 lignes aurait dupliqué, avec le code, les cinq garde-fous qu'il porte
+# (fenêtre restreinte, jointure comptée, couverture imprimée, colonnes attendues, § 4 bis).
+#
+# Les noms sont ceux que CAMS LIVRE, jamais ceux demandés à l'API — contrôlés sur fichier.
+CHIMIE = ["hcho_conc", "chocho_conc", "no_conc", "co_conc", "bpg_conc", "gpg_conc"]
 
-def charger_precurseurs(grandeur: str) -> tuple[pd.DataFrame, list[str], list[str]]:
-    """Les quatre gaz au grain journalier — moyenne ET maximum.
+LOTS_MESURABLES = {
+    # lot : (variables, préfixe de colonne, libellé humain)
+    "precurseurs": (GAZ, "pre", "précurseurs"),
+    "chimie": (CHIMIE, "chi", "chimie"),
+}
+
+
+def charger_lot(lot: str) -> tuple[pd.DataFrame, list[str], list[str]]:
+    """Les variables d'un lot au grain journalier — moyenne ET maximum.
 
     La moyenne décrit le niveau du jour, le maximum l'épisode : un pic d'ammoniac de six
     heures après un épandage n'est pas un fond élevé, et leur moyenne les confond. La
@@ -74,22 +91,23 @@ def charger_precurseurs(grandeur: str) -> tuple[pd.DataFrame, list[str], list[st
     produirait deux lignes partielles pour ce jour-là, et une jointure qui rend plus de
     lignes qu'elle n'en reçoit.
     """
-    fs = sorted(glob.glob(str(RACINE / "data/processed/meteo/precurseurs_metropole_*.parquet")))
+    variables, prefixe, libelle = LOTS_MESURABLES[lot]
+    fs = sorted(glob.glob(str(RACINE / f"data/processed/meteo/{lot}_metropole_*.parquet")))
     if not fs:
-        raise SystemExit("aucun précurseur extrait — lancer "
-                         "scripts/extraire_speciation.py --lot precurseurs")
+        raise SystemExit(f"aucun mois du lot « {lot} » extrait — lancer "
+                         f"scripts/extraire_speciation.py --lot {lot}")
     t = pd.concat([pd.read_parquet(f) for f in fs], ignore_index=True)
-    manque = [c for c in GAZ if c not in t.columns]
+    manque = [c for c in variables if c not in t.columns]
     if manque:
-        raise SystemExit(f"variables absentes des parquets : {manque}")
+        raise SystemExit(f"variables absentes des parquets « {lot} » : {manque}")
     t["jour"] = pd.to_datetime(t["timestamp_utc"]).dt.tz_localize(None).dt.floor("D")
-    g = t.groupby(["station_id", "jour"])[GAZ].agg(["mean", "max"])
-    g.columns = [f"pre_{a}_{b}" for a, b in g.columns]
+    g = t.groupby(["station_id", "jour"])[variables].agg(["mean", "max"])
+    g.columns = [f"{prefixe}_{a}_{b}" for a, b in g.columns]
     g = g.reset_index()
     moyennes = [c for c in g.columns if c.endswith("_mean")]
     maxima = [c for c in g.columns if c.endswith("_max")]
-    print(f"  précurseurs : {len(fs)} mois · {len(t):,} lignes horaires → {len(g):,} "
-          f"jours-station · {len(GAZ)} gaz", flush=True)
+    print(f"  {libelle} : {len(fs)} mois · {len(t):,} lignes horaires → {len(g):,} "
+          f"jours-station · {len(variables)} variables", flush=True)
     return g, moyennes, maxima
 
 
@@ -98,7 +116,7 @@ def rmse(o: np.ndarray, x: np.ndarray) -> float:
 
 
 def main(polluant: str, horizon: int, n_spa: int, axe: str,
-         retirer: tuple[str, ...] = ()) -> int:
+         retirer: tuple[str, ...] = (), lot: str = "precurseurs") -> int:
     depart = time.time()
     grandeur = GRANDEUR_PAR_POLLUANT[polluant]
     jeu = charger(polluant, horizon)
@@ -196,12 +214,13 @@ def main(polluant: str, horizon: int, n_spa: int, axe: str,
     d = d.merge(fou, on=["station_id", "jour"], how="left")
     base += cols_fou
 
-    # ── Les précurseurs, la seule chose que ce script mesure ────────────────────────
-    pre, moyennes, maxima = charger_precurseurs(grandeur)
+    # ── Le lot mesuré, la seule chose que ce script mesure ──────────────────────────
+    libelle_lot = LOTS_MESURABLES[lot][2]
+    pre, moyennes, maxima = charger_lot(lot)
     avant_pre = len(d)
     d = d.merge(pre, on=["station_id", "jour"], how="left")
     if len(d) != avant_pre:
-        raise SystemExit(f"jointure des précurseurs : {avant_pre:,} → {len(d):,} lignes")
+        raise SystemExit(f"jointure du lot « {lot} » : {avant_pre:,} → {len(d):,} lignes")
     toutes = moyennes + maxima
 
     # ── § « un mois absent est un code d'époque » : on RESTREINT la fenêtre ─────────
@@ -216,14 +235,14 @@ def main(polluant: str, horizon: int, n_spa: int, axe: str,
     base = [c for c in base if c in d.columns]
 
     modes = {"① pile complète — huit familles": base,
-             f"② + précurseurs, moyennes ({len(moyennes)})": base + moyennes,
-             f"③ + précurseurs, moyennes et maxima ({len(toutes)})": base + toutes}
+             f"② + {libelle_lot}, moyennes ({len(moyennes)})": base + moyennes,
+             f"③ + {libelle_lot}, moyennes et maxima ({len(toutes)})": base + toutes}
 
     mois = np.sort(d["mois"].unique())
     ids = np.sort(d["station_id"].unique())
     print(f"\n{polluant} · {libelle_echeance(horizon)} · axe {axe} · {len(d):,} jours-station"
           f" · {len(ids)} stations · {len(mois)} mois · base {len(base)} colonnes", flush=True)
-    print(f"  couverture des précurseurs : "
+    print(f"  couverture du lot « {lot} » : "
           f"{100 * d[toutes].notna().all(axis=1).mean():.1f} % des lignes", flush=True)
 
     rng = np.random.default_rng(GRAINE)
@@ -296,11 +315,11 @@ def main(polluant: str, horizon: int, n_spa: int, axe: str,
     if retirer:
         suff += "_sans-" + "-".join(sorted(retirer))
     ecrire_rapport(pd.DataFrame(lignes),
-                   RACINE / f"reports/apport_precurseurs_{suff}.csv", contexte,
+                   RACINE / f"reports/apport_{lot}_{suff}.csv", contexte,
                    attendues=["gain_pct", "apport_vs_pile_pct", "ecart_apparie_moyen_pct"])
-    ecrire_rapport(tp, RACINE / f"reports/apport_precurseurs_{suff}_par_pli.csv",
+    ecrire_rapport(tp, RACINE / f"reports/apport_{lot}_{suff}_par_pli.csv",
                    contexte, attendues=["rmse_config1", "rmse_config2"])
-    print(f"\nÉcrit : reports/apport_precurseurs_{suff}.csv · "
+    print(f"\nÉcrit : reports/apport_{lot}_{suff}.csv · "
           f"{(time.time() - depart) / 60:.1f} min")
     return 0
 
@@ -311,6 +330,8 @@ if __name__ == "__main__":
     a.add_argument("--horizon", type=int, default=2)
     a.add_argument("--plis-spatiaux", type=int, default=3)
     a.add_argument("--axe", default="double", choices=("double", "temporel"))
+    a.add_argument("--lot", default="precurseurs", choices=sorted(LOTS_MESURABLES),
+                   help="quel lot de variables CAMS empiler en dernière position")
     a.add_argument("--retirer", default="",
                    help="familles à retirer de la base, séparées par des virgules "
                         "— « geoscf » élargit la fenêtre en gardant la concurrence ; "
