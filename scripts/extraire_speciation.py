@@ -70,10 +70,31 @@ ATTENDUES = ["dust", "ecres_conc", "pm2p5_total_om_conc", "pmwf_conc", "sia_conc
 # Sa redondance avec `sia_conc` — dont il est une composante — rend la perte faible.
 TARDIVES = ["pm2p5_no3_conc"]
 
+# ── Le lot « précurseurs », ouvert le 23/08/2026 ───────────────────────────────────────
+#
+# Six variables demandées, et le même défaut que le nitrate s'est reproduit — attrapé cette
+# fois AVANT l'extraction, en comptant la présence mois par mois sur les 37 fichiers :
+#
+#   nh3_conc, nmvoc_conc, pans_conc, so2_conc      37/37 ✅
+#   pm2p5_nh4_conc, pm2p5_so4_conc                 21/37 🔴 absentes de 2023-08 à 2024-11
+#
+# CAMS a ajouté les composantes d'aérosol en décembre 2024, exactement comme le nitrate.
+# La famille publiable est donc celle des **quatre gaz**, couverte sur tout le corpus : elle
+# ne porte aucun indicateur d'époque, et c'est précisément pour cela que le téléchargement a
+# visé les 37 mois plutôt que les 32 de la spéciation.
+GAZ = ["nh3_conc", "nmvoc_conc", "pans_conc", "so2_conc"]
+AEROSOLS_TARDIFS = ["pm2p5_nh4_conc", "pm2p5_so4_conc"]
 
-def main(scope: str) -> int:
+LOTS = {
+    "speciation": (ATTENDUES, TARDIVES),
+    "precurseurs": (GAZ, AEROSOLS_TARDIFS),
+}
+
+
+def main(scope: str, lot: str = "speciation") -> int:
+    attendues, tardives = LOTS[lot]
     SORTIE.mkdir(parents=True, exist_ok=True)
-    fichiers = sorted(SOURCE.glob("speciation_*.nc"))
+    fichiers = sorted(SOURCE.glob(f"{lot}_*.nc"))
     if not fichiers:
         raise SystemExit(f"aucun fichier dans {SOURCE} — lancer "
                          f"scripts/telecharger_speciation_cams.py")
@@ -92,13 +113,14 @@ def main(scope: str) -> int:
     t0, faits, sautes, avec_tardives = time.time(), 0, 0, []
     for n, f in enumerate(fichiers, start=1):
         mois = f.stem.split("_")[1]
-        cible = SORTIE / f"speciation_{scope}_{mois}.parquet"
+        cible = SORTIE / f"{lot}_{scope}_{mois}.parquet"
         # ⚠️ **La reprise doit regarder TOUTES les sources, pas la première.** Elle ne
         # comparait qu'au fichier historique : le complément arrivé après produisait un
         # parquet « déjà à jour » et 32 fichiers téléchargés n'entraient jamais dans une
         # mesure. Signalé par une revue externe, vérifié : « 0 écrits, 32 déjà à jour ».
         # Un test de reprise qui ignore une source est un test qui ment (§ 4).
-        fc = SOURCE_COMPLEMENT / f"speciation_complement_{mois}.nc"
+        fc = (SOURCE_COMPLEMENT / f"speciation_complement_{mois}.nc"
+              if lot == "speciation" else Path("/inexistant"))
         sources = [f] + ([fc] if fc.exists() else [])
         if cible.exists() and cible.stat().st_mtime > max(x.stat().st_mtime for x in sources):
             sautes += 1
@@ -124,7 +146,7 @@ def main(scope: str) -> int:
                 raise SystemExit(f"{mois} : {100*perdu:.2f} % de lignes sans complément "
                                  f"— au-delà du seuil de 0,1 %")
 
-        manque = [c for c in ATTENDUES if c not in t.columns]
+        manque = [c for c in attendues if c not in t.columns]
         if manque:
             raise SystemExit(f"{f.name} : variables absentes du fichier reçu : {manque} "
                              f"— reçu {sorted(c for c in t.columns if c not in ('station_id', 'timestamp_utc'))}")
@@ -134,29 +156,57 @@ def main(scope: str) -> int:
         # Périmètre EFFECTIF, pas demandé (§ 2 quater) : on DIT quels mois portent les
         # variables tardives, au lieu de laisser une colonne à moitié vide s'expliquer
         # toute seule dans les métriques finales.
-        presentes = [c for c in TARDIVES if c in t.columns]
+        presentes = [c for c in tardives if c in t.columns]
         if presentes:
             avec_tardives.append(mois)
 
-        if not (t[ATTENDUES].std() > 0).any():
-            raise SystemExit(f"{f.name} : les six variables sont constantes")
+        if not (t[attendues].std() > 0).any():
+            raise SystemExit(f"{f.name} : toutes les variables du socle sont constantes")
 
         prov = cible.with_suffix(".parquet.partiel")
         t.to_parquet(prov, index=False)
         prov.rename(cible)
         faits += 1
         print(f"  [{n}/{len(fichiers)}] {int(time.time()-t0):4d}s  {mois}  "
-              f"{len(t):,} lignes · {len(ATTENDUES)} variables", flush=True)
+              f"{len(t):,} lignes · {len(attendues)} variables", flush=True)
 
-    ecrits = sorted(SORTIE.glob(f"speciation_{scope}_*.parquet"))
+    # ── Compter les JOURS, pas les fichiers — contrôle ajouté le 23/08/2026 ──────────
+    #
+    # 🔴 Le défaut qu'il attrape, commis le matin même : j'ai vérifié que les six variables
+    # étaient présentes **dans chacun des 37 fichiers**, et j'en ai conclu que les 37 mois
+    # étaient couverts. Faux. L'archive ADS de ces variables commence le **18 août 2023** :
+    # `precurseurs_202308` ne porte que **16 jours sur 31**. Un fichier mensuel à moitié
+    # rempli s'ouvre parfaitement, porte bien toutes ses variables, et pèse presque le même
+    # poids — rien ne le distingue d'un mois complet sans compter ses jours.
+    #
+    # C'est la § 2 bis appliquée au CALENDRIER : compter le reçu contre le demandé, en
+    # jours et pas en fichiers. Un mois court n'est pas une erreur en soi — le mois en cours
+    # l'est toujours — mais il doit être DIT, sinon il devient un indicateur d'époque dans
+    # un protocole qui cache les mois.
+    ecrits = sorted(SORTIE.glob(f"{lot}_{scope}_*.parquet"))
+    courts = []
+    for f in ecrits:
+        mois = f.stem.split("_")[-1]
+        h = pd.read_parquet(f, columns=["timestamp_utc"])["timestamp_utc"]
+        j = pd.to_datetime(h).dt.tz_localize(None).dt.floor("D")
+        attendus = pd.Period(f"{mois[:4]}-{mois[4:]}").days_in_month
+        if j.nunique() < attendus - 2:
+            courts.append((mois, j.nunique(), attendus, f"{j.min():%m-%d}", f"{j.max():%m-%d}"))
+    if courts:
+        print(f"  ⚠️ {len(courts)} mois COURT(S) — « la famille est absente » y vaut « nous "
+              f"sommes en ce mois-là » :", flush=True)
+        for m, n_j, att, a, z in courts:
+            print(f"       {m} : {n_j} jours sur {att} ({a} → {z})", flush=True)
+    else:
+        print(f"  ✅ tous les mois couvrent leur calendrier", flush=True)
     print(f"\n{len(ecrits)} mois sur disque ({faits} écrits, {sautes} déjà à jour) · "
           f"{(time.time()-t0)/60:.1f} min", flush=True)
-    print(f"  socle : {len(ATTENDUES)} variables sur les {len(ecrits)} mois", flush=True)
+    print(f"  socle : {len(attendues)} variables sur les {len(ecrits)} mois", flush=True)
     if avec_tardives:
-        print(f"  tardives {TARDIVES} : {len(avec_tardives)} mois sur {faits} traités "
+        print(f"  tardives {tardives} : {len(avec_tardives)} mois sur {faits} traités "
               f"— de {min(avec_tardives)} à {max(avec_tardives)}", flush=True)
     elif faits:
-        print(f"  tardives {TARDIVES} : AUCUN mois — à ne pas utiliser", flush=True)
+        print(f"  tardives {tardives} : AUCUN mois — à ne pas utiliser", flush=True)
     if not ecrits:
         raise SystemExit("AUCUN fichier écrit")
     return 0
@@ -165,5 +215,7 @@ def main(scope: str) -> int:
 if __name__ == "__main__":
     a = argparse.ArgumentParser(description=__doc__)
     a.add_argument("--scope", default="metropole", choices=("metropole", "occitanie"))
+    a.add_argument("--lot", default="speciation", choices=sorted(LOTS),
+                   help="quel jeu de variables — le nom du parquet le porte")
     n = a.parse_args()
-    raise SystemExit(main(n.scope))
+    raise SystemExit(main(n.scope, n.lot))

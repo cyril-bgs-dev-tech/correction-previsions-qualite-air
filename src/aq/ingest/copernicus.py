@@ -182,7 +182,7 @@ def requete_cams(
     return {
         "variable": list(variables or VARIABLES_CAMS),
         "model": ["ensemble"],
-        "level": ["0"],  # niveau sol
+        "level": couches,  # niveau sol
         "type": [type_reanalyse],
         "year": [str(annee)],
         "month": [f"{mois:02d}"],
@@ -230,6 +230,7 @@ def requete_cams_prevision(
     emprise: list[float] | None = None,
     echeances_h: range | list[int] | None = None,
     modeles: list[str] | None = None,
+    niveaux: list[str] | None = None,
 ) -> dict:
     """Construit une requête de **prévisions** CAMS Europe, une journée par jour du mois.
 
@@ -257,7 +258,14 @@ def requete_cams_prevision(
     # L'oublier ferait passer une requête à six membres pour une requête à un seul, et le
     # service la refuserait en HTTP 403 sans dire de combien.
     membres = list(modeles or ["ensemble"])
-    cout = cout_champs(len(especes), len(echeances)) * len(membres)
+    # ⚠️ **Le NIVEAU est une dimension du coût, comme l'espèce et l'échéance.** Le
+    # catalogue en expose dix — 0, 50, 100, 250, 500, 750, 1 000, 2 000, 3 000, 5 000 m
+    # (vérifié au `form.json` le 23/08/2026, jamais deviné). Demander quatre espèces sur
+    # trois niveaux, c'est douze champs par heure et non quatre : sans ce facteur, le
+    # garde laisse passer une requête que le service refuse en HTTP 403 sans dire de
+    # combien on dépasse.
+    couches = list(niveaux or ["0"])
+    cout = cout_champs(len(especes) * len(couches), len(echeances)) * len(membres)
     if cout > PLAFOND_CHAMPS_ADS:
         raise ValueError(
             f"{cout} champs demandés, plafond {PLAFOND_CHAMPS_ADS}. Découper par "
@@ -268,7 +276,7 @@ def requete_cams_prevision(
     return {
         "variable": especes,
         "model": membres,
-        "level": ["0"],
+        "level": couches,
         "type": ["forecast"],
         # **Le dernier jour du mois, jamais 31 en dur.** Une plage « 2024-02-01/
         # 2024-02-31 » désigne une date inexistante : le service la refuse en HTTP 500,
