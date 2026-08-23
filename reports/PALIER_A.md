@@ -217,6 +217,31 @@ ce document.
 
 ---
 
+## 5 sexies. Ce que la fenêtre complète peut et ne peut pas dire
+
+Écrit **avant** que ses résultats ne tombent, pour ne pas les lire de travers.
+
+La variante `--fenetre complete --exclure geoscf,feux` porte plus de mois que la référence.
+Elle n'est donc **pas comparable en score** : deux fenêtres différentes ne se soustraient
+pas, et `comparer_piles.py` refusera de le faire. Restreindre les deux à leurs mois communs
+ne réparerait rien — la variante aurait été *entraînée* sur des mois que la référence n'a
+pas vus.
+
+Ce qu'elle peut dire, et c'est pour cela qu'elle a été lancée : **est-ce que douze blocs
+rendent testable ce que neuf ne résolvent pas ?** Trois familles échouent aujourd'hui par
+puissance et non par absence d'effet — spéciation +1,25 pt, précurseurs +0,64, membres
++0,43, toutes avec les quatre polluants positifs. C'est la prédiction scellée `a2706756`.
+
+⚠️ Et une partie de la réponse est déjà connue : le test à blanc montre que la variante
+retire aussi **`membres` et `era5`**, dont la couverture est trouée. La question se réduit
+donc à la spéciation et aux précurseurs — et le coût du retrait de `geoscf + membres` est
+mesuré à **+0,545 à +1,393 pt** selon le polluant, tous résolus.
+
+**Un gain de puissance qui coûte une famille démontrée n'est pas un progrès : c'est un
+échange, et il se juge sur les deux plateaux.**
+
+---
+
 ## 6. Ce qui reste ouvert
 
 1. **Trois prédictions scellées** attendent leurs mesures — ablations jointes
