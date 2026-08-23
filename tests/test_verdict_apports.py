@@ -67,6 +67,25 @@ def test_un_echec_par_PUISSANCE_se_distingue_d_une_absence_d_effet():
     assert "NON CONFIRMÉ" in v and "PUISSANCE" not in v
 
 
+def test_tous_positifs_ne_suffit_pas_a_invoquer_la_puissance():
+    """Le cas réel du 24/08 : la chimie rendait p_PC=0,86 avec les quatre estimations
+    au-dessus de zéro, dont trois à +0,007, +0,117 et +0,197 pt. Le verdict annonçait
+    « gagner des mois » pour un effet inexistant sur trois polluants."""
+    porteur = (+0.73, +0.35, +1.13, 0.0063, 0.99, 8, 9)
+    plat = (+0.12, -0.40, +0.71, 0.3515, 0.65, 4, 8)
+    vide = {"O3": porteur, "NO2": plat, "PM10": plat, "PM25": plat}
+    v, _ = rendre_verdict(vide, {2: 1.0, 3: 0.8646, 4: 0.79},
+                          {L: dict.fromkeys(vide, 1) for L in (2, 3, 4)})
+    assert "PUISSANCE" not in v, "un seul groupe qui penche n'est pas un manque de puissance"
+
+    # Deux groupes qui penchent, eux, le sont — c'est la spéciation en dernière position.
+    penche = (+1.67, -0.36, +3.16, 0.0216, 0.98, 7, 9)
+    puissance = {"NO2": porteur, "PM25": penche, "O3": plat, "PM10": plat}
+    v, _ = rendre_verdict(puissance, {2: 0.07, 3: 0.0648, 4: 0.08},
+                          {L: dict.fromkeys(puissance, 1) for L in (2, 3, 4)})
+    assert "PUISSANCE" in v
+
+
 def test_quatre_groupes_positifs_tiennent():
     """Le témoin : sans groupe en sens inverse, la conjonction décide seule."""
     detail = {p: PORTE for p in ("NO2", "O3", "PM10", "PM25")}

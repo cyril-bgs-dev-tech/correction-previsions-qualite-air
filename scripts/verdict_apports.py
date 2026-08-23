@@ -220,7 +220,20 @@ def rendre_verdict(detail: dict, pcs: dict, signes: dict, alpha: float = 0.05):
         #
         # Le plancher atteignable le dit sans ambiguïté : sur huit blocs, aucun `p_PC` de
         # permutation ne peut descendre sous 0,0117, quel que soit l'effet.
-        tous_positifs = all(d[0] > 0 for d in detail.values())
+        # 🔴 « Tous positifs » ne suffit pas — corrigé le 24/08/2026 sur un cas réel.
+        #
+        # La chimie en moyennes et maxima rendait p_PC = 0,86 avec les quatre estimations
+        # au-dessus de zéro, dont trois à +0,007, +0,117 et +0,197 pt. Le verdict annonçait
+        # « défaut de PUISSANCE, gagner des mois » — ce qui aurait envoyé chercher des mois
+        # pour un effet inexistant sur trois polluants. À 0,86, aucun nombre de blocs ne
+        # rapproche de 0,05.
+        #
+        # Un manque de puissance se reconnaît à ce que PLUSIEURS groupes penchent déjà :
+        # la conjonction partielle teste « présent dans au moins deux », donc il faut au
+        # moins deux `p⁺` qui s'en approchent. Le seuil de 0,25 n'est pas un seuil de
+        # décision — c'est la frontière entre « penche » et « ne dit rien ».
+        tous_positifs = (all(d[0] > 0 for d in detail.values())
+                         and sum(1 for d in detail.values() if d[3] < 0.25) >= 2)
         plancher = min(1.0, (len(detail) - 1) * sorted(
             2.0 ** -max(d[6], 1) for d in detail.values())[1]) if len(detail) >= 2 else 1.0
         if tous_positifs:

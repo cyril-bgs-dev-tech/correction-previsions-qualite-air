@@ -1,0 +1,4 @@
+polluant,horizon,axe,configuration,n_colonnes,rmse_candidat,rmse_ancre,gain_pct,apport_vs_pile_pct,ecart_apparie_moyen_pct,ecart_apparie_sigma_pct,n_plis_positifs,n_plis,n_lignes,fenetre,n_mois,empreinte_corpus,echeance
+O3,2,double,① pile complète — huit familles,105,9.966556308398019,12.447766359899543,19.932974155867335,,0.0,0.0,0,28,72442,2023-09→2025-12,28,cb9f42e4b80e,J+1
+O3,2,double,"② + chimie, moyennes (4)",109,9.852541600298423,12.447766359899543,20.84891927246989,0.9159451166025541,1.1668180480009371,1.0733122414667675,23,28,72442,2023-09→2025-12,28,cb9f42e4b80e,J+1
+O3,2,double,"③ + chimie, moyennes et maxima (8)",113,9.883541032965677,12.447766359899543,20.599883166143872,0.6669090102765374,0.8057239110527675,1.1896363034609343,21,28,72442,2023-09→2025-12,28,cb9f42e4b80e,J+1
