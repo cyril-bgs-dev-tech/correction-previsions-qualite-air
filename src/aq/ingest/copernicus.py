@@ -182,7 +182,12 @@ def requete_cams(
     return {
         "variable": list(variables or VARIABLES_CAMS),
         "model": ["ensemble"],
-        "level": couches,  # niveau sol
+        # 🔴 La réanalyse n'a PAS de paramètre de niveau — remis à ["0"] le 23/08/2026.
+        # En ajoutant `niveaux` à la fonction de PRÉVISION, un remplacement global a
+        # aussi touché celle-ci, qui ne définit aucun `couches`. Rien n'a levé à
+        # l'exécution : ce chemin n'est plus emprunté par la chaîne. Seuls trois tests
+        # unitaires l'ont vu, quinze jours plus tard.
+        "level": ["0"],  # niveau sol
         "type": [type_reanalyse],
         "year": [str(annee)],
         "month": [f"{mois:02d}"],
