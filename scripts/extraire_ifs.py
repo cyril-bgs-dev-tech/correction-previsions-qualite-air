@@ -341,7 +341,27 @@ def main(annee: int, mois: int, jours: int) -> int:
     # Le run 00 h d'un jour porte les échéances 24-45 h, donc le LENDEMAIN : on décale.
     attendus = {(pd.Timestamp(d) + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
                 for d in attendus}
+    # 🔴 Un jour PRÉSENT n'est pas un jour COMPLET — durci le 24/08/2026.
+    #
+    # Le contrôle ne vérifiait que la présence du jour. Or chaque jour porte huit
+    # échéances (24 à 45 h, tri-horaires) : un pas perdu retire trois heures et le jour
+    # reste « présent ». Mesuré sur les mois déjà écrits, la médiane vaut 8 heures partout
+    # — et **2025-01 en portait deux à 6**, écrits sous le nom définitif sans un mot.
+    #
+    # C'est la § 4 dans sa forme la plus littérale : un artefact au nom définitif doit être
+    # complet, et l'attendu se calcule depuis la DEMANDE — huit échéances — jamais depuis
+    # ce qui est arrivé.
+    heures = t.assign(_j=pd.to_datetime(t["timestamp_utc"]).dt.strftime("%Y-%m-%d")) \
+               .groupby("_j")["timestamp_utc"].nunique()
+    courts = sorted(f"{j} ({n}/8 h)" for j, n in heures.items() if n < len(ECHEANCES))
     manquants = sorted(attendus - vus)
+    if courts:
+        provisoire.unlink(missing_ok=True)
+        print(f"\n❌ {len(courts)} jour(s) incomplet(s) : "
+              f"{', '.join(courts[:8])}{' …' if len(courts) > 8 else ''}\n"
+              f"   Rien écrit sous le nom définitif — le cache GRIB est CONSERVÉ.",
+              flush=True)
+        return 1
     if manquants:
         provisoire.unlink(missing_ok=True)
         print(f"\n❌ {len(manquants)} jour(s) absent(s) du parquet : "
