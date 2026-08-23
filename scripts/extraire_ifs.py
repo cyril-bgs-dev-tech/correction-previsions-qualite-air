@@ -54,7 +54,37 @@ sys.path.insert(0, str(RACINE / "src"))
 
 from aq.ingest import stations as st  # noqa: E402
 
-BASE = "https://ecmwf-forecasts.s3.amazonaws.com"
+# 🔴 Deux miroirs, alternés — mesuré le 23/08/2026 après une limitation en pleine face.
+#
+# Le lot de juin 2024 a tiré ~970 Mo puis s'est effondré : jour 22 à 426 s, jour 23 à
+# 970 s, et une sonde dix minutes plus tard rendait encore **4 rejets sur 16 à 4 s de
+# pause**, avec 0,16 Mo/s contre 2,7 en début de soirée. Ce n'est pas une limite de
+# CADENCE — la bande passante elle-même était bridée d'un facteur 17. C'est un budget
+# consommé, et insister le creuse.
+#
+# L'open data ECMWF est servi par plusieurs hébergeurs. Mesuré sur le même fichier :
+#
+#   AWS s3     ✅ 12,52 Mo/s        Google  ✅ 6,82 Mo/s
+#   Azure      ❌ HTTP 409          data.ecmwf.int ❌ 404
+#
+# Alterner les deux répartit la charge : chaque hôte voit la moitié des requêtes, donc le
+# budget se consomme deux fois moins vite. Ce n'est pas une optimisation de débit — les
+# deux sont largement assez rapides — c'est une façon de ne pas épuiser un seul seau.
+MIROIRS = [
+    "https://ecmwf-forecasts.s3.amazonaws.com",
+    "https://storage.googleapis.com/ecmwf-open-data",
+]
+BASE = MIROIRS[0]  # conservé : d'anciens appels le référencent
+
+_TOUR = 0
+
+
+def _miroir() -> str:
+    """Rend le miroir suivant. L'alternance est par REQUÊTE, pas par mois : un mois entier
+    sur un seul hôte reviendrait à ne rien alterner du tout."""
+    global _TOUR
+    _TOUR += 1
+    return MIROIRS[_TOUR % len(MIROIRS)]
 SORTIE = RACINE / "data/processed/meteo"
 CACHE = RACINE / "data/raw/ifs"
 PYTHON_GRIB = "/home/cyril/miniforge3/bin/mamba"
@@ -90,7 +120,7 @@ ECHEANCES = [24, 27, 30, 33, 36, 39, 42, 45]
 
 
 def index_du_pas(date: str, echeance: int) -> list[dict]:
-    url = f"{BASE}/{date}/00z/ifs/0p25/oper/{date}000000-{echeance}h-oper-fc.index"
+    url = f"{_miroir()}/{date}/00z/ifs/0p25/oper/{date}000000-{echeance}h-oper-fc.index"
     _derniere: BaseException | None = None
     for essai in range(6):
         try:
@@ -195,7 +225,7 @@ def telecharger_pas(date: str, echeance: int, cible: Path) -> bool:
     if not champs:
         return False
     plages = plages_regroupees(champs)
-    url = f"{BASE}/{date}/00z/ifs/0p25/oper/{date}000000-{echeance}h-oper-fc.grib2"
+    chemin = f"{date}/00z/ifs/0p25/oper/{date}000000-{echeance}h-oper-fc.grib2"
     morceaux = []
     for a, b in plages:
         # Six tentatives et un recul exponentiel : l'ancienne version abandonnait après
@@ -203,7 +233,8 @@ def telecharger_pas(date: str, echeance: int, cible: Path) -> bool:
         for essai in range(6):
             try:
                 _freiner()
-                req = urllib.request.Request(url, headers={"Range": f"bytes={a}-{b - 1}"})
+                req = urllib.request.Request(f"{_miroir()}/{chemin}",
+                                             headers={"Range": f"bytes={a}-{b - 1}"})
                 with urllib.request.urlopen(req, timeout=180) as r:
                     brut = r.read()
                 if brut[:4] == b"GRIB":
