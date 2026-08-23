@@ -198,7 +198,7 @@ def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[s
 
 def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
          speciation: str = "brute", support_complet: bool = False,
-         exclure: tuple[str, ...] = ()) -> int:
+         exclure: tuple[str, ...] = (), precurseurs: str = "completes") -> int:
     depart = time.time()
     jeu = charger(polluant, horizon)
     base_cols = colonnes_admises(jeu)
@@ -234,7 +234,13 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     d = d.merge(pre, on=["station_id", "jour"], how="left")
     if len(d) != avant_pre:
         raise SystemExit(f"jointure des précurseurs : {avant_pre:,} → {len(d):,} lignes")
-    familles["precurseurs"] = moy_pre + max_pre
+    # 🔴 Quatre colonnes ou huit ? La question a une réponse mesurée — 23/08/2026.
+    # Testé au double aveugle, « moyennes seules » (4) tient sur les DEUX axes ;
+    # « moyennes ET maxima » (8) tombe sur l'axe complet dès qu'on juge à la permutation
+    # exacte plutôt qu'au bootstrap saturé — p_PC 0,0288 → 0,1185. Les huit colonnes
+    # restent le défaut pour ne pas changer la pile sans mesure ; `--precurseurs moyennes`
+    # rend la variante parcimonieuse mesurable sur les mêmes plis.
+    familles["precurseurs"] = moy_pre if precurseurs == "moyennes" else moy_pre + max_pre
     # ⚠️ La dynamique de CAMS se calcule **avant** toute restriction de fenêtre. Elle
     # décale la série d'un jour par station : la calculer après le filtrage sur la
     # couverture GEOS-CF ferait sauter le décalage par-dessus le bord de fenêtre, et la
@@ -483,6 +489,9 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     suff = "" if speciation == "brute" else f"_spe-{speciation}"
     suff += "_sc" if support_complet else ""
     suff += ("_sans-" + "-".join(sorted(exclure))) if exclure else ""
+    # Le suffixe porte la variante : sans lui, deux piles différentes écriraient le même
+    # fichier et la seconde effacerait la première sans que rien ne lève (§ 4).
+    suff += "_pre-moyennes" if precurseurs == "moyennes" else ""
     partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv.partiel"
 
     # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
@@ -663,6 +672,10 @@ if __name__ == "__main__":
     a.add_argument("--support-complet", action="store_true",
                    help="écarter toute famille ayant au moins un MOIS entièrement absent — "
                         "sinon le modèle apprend la date par le motif de manque")
+    a.add_argument("--precurseurs", default="completes",
+                   choices=("completes", "moyennes"),
+                   help="« moyennes » retient les 4 moyennes ; « completes » y ajoute les "
+                        "4 maxima — la variante en service, non démontrée sur l'axe complet")
     a.add_argument("--speciation", default="brute",
                    choices=("brute", "anomalie", "core7"),
                    help="« anomalie » remplace chaque composante par son écart à la "
@@ -671,4 +684,4 @@ if __name__ == "__main__":
     n = a.parse_args()
     raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.ablation,
                           n.speciation, n.support_complet,
-                          tuple(x for x in n.exclure.split(',') if x)))
+                          tuple(x for x in n.exclure.split(',') if x), n.precurseurs))
