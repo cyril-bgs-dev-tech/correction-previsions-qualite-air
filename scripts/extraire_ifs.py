@@ -63,7 +63,28 @@ PYTHON_GRIB = "/home/cyril/miniforge3/bin/mamba"
 # Les niveaux de pression sont écartés à ce stade : l'ablation a montré que le vent n'apporte
 # que **+0,067 µg/m³** en marginal, ce qui ne justifie pas treize niveaux.
 CHAMPS_SFC = {"2t", "2d", "10u", "10v", "ssrd", "tp"}
-TOLERANCE_REGROUPEMENT = 20_000_000  # octets : 1 requête par pas, 60 % de superflu assumé
+# 🔴 Ramené de 20 Mo à 1 Mo — mesuré le 23/08/2026, SANS transférer un octet.
+#
+# Les six champs de surface sont éparpillés dans un GRIB de plusieurs centaines de Mo. Une
+# tolérance de 20 Mo fusionne des plages très distantes et tire tout ce qui les sépare. Le
+# coût se calcule exactement depuis l'index, qui porte l'offset et la longueur de chaque
+# champ — donc la question se tranche avant l'acquisition, pas après :
+#
+#   tolérance   requêtes/jour   transféré/jour   superflu   22 mois
+#      20 Mo         16            175,0 Mo        77 %      115 Go
+#       5 Mo         26            117,5 Mo        65 %       78 Go
+#       1 Mo         47             41,7 Mo         2 %       27 Go
+#       0            48             40,9 Mo         0 %       27 Go
+#
+# L'utile vaut 40,9 Mo par jour. À 1 Mo de tolérance on transfère 41,7 Mo — 2 % de
+# superflu — pour 47 requêtes au lieu de 16. Or la mesure du 31/07 établit que le service
+# accepte **288 requêtes par minute sans un seul rejet** : le nombre de requêtes n'est pas
+# la ressource rare, le volume l'est. Diviser le transfert par 4,2 pour tripler un compteur
+# qu'on ne sature pas est un échange sans perdant.
+#
+# En dessous de 1 Mo le gain devient nul (2 % → 0 %) pour une requête de plus : c'est le
+# point où le regroupement cesse de coûter.
+TOLERANCE_REGROUPEMENT = 1_000_000
 # Un run de 00 h couvre le jour suivant par ses échéances 24 à 47 ; l'open data est tri-horaire.
 ECHEANCES = [24, 27, 30, 33, 36, 39, 42, 45]
 
@@ -189,16 +210,47 @@ def main(annee: int, mois: int, jours: int) -> int:
 
     volume = sum(f.stat().st_size for f in fichiers) / 1e6
     print(f"\n{len(fichiers)} pas · {volume:.0f} Mo · {time.time() - depart:.0f}s")
-    print(f"extrapolation 17 mois : {volume * 17 * 30 / jours / 1000:.0f} Go · "
-          f"{(time.time() - depart) * 17 * 30 / jours / 3600:.1f} h", flush=True)
+    # L'extrapolation porte sur le lot RESTANT, et depuis la passe de CETTE exécution
+    # (§ 0-A) — jamais sur un compte figé qui périme dès que la cible change.
+    par_mois = volume * 30 / max(jours, 1)
+    secondes = (time.time() - depart) * 30 / max(jours, 1)
+    print(f"extrapolation : {par_mois / 1000:.2f} Go et {secondes / 60:.0f} min par mois "
+          f"→ 22 mois = {par_mois * 22 / 1000:.0f} Go · {secondes * 22 / 3600:.1f} h",
+          flush=True)
 
     t = extraire(fichiers, stations)
     cible = SORTIE / f"ifs_metropole_{annee}{mois:02d}.parquet"
     provisoire = cible.with_suffix(".parquet.partiel")
     t.to_parquet(provisoire, index=False)
+
+    # 🔴 Le contrôle porte sur le CONTENU, avant le nom définitif (§ 4). Un mois à moitié
+    # téléchargé écrit sous son nom final serait sauté à jamais par la reprise, et sa
+    # moitié absente deviendrait un code d'époque. Les jours attendus sont NOMMÉS, pas
+    # comptés contre un total : « ne jamais comparer un compte à un compte ».
+    vus = set(pd.to_datetime(t["timestamp_utc"]).dt.strftime("%Y-%m-%d"))
+    attendus = {f"{annee}-{mois:02d}-{j:02d}" for j in range(1, jours + 1)}
+    # Le run 00 h d'un jour porte les échéances 24-45 h, donc le LENDEMAIN : on décale.
+    attendus = {(pd.Timestamp(d) + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+                for d in attendus}
+    manquants = sorted(attendus - vus)
+    if manquants:
+        provisoire.unlink(missing_ok=True)
+        print(f"\n❌ {len(manquants)} jour(s) absent(s) du parquet : "
+              f"{', '.join(manquants[:8])}{' …' if len(manquants) > 8 else ''}\n"
+              f"   Rien écrit sous le nom définitif — le cache GRIB est CONSERVÉ pour la "
+              f"reprise.", flush=True)
+        return 1
     provisoire.rename(cible)
     print(f"\nÉcrit : {cible.relative_to(RACINE)} · {len(t):,} lignes · "
-          f"colonnes {list(t.columns)}", flush=True)
+          f"{len(vus)} jours · colonnes {list(t.columns)}", flush=True)
+
+    # Le cache GRIB ne sert qu'à la reprise DANS le mois. Une fois le parquet complet
+    # écrit, il ne sert plus à rien — et /mnt/d n'a pas la place de 22 mois à 1,2 Go.
+    libere = sum(f.stat().st_size for f in fichiers) / 1e9
+    for f in fichiers:
+        f.unlink(missing_ok=True)
+    print(f"Cache GRIB purgé : {len(fichiers)} fichier(s), {libere:.1f} Go rendus",
+          flush=True)
     return 0
 
 
