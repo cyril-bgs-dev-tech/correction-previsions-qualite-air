@@ -52,6 +52,8 @@ RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "src"))
 sys.path.insert(0, str(RACINE / "scripts"))
 
+from verdict_apports import bootstrap_blocs, permutation_blocs  # noqa: E402
+
 MAX = "★ MAXIMALE — PARTOUT"
 
 
@@ -65,16 +67,25 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
     if not ref.exists():
         raise SystemExit(f"référence absente : {ref.name} — lancer la pile complète d'abord")
 
-    cmd = [sys.executable, "-u", str(RACINE / "scripts/methode_maximale.py"),
-           "--polluant", polluant, "--horizon", str(horizon), "--exclure", ",".join(fam)]
-    if support_complet:
-        cmd.append("--support-complet")
-    print("  " + " ".join(cmd[2:]), flush=True)
-    subprocess.run(cmd, check=False)
-
-    # Le verdict porte sur l'ARTEFACT, jamais sur le code de sortie (§ 0-C).
     sans = RACINE / (f"reports/methode_maximale_{polluant}_h{horizon}{suff}"
                      f"_sans-{'-'.join(fam)}.csv")
+    # Reprise sur l'ARTEFACT : la pile réduite est un ajustement de vingt minutes, et
+    # relire son verdict ne doit pas la refaire. Le contrôle porte sur le contenu — le
+    # fichier doit porter la configuration de référence — jamais sur la seule existence.
+    deja = (sans.exists()
+            and MAX in set(pd.read_csv(sans)["configuration"])
+            and sans.with_name(sans.name.replace(".csv", "_par_pli.csv")).exists())
+    if deja:
+        print(f"  pile réduite déjà écrite : {sans.name} — ajustement sauté", flush=True)
+    else:
+        cmd = [sys.executable, "-u", str(RACINE / "scripts/methode_maximale.py"),
+               "--polluant", polluant, "--horizon", str(horizon), "--exclure", ",".join(fam)]
+        if support_complet:
+            cmd.append("--support-complet")
+        print("  " + " ".join(cmd[2:]), flush=True)
+        subprocess.run(cmd, check=False)
+
+    # Le verdict porte sur l'ARTEFACT, jamais sur le code de sortie (§ 0-C).
     if not sans.exists():
         raise SystemExit(f"aucun artefact écrit : {sans.name}")
 
@@ -94,15 +105,44 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
     cout = float(ga[MAX] - gb[MAX])
     ind = {n: float(ga[MAX] - ga.get(f"− {n} (ablation)", np.nan)) for n in fam}
     somme = float(np.nansum(list(ind.values())))
-    # La lecture n'est pas « joint > somme » ou l'inverse : c'est le SENS de l'écart.
-    if somme < cout - 0.05:
-        lecture = ("les retraits individuels SOUS-ESTIMENT le retrait joint : les familles "
-                   "sont REDONDANTES, chacune masque l'autre à l'ablation")
-    elif somme > cout + 0.05:
-        lecture = ("les retraits individuels SURESTIMENT le retrait joint : les familles "
-                   "se NUISENT en partie, la pile gagne à en perdre une")
+
+    # 🔴 La lecture ne se tire pas de deux scalaires — corrigé le 23/08/2026
+    # -------------------------------------------------------------------------------
+    # La première version comparait `somme` à `cout` et concluait « redondantes » dès que
+    # la somme était la plus petite. Deux défauts, vus sur le premier résultat réel :
+    #
+    #   ① elle supposait des apports POSITIFS. Sur NO₂, feux −0,14 et tendance −0,23
+    #      donnent somme = −0,37 contre un coût joint de −0,01 : la condition rendait
+    #      « REDONDANTES » là où les deux familles ne valent rien, dans un sens comme dans
+    #      l'autre. Quand les quantités changent de signe, les étiquettes s'inversent ;
+    #   ② surtout, elle interprétait des écarts SOUS LA RÉSOLUTION. −0,01 et −0,37 pt sur
+    #      un protocole qui résout ±0,36 ne se distinguent ni l'un de l'autre ni de zéro.
+    #
+    # On mesure donc l'écart APPARIÉ pli à pli, dont on tire un IC95 et un `p` exact. Une
+    # lecture ne s'énonce que si l'écart est résolu ; sinon le résultat est « la pile ne
+    # voit pas la différence », qui est une information et non un échec.
+    pa = pd.read_csv(str(ref).replace(".csv", "_par_pli.csv"))
+    pb = pd.read_csv(str(sans).replace(".csv", "_par_pli.csv"))
+    def _serie(t):
+        return t[t["configuration"] == MAX].set_index("mois")["gain_pct"]
+    paire = pd.concat({"complete": _serie(pa), "reduite": _serie(pb)}, axis=1).dropna()
+    ecart = list((paire["complete"] - paire["reduite"]).to_numpy())
+    moy, bas, haut, _, _ = bootstrap_blocs(ecart, 3)
+    p_plus, p_moins = permutation_blocs(ecart, 3)
+    resolu = not (bas <= 0.0 <= haut)
+    if not resolu:
+        lecture = (f"NON RÉSOLU — l'écart apparié vaut {moy:+.3f} pt, IC95 "
+                   f"[{bas:+.3f} ; {haut:+.3f}], qui contient zéro. Retirer "
+                   f"{' et '.join(fam)} ne change rien que ce plan sache voir.")
+    elif moy > 0 and somme < moy - 0.05:
+        lecture = ("REDONDANTES — le retrait joint coûte plus que la somme des retraits "
+                   "individuels : chaque famille masque l'autre à l'ablation.")
+    elif moy > 0:
+        lecture = ("ADDITIVES — le retrait joint coûte ce que les retraits individuels "
+                   "annoncent : les familles portent de l'information disjointe.")
     else:
-        lecture = "retraits additifs : les familles portent de l'information disjointe"
+        lecture = ("LA PILE GAGNE À LES PERDRE — le retrait joint AMÉLIORE le score, et "
+                   "l'écart est résolu.")
 
     print(f"\n{'═' * 82}")
     print(f"ABLATION JOINTE · {polluant} · {' + '.join(fam)} · "
@@ -112,6 +152,8 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
     print(f"  pile complète                    {ga[MAX]:+7.2f} %")
     print(f"  pile SANS {', '.join(fam):<22s}  {gb[MAX]:+7.2f} %")
     print(f"  → coût du retrait joint          {cout:+7.2f} pt")
+    print(f"     apparié sur {len(ecart)} plis : {moy:+.3f} pt · IC95 "
+          f"[{bas:+.3f} ; {haut:+.3f}] · p⁺={p_plus:.4f}")
     print(f"     retraits individuels : "
           + " · ".join(f"{n} {v:+.2f}" for n, v in ind.items())
           + f" — somme {somme:+.2f}")
@@ -124,6 +166,9 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
              "gain_pile_complete_pct": float(ga[MAX]),
              "gain_pile_reduite_pct": float(gb[MAX]),
              "cout_retrait_joint_pt": cout,
+             "ecart_apparie_pt": moy, "ic95_bas": bas, "ic95_haut": haut,
+             "p_permutation_positif": p_plus, "p_permutation_negatif": p_moins,
+             "n_plis_apparies": len(ecart), "resolu": bool(resolu),
              "somme_des_retraits_individuels_pt": somme, "lecture": lecture}
     ligne.update({f"cout_retrait_{n}_pt": v for n, v in ind.items()})
     ecrire_rapport(
