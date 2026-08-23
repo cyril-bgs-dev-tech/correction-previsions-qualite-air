@@ -313,7 +313,13 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         mois_ok = sorted(d.loc[couvert, "mois"].unique())
     avant = len(d)
     d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
-    print(f"\n  fenêtre d'évaluation = couverture GEOS-CF v1 : {mois_ok[0]} → {mois_ok[-1]}"
+    # 🔴 L'étiquette doit nommer ce qui a DÉCIDÉ, pas une identité supposée (§ 0-H). Sous
+    # `--fenetre complete`, ce message annonçait « couverture GEOS-CF v1 » pour une fenêtre
+    # dont GEOS-CF n'était plus la cause — le nom aurait survécu au changement, pas ce
+    # qu'il affirme.
+    origine = ("couverture GEOS-CF v1" if fenetre == "geoscf"
+               else "corpus apparié complet (--fenetre complete)")
+    print(f"\n  fenêtre d'évaluation = {origine} : {mois_ok[0]} → {mois_ok[-1]}"
           f" ({len(mois_ok)} mois) · {len(d):,} jours-station sur {avant:,}", flush=True)
 
     debut, fin = mois_ok[0].replace("-", ""), mois_ok[-1].replace("-", "")
@@ -541,9 +547,18 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
 
         epoque, maigres = trier_couverture(couv, familles)
         if epoque:
+            # 🔴 Toutes nommées, jamais tronquées. Le premier essai en affichait huit sur
+            # trente et deux familles disparaissaient sans qu'on sache lesquelles : un
+            # retrait qu'on ne peut pas énumérer ne peut pas être contesté.
+            par_famille: dict[str, list[str]] = {}
+            for nom, cols in familles.items():
+                pris = [c for c in cols if c in set(epoque)]
+                if pris:
+                    par_famille[nom] = pris
             print(f"  {len(epoque)} colonne(s) retirée(s) — absentes de mois ENTIERS, donc "
-                  f"indicateurs d'époque : {', '.join(epoque[:8])}"
-                  + (" …" if len(epoque) > 8 else ""), flush=True)
+                  f"indicateurs d'époque :", flush=True)
+            for nom, cols in par_famille.items():
+                print(f"    {nom:12s} {len(cols):2d} : {', '.join(cols)}", flush=True)
             garde = set(epoque)
             for nom in list(familles):
                 familles[nom] = [c for c in familles[nom] if c not in garde]
