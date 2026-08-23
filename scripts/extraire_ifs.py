@@ -91,23 +91,25 @@ ECHEANCES = [24, 27, 30, 33, 36, 39, 42, 45]
 
 def index_du_pas(date: str, echeance: int) -> list[dict]:
     url = f"{BASE}/{date}/00z/ifs/0p25/oper/{date}000000-{echeance}h-oper-fc.index"
-    for essai in range(4):
+    for essai in range(6):
         try:
+            _freiner()
             with urllib.request.urlopen(url, timeout=60) as r:
                 brut = r.read()
             if brut[:1] == b"{":
+                _succes()
                 return [json.loads(l) for l in brut.decode().splitlines() if l.strip()]
         except Exception:  # noqa: BLE001
             pass
         # **Le code de sortie ne suffit pas** : un appel limité rend du XML d'erreur avec un
         # statut apparemment normal. On contrôle le contenu.
         #
-        # Attente courte, et c'est une correction de fond. Une première version patientait
-        # 8 à 40 s après chaque échec, sur l'hypothèse d'une limite de débit déduite d'un 503
-        # isolé. **Mesure du 31/07 : le service accepte 288 requêtes par minute sans un seul
-        # rejet** — 8 succès sur 8 à pause nulle. Les rejets sont aléatoires et rares. Les 94 h
-        # extrapolées venaient donc entièrement de ma propre prudence, pas du service.
-        time.sleep(0.5 * (essai + 1))
+        # ⚠️ Ce bloc a porté pendant trois semaines la phrase « le service accepte 288
+        # requêtes par minute sans un seul rejet », tirée de HUIT requêtes du 31/07. La
+        # passe unitaire du 23/08 l'a réfutée : 62 échecs sur 240, tous groupés en fin de
+        # lot, et des 503 encore servis une minute plus tard. Voir `_freiner`.
+        _rejet()
+        time.sleep(min(30.0, 2.0 ** essai))
     return []
 
 
@@ -130,6 +132,45 @@ def plages_regroupees(champs: list[dict]) -> list[tuple[int, int]]:
     return plages
 
 
+
+# ── Le frein adaptatif, et le défaut qui l'impose — mesuré le 23/08/2026 ───────────────
+#
+# La passe unitaire sur juin 2024 a rendu **62 échecs sur 240 pas**, et ils étaient tous
+# groupés à la FIN : les jours 1 à 20 sont passés sans une erreur, les jours 21 à 30 ont
+# presque tout raté. Interrogé juste après, le service rendait **HTTP 503** même sur une
+# requête d'index isolée. Ce n'est donc pas une absence de données, c'est une limitation de
+# débit qui s'installe sous charge soutenue.
+#
+# 🔴 Et cela RÉFUTE une phrase écrite dans ce fichier : « le service accepte 288 requêtes
+# par minute sans un seul rejet ». Elle vient d'une mesure du 31/07 portant sur **huit
+# requêtes**. Huit requêtes ne mesurent pas un débit soutenu — c'est la § 1 ter, *une
+# mesure n'est pas une propriété*, et la phrase avait ensuite servi à justifier de retirer
+# toute prudence.
+#
+# Le frein ne porte aucune constante devinée (§ 0-A) : il part de zéro, s'allonge à chaque
+# rejet et se relâche à chaque succès. Il se calibre donc sur le service tel qu'il est ce
+# jour-là, au lieu de reprendre un chiffre d'une autre exécution.
+_PAUSE = 0.0
+_PLAFOND_PAUSE = 4.0
+
+
+def _rejet() -> None:
+    """Un rejet allonge le frein — et l'attente qui suit croît avec lui."""
+    global _PAUSE
+    _PAUSE = min(_PLAFOND_PAUSE, _PAUSE * 2 + 0.05)
+
+
+def _succes() -> None:
+    """Une réussite le relâche, lentement : redescendre trop vite rappelle le rejet."""
+    global _PAUSE
+    _PAUSE *= 0.97
+
+
+def _freiner() -> None:
+    if _PAUSE > 0:
+        time.sleep(_PAUSE)
+
+
 def telecharger_pas(date: str, echeance: int, cible: Path) -> bool:
     if cible.exists():
         return True
@@ -140,17 +181,22 @@ def telecharger_pas(date: str, echeance: int, cible: Path) -> bool:
     url = f"{BASE}/{date}/00z/ifs/0p25/oper/{date}000000-{echeance}h-oper-fc.grib2"
     morceaux = []
     for a, b in plages:
-        for essai in range(4):
+        # Six tentatives et un recul exponentiel : l'ancienne version abandonnait après
+        # 0,5+1+1,5 = 3 s, soit bien moins que la durée d'un throttle S3.
+        for essai in range(6):
             try:
+                _freiner()
                 req = urllib.request.Request(url, headers={"Range": f"bytes={a}-{b - 1}"})
                 with urllib.request.urlopen(req, timeout=180) as r:
                     brut = r.read()
                 if brut[:4] == b"GRIB":
                     morceaux.append(brut)
+                    _succes()
                     break
+                _rejet()
             except Exception:  # noqa: BLE001
-                pass
-            time.sleep(0.5 * (essai + 1))
+                _rejet()
+            time.sleep(min(30.0, 2.0 ** essai))
         else:
             return False
     provisoire = cible.with_suffix(".grib2.partiel")
