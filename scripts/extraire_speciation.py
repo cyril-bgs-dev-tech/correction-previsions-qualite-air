@@ -56,7 +56,7 @@ SORTIE = RACINE / "data/processed/meteo"
 
 # Les noms tels que CAMS les livre — vérifiés sur fichier réel, jamais déduits du nom
 # demandé à l'API (`residential_elementary_carbon` arrive en `ecres_conc`).
-ATTENDUES = ["dust", "ecres_conc", "pm2p5_total_om_conc", "pmwf_conc", "sia_conc"]
+ATTENDUES = ["dust", "ecres_conc", "pmwf_conc", "sia_conc"]
 
 # ⚠️ **Le nitrate n'existe que depuis décembre 2024**, et CAMS l'omet SANS LEVER pour les
 # mois antérieurs : le téléchargement a demandé six variables et reçu cinq, en silence —
@@ -68,7 +68,21 @@ ATTENDUES = ["dust", "ecres_conc", "pm2p5_total_om_conc", "pmwf_conc", "sia_conc
 # ne l'est pas. Le déclarer obligatoire aurait rejeté onze mois valides ; le passer sous
 # silence aurait produit une colonne à moitié vide dont personne n'aurait su la cause.
 # Sa redondance avec `sia_conc` — dont il est une composante — rend la perte faible.
-TARDIVES = ["pm2p5_no3_conc"]
+# 🔴 `pm2p5_total_om_conc` rejoint les tardives — 23/08/2026, en complétant 2023
+# ---------------------------------------------------------------------------------------
+# Les cinq mois manquants de 2023 ont été téléchargés, et l'extraction a REFUSÉ de les
+# lire : la matière organique totale est absente de 2023-08, 09 et 10. Compté sur les
+# 37 fichiers bruts :
+#
+#   dust · ecres_conc · pmwf_conc · sia_conc   37/37 ✅
+#   pm2p5_total_om_conc                        34/37 — absente de 2023-08, 09, 10
+#   pm2p5_no3_conc                             21/37 — absente avant 2024-12
+#
+# Le garde du § 2 bis a fait exactement son travail : il a levé au lieu de produire une
+# colonne à moitié vide dont personne n'aurait su la cause. La déclarer tardive la rend
+# présente quand elle l'est, comptée quand elle ne l'est pas — et c'est la restriction de
+# fenêtre, en aval, qui décide si les trois mois entrent.
+TARDIVES = ["pm2p5_total_om_conc", "pm2p5_no3_conc"]
 
 # ── Le lot « précurseurs », ouvert le 23/08/2026 ───────────────────────────────────────
 #
