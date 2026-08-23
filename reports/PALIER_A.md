@@ -251,6 +251,26 @@ mesuré à **+0,545 à +1,393 pt** selon le polluant, tous résolus.
 **Un gain de puissance qui coûte une famille démontrée n'est pas un progrès : c'est un
 échange, et il se juge sur les deux plateaux.**
 
+### Un aperçu sur NO₂, en attendant les trois autres
+
+⚠️ Un polluant ne fait pas un mécanisme — ceci n'est pas un résultat, c'est ce qui oriente
+la lecture des trois qui manquent.
+
+| famille | référence, 9 blocs | complète, 11 blocs |
+|---|---|---|
+| typologie | +10,29 · p⁺ 0,0021 | +10,01 · **p⁺ 0,0007** |
+| speciation | +1,02 · p⁺ 0,0021 | +1,00 · **p⁺ 0,0013** |
+| fourier | +0,60 · p⁺ 0,0021 | +0,44 · **p⁺ 0,0017** |
+| membres | +0,03 · p⁺ 0,41 | +0,08 · **p⁺ 0,15** |
+| precurseurs | +0,33 · p⁺ 0,030 | +0,23 · p⁺ **0,063** |
+| profil | +0,15 · p⁺ 0,066 | **−0,01** · p⁺ 0,54 |
+
+Le plancher s'améliore comme attendu — 1/2¹¹ au lieu de 1/2⁹ — et les familles fortes en
+profitent. Mais **les effets marginaux rétrécissent sur la fenêtre longue** : `precurseurs`
+perd un tiers de son apport, `profil` change de signe. Plus de blocs ne compense pas un
+effet qui diminue, et la question du palier — *gagner des mois rend-il testable ce qui ne
+l'est pas ?* — reçoit ici une réponse mitigée.
+
 ---
 
 ## 5 septies. Chimie et précurseurs partagent la moitié de leur variance
