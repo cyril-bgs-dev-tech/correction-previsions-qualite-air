@@ -72,9 +72,28 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
     # Reprise sur l'ARTEFACT : la pile réduite est un ajustement de vingt minutes, et
     # relire son verdict ne doit pas la refaire. Le contrôle porte sur le contenu — le
     # fichier doit porter la configuration de référence — jamais sur la seule existence.
+    # 🔴 La reprise doit vérifier le CORPUS, pas seulement l'existence — 24/08/2026.
+    #
+    # Sauter l'ajustement quand l'artefact existe est correct tant que la référence n'a pas
+    # changé. Elle a changé cette nuit : la spéciation complétée a déplacé la base de 0,17
+    # à 0,32 pt, et une pile réduite écrite avant serait comparée à une référence écrite
+    # après. Ni la fenêtre ni le nombre de plis ne le montrent — c'est le défaut que
+    # l'empreinte des entrées existe pour attraper.
     deja = (sans.exists()
             and MAX in set(pd.read_csv(sans)["configuration"])
             and sans.with_name(sans.name.replace(".csv", "_par_pli.csv")).exists())
+    if deja:
+        tr, tv = pd.read_csv(ref), pd.read_csv(sans)
+        er = str(tr["empreinte_entrees"].iloc[0]) if "empreinte_entrees" in tr else ""
+        ev = str(tv["empreinte_entrees"].iloc[0]) if "empreinte_entrees" in tv else ""
+        # Les empreintes d'une pile complète et d'une pile RÉDUITE diffèrent forcément —
+        # il y a moins de familles. On ne peut donc pas les comparer entre elles : ce qui
+        # se compare est leur présence. Une variante SANS empreinte face à une référence
+        # qui en porte une date d'avant le corpus corrigé, et doit être refaite.
+        if er and not ev:
+            print(f"  pile réduite {sans.name} antérieure au corpus actuel "
+                  f"(pas d'empreinte, référence {er}) — ajustement REFAIT", flush=True)
+            deja = False
     if deja:
         print(f"  pile réduite déjà écrite : {sans.name} — ajustement sauté", flush=True)
     else:
