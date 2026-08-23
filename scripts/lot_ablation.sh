@@ -29,7 +29,7 @@ ESSAIS_MAX=20        # taux d'échec mesuré ~17 % par tentative — voir lot_ma
 PLAFOND=24G          # pic réel mesuré à 18,9 Go sur NO₂ ; ce n'est PAS «10× le besoin»
 JOURNAL=logs/lot_ablation.log
 VEILLE="$HOME/veille_memoire_ablation.csv"   # hors /mnt/d : doit survivre à la coupure
-MARQUEUR="− tendance (ablation)"             # la DERNIÈRE ablation écrite : sa présence
+MARQUEUR="− fourier (ablation)"              # la DERNIÈRE ablation écrite : sa présence
                                              # atteste que le fichier est complet
 mkdir -p logs
 

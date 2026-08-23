@@ -1,0 +1,9 @@
+prefixe,axe,configuration,polluant,n_plis,ecart_apparie_moyen_pct,part_plis_positifs,p_signe,verdict_groupe
+apport_fourier_profil,double,② pile + Fourier à la place (4),NO2,37,1.3170918291265206,0.8918918918918919,1.0843941709026694e-06,positif
+apport_fourier_profil,double,② pile + Fourier à la place (4),O3,37,0.1953194175379521,0.5675675675675675,0.5113757815852296,hasard
+apport_fourier_profil,double,② pile + Fourier à la place (4),PM10,32,-0.14190495216110863,0.5,1.0,hasard
+apport_fourier_profil,double,② pile + Fourier à la place (4),PM25,37,0.12592438886953844,0.40540540540540543,0.3240086000878364,hasard
+apport_fourier_profil,double,③ pile + les deux (8),NO2,37,1.4509690144047827,0.918918918918919,1.233129296451807e-07,positif
+apport_fourier_profil,double,③ pile + les deux (8),O3,37,0.504931382656776,0.7567567567567568,0.0025632079923525453,positif
+apport_fourier_profil,double,③ pile + les deux (8),PM10,32,0.5345092451062652,0.71875,0.020061607006937265,positif
+apport_fourier_profil,double,③ pile + les deux (8),PM25,37,0.3333455171549734,0.5945945945945946,0.3240086000878364,hasard

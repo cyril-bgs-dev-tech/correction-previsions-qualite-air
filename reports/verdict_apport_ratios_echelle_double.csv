@@ -1,0 +1,9 @@
+prefixe,axe,configuration,polluant,n_plis,ecart_apparie_moyen_pct,part_plis_positifs,p_signe,verdict_groupe
+apport_ratios_echelle,double,② + ratios ROUTE (4),NO2,37,0.8966544791908018,0.7027027027027027,0.020073851919732988,positif
+apport_ratios_echelle,double,② + ratios ROUTE (4),O3,37,-0.14765698182678194,0.35135135135135137,0.09887174959294498,hasard
+apport_ratios_echelle,double,② + ratios ROUTE (4),PM10,32,-0.005247408982182039,0.46875,0.860050065908581,hasard
+apport_ratios_echelle,double,② + ratios ROUTE (4),PM25,37,-0.22184011907882956,0.4594594594594595,0.7428293587290682,hasard
+apport_ratios_echelle,double,③ + ratios des 5 familles (28),NO2,37,1.1542592983264406,0.6216216216216216,0.18774155899882317,hasard
+apport_ratios_echelle,double,③ + ratios des 5 familles (28),O3,37,-0.17555713944313486,0.35135135135135137,0.09887174959294498,hasard
+apport_ratios_echelle,double,③ + ratios des 5 familles (28),PM10,32,-0.6641402111130696,0.28125,0.020061607006937265,négatif
+apport_ratios_echelle,double,③ + ratios des 5 familles (28),PM25,37,-0.17646125999299156,0.4864864864864865,1.0,hasard

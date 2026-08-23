@@ -1,0 +1,9 @@
+prefixe,axe,configuration,polluant,n_plis,ecart_apparie_moyen_pct,part_plis_positifs,p_signe,verdict_groupe
+apport_precurseurs,double_mince,"② + précurseurs, moyennes (4)",NO2,36,2.7832351765417562,0.8888888888888888,1.941574737429619e-06,positif
+apport_precurseurs,double_mince,"② + précurseurs, moyennes (4)",O3,36,4.551537116333942,0.9166666666666666,2.2721360437572002e-07,positif
+apport_precurseurs,double_mince,"② + précurseurs, moyennes (4)",PM10,32,4.337714503482432,0.9375,2.4633482098579407e-07,positif
+apport_precurseurs,double_mince,"② + précurseurs, moyennes (4)",PM25,36,2.6488409518513736,0.8611111111111112,1.2913485988974571e-05,positif
+apport_precurseurs,double_mince,"③ + précurseurs, moyennes et maxima (8)",NO2,36,2.6119488422154893,0.8888888888888888,1.941574737429619e-06,positif
+apport_precurseurs,double_mince,"③ + précurseurs, moyennes et maxima (8)",O3,36,4.567283297402373,0.9166666666666666,2.2721360437572002e-07,positif
+apport_precurseurs,double_mince,"③ + précurseurs, moyennes et maxima (8)",PM10,32,4.647999803677245,0.96875,1.5366822481155396e-08,positif
+apport_precurseurs,double_mince,"③ + précurseurs, moyennes et maxima (8)",PM25,36,2.8335695887603096,0.9444444444444444,1.941225491464138e-08,positif

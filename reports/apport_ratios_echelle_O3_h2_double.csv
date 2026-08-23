@@ -1,0 +1,4 @@
+polluant,horizon,axe,configuration,n_colonnes,rmse_candidat,rmse_ancre,gain_pct,apport_marginal_pct,ecart_apparie_moyen_pct,ecart_apparie_sigma_pct,n_plis_positifs,n_plis,n_plis_prevus,n_plis_ecartes,n_lignes,fenetre,n_mois,echeance
+O3,2,double,"① base (CAMS, niveaux λ, relief, calendrier)",54,12.073940203440731,12.860561969344447,6.116542712354067,,0.0,0.0,0,37,37,0,94535,2023-08→2026-08,37,J+1
+O3,2,double,② + ratios ROUTE (4),58,12.083331937598349,12.860561969344447,6.043515311374192,-0.07302740097987481,-0.14765698182677983,0.8883050056167487,13,37,37,0,94535,2023-08→2026-08,37,J+1
+O3,2,double,③ + ratios des 5 familles (28),82,12.08661267197672,12.860561969344447,6.018005272340199,-0.09853744001386833,-0.1755571394431364,0.9265479032632902,13,37,37,0,94535,2023-08→2026-08,37,J+1
