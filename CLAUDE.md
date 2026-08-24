@@ -90,7 +90,7 @@ Aucune ne porte de constante : c'est ce qui les rend **adaptatives**.
   | ressource | plafond mesuré | d'où vient la mesure |
   |---|---|---|
   | service ADS | **3 requêtes simultanées** (6 rejetées, puis HTTP 400 muet) | § 1 |
-  | CPU / LightGBM | `n_jobs=4`, **un seul lot** — trois lots concurrents s'effondrent d'un ordre de grandeur | § 1 |
+  | CPU / LightGBM | **quatre lots à `n_jobs=8`** — mesuré le 24/08 : 11,9 cœurs sur 32, 28 Go sur 68, démarrages échelonnés de 90 s. L'effondrement du 02/08 venait de `n_jobs=-1`, soit 96 fils sur 32 cœurs : **une autre situation**. LightGBM plafonne à ~1,5 cœur par ajustement, donc la parallélisation utile est ENTRE les lots | § 1 · `scripts/lancer_par_polluant.sh` |
   | GPU | **un entraînement à la fois** | RTX 5090, 34 Go |
   | mémoire | plafond `systemd-run` par lot | § 1 quater |
   | réseau ≠ CPU | l'attente ADS est **84 %** du coût d'une requête et ne consomme aucun cœur | § 1 |

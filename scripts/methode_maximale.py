@@ -276,41 +276,6 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # rend la variante parcimonieuse mesurable sur les mêmes plis.
     familles["precurseurs"] = moy_pre if precurseurs == "moyennes" else moy_pre + max_pre
 
-    # ── Le module MÉTÉO PRÉVUE, sur demande — 24/08/2026 ────────────────────────────
-    #
-    # L'IFS a tenu au criblage sur les quatre polluants : +0,86 à +1,66 pt appariés,
-    # p_PC = 0,0003. Mais ce criblage portait sur la pile à huit familles ; la confirmation
-    # se fait ici, en DERNIÈRE position, sur le socle.
-    #
-    # ⚠️ Il ne peut PAS entrer dans le socle : sa couverture commence en 2024-03 quand la
-    # fenêtre canonique commence en 2023-09. C'est un MODULE — son gain se mesure sur son
-    # propre support, et la fenêtre est restreinte ici plutôt que ses colonnes écartées
-    # comme indicateur d'époque. Sans cette restriction, la règle de couverture en deux
-    # passes le retirerait purement et simplement.
-    #
-    # Huit champs de surface, MOYENNES seules : le criblage a montré que les maxima
-    # n'ajoutent rien de démontrable (p_PC 0,0435 contre 0,0003).
-    if avec_ifs:
-        from apport_precurseurs import charger_lot as _cl  # noqa: PLC0415
-        ifs, moy_ifs, _max_ifs = _cl("ifs")
-        ifs["jour"] = pd.to_datetime(ifs["jour"]).dt.tz_localize(None)
-        avant_ifs = len(d)
-        d = d.merge(ifs[["station_id", "jour"] + moy_ifs], on=["station_id", "jour"],
-                    how="left")
-        if len(d) != avant_ifs:
-            raise SystemExit(f"jointure IFS : {avant_ifs:,} → {len(d):,} lignes")
-        familles["ifs"] = moy_ifs
-        # La fenêtre se restreint au support du module, et le retrait est COMPTÉ.
-        couvert_ifs = d[moy_ifs[0]].notna()
-        mois_ifs = sorted(d.loc[couvert_ifs, "mois"].unique())
-        hors = [m for m in mois_ok if m not in set(mois_ifs)]
-        if hors:
-            print(f"  module IFS : fenêtre restreinte à son support — {len(hors)} mois "
-                  f"retiré(s) ({hors[0]} → {hors[-1]})", flush=True)
-            mois_ok = [m for m in mois_ok if m in set(mois_ifs)]
-            d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
-        print(f"  module IFS : {len(moy_ifs)} colonnes · {mois_ok[0]} → {mois_ok[-1]} "
-              f"({len(mois_ok)} mois)", flush=True)
     # ⚠️ La dynamique de CAMS se calcule **avant** toute restriction de fenêtre. Elle
     # décale la série d'un jour par station : la calculer après le filtrage sur la
     # couverture GEOS-CF ferait sauter le décalage par-dessus le bord de fenêtre, et la
@@ -512,6 +477,42 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         print(f"  ✅ aucune famille n'a de mois entièrement absent "
               f"({len(mois_corpus)} mois)", flush=True)
 
+    # ── Le module MÉTÉO PRÉVUE, sur demande — 24/08/2026 ────────────────────────────
+    #
+    # L'IFS a tenu au criblage sur les quatre polluants : +0,86 à +1,66 pt appariés,
+    # p_PC = 0,0003. Mais ce criblage portait sur la pile à huit familles ; la confirmation
+    # se fait ici, en DERNIÈRE position, sur le socle.
+    #
+    # ⚠️ Il ne peut PAS entrer dans le socle : sa couverture commence en 2024-03 quand la
+    # fenêtre canonique commence en 2023-09. C'est un MODULE — son gain se mesure sur son
+    # propre support, et la fenêtre est restreinte ici plutôt que ses colonnes écartées
+    # comme indicateur d'époque. Sans cette restriction, la règle de couverture en deux
+    # passes le retirerait purement et simplement.
+    #
+    # Huit champs de surface, MOYENNES seules : le criblage a montré que les maxima
+    # n'ajoutent rien de démontrable (p_PC 0,0435 contre 0,0003).
+    if avec_ifs:
+        from apport_precurseurs import charger_lot as _cl  # noqa: PLC0415
+        ifs, moy_ifs, _max_ifs = _cl("ifs")
+        ifs["jour"] = pd.to_datetime(ifs["jour"]).dt.tz_localize(None)
+        avant_ifs = len(d)
+        d = d.merge(ifs[["station_id", "jour"] + moy_ifs], on=["station_id", "jour"],
+                    how="left")
+        if len(d) != avant_ifs:
+            raise SystemExit(f"jointure IFS : {avant_ifs:,} → {len(d):,} lignes")
+        familles["ifs"] = moy_ifs
+        # La fenêtre se restreint au support du module, et le retrait est COMPTÉ.
+        couvert_ifs = d[moy_ifs[0]].notna()
+        mois_ifs = sorted(d.loc[couvert_ifs, "mois"].unique())
+        hors = [m for m in mois_ok if m not in set(mois_ifs)]
+        if hors:
+            print(f"  module IFS : fenêtre restreinte à son support — {len(hors)} mois "
+                  f"retiré(s) ({hors[0]} → {hors[-1]})", flush=True)
+            mois_ok = [m for m in mois_ok if m in set(mois_ifs)]
+            d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
+        print(f"  module IFS : {len(moy_ifs)} colonnes · {mois_ok[0]} → {mois_ok[-1]} "
+              f"({len(mois_ok)} mois)", flush=True)
+
     # ── Les configurations, cumulatives et déclarées ─────────────────────────────────
     configs: list[tuple[str, list[str], str]] = [("base (CAMS, terrain, calendrier)",
                                                   list(base), "PARTOUT")]
@@ -576,6 +577,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     #
     # Le seuil ne coûte rien ici : 2023-09 → 2026-08 fait 36 mois, soit 12 blocs de trois
     # — exactement autant que 37, dont le reliquat serait jeté de toute façon.
+
     if fenetre == "complete":
         # 🔴 Deux passes, et l'ORDRE décide — corrigé le 23/08/2026, avant tout lancement.
         #
@@ -647,6 +649,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     empreinte = hashlib.sha256(f"{len(d)}|{corps}".encode()).hexdigest()[:12]
     print(f"  empreinte des entrées : {empreinte} · {len(d):,} lignes · "
           f"{len(familles)} familles", flush=True)
+
 
     # ── Le protocole : double aveugle, station ET mois cachés ────────────────────────
     rng = np.random.default_rng(GRAINE)
