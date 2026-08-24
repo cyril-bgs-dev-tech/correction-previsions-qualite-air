@@ -135,15 +135,31 @@ def charger_speciation() -> pd.DataFrame:
     # menti trois fois en une nuit : la matière organique, puis le chevauchement
     # SOCLE/TARDIVES, puis les deux colonnes du lot complément. Une colonne du socle
     # absente de mois entiers est un indicateur d'époque déguisé en variable stable.
-    mois_brut = pd.to_datetime(brut["jour"]).dt.strftime("%Y-%m")
+    # 🔴 Le mois se calcule sur les JOURS UNIQUES, pas sur les 12 M de lignes — 24/08.
+    #
+    # La première version faisait `pd.to_datetime(brut["jour"]).dt.strftime("%Y-%m")` sur
+    # tout le tableau. Elle a fait tomber la file à sa quatorzième tâche :
+    #
+    #     TypeError: 'NoneType' object cannot be interpreted as an integer
+    #       pandas/_libs/tslibs/timestamps.pyx → Timestamp.strftime
+    #
+    # C'est la signature exacte de l'instabilité plateforme documentée en § 1 quater — un
+    # objet valide arrivant dans un emplacement d'argument entier, non déterministe : le
+    # même appel passait à la main quelques minutes plus tôt. On ne corrige pas le
+    # matériel, mais on cesse de lui offrir douze millions d'occasions : il y a ~1 100
+    # jours distincts, donc autant de conversions au lieu de 12 589 248.
+    jours = pd.to_datetime(pd.Index(brut["jour"].unique()))
+    mois_de = dict(zip(brut["jour"].unique(), jours.strftime("%Y-%m")))
+    mois_brut = brut["jour"].map(mois_de)
+    n_mois = mois_brut.nunique()
     traitres = []
     for c in SOCLE:
         if c not in brut.columns:
             traitres.append(f"{c} (absente)")
             continue
         vus = mois_brut[brut[c].notna()].nunique()
-        if vus < mois_brut.nunique():
-            traitres.append(f"{c} ({vus}/{mois_brut.nunique()} mois)")
+        if vus < n_mois:
+            traitres.append(f"{c} ({vus}/{n_mois} mois)")
     if traitres:
         raise SystemExit(
             "❌ colonne(s) du SOCLE absente(s) de mois entiers : " + ", ".join(traitres)
