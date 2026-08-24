@@ -30,7 +30,7 @@ mesure perdait huit mois d'information pour l'accommoder.
 
 ---
 
-## Le socle — sept familles, disponibles sur toute la fenêtre
+## Le socle — huit familles, disponibles sur toute la fenêtre
 
 `base (CAMS, terrain, calendrier)` · `typologie` · `membres` · `tendance` · `speciation` ·
 `profil` · `fourier` · `precurseurs` — 103 à 104 colonnes, **identiques sur les quatre
@@ -46,9 +46,18 @@ famille y entre parce qu'elle sert toutes les dates, pas parce qu'elle aide.
 | PM10 | 2024-01 → 2026-08 | 32 | 10 | **23,67 %** |
 | PM2,5 | 2023-09 → 2026-08 | 34 | 11 | **14,54 %** |
 
-*Mois écartés : 2023-08 (livraison à moitié), 2023-11 et 2025-07 (membres à 3 %), 2026-08
-(mois en cours). Colonnes écartées : nitrate, matière organique, carbone élémentaire total,
-sel marin — absentes de mois entiers.*
+*Mois écartés : 2023-08 (précurseurs à 54 %), 2023-11, 2025-07 et 2026-08 (membres à 3-5 %,
+le dernier étant le mois en cours). Colonnes écartées : nitrate, matière organique, carbone
+élémentaire total, sel marin — absentes de mois entiers.*
+
+⚠️ **« Cette colonne est complète » ne veut rien dire sans nommer la fenêtre.** La
+qualification d'une colonne comme indicateur d'époque se décide **relativement à la fenêtre
+considérée**, et c'est correct par construction : sur le support du module IFS
+(2024-03 → 2026-08), seul le nitrate est écarté ; sur la fenêtre du socle
+(2023-08 → 2026-08), quatre variables le sont. J'ai écrit l'inverse dans une résolution du
+registre le 24/08, en lisant le journal du mauvais lot — et le registre **refuse de réécrire
+une résolution scellée**, ce qui est le bon comportement : la correction vit ici, la trace de
+l'erreur reste là-bas.
 
 ---
 
