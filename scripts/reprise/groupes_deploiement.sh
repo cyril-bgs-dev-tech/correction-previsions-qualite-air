@@ -13,10 +13,10 @@
 #   G1 « site »              `typologie`                       ✅ DÉJÀ MESURÉ — famille seule,
 #   G4 « dispersion »        `membres`                          l'ablation est dans la pile.
 #   G2 « forme du jour »     `profil` `fourier` `tendance`      ⚙️ lancé ici
-#   G3 « composition »       `speciation` `precurseurs`         🔴 BLOQUÉ — voir ci-dessous
+#   G3 « composition »       `speciation` `precurseurs`         ⚙️ lançable depuis le 25/08
 #
-# 🔴 Pourquoi G3 ne peut pas être lancé tel quel
-# ------------------------------------------------
+# ✅ Pourquoi G3 est lançable depuis le 25/08 — et ce qu'il fallait pour ça
+# --------------------------------------------------------------------------
 # `profil`, `fourier` et `tendance` se calculent depuis la base : elles n'ont pas de source
 # propre, donc les retirer ne peut pas allonger la fenêtre. G2 est sûr.
 #
@@ -25,8 +25,10 @@
 # que sa référence, et l'écart mélangerait le retrait avec les mois en plus. `ablation_jointe`
 # refusera — c'est son travail, et c'est le défaut réel du 23/08 sur GEOS-CF.
 #
-# G3 exige donc de pouvoir ÉPINGLER la fenêtre sur celle de la référence. Tant que
-# `methode_maximale.py` ne sait pas le faire, lancer G3 produirait un refus, pas une mesure.
+# G3 exigeait donc de pouvoir ÉPINGLER la fenêtre sur celle de la référence.
+# `methode_maximale.py --mois-de` le fait depuis le 25/08, et `ablation_jointe --socle` le
+# passe SYSTÉMATIQUEMENT — pas « si ça déborde » : une condition à juger à chaque appel est
+# exactement le genre de vigilance qui a échoué ailleurs ici.
 #
 # Usage :  scripts/reprise/groupes_deploiement.sh [G2]
 set -uo pipefail
@@ -35,10 +37,8 @@ cd "$RACINE" || exit 2
 GROUPE="${1:-G2}"
 case "$GROUPE" in
   G2) FAM="fourier,profil,tendance" ;;
-  G3) echo "🔴 G3 est bloqué : retirer speciation/precurseurs allonge la fenêtre, et" >&2
-      echo "   l'écart mélangerait le retrait avec les mois en plus. Épingler la fenêtre" >&2
-      echo "   d'abord (--mois-de sur methode_maximale.py)." >&2; exit 3 ;;
-  *)  echo "groupe inconnu : $GROUPE (G2 seul est lançable)" >&2; exit 2 ;;
+  G3) FAM="precurseurs,speciation" ;;
+  *)  echo "groupe inconnu : $GROUPE (G2 et G3 sont lançables)" >&2; exit 2 ;;
 esac
 
 # La cible se DEMANDE au code — voir `_cible_ablation.py` pour ce que la reconstruire a

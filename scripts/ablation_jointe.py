@@ -151,6 +151,20 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
             cmd.append("--support-complet")
         if socle:
             cmd += ["--fenetre", "complete"]
+            # 🔴 Épingler la fenêtre sur celle de la RÉFÉRENCE, systématiquement.
+            #
+            # Retirer une famille lève sa restriction de support : sur le socle, retirer
+            # `precurseurs` rend 2023-08 et la pile réduite passe à 34 mois quand la
+            # référence en a 33. Le garde de fenêtre refuserait alors — à raison, mais la
+            # mesure serait perdue.
+            #
+            # Épingler sans condition plutôt que « si ça déborde » : la condition serait un
+            # jugement à porter à chaque appel, et c'est exactement le genre de vigilance qui
+            # a échoué ailleurs sur ce dépôt. Quand les fenêtres coïncident déjà, l'épinglage
+            # imprime « rien à épingler » et ne fait rien.
+            ref_plis = ref.with_name(ref.name.replace(".csv", "_par_pli.csv"))
+            if ref_plis.exists():
+                cmd += ["--mois-de", str(ref_plis.relative_to(RACINE))]
         print("  " + " ".join(cmd[2:]), flush=True)
         subprocess.run(cmd, check=False)
 
