@@ -26,6 +26,20 @@ case "${1:-}" in
   --plan) exec $P -u scripts/plan_scores.py ;;
 esac
 
+# 🔴 Le préflight d'intégrité passe AVANT tout — il coûte des secondes et il a été écrit
+# après que trois heures de mesures ont dû être refaites pour un corpus troué que la pile
+# SIGNALAIT à chaque exécution, sans que personne ne le lise. Un diagnostic imprimé qui
+# n'arrête rien n'est pas un contrôle.
+if ! $P -u scripts/preflight.py; then
+  echo
+  echo "⛔ Le préflight refuse. Mesurer maintenant produirait des chiffres à refaire."
+  echo "   Compléter les familles à trou, ou restreindre la fenêtre d'évaluation."
+  echo "   Pour passer outre en connaissance de cause : --malgre-tout"
+  [ "${1:-}" = "--malgre-tout" ] || exit 1
+  echo "   ⚠️ --malgre-tout : les mesures porteront un indicateur d'époque."
+fi
+echo
+
 $P -u scripts/plan_scores.py
 echo
 
