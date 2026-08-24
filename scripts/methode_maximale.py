@@ -190,6 +190,47 @@ def anomaliser(ref: pd.DataFrame, tr: pd.DataFrame, te: pd.DataFrame,
     return ecart(tr, m_tr, "apprentissage"), ecart(te, m_te, "test")
 
 
+def epingler_fenetre(mois_ok: list[str], vises: list[str],
+                     nom: str = "la référence") -> tuple[list[str], list[str]]:
+    """Restreindre la fenêtre à celle d'une référence — jamais l'élargir.
+
+    Le défaut que cela lève
+    ------------------------
+    Retirer une famille **lève sa restriction de support**. Sur le socle, la fenêtre est
+    bornée par `precurseurs` (2023-08 absent à 54 %) ; retirer cette famille rend le mois, et
+    la pile réduite tourne sur 34 mois quand sa référence en a 33. `ablation_jointe` refuse
+    alors — l'écart mélangerait le retrait avec les mois en plus — et ce refus juste bloquait
+    la mesure au lieu de la rendre possible.
+
+    Pourquoi l'épinglage ne peut que RESTREINDRE
+    ---------------------------------------------
+    Un mois demandé mais absent de la couverture n'est pas un mois vide : c'est un mois **sans
+    données**, et le réclamer produirait un pli sans lignes de test plutôt qu'une erreur. Le
+    silence est le mode de panne que tout ce dépôt traque — donc on lève, en nommant les mois.
+
+    Rend `(fenêtre retenue, mois retirés)`.
+    """
+    vus, cibles = set(mois_ok), set(vises)
+    if manquants := sorted(m for m in vises if m not in vus):
+        raise SystemExit(
+            f"⛔ épinglage sur {nom} : {len(manquants)} mois de la référence sont ABSENTS de "
+            f"cette pile ({manquants[0]} → {manquants[-1]}). Épingler ne peut que restreindre ; "
+            f"réclamer un mois sans données rendrait un pli vide, pas une erreur.")
+    retenus = [m for m in mois_ok if m in cibles]
+    if not retenus:
+        raise SystemExit(
+            f"⛔ épinglage sur {nom} : la fenêtre retenue serait VIDE. Une référence sans mois "
+            f"commun n'est pas une fenêtre étroite, c'est une erreur de cible — et une pile à "
+            f"zéro pli s'écrirait sans rien lever.")
+    retires = [m for m in mois_ok if m not in cibles]
+    if retires:
+        print(f"  fenêtre ÉPINGLÉE sur {nom} — {len(retires)} mois retiré(s) "
+              f"({retires[0]} → {retires[-1]})", flush=True)
+    else:
+        print(f"  fenêtre déjà identique à {nom} — rien à épingler", flush=True)
+    return retenus, retires
+
+
 def joindre_module(d: pd.DataFrame, familles: dict, mois_ok: list[str],
                    lot: str) -> tuple[pd.DataFrame, list[str]]:
     """Un MODULE conditionnel, joint en dernière position — `ifs`, `chimie`.
@@ -267,7 +308,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
          speciation: str = "brute", support_complet: bool = False,
          exclure: tuple[str, ...] = (), precurseurs: str = "completes",
          fenetre: str = "geoscf", avec_ifs: bool = False,
-         avec_chimie: bool = False) -> int:
+         avec_chimie: bool = False, mois_de: str = "") -> int:
     # Le garde à l'ENTRÉE, avant tout chargement : refuser après deux minutes de lecture
     # de parquets est un refus tardif, et le coût est payé pour rien.
     if fenetre == "complete" and "geoscf" not in exclure:
@@ -537,6 +578,27 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
         if actif:
             d, mois_ok = joindre_module(d, familles, mois_ok, lot)
 
+    # ── Épingler la fenêtre sur celle d'une RÉFÉRENCE — 25/08/2026 ───────────────────
+    #
+    # Le défaut que cela lève : retirer une famille **lève sa restriction de support**. Sur
+    # le socle, la fenêtre est bornée par `precurseurs` (2023-08 absent à 54 %) ; retirer
+    # cette famille rend le mois, et la pile réduite tourne alors sur 34 mois quand sa
+    # référence en a 33. `ablation_jointe` refuse à raison — l'écart mélangerait le retrait
+    # avec les mois en plus — mais le refus bloque la mesure au lieu de la rendre possible.
+    #
+    # Épingler ne peut que RESTREINDRE : on prend l'intersection, jamais l'union. Un mois
+    # demandé mais absent de la couverture serait un mois sans données, et le réclamer
+    # produirait un pli vide plutôt qu'une erreur — d'où le refus explicite ci-dessous.
+    if mois_de:
+        ref = Path(mois_de) if Path(mois_de).is_absolute() else RACINE / mois_de
+        if not ref.exists():
+            raise SystemExit(f"⛔ --mois-de : {ref} introuvable. On n'épingle pas sur une "
+                             f"référence qui n'existe pas.")
+        vises = sorted(pd.read_csv(ref)["mois"].astype(str).unique())
+        mois_ok, retires = epingler_fenetre(mois_ok, vises, ref.name)
+        if retires:
+            d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
+
     # ── Les configurations, cumulatives et déclarées ─────────────────────────────────
     configs: list[tuple[str, list[str], str]] = [("base (CAMS, terrain, calendrier)",
                                                   list(base), "PARTOUT")]
@@ -701,6 +763,10 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     suff += "_fenetre-complete" if fenetre == "complete" else ""
     suff += "_avec-ifs" if avec_ifs else ""
     suff += "_avec-chimie" if avec_chimie else ""
+    # L'épinglage ne change PAS le nom : une pile réduite épinglée sur sa référence est la
+    # mesure que l'on veut comparer à elle, et lui donner un autre nom la rendrait
+    # introuvable pour `ablation_jointe`. Ce que l'épinglage change est inscrit dans la
+    # colonne `n_mois` de la sortie, que le garde de fenêtre lit.
     partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv.partiel"
 
     # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
@@ -882,6 +948,9 @@ if __name__ == "__main__":
     a.add_argument("--support-complet", action="store_true",
                    help="écarter toute famille ayant au moins un MOIS entièrement absent — "
                         "sinon le modèle apprend la date par le motif de manque")
+    a.add_argument("--mois-de", default="", dest="mois_de", metavar="CSV_PAR_PLI",
+                   help="restreindre la fenêtre aux mois d'un artefact `_par_pli.csv` de "
+                        "référence ; ne peut que restreindre, jamais élargir")
     a.add_argument("--avec-chimie", action="store_true", dest="avec_chimie",
                    help="joint le MODULE chimie (formaldéhyde, glyoxal, NO, CO ; 4 moyennes) "
                         "en dernière position ; la fenêtre est restreinte à son support")
@@ -915,4 +984,5 @@ if __name__ == "__main__":
                           speciation=n.speciation, support_complet=n.support_complet,
                           exclure=tuple(x for x in n.exclure.split(',') if x),
                           precurseurs=n.precurseurs, fenetre=n.fenetre,
-                          avec_ifs=n.avec_ifs, avec_chimie=n.avec_chimie))
+                          avec_ifs=n.avec_ifs, avec_chimie=n.avec_chimie,
+                          mois_de=n.mois_de))
