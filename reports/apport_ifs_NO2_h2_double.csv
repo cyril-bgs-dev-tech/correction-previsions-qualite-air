@@ -1,0 +1,4 @@
+polluant,horizon,axe,configuration,n_colonnes,rmse_candidat,rmse_ancre,gain_pct,apport_vs_pile_pct,ecart_apparie_moyen_pct,ecart_apparie_sigma_pct,n_plis_positifs,n_plis,n_lignes,fenetre,n_mois,empreinte_corpus,echeance
+NO2,2,double,① pile complète — huit familles,106,13.053338860534929,22.09664663106562,40.9261546402101,,0.0,0.0,0,20,64559,2024-03→2025-12,20,cb9f42e4b80e,J+1
+NO2,2,double,"② + météo prévue IFS (surface), moyennes (8)",114,12.9245647741301,22.09664663106562,41.50893124226602,0.5827766020559224,0.8985148517665292,1.2054332117590554,16,20,64559,2024-03→2025-12,20,cb9f42e4b80e,J+1
+NO2,2,double,"③ + météo prévue IFS (surface), moyennes et maxima (16)",122,12.885111214188566,22.09664663106562,41.68748123041702,0.7613265902069202,1.1662551227714868,1.3979633258951993,16,20,64559,2024-03→2025-12,20,cb9f42e4b80e,J+1
