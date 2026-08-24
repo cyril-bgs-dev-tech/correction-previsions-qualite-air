@@ -62,7 +62,7 @@ variable**.
 | module | couverture | statut |
 |---|---|---|
 | **geoscf v1** | 2023-08 → 2025-12 · 29 mois | module historique. +0,51 pt en dernière position, proche de la résolution, contre 8 mois de corpus pour toutes les autres mesures |
-| **ifs** | 2024-02 → 2026-07 · 24 mois, **6 trous** | candidat. Non promouvable avant rattrapage. Mécanisme neuf — la pile ne porte aucune météo |
+| **ifs** | 2024-03 → 2026-08 · **contigu** | ✅ **CONFIRMÉ** — voir ci-dessous |
 | **feux** | 2023-08 → 2025-05 · 19 mois, 3 trous | expérimental. −0,09 pt, hors socle |
 | **era5** | complet | plafond non déployable, jamais dans un produit |
 
