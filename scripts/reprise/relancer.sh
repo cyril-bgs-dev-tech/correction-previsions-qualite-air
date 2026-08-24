@@ -32,13 +32,23 @@ echo
 if [ "${1:-}" = "--avec-ifs" ]; then
   # Le lot saute les mois déjà écrits ; deux passes ramassent ceux que le contrôle des
   # heures a refusés. Journal séparé : la ressource est distincte, la trace aussi.
-  if [ -z "$(scripts/pids_de.sh scripts/lot_ifs_2025_2026.sh)" ]; then
-    nohup bash -c 'for p in 1 2 3; do scripts/lot_ifs_2025_2026.sh; \
-                   grep -q "les 19 mois demandés" logs/lot_ifs_2025_2026.log && break; done' \
-          >> logs/lot_ifs_2025_2026.log 2>&1 &
-    echo "▶ acquisition IFS lancée en fond (réseau) — logs/lot_ifs_2025_2026.log"
+  # 🔴 Par la FILE DE RESSOURCE, jamais par un garde qu'on peut contourner — 24/08/2026.
+  #
+  # Un garde `if [ -z "$(pids_de …)" ]` protège ce script, pas la ressource : le 24/08
+  # j'ai lancé un second lot à la main, hors de ce chemin, et deux téléchargements
+  # concurrents ont repris sur le seau qui bride — la panne même que la nuit avait passée
+  # à diagnostiquer. Le `flock` de `file_ressource.sh` rend le jumeau IMPOSSIBLE au lieu de
+  # le déconseiller, et il vaut pour tout appelant, y compris moi en ligne de commande.
+  #
+  # La ressource « ecmwf » est DISTINCTE de « cpu » : les deux files tournent ensemble,
+  # c'est le § 0-G. Sérialiser dedans, paralléliser entre.
+  echo "data/processed/meteo/ifs_metropole_202607.parquet :: bash -c 'for p in 1 2 3; do scripts/lot_ifs_2025_2026.sh || true; grep -q \"les 19 mois demandés\" logs/lot_ifs_2025_2026.log && break; done'" \
+    | nohup scripts/file_ressource.sh ecmwf >> logs/lot_ifs_2025_2026.log 2>&1 &
+  sleep 2
+  if grep -q "DÉJÀ en cours" logs/lot_ifs_2025_2026.log 2>/dev/null; then
+    echo "▶ acquisition IFS déjà en cours — le verrou l'a refusée, rien relancé"
   else
-    echo "▶ acquisition IFS déjà en cours — rien relancé"
+    echo "▶ acquisition IFS lancée en fond (ressource « ecmwf ») — logs/lot_ifs_2025_2026.log"
   fi
 fi
 
