@@ -47,11 +47,16 @@ qu'une tâche attend ailleurs est un défaut, pas une prudence.
 ## Lancer en parallèle, et juger sur l'artefact
 
 ```bash
-python3 scripts/plan_scores.py --taches | scripts/lancer_en_parallele.sh 3 90 20G cpu
+python3 scripts/plan_scores.py --taches | scripts/lancer_en_parallele.sh 3 90 20G cpu logs/reprise.log
 #                                                                        │  │   │   └ ressource verrouillée
 #                                                                        │  │   └ plafond mémoire par tâche
 #                                                                        │  └ décalage des démarrages (le pic est au CHARGEMENT)
 #                                                                        └ tâches simultanées
+#
+# 🔴 Le cinquième argument est le JOURNAL, et il n'est pas un confort : sans lui on écrit
+#    « ... | tee logs/x.log », et le code de sortie appartient alors à `tee`. Le 24/08, le
+#    garde a imprimé « ⛔ ABSENT » sur QUATRE artefacts et la commande a rendu 0 — règle C
+#    violée dans la commande de lancement elle-même.
 ```
 
 Le lanceur consomme **le format que `plan_scores.py --taches` émet déjà** (`cible :: commande`),

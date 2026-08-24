@@ -37,6 +37,20 @@ set -uo pipefail
 RACINE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$RACINE" || exit 2
 LARGEUR="${1:-4}"; DECALAGE="${2:-90}"; PLAFOND="${3:-20G}"; RESSOURCE="${4:-cpu}"
+JOURNAL="${5:-}"
+
+# 🔴 Le journal se demande ICI, jamais par un tube — 24/08/2026, et c'est la règle C du
+# projet violée dans ma propre commande de lancement.
+#
+# Lancé ainsi :  ... | scripts/lancer_en_parallele.sh 4 90 20G cpu | tee logs/G2.log
+# le code de sortie appartient à `tee`. Le garde a correctement imprimé « ⛔ ABSENT » sur
+# QUATRE artefacts, et la commande a rendu 0. Un contrôle dont le verdict est jeté par le
+# tuyau qui le transporte ne protège de rien — et il est PIRE qu'absent, parce qu'il donne
+# l'impression d'exister.
+#
+# La substitution de processus ci-dessous laisse `$?` au script : le journal est écrit et le
+# verdict survit. C'est la seule forme qui ne se souvienne de rien.
+[ -n "$JOURNAL" ] && exec > >(tee "$JOURNAL") 2>&1
 P=/home/cyril/miniforge3/envs/llm-agent/bin/python3
 mkdir -p logs
 
