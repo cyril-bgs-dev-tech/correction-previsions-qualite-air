@@ -180,7 +180,27 @@ def conjonction_partielle(ps: list[float], r: int = 2) -> float:
         return 1.0
     return min(1.0, (len(v) - r + 1) * v[r - 1])
 
-def rendre_verdict(detail: dict, pcs: dict, signes: dict, alpha: float = 0.05):
+# 🔴 L'effet UTILE, absent de la décision jusqu'au 24/08/2026 — action P1.7.
+#
+# Le verdict ne regardait que le `p`. Une famille à +0,05 pt avec p_PC = 0,001 était donc
+# déclarée TIENT : statistiquement démontrée, et sans valeur. `fourier` a été promue à
+# +0,28 pt sur ce critère.
+#
+# La décision porte désormais sur TROIS choses — effet, incertitude, utilité — et rend
+# trois issues au lieu de deux :
+#
+#   TIENT    effet ≥ utile sur au moins deux groupes, ET p sous le seuil, ET IC compatible
+#   SAUTE    la borne HAUTE est sous l'utile sur tous les groupes : on peut exclure un
+#            bénéfice, ce qui est une information, pas un silence
+#   RÉSERVE  tout le reste — notamment quatre signes positifs sans résolution suffisante
+#
+# Le seuil de 0,5 pt n'est pas une constante scientifique : il est aligné sur la résolution
+# mesurée (±0,36 à ±0,48). Un seuil de 0,25 serait plus précis que l'instrument.
+EFFET_UTILE_PT = 0.5
+
+
+def rendre_verdict(detail: dict, pcs: dict, signes: dict, alpha: float = 0.05,
+                   effet_utile: float = EFFET_UTILE_PT):
     """La décision, isolée de toute entrée-sortie pour être testable.
 
     `detail` : {polluant: (moy, bas, haut, p_plus, p_moins, k, n_blocs)} au bloc primaire.
@@ -210,6 +230,13 @@ def rendre_verdict(detail: dict, pcs: dict, signes: dict, alpha: float = 0.05):
         noms = ", ".join(f"{p_} ({d[0]:+.2f} %)" for p_, d in sorted(refute.items()))
         return (f"🔴 RÉFUTÉ — effet significativement NÉGATIF sur {noms}. "
                 f"Un groupe en sens inverse n'est pas un silence."), porteurs
+    # SAUTE — la borne haute exclut un bénéfice utile PARTOUT. C'est une information,
+    # pas un silence : on sait que la famille ne paiera pas.
+    if all(d[2] < effet_utile for d in detail.values()):
+        pire = max(d[2] for d in detail.values())
+        return (f"🔴 SAUTE — la borne haute de l'IC95 reste sous {effet_utile} pt sur les "
+                f"{len(detail)} groupes (au mieux {pire:+.2f}). Un bénéfice utile est "
+                f"EXCLU, pas seulement non démontré."), porteurs
     if pcs[3] >= alpha:
         # 🔴 « Non confirmé » recouvre deux situations que rien ne distinguait, et elles
         # appellent des décisions opposées. Mesuré le 23/08 : la spéciation rend
@@ -246,8 +273,16 @@ def rendre_verdict(detail: dict, pcs: dict, signes: dict, alpha: float = 0.05):
         inv = ", ".join(f"{p_} : " + "/".join(f"{signes[L][p_]:+.0f}" for L in sorted(signes))
                         for p_ in porteurs)
         return f"🔴 SIGNE INSTABLE chez un porteur ({inv}) — le découpage décide", porteurs
-    return (f"✅ TIENT — p_PC={pcs[3]:.4f} au bloc primaire, signe stable "
-            f"chez les porteurs ({', '.join(porteurs)})"), porteurs
+    # Le `p` est franchi ; reste l'UTILITÉ. Combien de groupes atteignent l'effet utile ?
+    utiles = [p_ for p_, d in detail.items() if d[0] >= effet_utile]
+    if len(utiles) >= 2:
+        return (f"✅ TIENT — p_PC={pcs[3]:.4f}, signe stable chez les porteurs "
+                f"({', '.join(porteurs)}), et l'effet dépasse {effet_utile} pt sur "
+                f"{len(utiles)} groupe(s) : {', '.join(sorted(utiles))}"), porteurs
+    return (f"🟡 RÉSERVE — p_PC={pcs[3]:.4f} franchi, mais l'effet n'atteint "
+            f"{effet_utile} pt que sur {len(utiles)} groupe(s)"
+            + (f" ({', '.join(sorted(utiles))})" if utiles else "")
+            + ". Démontré n'est pas utile."), porteurs
 
 
 def main(prefixe: str, horizon: int, axe: str) -> int:

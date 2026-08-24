@@ -60,11 +60,14 @@ def test_un_echec_par_PUISSANCE_se_distingue_d_une_absence_d_effet():
                           {L: dict.fromkeys(puissance, 1) for L in (2, 3, 4)})
     assert "PUISSANCE" in v and "🟠" in v
 
+    # ⚠️ Depuis le 24/08, ce cas n'est plus « non confirmé » mais SAUTE : toutes les
+    #    bornes hautes sont sous l'effet utile, donc un bénéfice est EXCLU — verdict plus
+    #    fort qu'un silence. Le test l'a signalé en tombant, et c'était son travail.
     negatif = (-0.5, -1.1, +0.2, 0.80, 0.20, 3, 9)
     vide = {"NO2": negatif, "O3": negatif, "PM10": negatif, "PM25": MUET}
     v, _ = rendre_verdict(vide, {2: 1.0, 3: 1.0, 4: 1.0},
                           {L: dict.fromkeys(vide, -1) for L in (2, 3, 4)})
-    assert "NON CONFIRMÉ" in v and "PUISSANCE" not in v
+    assert "SAUTE" in v and "PUISSANCE" not in v
 
 
 def test_tous_positifs_ne_suffit_pas_a_invoquer_la_puissance():
@@ -84,6 +87,31 @@ def test_tous_positifs_ne_suffit_pas_a_invoquer_la_puissance():
     v, _ = rendre_verdict(puissance, {2: 0.07, 3: 0.0648, 4: 0.08},
                           {L: dict.fromkeys(puissance, 1) for L in (2, 3, 4)})
     assert "PUISSANCE" in v
+
+
+def test_demontre_n_est_pas_utile():
+    """Le défaut du 24/08 : une famille à +0,28 pt avec p_PC=0,0003 était déclarée TIENT.
+    Statistiquement démontrée, et sans valeur — `fourier` a été promue ainsi."""
+    # ⚠️ L'IC doit rester OUVERT au-delà de l'effet utile, sinon c'est SAUTE et non
+    #    RÉSERVE : une borne haute sous 0,5 exclut le bénéfice au lieu de le laisser
+    #    indécis. La première version de ce test l'ignorait et attendait RÉSERVE d'un cas
+    #    qui était un SAUTE parfaitement correct.
+    petit = (+0.28, +0.02, +0.70, 0.0001, 1.0, 9, 9)
+    d = dict.fromkeys(("NO2", "O3", "PM10", "PM25"), petit)
+    v, _ = rendre_verdict(d, {2: 0.0003, 3: 0.0003, 4: 0.0003},
+                          {L: dict.fromkeys(d, 1) for L in (2, 3, 4)})
+    assert "RÉSERVE" in v, "un p franchi ne suffit pas : l'effet doit être UTILE"
+    assert "SAUTE" not in v and "TIENT" not in v
+
+
+def test_un_effet_utile_sur_deux_groupes_tient():
+    """Le cas de l'IFS : +0,86 à +1,66 pt sur les quatre, p_PC=0,0003."""
+    fort = (+1.51, +0.96, +1.98, 0.0001, 1.0, 7, 7)
+    moyen = (+0.86, +0.37, +1.43, 0.0145, 0.99, 6, 6)
+    d = {"PM10": fort, "PM25": fort, "NO2": moyen, "O3": moyen}
+    v, _ = rendre_verdict(d, {2: 0.0021, 3: 0.0003, 4: 0.09},
+                          {L: dict.fromkeys(d, 1) for L in (2, 3, 4)})
+    assert "TIENT" in v and "4 groupe" in v
 
 
 def test_quatre_groupes_positifs_tiennent():
