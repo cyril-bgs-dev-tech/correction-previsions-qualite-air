@@ -70,6 +70,41 @@ variable**.
 
 ---
 
+## ✅ Le module MÉTÉO PRÉVUE est confirmé — 24/08/2026
+
+Huit champs de surface de l'IFS, moyennes journalières, mesurés **en dernière position sur
+le socle**, sur le support propre du module (2024-03 → 2026-08, 28 à 29 mois, 9 blocs).
+
+| | écart apparié | IC95 | `p⁺` | blocs positifs |
+|---|---:|---:|---:|:---:|
+| NO₂ | **+0,746 pt** | [+0,447 ; +1,046] | 0,0033 | 8/9 |
+| O₃ | **+0,886 pt** | [+0,339 ; +1,535] | 0,0105 | 8/9 |
+| PM10 | **+1,216 pt** | [+0,477 ; +1,842] | 0,0104 | 8/9 |
+| PM2,5 | **+0,830 pt** | [+0,282 ; +1,399] | 0,0140 | 7/9 |
+
+`p_PC = 0,0312`, **stable aux trois longueurs de bloc** (0,0114 · 0,0312 · 0,0201) : le
+découpage ne décide pas. Le seuil calibré vaut 0,0950 — il passe avec une marge de 3 ×.
+
+**L'effet dépasse l'effet utile de 0,5 pt sur les quatre polluants.** C'est le premier
+module à franchir les trois critères — effet, incertitude et utilité.
+
+**Le score du produit avec module** : NO₂ 42,25 % · O₃ 20,36 % · PM10 23,53 % ·
+PM2,5 15,32 %, sur 28 à 29 mois.
+
+⚠️ **Ces valeurs ne se soustraient pas à celles du socle seul** : les fenêtres diffèrent de
+trois à cinq mois. PM10 affiche −0,14 pt en poolé et **+1,216 en apparié** — c'est l'écart
+de fenêtre, pas un désaccord. Seul l'apparié conclut.
+
+**Ce qui rend ce résultat défendable** : la configuration a été inscrite au registre
+prospectif AVANT exécution, deux fois — au criblage (`1121b0de`) puis à la confirmation
+(`e4fdd2f0`), cette dernière portant la réserve écrite « elle peut tomber ».
+
+**Contrat de service** : l'IFS est un flux ECMWF public, disponible à J+1 avec quelques
+heures de latence. Si la source manque à l'inférence, on retombe sur le socle — l'absence
+n'entre pas comme variable.
+
+---
+
 ## Ce que ce contrat interdit
 
 * qu'un candidat raccourcisse rétroactivement la fenêtre canonique ;
@@ -120,14 +155,78 @@ d'où un léger écart aux scores de la table précédente.*
 
 ---
 
+## ⚙️ L'enveloppe de stabilité — chantier ①, axe ÉVALUATION, 24/08
+
+Le socle publie « NO₂ 41,09 % ». Ce nombre n'est pas une propriété du modèle : c'est une
+propriété du modèle **et** d'une trentaine de décisions d'évaluation qu'un autre analyste
+aurait pu prendre autrement. Tant que leur amplitude n'est pas mesurée, le chiffre n'a pas
+d'échelle — et nul ne peut savoir si 0,4 pt d'écart entre deux piles veut dire quelque chose.
+
+Quatorze perturbations préinscrites, rejouées sur les prédictions hors échantillon
+enregistrées — donc **exactes et gratuites**.
+
+| | publié | enveloppe | amplitude | jackknife par mois | ampl. |
+|---|---:|---:|---:|---:|---:|
+| NO₂ | 41,09 % | [40,99 ; 41,55] | **0,56 pt** | [40,92 ; 41,43] | 0,51 |
+| O₃ | 19,44 % | [18,31 ; 19,85] | **1,54 pt** | [18,31 ; 19,91] | 1,60 |
+| PM10 | 23,67 % | [23,29 ; 24,28] | **0,99 pt** | [22,89 ; 25,36] | 2,47 |
+| PM2,5 | 14,54 % | [14,42 ; 14,91] | **0,49 pt** | [13,29 ; 14,90] | 1,61 |
+
+**Retirer UN SEUL mois déplace le chiffre plus que toutes les perturbations
+d'échantillonnage réunies** — jusqu'à 2,47 pt sur PM10. C'est la justification mesurée des
+arrondis : ≈ 41 · ≈ 19 · ≈ 24 · ≈ 15 %.
+
+Les perturbations **saisonnières** sont tenues à part : elles ne rééchantillonnent pas le
+corpus, elles **changent la question**. Sur PM10, hors été 19,10 % et hors hiver 25,52 % —
+6,4 pt, six fois l'amplitude de tout le reste. Le gain sur PM10 est majoritairement estival.
+
+### 🔑 Un mois vaut 2 pt : un module qui gagne 0,75 pt est-il du bruit ?
+
+Non — et cela se mesure sur les **mêmes lignes**, jamais s'affirme.
+
+| | absolu, amplitude jackknife | écart apparié, amplitude | rapport |
+|---|---:|---:|---:|
+| NO₂ | 0,51 pt | **0,108 pt** | 4,7 × |
+| O₃ | 2,15 pt | **0,335 pt** | 6,4 × |
+| PM10 | 2,27 pt | **0,262 pt** | 8,7 × |
+| PM2,5 | 1,90 pt | **0,536 pt** | 3,5 × |
+
+**L'écart apparié est 3,5 à 8,7 × plus stable que le chiffre absolu** : les deux bras voient
+les mêmes mois, et le déplacement commun se soustrait. C'est ce qui autorise à **arrondir
+les niveaux** *et* à **conclure sur les différences**.
+
+⚠️ **PM2,5 est le cas le moins confortable** : 0,536 pt d'amplitude appariée pour 0,655 pt
+d'effet. Un mois peut y déplacer la moitié de l'effet — cohérent avec ses 7 blocs positifs
+sur 9, les plus faibles des quatre.
+
+🔴 **Le piège évité, et il n'aurait rien levé.** Comparer la pile socle et la pile module
+entre **deux exécutions** ne mesure rien : le protocole cache une rotation `groupes[i % 3]`
+indexée sur le rang du mois, et les deux exécutions ne commençant pas au même mois, leurs
+partitions de test sont **disjointes par construction** — 16 055 lignes communes sur 90 000
+pour NO₂, et **zéro pour O₃**. Le calcul inter-exécutions rendait « +1,77 à +3,33 pt » là où
+l'appariement interne rend +0,78. Les deux nombres sont plausibles ; seul le second est
+mesuré.
+
+⬜ **Ce qui reste du chantier ①** : l'axe **apprentissage**. Perturber ce qui est *noté* est
+gratuit ; perturber ce qui est *appris* demande un réajustement par perturbation. L'enveloppe
+ci-dessus est donc un **minorant**, et elle est nommée comme tel.
+
+Régénérable : `python3 scripts/enveloppe_stabilite.py` et `--apparie`.
+
+---
+
 ## Ce qui reste à faire avant que ces chiffres soient définitifs
 
-1. **enveloppe de stabilité** — 6 à 10 perturbations de corpus préenregistrées, graine
-   fixe, pour borner la sensibilité de version ;
+1. **enveloppe de stabilité** — ⚙️ **moitié faite** : l'axe *évaluation* est mesuré
+   (14 perturbations, ci-dessus). Reste l'axe *apprentissage* — perturber ce qui est appris
+   demande un réajustement par perturbation, et c'est le seul poste encore coûteux ;
 2. ~~**intervalle du plan**~~ — ✅ fait, voir ci-dessus ;
-3. **recalibrer la règle de décision** — la conjonction partielle a une taille réelle de
-   0,0015 pour un seuil annoncé à 0,05, soit 34 × trop sévère ;
+3. ~~**recalibrer la règle de décision**~~ — ✅ fait : seuil calibré à **0,0950** pour 12
+   configurations criblées, au lieu des 0,05 nominaux 36 × trop sévères ;
 4. **registre exhaustif des configurations**, ouvert avant le prochain criblage — le
    compte actuel ne recense que celles ayant laissé un CSV.
 
-En attendant, ces quatre scores sont **exploratoires**, et ils le seront dit.
+En attendant, ces quatre scores restent **exploratoires**, et ils le seront dit. Ce qui a
+changé le 24/08 : ils ont désormais une **échelle** — ± 0,5 à 1,5 pt d'enveloppe
+d'évaluation, et jusqu'à 2,5 pt pour le retrait d'un seul mois. C'est ce qui rend l'arrondi
+obligatoire plutôt que prudent.
