@@ -238,6 +238,48 @@ tiennent sur la pile qui porte le module**, pas la cause des variations entre co
 
 ---
 
+## 🔴 La chimie CAMS n'entre ni au socle ni en module — 24/08/2026
+
+Formaldéhyde, glyoxal, NO, CO — quatre moyennes journalières, mesurées **en dernière position
+sur le socle**. Sa couverture est **complète (37 mois)**, donc elle ne restreint pas la
+fenêtre : la mesure tourne sur **exactement les mêmes plis que le socle** (33/33, 32/32,
+34/34), ce qui rend la comparaison directement valide — contrairement au module IFS.
+
+| | apport apparié | IC95 | `p⁺` | blocs positifs |
+|---|---:|---:|---:|:---:|
+| NO₂ | +0,225 pt | [+0,042 ; +0,408] | 0,0299 | 8/11 |
+| **O₃** | **+0,027 pt** | **[−0,549 ; +0,421]** | 0,4846 | 8/11 |
+| PM10 | +0,145 pt | [−0,139 ; +0,429] | 0,1977 | 7/10 |
+| PM2,5 | +0,295 pt | [−0,014 ; +0,623] | 0,0593 | 6/11 |
+
+`p_PC = 0,1779` → 🟠 **NON CONFIRMÉ, par puissance** : les quatre groupes vont dans le même
+sens, mais aucun n'atteint l'effet utile.
+
+**Sur l'ozone, il ne reste rien.** La pile historique donnait **+1,165 pt** avec neuf blocs
+positifs sur neuf ; le socle donne **+0,027**, intervalle contenant zéro.
+
+### Ce que cette mesure établit, et ce qu'elle n'établit pas
+
+**Établi** : sur le socle, la chimie n'apporte aucun effet utile, sur aucun polluant. Elle
+n'entre donc ni comme famille ni comme module — et une famille dont l'apport ne dépasse pas
+0,3 pt ne se promeut pas sur l'espoir de mois supplémentaires.
+
+**Non établi** : que l'effet ait « disparu ». Les +1,165 pt portaient sur **29 mois**, celui-ci
+sur **33**, et les partitions de test de deux fenêtres différentes sont **disjointes par
+construction**. Les deux nombres n'ont jamais été comparables ; le second n'annule pas le
+premier, il le remplace sur le seul corpus qui définisse le produit.
+
+### La prédiction, et ce qu'elle a coûté d'exact
+
+Inscrite avant exécution (`92c7a20c`), **démentie**. Elle annonçait « ≈ +1 pt sur l'ozone,
+rien ailleurs ». Deux enseignements que le chiffre seul ne donnerait pas :
+
+* le verdict global — `NON CONFIRMÉ`, `p_PC` au-dessus du seuil — était **juste pour une
+  raison fausse** : je le prédisais parce qu'*un seul* groupe porterait ; il tombe parce
+  qu'**aucun** ne porte ;
+* le **mécanisme** est contredit de biais. Je prédisais le NO₂ nul « comme prédit », étant
+  lui-même un précurseur — et c'est **le seul des quatre dont l'intervalle exclut zéro**.
+
 ## ⚙️ L'enveloppe de stabilité — chantier ①, axe ÉVALUATION, 24/08
 
 Le socle publie « NO₂ 41,09 % ». Ce nombre n'est pas une propriété du modèle : c'est une
