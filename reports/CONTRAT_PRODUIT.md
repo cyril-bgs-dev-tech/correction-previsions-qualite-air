@@ -155,6 +155,51 @@ d'où un léger écart aux scores de la table précédente.*
 
 ---
 
+## 🔑 Le socle démontre QUATRE familles, la pile de référence n'en démontrait qu'une
+
+Apport **en dernière position**, c'est-à-dire en présence de toutes les autres — la mesure la
+plus dure qu'un ordre d'empilement autorise.
+
+| famille | pile de référence · 29 mois | | SOCLE · 32-34 mois | |
+|---|---:|---|---:|---|
+| | apport | `p_PC` | apport | `p_PC` |
+| `typologie` | +3,528 | 0,0120 ✅ | **+3,457** | **0,0030 ✅** |
+| `speciation` | +1,455 | 0,1089 🟠 | **+2,416** | **0,0045 ✅** |
+| `precurseurs` | +0,761 | 0,0900 🟠 | **+0,966** | **0,0021 ✅** |
+| `membres` | +0,404 | 0,5094 🟠 | **+0,864** | **0,0069 ✅** |
+| `fourier` | +0,133 | 0,9063 🔴 | +0,113 | 0,8772 🔴 |
+| `profil` | +0,166 | 0,4686 🟠 | +0,082 | **0,8943 🔴 SAUTE** |
+| `tendance` | +0,152 | 0,4098 🔴 | +0,046 | 0,6660 🔴 |
+
+*(🟠 = non confirmé par manque de puissance — l'utilité restait possible)*
+
+**C'est le retour sur investissement du contrat.** Fixer la fenêtre par la **disponibilité**
+plutôt que la laisser à un candidat fait passer **trois familles** de « peut-être utile, on ne
+peut pas trancher » à **démontrée**. Prédit avant la mesure (`a2706756`, scellée le 23/08) — la
+prédiction annonçait deux familles sur trois, les trois sont passées.
+
+**Trois causes distinctes s'additionnent, et il faut les séparer :**
+
+**① Plus de blocs, donc un plancher de `p` plus bas.** 10-11 blocs au lieu de 9. C'est l'effet
+prédit.
+
+**② `membres` DOUBLE (+0,404 → +0,864) parce que son substitut est parti.** L'ablation jointe
+`geoscf`+`membres`, mesurée indépendamment le même jour, montre que les deux encodent la même
+chose. Sur la pile de référence, `geoscf` masquait `membres` ; sur le socle, `membres` seule
+porte l'information. **Deux mesures indépendantes qui se confirment l'une l'autre.**
+
+**③ `profil` bascule de 🟠 vers 🔴 SAUTE.** Plus de données ont converti une **inconnue** en
+**bénéfice exclu** — c'est précisément ce que la règle à trois zones existe pour produire, et
+c'est une information, pas un échec.
+
+⚠️ **Ce que cela ne dit pas.** `fourier`, `profil` et `tendance` sont jugées **une à une**.
+Deux familles redondantes s'annulent à l'ablation individuelle — c'est mesuré sur ce dépôt.
+Leur sort se joue au sein de **G2**, en retrait conjoint, pas ici.
+
+Régénérable : `python3 scripts/apport_en_derniere_position.py --suffixe _sans-feux-geoscf_fenetre-complete`.
+
+---
+
 ## ⚙️ L'enveloppe de stabilité — chantier ①, axe ÉVALUATION, 24/08
 
 Le socle publie « NO₂ 41,09 % ». Ce nombre n'est pas une propriété du modèle : c'est une
