@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Animatic · Une meilleure moyenne peut encore manquer l&#x27;épisode</title>
+<style>
+:root{--ink:#eef7f8;--muted:#94aeb3;--bg:#071012;--panel:#0d191c;--line:#20343a;
+--cyan:#55d5e3;--amber:#ffbd6b;--red:#ef6c67;--safe:rgba(85,213,227,.2)}
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--bg);color:var(--ink);
+font:15px/1.55 Inter,Segoe UI,system-ui,sans-serif} .top{position:sticky;top:0;z-index:20;padding:18px 4vw;
+background:rgba(7,16,18,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);display:flex;
+align-items:center;gap:24px} .top h1{font-size:18px;margin:0;letter-spacing:-.02em} .top p{margin:0;color:var(--muted)}
+.top nav{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap} .top a{color:var(--muted);text-decoration:none;
+border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:12px} .top a:hover{color:var(--ink);border-color:var(--cyan)}
+main{width:min(1500px,94vw);margin:38px auto 100px;display:grid;gap:28px} .scene{background:var(--panel);
+border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.22)}
+.scene header{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.scene-number{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#102b30;color:var(--cyan);font-weight:800}
+.timecode,.eyebrow{margin:0;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+h2{font-size:clamp(20px,2.4vw,34px);line-height:1.08;margin:3px 0 0;letter-spacing:-.035em}
+.status{color:var(--amber);font-size:12px;border:1px solid #604a2c;border-radius:999px;padding:5px 10px}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.75fr);gap:24px;padding:24px}
+.frame{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:16px;background:
+radial-gradient(circle at 72% 22%,rgba(85,213,227,.18),transparent 28%),linear-gradient(135deg,#10292e,#071012 65%);
+border:1px solid #294148;display:flex;flex-direction:column;justify-content:center;padding:8%;isolation:isolate}
+.scene[data-mode="deterministic"] .frame{background:linear-gradient(135deg,#102026,#0a1416)}
+.scene[data-mode="generative"] .frame{background:radial-gradient(circle at 40% 30%,#4c3520,#10191b 48%,#070d0f)}
+.safe-zone{position:absolute;inset:7%;border:1px dashed var(--safe);border-radius:10px;z-index:-1}
+.frame-meta{position:absolute;left:18px;top:16px;display:flex;gap:7px} .frame-meta span,.jobs span{font-size:10px;text-transform:uppercase;
+letter-spacing:.1em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 7px}
+.screen-text{display:flex;flex-direction:column;gap:8px;max-width:88%} .screen-text span{font-size:clamp(19px,2.5vw,42px);
+line-height:1.02;font-weight:780;letter-spacing:-.04em} .screen-text span:nth-child(n+2){color:var(--cyan)}
+.prompt{position:absolute;left:8%;right:8%;bottom:5%;color:rgba(238,247,248,.42);font-size:11px;margin:0;max-width:88ch}
+.editorial p{margin:5px 0 20px} .claim{font-size:19px;color:var(--cyan);font-weight:650} blockquote{margin:5px 0;
+padding:15px 18px;border-left:3px solid var(--amber);background:#101f22;border-radius:0 12px 12px 0;color:#dce9eb}
+details{border-top:1px solid var(--line);padding:0 24px 22px} summary{cursor:pointer;padding:16px 0;color:var(--muted)}
+.details-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px} .facts{list-style:none;padding:0;margin:5px 0}
+.facts li{display:grid;grid-template-columns:1fr auto;gap:5px 15px;padding:9px 0;border-bottom:1px solid var(--line)}
+.facts code{grid-column:1/-1;color:var(--muted);font-size:11px} .jobs{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}
+.metric{color:var(--amber)}
+@media(max-width:900px){.grid,.details-grid{grid-template-columns:1fr}.top nav{display:none}.scene header{grid-template-columns:auto 1fr}.status{display:none}}
+@media print{.top{position:static}body{background:white;color:#111}.scene{break-inside:avoid;box-shadow:none}details{display:block}}
+</style>
+</head>
+<body>
+<header class="top"><div><h1>Une meilleure moyenne peut encore manquer l&#x27;épisode</h1><p>13 scènes · 13:10 · G1 animatic</p></div>
+<nav><a href="#S01">S01</a><a href="#S02">S02</a><a href="#S03">S03</a><a href="#S04">S04</a><a href="#S05">S05</a><a href="#S06">S06</a><a href="#S07">S07</a><a href="#S08">S08</a><a href="#S09">S09</a><a href="#S10">S10</a><a href="#S11">S11</a><a href="#S12">S12</a><a href="#S13">S13</a></nav></header>
+<main>
+    <article class="scene" id="S01" data-mode="hybrid">
+      <header>
+        <div class="scene-number">S01</div>
+        <div>
+          <p class="timecode">00:00 → 00:50 · 50 s</p>
+          <h2>Une meilleure moyenne peut encore manquer l&#x27;épisode</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>hybrid</span><span>hero</span>
+          </div>
+          <div class="screen-text"><span>Même budget : 30 %</span><span>0,184 → 0,656</span><span>3,6× plus de dépassements retrouvés</span></div>
+          <p class="prompt">Aube froide sur une ville d&#x27;Occitanie, atmosphère claire et crédible, caméra lente descendant vers une pile abstraite de journées, espace négatif propre pour une courbe compositée, lumière cinématographique retenue, documentaire scientifique.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Ouvrir sur le conflit entre erreur moyenne et décision rare.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">À budget de fausses alertes égal, l&#x27;ordre des jours change la décision.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Un modèle peut réduire son erreur moyenne et manquer encore le jour qui demande une décision. J&#x27;ai donc comparé les systèmes avec le même budget de fausses alertes.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>point de fonctionnement O3</strong><span>30 % · 0,184 → 0,656 · 3,6×</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>keyframe</span><span>video-candidates</span><span>quality-gate</span><span>deterministic-overlay</span><span>composite</span></div>
+            <p class="metric">5 travaux · 9 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>hunyuan15</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S02" data-mode="hybrid">
+      <header>
+        <div class="scene-number">S02</div>
+        <div>
+          <p class="timecode">00:50 → 01:40 · 50 s</p>
+          <h2>Le prévisionniste reste décisionnaire</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>hybrid</span><span>standard</span>
+          </div>
+          <div class="screen-text"><span>Prévision → attention → expertise humaine</span><span>Aucune alerte automatique</span></div>
+          <p class="prompt">Poste de prévision sobre et contemporain, analyste vu de trois quarts sans visage héroïsé, cartes atmosphériques abstraites non textuelles, geste calme de sélection, profondeur de champ modérée, lumière naturelle du matin.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Positionner le produit comme une aide à l&#x27;attention humaine.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">Le système hiérarchise l&#x27;attention et ne déclenche pas seul une procédure.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>La sortie utile est un ordre de risque et une concentration corrigée. Le système indique où regarder ; l&#x27;expertise humaine conserve la décision.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>limite de responsabilité</strong><span>aide à l&#x27;attention, pas alerte automatique</span><code>story telling/README.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>keyframe</span><span>video-candidates</span><span>quality-gate</span><span>deterministic-overlay</span><span>composite</span></div>
+            <p class="metric">5 travaux · 6 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>hunyuan15</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S03" data-mode="deterministic">
+      <header>
+        <div class="scene-number">S03</div>
+        <div>
+          <p class="timecode">01:40 → 02:45 · 65 s</p>
+          <h2>L&#x27;échéance réglementaire change l&#x27;échelle du besoin</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>deterministic</span><span>hero</span>
+          </div>
+          <div class="screen-text"><span>À air constant : 6 → 109</span><span>NO₂ : 41,4 % → 96,2 %</span><span>Critère : 90 %</span></div>
+          <p class="prompt">Carte vectorielle de la France puis resserrement sur l&#x27;Occitanie, deux états temporels, barres de conformité et seuil clairement séparés.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Donner tôt la raison institutionnelle d&#x27;agir.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">À air constant, le changement de seuil étend fortement le besoin de modélisation.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>À pollution inchangée, le seul déplacement des seuils ferait passer de six à cent neuf les stations concernées. Là où modéliser devient nécessaire, la qualité du modèle devient elle-même un point de contrôle.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>stations en dépassement</strong><span>6 → 109 · 2030</span><code>reports/VERITE_DOSSIER.md</code></li><li><strong>qualité NO2</strong><span>41,4 % → 96,2 % · seuil 90 %</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>deterministic-render</span><span>composite</span></div>
+            <p class="metric">2 travaux · 0 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>deterministic</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S04" data-mode="deterministic">
+      <header>
+        <div class="scene-number">S04</div>
+        <div>
+          <p class="timecode">02:45 → 03:35 · 50 s</p>
+          <h2>Le produit organise l&#x27;attention, il ne remplace pas le service</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>deterministic</span><span>standard</span>
+          </div>
+          <div class="screen-text"><span>Données disponibles à l&#x27;émission</span><span>Risque + concentration</span><span>Expertise humaine</span></div>
+          <p class="prompt">Flux de décision vectoriel en trois blocs, mouvement horizontal lent, portes de validation visibles, aucun cerveau artificiel ni iconographie robotique.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Définir les entrées, les sorties et la frontière de responsabilité.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">Une chaîne de décision bornée vaut mieux qu&#x27;un modèle présenté seul.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>La chaîne part des données disponibles à l&#x27;émission. Elle produit une concentration corrigée et un rang de risque, puis rend la main au prévisionniste.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>sortie utile</strong><span>ordre de risque et concentration corrigée</span><code>story telling/02_TRAME_PRESENTATION.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>deterministic-render</span><span>composite</span></div>
+            <p class="metric">2 travaux · 0 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>deterministic</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S05" data-mode="deterministic">
+      <header>
+        <div class="scene-number">S05</div>
+        <div>
+          <p class="timecode">03:35 → 04:30 · 55 s</p>
+          <h2>Le protocole cache le lieu et la période</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>deterministic</span><span>standard</span>
+          </div>
+          <div class="screen-text"><span>O₃ 270 · NO₂ 340 · PM2,5 227</span><span>Station et période jamais vues</span></div>
+          <p class="prompt">Carte de stations en deux couleurs puis calendrier masqué, animation pédagogique précise, distances et groupes suggérés sans produire une fausse carte scientifique.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Expliquer le double aveugle sans jargon.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">La condition de déploiement demande une station et une période jamais vues.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Chaque station évaluée est prédite par un modèle qui ne l&#x27;a jamais vue. Puis la période est cachée elle aussi. Ce test mesure demain ailleurs, pas seulement ailleurs.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>population O3</strong><span>270</span><code>reports/VERITE_DOSSIER.md</code></li><li><strong>population NO2</strong><span>340</span><code>reports/VERITE_DOSSIER.md</code></li><li><strong>population PM2.5</strong><span>227</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>deterministic-render</span><span>composite</span></div>
+            <p class="metric">2 travaux · 0 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>deterministic</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S06" data-mode="hybrid">
+      <header>
+        <div class="scene-number">S06</div>
+        <div>
+          <p class="timecode">04:30 → 05:40 · 70 s</p>
+          <h2>La première version ne tenait presque plus dans le temps</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>hybrid</span><span>hero</span>
+          </div>
+          <div class="screen-text"><span>Première version — O₃</span><span>+29,7 % → +6,7 % → +1,5 %</span></div>
+          <p class="prompt">Trois niveaux de preuve matérialisés comme des plans de verre scientifique, le premier stable puis les deux suivants s&#x27;abaissent avec retenue, caméra latérale précise, espace central pour trois barres déterministes.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Faire du résultat négatif le pivot de la démonstration.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">Le succès spatial initial masquait une faiblesse temporelle importante.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Dans la première version, le gain semblait solide lorsque seules les stations étaient cachées. En cachant aussi la période, il tombait à un virgule cinq pour cent. J&#x27;ai donc retiré l&#x27;affirmation de robustesse temporelle.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>première version O3</strong><span>+29,7 % · +6,7 % · +1,5 %</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>keyframe</span><span>video-candidates</span><span>quality-gate</span><span>deterministic-overlay</span><span>composite</span></div>
+            <p class="metric">5 travaux · 9 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>wan22</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S07" data-mode="hybrid">
+      <header>
+        <div class="scene-number">S07</div>
+        <div>
+          <p class="timecode">05:40 → 07:05 · 85 s</p>
+          <h2>Ce qui manquait était une information, pas un algorithme</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>hybrid</span><span>hero</span>
+          </div>
+          <div class="screen-text"><span>Système complet — sans observation locale</span><span>O₃ +17,9 % · NO₂ +39,6 %</span><span>PM10 +20,2 % · PM2,5 +11,8 %</span></div>
+          <p class="prompt">Champ atmosphérique stylisé et physiquement crédible, sept flux de composition convergent vers une structure stable sans symboles chimiques générés, caméra lente, palette cyan et ambre, quatre espaces réservés aux barres compositées.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Montrer la sortie du creux sans cacher la différence entre gain total et marginal.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">La pile complète sans observation locale tient mieux le protocole conjoint.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Le système complet actuel n&#x27;utilise ici aucune observation locale récente. Dans le même protocole, il atteint dix-sept virgule neuf pour cent sur l&#x27;ozone et trente-neuf virgule six sur le dioxyde d&#x27;azote. Le progrès vient surtout de l&#x27;information ajoutée.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>système complet partout</strong><span>O₃ +17,9 % · NO₂ +39,6 % · PM10 +20,2 % · PM2,5 +11,8 %</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>keyframe</span><span>video-candidates</span><span>quality-gate</span><span>deterministic-overlay</span><span>composite</span></div>
+            <p class="metric">5 travaux · 9 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>wan22</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S08" data-mode="deterministic">
+      <header>
+        <div class="scene-number">S08</div>
+        <div>
+          <p class="timecode">07:05 → 08:05 · 60 s</p>
+          <h2>La bonne cible compte davantage que la bibliothèque</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>deterministic</span><span>standard</span>
+          </div>
+          <div class="screen-text"><span>O₃ +5,8 pts · NO₂ +6,5 pts</span><span>PM2,5 -1,5 pts</span></div>
+          <p class="prompt">Série horaire qui devient maximum ou moyenne, comparaison claire des deux chemins, aucune table dense, mouvement morphologique déterministe.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Montrer qu&#x27;une décision de modélisation dépasse le choix d&#x27;algorithme.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">Apprendre directement la grandeur réglementaire aide les maxima et non la moyenne.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Pour les maxima d&#x27;ozone et de dioxyde d&#x27;azote, apprendre directement la grandeur réglementaire améliore le résultat. Pour une moyenne journalière, l&#x27;effet s&#x27;inverse. C&#x27;est une réplication, pas une découverte revendiquée.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>effet de la cible</strong><span>O₃ +5,8 pts · NO₂ +6,5 pts · PM2,5 -1,5 pts</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>deterministic-render</span><span>composite</span></div>
+            <p class="metric">2 travaux · 0 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>deterministic</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S09" data-mode="deterministic">
+      <header>
+        <div class="scene-number">S09</div>
+        <div>
+          <p class="timecode">08:05 → 09:20 · 75 s</p>
+          <h2>À budget égal, l&#x27;ordre des jours change la décision</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>deterministic</span><span>hero</span>
+          </div>
+          <div class="screen-text"><span>Budget : 30 %</span><span>CAMS 0,184 → correction 0,656</span><span>3,6×</span></div>
+          <p class="prompt">Courbe rappel-fausses alertes et pile de journées synchronisées, le même budget reste fixe pendant que davantage de journées à risque remontent, animation très lisible.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Donner le résultat opérationnel principal.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">La correction avec observation antérieure rappelle davantage de dépassements O3.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>À trente pour cent de fausses alertes, la prévision européenne brute rappelle zéro virgule cent quatre-vingt-quatre des dépassements. Avec l&#x27;observation antérieure de la station, la correction atteint zéro virgule six cent cinquante-six.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>rappel à budget égal</strong><span>30 % · 0,184 → 0,656 · 3,6×</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>deterministic-render</span><span>composite</span></div>
+            <p class="metric">2 travaux · 0 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>deterministic</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S10" data-mode="deterministic">
+      <header>
+        <div class="scene-number">S10</div>
+        <div>
+          <p class="timecode">09:20 → 10:25 · 65 s</p>
+          <h2>Le classement se reproduit mieux que la valeur exacte</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>deterministic</span><span>standard</span>
+          </div>
+          <div class="screen-text"><span>Occitanie 2025</span><span>RMSE : -3,22 µg/m³</span><span>IC95 : -4,87 à -1,74</span></div>
+          <p class="prompt">Calendrier basculant vers une période masquée, intervalle de confiance horizontal, une seule conclusion ferme mise en évidence et les autres atténuées.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Montrer la validation hors période et sa réserve statistique.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">La comparaison ferme contre le MOS officiel porte sur la RMSE, pas sur tout indicateur.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Sur l&#x27;Occitanie en deux mille vingt-cinq, la seule différence statistiquement ferme face au produit officiel reste la RMSE. Les écarts de détection sont descriptifs.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>validation Occitanie</strong><span>2025 · -3,22 µg/m³ · IC95 -4,87 à -1,74</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>deterministic-render</span><span>composite</span></div>
+            <p class="metric">2 travaux · 0 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>deterministic</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S11" data-mode="deterministic">
+      <header>
+        <div class="scene-number">S11</div>
+        <div>
+          <p class="timecode">10:25 → 11:25 · 60 s</p>
+          <h2>Le produit réellement diffusé est comparé sur une fenêtre encore courte</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>deterministic</span><span>hero</span>
+          </div>
+          <div class="screen-text"><span>Même stations, mêmes jours</span><span>O₃ +13,7 % · NO₂ +59,8 % · PM2,5 +66,9 %</span><span>17 jours seulement</span></div>
+          <p class="prompt">Trois paires de barres avec fenêtre calendaire visible, réserve méthodologique affichée avant le résultat, style documentaire et non compétitif.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Montrer le benchmark réel et sa limite avant qu&#x27;elle soit demandée.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">Le duel direct est informatif mais dix-sept jours ne permettent pas de conclure.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Contre le produit réellement diffusé, les écarts vont de treize virgule sept pour cent sur l&#x27;ozone à soixante-six virgule neuf sur les particules fines. Mais la fenêtre ne compte que dix-sept jours : c&#x27;est un ordre de grandeur, pas une conclusion.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>duel PREV&#x27;AIR</strong><span>17 jours · O₃ +13,7 % · NO₂ +59,8 % · PM2,5 +66,9 %</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>deterministic-render</span><span>composite</span></div>
+            <p class="metric">2 travaux · 0 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>deterministic</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S12" data-mode="hybrid">
+      <header>
+        <div class="scene-number">S12</div>
+        <div>
+          <p class="timecode">11:25 → 12:25 · 60 s</p>
+          <h2>Les limites définissent le produit utile</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>hybrid</span><span>standard</span>
+          </div>
+          <div class="screen-text"><span>Temps</span><span>NO₂</span><span>Support spatial</span></div>
+          <p class="prompt">Triptyque sobre : calendrier, événement rare, territoire sans station, matière rouge très limitée aux frontières de validité, caméra presque fixe, nombreux espaces calmes.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Transformer les faiblesses en garde-fous opérationnels.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">Temps, rareté NO2 et support spatial imposent des conditions de repli.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Trois limites bornent l&#x27;usage : la stabilité dans le temps, la rareté des dépassements de dioxyde d&#x27;azote et la différence entre une station inconnue et une commune sans mesure.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>rareté NO2</strong><span>270 dépassements · budget 40 % inatteignable</span><code>reports/VERITE_DOSSIER.md</code></li><li><strong>support spatial</strong><span>station inconnue ≠ lieu quelconque</span><code>reports/VERITE_DOSSIER.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>keyframe</span><span>video-candidates</span><span>quality-gate</span><span>deterministic-overlay</span><span>composite</span></div>
+            <p class="metric">5 travaux · 6 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>hunyuan15</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    
+    <article class="scene" id="S13" data-mode="hybrid">
+      <header>
+        <div class="scene-number">S13</div>
+        <div>
+          <p class="timecode">12:25 → 13:10 · 45 s</p>
+          <h2>Trois choix métier décideront du bon système</h2>
+        </div>
+        <div class="status">approved_for_animatic</div>
+      </header>
+      <div class="grid">
+        <section class="frame">
+          <div class="frame-meta">
+            <span>hybrid</span><span>hero</span>
+          </div>
+          <div class="screen-text"><span>Quelle heure de coupure ?</span><span>Quel budget de fausses alertes ?</span><span>Station, zone ou commune ?</span></div>
+          <p class="prompt">Territoire occitan au lever du jour, trois chemins lumineux sobres convergent vers un poste de décision humain, caméra lente ascendante, conclusion ouverte et calme, grand espace négatif pour trois questions compositées.</p>
+          <div class="safe-zone" aria-hidden="true"></div>
+        </section>
+        <section class="editorial">
+          <p class="eyebrow">INTENTION</p>
+          <p>Fermer sur une discussion concrète avec ATMO Occitanie.</p>
+          <p class="eyebrow">CONCLUSION UNIQUE</p>
+          <p class="claim">L&#x27;heure de coupure, le budget de fausses alertes et l&#x27;échelle géographique décident du produit.</p>
+          <p class="eyebrow">VOIX OFF</p>
+          <blockquote>Je n&#x27;arrive pas avec un seuil à imposer. Trois choix métier doivent décider du système : l&#x27;heure de coupure, le budget de fausses alertes et l&#x27;échelle géographique utile.</blockquote>
+        </section>
+      </div>
+      <details>
+        <summary>Preuves, fabrication et contraintes</summary>
+        <div class="details-grid">
+          <div><p class="eyebrow">FAITS SOURCÉS</p><ul class="facts"><li><strong>choix métier</strong><span>heure de coupure · budget de fausses alertes · unité géographique</span><code>story telling/02_TRAME_PRESENTATION.md</code></li></ul></div>
+          <div>
+            <p class="eyebrow">FILE</p><div class="jobs"><span>keyframe</span><span>video-candidates</span><span>quality-gate</span><span>deterministic-overlay</span><span>composite</span></div>
+            <p class="metric">5 travaux · 9 candidats · seuil 85/100</p>
+            <p class="eyebrow">MOTEUR</p><p>hunyuan15</p>
+            <p class="eyebrow">INTERDITS</p><p>texte ou chiffre généré dans l&#x27;image · logo inventé ou déformé · fumée catastrophiste · caméra instable ou accélération gratuite · saturation publicitaire · morphing d&#x27;objet ou scintillement temporel</p>
+          </div>
+        </div>
+      </details>
+    </article>
+    </main>
+<script>
+document.addEventListener('keydown',e=>{
+  if(!['ArrowDown','ArrowUp'].includes(e.key))return;
+  const scenes=[...document.querySelectorAll('.scene')], y=scrollY+innerHeight*.25;
+  let i=scenes.findIndex(s=>s.offsetTop>y); if(i<0)i=scenes.length;
+  i=e.key==='ArrowDown'?Math.min(i,scenes.length-1):Math.max(0,i-2);
+  scenes[i].scrollIntoView({behavior:'smooth',block:'start'});
+});
+</script>
+</body></html>

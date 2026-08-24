@@ -1,0 +1,24 @@
+generation 20260824-084626-cpu
+libelle reference-propre-puis-ifs
+ressource cpu
+lance_le 2026-08-24T08:46:26+02:00
+code a38940b+2modifs
+corpus cb9f42e4b80e
+n_taches 14
+---
+reports/methode_maximale_PM10_h2_sans-feux-geoscf_fenetre-complete.csv :: python3 -u scripts/methode_maximale.py --polluant PM10 --horizon 2 --ablation --exclure geoscf,feux --fenetre complete
+reports/methode_maximale_PM25_h2_sans-feux-geoscf_fenetre-complete.csv :: python3 -u scripts/methode_maximale.py --polluant PM25 --horizon 2 --ablation --exclure geoscf,feux --fenetre complete
+reports/methode_maximale_NO2_h2_pre-moyennes.csv :: python3 -u scripts/methode_maximale.py --polluant NO2 --horizon 2 --precurseurs moyennes
+reports/methode_maximale_O3_h2_pre-moyennes.csv :: python3 -u scripts/methode_maximale.py --polluant O3 --horizon 2 --precurseurs moyennes
+reports/methode_maximale_PM10_h2_pre-moyennes.csv :: python3 -u scripts/methode_maximale.py --polluant PM10 --horizon 2 --precurseurs moyennes
+reports/methode_maximale_PM25_h2_pre-moyennes.csv :: python3 -u scripts/methode_maximale.py --polluant PM25 --horizon 2 --precurseurs moyennes
+reports/methode_maximale_NO2_h2_spe-core7.csv :: python3 -u scripts/methode_maximale.py --polluant NO2 --horizon 2 --speciation core7
+reports/apport_ifs_NO2_h2_double.csv :: python3 -u scripts/apport_precurseurs.py --polluant NO2 --horizon 2 --axe double --lot ifs
+reports/apport_ifs_O3_h2_double.csv :: python3 -u scripts/apport_precurseurs.py --polluant O3 --horizon 2 --axe double --lot ifs
+reports/apport_ifs_PM10_h2_double.csv :: python3 -u scripts/apport_precurseurs.py --polluant PM10 --horizon 2 --axe double --lot ifs
+reports/apport_ifs_PM25_h2_double.csv :: python3 -u scripts/apport_precurseurs.py --polluant PM25 --horizon 2 --axe double --lot ifs
+reports/methode_maximale_NO2_h2_sans-feux-tendance.csv :: python3 -u scripts/ablation_jointe.py --polluant NO2 --familles feux,tendance
+reports/methode_maximale_O3_h2_sans-feux-tendance.csv :: python3 -u scripts/ablation_jointe.py --polluant O3 --familles feux,tendance
+reports/methode_maximale_PM10_h2_sans-feux-tendance.csv :: python3 -u scripts/ablation_jointe.py --polluant PM10 --familles feux,tendance
+fini_le 2026-08-24T12:00:31+02:00
+code_fin 3881976+2modifs

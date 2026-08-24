@@ -1,0 +1,14 @@
+generation 20260824-124542-cpu
+libelle confirmation-ifs-socle
+ressource cpu
+lance_le 2026-08-24T12:45:42+02:00
+code 866ea5a+2modifs
+corpus cb9f42e4b80e
+n_taches 4
+---
+reports/methode_maximale_NO2_h2_sans-feux-geoscf_fenetre-complete_avec-ifs.csv :: python3 -u scripts/methode_maximale.py --polluant NO2 --horizon 2 --ablation --exclure geoscf,feux --fenetre complete --avec-ifs
+reports/methode_maximale_O3_h2_sans-feux-geoscf_fenetre-complete_avec-ifs.csv :: python3 -u scripts/methode_maximale.py --polluant O3 --horizon 2 --ablation --exclure geoscf,feux --fenetre complete --avec-ifs
+reports/methode_maximale_PM10_h2_sans-feux-geoscf_fenetre-complete_avec-ifs.csv :: python3 -u scripts/methode_maximale.py --polluant PM10 --horizon 2 --ablation --exclure geoscf,feux --fenetre complete --avec-ifs
+reports/methode_maximale_PM25_h2_sans-feux-geoscf_fenetre-complete_avec-ifs.csv :: python3 -u scripts/methode_maximale.py --polluant PM25 --horizon 2 --ablation --exclure geoscf,feux --fenetre complete --avec-ifs
+fini_le 2026-08-24T12:46:45+02:00
+code_fin 866ea5a+2modifs

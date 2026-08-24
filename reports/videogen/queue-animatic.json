@@ -1,0 +1,2099 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "s01-keyframe",
+      "scene_id": "S01",
+      "kind": "keyframe",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 3,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S01/animatic/keyframe",
+      "fingerprint": "48b6103ce3661773",
+      "payload": {
+        "title": "Une meilleure moyenne peut encore manquer l'épisode",
+        "intent": "Ouvrir sur le conflit entre erreur moyenne et décision rare.",
+        "claim": "À budget de fausses alertes égal, l'ordre des jours change la décision.",
+        "prompt": "Aube froide sur une ville d'Occitanie, atmosphère claire et crédible, caméra lente descendant vers une pile abstraite de journées, espace négatif propre pour une courbe compositée, lumière cinématographique retenue, documentaire scientifique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Même budget : 30 %",
+          "0,184 → 0,656",
+          "3,6× plus de dépassements retrouvés"
+        ],
+        "facts": [
+          {
+            "label": "point de fonctionnement O3",
+            "value": "30 % · 0,184 → 0,656 · 3,6×",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s01-video-candidates",
+      "scene_id": "S01",
+      "kind": "video-candidates",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 6,
+      "depends_on": [
+        "s01-keyframe"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S01/animatic/video-candidates",
+      "fingerprint": "18eee982d103f68d",
+      "payload": {
+        "title": "Une meilleure moyenne peut encore manquer l'épisode",
+        "intent": "Ouvrir sur le conflit entre erreur moyenne et décision rare.",
+        "claim": "À budget de fausses alertes égal, l'ordre des jours change la décision.",
+        "prompt": "Aube froide sur une ville d'Occitanie, atmosphère claire et crédible, caméra lente descendant vers une pile abstraite de journées, espace négatif propre pour une courbe compositée, lumière cinématographique retenue, documentaire scientifique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Même budget : 30 %",
+          "0,184 → 0,656",
+          "3,6× plus de dépassements retrouvés"
+        ],
+        "facts": [
+          {
+            "label": "point de fonctionnement O3",
+            "value": "30 % · 0,184 → 0,656 · 3,6×",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s01-quality-gate",
+      "scene_id": "S01",
+      "kind": "quality-gate",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s01-video-candidates"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S01/animatic/quality-gate",
+      "fingerprint": "32df9a370801417a",
+      "payload": {
+        "title": "Une meilleure moyenne peut encore manquer l'épisode",
+        "intent": "Ouvrir sur le conflit entre erreur moyenne et décision rare.",
+        "claim": "À budget de fausses alertes égal, l'ordre des jours change la décision.",
+        "prompt": "Aube froide sur une ville d'Occitanie, atmosphère claire et crédible, caméra lente descendant vers une pile abstraite de journées, espace négatif propre pour une courbe compositée, lumière cinématographique retenue, documentaire scientifique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Même budget : 30 %",
+          "0,184 → 0,656",
+          "3,6× plus de dépassements retrouvés"
+        ],
+        "facts": [
+          {
+            "label": "point de fonctionnement O3",
+            "value": "30 % · 0,184 → 0,656 · 3,6×",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s01-deterministic-overlay",
+      "scene_id": "S01",
+      "kind": "deterministic-overlay",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s01-quality-gate"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S01/animatic/deterministic-overlay",
+      "fingerprint": "d47a99a69e178298",
+      "payload": {
+        "title": "Une meilleure moyenne peut encore manquer l'épisode",
+        "intent": "Ouvrir sur le conflit entre erreur moyenne et décision rare.",
+        "claim": "À budget de fausses alertes égal, l'ordre des jours change la décision.",
+        "prompt": "Aube froide sur une ville d'Occitanie, atmosphère claire et crédible, caméra lente descendant vers une pile abstraite de journées, espace négatif propre pour une courbe compositée, lumière cinématographique retenue, documentaire scientifique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Même budget : 30 %",
+          "0,184 → 0,656",
+          "3,6× plus de dépassements retrouvés"
+        ],
+        "facts": [
+          {
+            "label": "point de fonctionnement O3",
+            "value": "30 % · 0,184 → 0,656 · 3,6×",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s01-composite",
+      "scene_id": "S01",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s01-deterministic-overlay"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S01/animatic/composite",
+      "fingerprint": "2862af4771983c76",
+      "payload": {
+        "title": "Une meilleure moyenne peut encore manquer l'épisode",
+        "intent": "Ouvrir sur le conflit entre erreur moyenne et décision rare.",
+        "claim": "À budget de fausses alertes égal, l'ordre des jours change la décision.",
+        "prompt": "Aube froide sur une ville d'Occitanie, atmosphère claire et crédible, caméra lente descendant vers une pile abstraite de journées, espace négatif propre pour une courbe compositée, lumière cinématographique retenue, documentaire scientifique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Même budget : 30 %",
+          "0,184 → 0,656",
+          "3,6× plus de dépassements retrouvés"
+        ],
+        "facts": [
+          {
+            "label": "point de fonctionnement O3",
+            "value": "30 % · 0,184 → 0,656 · 3,6×",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s02-keyframe",
+      "scene_id": "S02",
+      "kind": "keyframe",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 2,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S02/animatic/keyframe",
+      "fingerprint": "ebea13850e4c60af",
+      "payload": {
+        "title": "Le prévisionniste reste décisionnaire",
+        "intent": "Positionner le produit comme une aide à l'attention humaine.",
+        "claim": "Le système hiérarchise l'attention et ne déclenche pas seul une procédure.",
+        "prompt": "Poste de prévision sobre et contemporain, analyste vu de trois quarts sans visage héroïsé, cartes atmosphériques abstraites non textuelles, geste calme de sélection, profondeur de champ modérée, lumière naturelle du matin.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Prévision → attention → expertise humaine",
+          "Aucune alerte automatique"
+        ],
+        "facts": [
+          {
+            "label": "limite de responsabilité",
+            "value": "aide à l'attention, pas alerte automatique",
+            "source": "story telling/README.md",
+            "evidence_contains": "ne jamais présenter le système comme l’indice ATMO officiel ou comme une alerte automatique"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s02-video-candidates",
+      "scene_id": "S02",
+      "kind": "video-candidates",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 4,
+      "depends_on": [
+        "s02-keyframe"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S02/animatic/video-candidates",
+      "fingerprint": "8627284e0ebae52d",
+      "payload": {
+        "title": "Le prévisionniste reste décisionnaire",
+        "intent": "Positionner le produit comme une aide à l'attention humaine.",
+        "claim": "Le système hiérarchise l'attention et ne déclenche pas seul une procédure.",
+        "prompt": "Poste de prévision sobre et contemporain, analyste vu de trois quarts sans visage héroïsé, cartes atmosphériques abstraites non textuelles, geste calme de sélection, profondeur de champ modérée, lumière naturelle du matin.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Prévision → attention → expertise humaine",
+          "Aucune alerte automatique"
+        ],
+        "facts": [
+          {
+            "label": "limite de responsabilité",
+            "value": "aide à l'attention, pas alerte automatique",
+            "source": "story telling/README.md",
+            "evidence_contains": "ne jamais présenter le système comme l’indice ATMO officiel ou comme une alerte automatique"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s02-quality-gate",
+      "scene_id": "S02",
+      "kind": "quality-gate",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s02-video-candidates"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S02/animatic/quality-gate",
+      "fingerprint": "ba81e06c164f12ea",
+      "payload": {
+        "title": "Le prévisionniste reste décisionnaire",
+        "intent": "Positionner le produit comme une aide à l'attention humaine.",
+        "claim": "Le système hiérarchise l'attention et ne déclenche pas seul une procédure.",
+        "prompt": "Poste de prévision sobre et contemporain, analyste vu de trois quarts sans visage héroïsé, cartes atmosphériques abstraites non textuelles, geste calme de sélection, profondeur de champ modérée, lumière naturelle du matin.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Prévision → attention → expertise humaine",
+          "Aucune alerte automatique"
+        ],
+        "facts": [
+          {
+            "label": "limite de responsabilité",
+            "value": "aide à l'attention, pas alerte automatique",
+            "source": "story telling/README.md",
+            "evidence_contains": "ne jamais présenter le système comme l’indice ATMO officiel ou comme une alerte automatique"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s02-deterministic-overlay",
+      "scene_id": "S02",
+      "kind": "deterministic-overlay",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s02-quality-gate"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S02/animatic/deterministic-overlay",
+      "fingerprint": "6b067fc92bbaf3bd",
+      "payload": {
+        "title": "Le prévisionniste reste décisionnaire",
+        "intent": "Positionner le produit comme une aide à l'attention humaine.",
+        "claim": "Le système hiérarchise l'attention et ne déclenche pas seul une procédure.",
+        "prompt": "Poste de prévision sobre et contemporain, analyste vu de trois quarts sans visage héroïsé, cartes atmosphériques abstraites non textuelles, geste calme de sélection, profondeur de champ modérée, lumière naturelle du matin.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Prévision → attention → expertise humaine",
+          "Aucune alerte automatique"
+        ],
+        "facts": [
+          {
+            "label": "limite de responsabilité",
+            "value": "aide à l'attention, pas alerte automatique",
+            "source": "story telling/README.md",
+            "evidence_contains": "ne jamais présenter le système comme l’indice ATMO officiel ou comme une alerte automatique"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s02-composite",
+      "scene_id": "S02",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s02-deterministic-overlay"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S02/animatic/composite",
+      "fingerprint": "88657858ac02dcef",
+      "payload": {
+        "title": "Le prévisionniste reste décisionnaire",
+        "intent": "Positionner le produit comme une aide à l'attention humaine.",
+        "claim": "Le système hiérarchise l'attention et ne déclenche pas seul une procédure.",
+        "prompt": "Poste de prévision sobre et contemporain, analyste vu de trois quarts sans visage héroïsé, cartes atmosphériques abstraites non textuelles, geste calme de sélection, profondeur de champ modérée, lumière naturelle du matin.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Prévision → attention → expertise humaine",
+          "Aucune alerte automatique"
+        ],
+        "facts": [
+          {
+            "label": "limite de responsabilité",
+            "value": "aide à l'attention, pas alerte automatique",
+            "source": "story telling/README.md",
+            "evidence_contains": "ne jamais présenter le système comme l’indice ATMO officiel ou comme une alerte automatique"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s03-deterministic-render",
+      "scene_id": "S03",
+      "kind": "deterministic-render",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S03/animatic/deterministic-render",
+      "fingerprint": "dff48d6f802d9705",
+      "payload": {
+        "title": "L'échéance réglementaire change l'échelle du besoin",
+        "intent": "Donner tôt la raison institutionnelle d'agir.",
+        "claim": "À air constant, le changement de seuil étend fortement le besoin de modélisation.",
+        "prompt": "Carte vectorielle de la France puis resserrement sur l'Occitanie, deux états temporels, barres de conformité et seuil clairement séparés.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "À air constant : 6 → 109",
+          "NO₂ : 41,4 % → 96,2 %",
+          "Critère : 90 %"
+        ],
+        "facts": [
+          {
+            "label": "stations en dépassement",
+            "value": "6 → 109 · 2030",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "6 station(s) en dépassement aujourd'hui, 109 en 2030"
+          },
+          {
+            "label": "qualité NO2",
+            "value": "41,4 % → 96,2 % · seuil 90 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| NO₂ | 338 | **41,4 %** ✗ | **87,9 %** ✗ | **96,2 %** ✓ |"
+          }
+        ],
+        "duration_s": 65,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s03-composite",
+      "scene_id": "S03",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [
+        "s03-deterministic-render"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S03/animatic/composite",
+      "fingerprint": "185f62e93a5fbb83",
+      "payload": {
+        "title": "L'échéance réglementaire change l'échelle du besoin",
+        "intent": "Donner tôt la raison institutionnelle d'agir.",
+        "claim": "À air constant, le changement de seuil étend fortement le besoin de modélisation.",
+        "prompt": "Carte vectorielle de la France puis resserrement sur l'Occitanie, deux états temporels, barres de conformité et seuil clairement séparés.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "À air constant : 6 → 109",
+          "NO₂ : 41,4 % → 96,2 %",
+          "Critère : 90 %"
+        ],
+        "facts": [
+          {
+            "label": "stations en dépassement",
+            "value": "6 → 109 · 2030",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "6 station(s) en dépassement aujourd'hui, 109 en 2030"
+          },
+          {
+            "label": "qualité NO2",
+            "value": "41,4 % → 96,2 % · seuil 90 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| NO₂ | 338 | **41,4 %** ✗ | **87,9 %** ✗ | **96,2 %** ✓ |"
+          }
+        ],
+        "duration_s": 65,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s04-deterministic-render",
+      "scene_id": "S04",
+      "kind": "deterministic-render",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S04/animatic/deterministic-render",
+      "fingerprint": "eba2405d1c7a92dc",
+      "payload": {
+        "title": "Le produit organise l'attention, il ne remplace pas le service",
+        "intent": "Définir les entrées, les sorties et la frontière de responsabilité.",
+        "claim": "Une chaîne de décision bornée vaut mieux qu'un modèle présenté seul.",
+        "prompt": "Flux de décision vectoriel en trois blocs, mouvement horizontal lent, portes de validation visibles, aucun cerveau artificiel ni iconographie robotique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Données disponibles à l'émission",
+          "Risque + concentration",
+          "Expertise humaine"
+        ],
+        "facts": [
+          {
+            "label": "sortie utile",
+            "value": "ordre de risque et concentration corrigée",
+            "source": "story telling/02_TRAME_PRESENTATION.md",
+            "evidence_contains": "La sortie utile est un ordre de risque et une concentration corrigée"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s04-composite",
+      "scene_id": "S04",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [
+        "s04-deterministic-render"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S04/animatic/composite",
+      "fingerprint": "2fb1444b6cd69388",
+      "payload": {
+        "title": "Le produit organise l'attention, il ne remplace pas le service",
+        "intent": "Définir les entrées, les sorties et la frontière de responsabilité.",
+        "claim": "Une chaîne de décision bornée vaut mieux qu'un modèle présenté seul.",
+        "prompt": "Flux de décision vectoriel en trois blocs, mouvement horizontal lent, portes de validation visibles, aucun cerveau artificiel ni iconographie robotique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Données disponibles à l'émission",
+          "Risque + concentration",
+          "Expertise humaine"
+        ],
+        "facts": [
+          {
+            "label": "sortie utile",
+            "value": "ordre de risque et concentration corrigée",
+            "source": "story telling/02_TRAME_PRESENTATION.md",
+            "evidence_contains": "La sortie utile est un ordre de risque et une concentration corrigée"
+          }
+        ],
+        "duration_s": 50,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s05-deterministic-render",
+      "scene_id": "S05",
+      "kind": "deterministic-render",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S05/animatic/deterministic-render",
+      "fingerprint": "41cf63f5796a31c9",
+      "payload": {
+        "title": "Le protocole cache le lieu et la période",
+        "intent": "Expliquer le double aveugle sans jargon.",
+        "claim": "La condition de déploiement demande une station et une période jamais vues.",
+        "prompt": "Carte de stations en deux couleurs puis calendrier masqué, animation pédagogique précise, distances et groupes suggérés sans produire une fausse carte scientifique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "O₃ 270 · NO₂ 340 · PM2,5 227",
+          "Station et période jamais vues"
+        ],
+        "facts": [
+          {
+            "label": "population O3",
+            "value": "270",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "population qui mesure l'ozone n'en compte que 270"
+          },
+          {
+            "label": "population NO2",
+            "value": "340",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "Pour le NO₂ : 340 stations"
+          },
+          {
+            "label": "population PM2.5",
+            "value": "227",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "Pour les PM2,5 : 227 stations"
+          }
+        ],
+        "duration_s": 55,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s05-composite",
+      "scene_id": "S05",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [
+        "s05-deterministic-render"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S05/animatic/composite",
+      "fingerprint": "890c120023287ead",
+      "payload": {
+        "title": "Le protocole cache le lieu et la période",
+        "intent": "Expliquer le double aveugle sans jargon.",
+        "claim": "La condition de déploiement demande une station et une période jamais vues.",
+        "prompt": "Carte de stations en deux couleurs puis calendrier masqué, animation pédagogique précise, distances et groupes suggérés sans produire une fausse carte scientifique.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "O₃ 270 · NO₂ 340 · PM2,5 227",
+          "Station et période jamais vues"
+        ],
+        "facts": [
+          {
+            "label": "population O3",
+            "value": "270",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "population qui mesure l'ozone n'en compte que 270"
+          },
+          {
+            "label": "population NO2",
+            "value": "340",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "Pour le NO₂ : 340 stations"
+          },
+          {
+            "label": "population PM2.5",
+            "value": "227",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "Pour les PM2,5 : 227 stations"
+          }
+        ],
+        "duration_s": 55,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s06-keyframe",
+      "scene_id": "S06",
+      "kind": "keyframe",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 3,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S06/animatic/keyframe",
+      "fingerprint": "3dcbc8293cab170a",
+      "payload": {
+        "title": "La première version ne tenait presque plus dans le temps",
+        "intent": "Faire du résultat négatif le pivot de la démonstration.",
+        "claim": "Le succès spatial initial masquait une faiblesse temporelle importante.",
+        "prompt": "Trois niveaux de preuve matérialisés comme des plans de verre scientifique, le premier stable puis les deux suivants s'abaissent avec retenue, caméra latérale précise, espace central pour trois barres déterministes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Première version — O₃",
+          "+29,7 % → +6,7 % → +1,5 %"
+        ],
+        "facts": [
+          {
+            "label": "première version O3",
+            "value": "+29,7 % · +6,7 % · +1,5 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| **Blocage conjoint** station × mois | **+1,5 %**, pire **−41,4 %**, **8 négatifs sur 17**"
+          }
+        ],
+        "duration_s": 70,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s06-video-candidates",
+      "scene_id": "S06",
+      "kind": "video-candidates",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 6,
+      "depends_on": [
+        "s06-keyframe"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S06/animatic/video-candidates",
+      "fingerprint": "18e9e318898bfa16",
+      "payload": {
+        "title": "La première version ne tenait presque plus dans le temps",
+        "intent": "Faire du résultat négatif le pivot de la démonstration.",
+        "claim": "Le succès spatial initial masquait une faiblesse temporelle importante.",
+        "prompt": "Trois niveaux de preuve matérialisés comme des plans de verre scientifique, le premier stable puis les deux suivants s'abaissent avec retenue, caméra latérale précise, espace central pour trois barres déterministes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Première version — O₃",
+          "+29,7 % → +6,7 % → +1,5 %"
+        ],
+        "facts": [
+          {
+            "label": "première version O3",
+            "value": "+29,7 % · +6,7 % · +1,5 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| **Blocage conjoint** station × mois | **+1,5 %**, pire **−41,4 %**, **8 négatifs sur 17**"
+          }
+        ],
+        "duration_s": 70,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s06-quality-gate",
+      "scene_id": "S06",
+      "kind": "quality-gate",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 1,
+      "depends_on": [
+        "s06-video-candidates"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S06/animatic/quality-gate",
+      "fingerprint": "bdfbcd6d2d6fa1ab",
+      "payload": {
+        "title": "La première version ne tenait presque plus dans le temps",
+        "intent": "Faire du résultat négatif le pivot de la démonstration.",
+        "claim": "Le succès spatial initial masquait une faiblesse temporelle importante.",
+        "prompt": "Trois niveaux de preuve matérialisés comme des plans de verre scientifique, le premier stable puis les deux suivants s'abaissent avec retenue, caméra latérale précise, espace central pour trois barres déterministes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Première version — O₃",
+          "+29,7 % → +6,7 % → +1,5 %"
+        ],
+        "facts": [
+          {
+            "label": "première version O3",
+            "value": "+29,7 % · +6,7 % · +1,5 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| **Blocage conjoint** station × mois | **+1,5 %**, pire **−41,4 %**, **8 négatifs sur 17**"
+          }
+        ],
+        "duration_s": 70,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s06-deterministic-overlay",
+      "scene_id": "S06",
+      "kind": "deterministic-overlay",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 1,
+      "depends_on": [
+        "s06-quality-gate"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S06/animatic/deterministic-overlay",
+      "fingerprint": "cf6148bbafd71838",
+      "payload": {
+        "title": "La première version ne tenait presque plus dans le temps",
+        "intent": "Faire du résultat négatif le pivot de la démonstration.",
+        "claim": "Le succès spatial initial masquait une faiblesse temporelle importante.",
+        "prompt": "Trois niveaux de preuve matérialisés comme des plans de verre scientifique, le premier stable puis les deux suivants s'abaissent avec retenue, caméra latérale précise, espace central pour trois barres déterministes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Première version — O₃",
+          "+29,7 % → +6,7 % → +1,5 %"
+        ],
+        "facts": [
+          {
+            "label": "première version O3",
+            "value": "+29,7 % · +6,7 % · +1,5 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| **Blocage conjoint** station × mois | **+1,5 %**, pire **−41,4 %**, **8 négatifs sur 17**"
+          }
+        ],
+        "duration_s": 70,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s06-composite",
+      "scene_id": "S06",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 1,
+      "depends_on": [
+        "s06-deterministic-overlay"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S06/animatic/composite",
+      "fingerprint": "41f65c2bda727d63",
+      "payload": {
+        "title": "La première version ne tenait presque plus dans le temps",
+        "intent": "Faire du résultat négatif le pivot de la démonstration.",
+        "claim": "Le succès spatial initial masquait une faiblesse temporelle importante.",
+        "prompt": "Trois niveaux de preuve matérialisés comme des plans de verre scientifique, le premier stable puis les deux suivants s'abaissent avec retenue, caméra latérale précise, espace central pour trois barres déterministes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Première version — O₃",
+          "+29,7 % → +6,7 % → +1,5 %"
+        ],
+        "facts": [
+          {
+            "label": "première version O3",
+            "value": "+29,7 % · +6,7 % · +1,5 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| **Blocage conjoint** station × mois | **+1,5 %**, pire **−41,4 %**, **8 négatifs sur 17**"
+          }
+        ],
+        "duration_s": 70,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s07-keyframe",
+      "scene_id": "S07",
+      "kind": "keyframe",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 3,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S07/animatic/keyframe",
+      "fingerprint": "fbac4fa474d6609d",
+      "payload": {
+        "title": "Ce qui manquait était une information, pas un algorithme",
+        "intent": "Montrer la sortie du creux sans cacher la différence entre gain total et marginal.",
+        "claim": "La pile complète sans observation locale tient mieux le protocole conjoint.",
+        "prompt": "Champ atmosphérique stylisé et physiquement crédible, sept flux de composition convergent vers une structure stable sans symboles chimiques générés, caméra lente, palette cyan et ambre, quatre espaces réservés aux barres compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Système complet — sans observation locale",
+          "O₃ +17,9 % · NO₂ +39,6 %",
+          "PM10 +20,2 % · PM2,5 +11,8 %"
+        ],
+        "facts": [
+          {
+            "label": "système complet partout",
+            "value": "O₃ +17,9 % · NO₂ +39,6 % · PM10 +20,2 % · PM2,5 +11,8 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+1 | **+17,90 %** | **+39,61 %** | **+20,23 %** | **+11,79 %** |"
+          }
+        ],
+        "duration_s": 85,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s07-video-candidates",
+      "scene_id": "S07",
+      "kind": "video-candidates",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 6,
+      "depends_on": [
+        "s07-keyframe"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S07/animatic/video-candidates",
+      "fingerprint": "a6b0eb06151e0691",
+      "payload": {
+        "title": "Ce qui manquait était une information, pas un algorithme",
+        "intent": "Montrer la sortie du creux sans cacher la différence entre gain total et marginal.",
+        "claim": "La pile complète sans observation locale tient mieux le protocole conjoint.",
+        "prompt": "Champ atmosphérique stylisé et physiquement crédible, sept flux de composition convergent vers une structure stable sans symboles chimiques générés, caméra lente, palette cyan et ambre, quatre espaces réservés aux barres compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Système complet — sans observation locale",
+          "O₃ +17,9 % · NO₂ +39,6 %",
+          "PM10 +20,2 % · PM2,5 +11,8 %"
+        ],
+        "facts": [
+          {
+            "label": "système complet partout",
+            "value": "O₃ +17,9 % · NO₂ +39,6 % · PM10 +20,2 % · PM2,5 +11,8 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+1 | **+17,90 %** | **+39,61 %** | **+20,23 %** | **+11,79 %** |"
+          }
+        ],
+        "duration_s": 85,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s07-quality-gate",
+      "scene_id": "S07",
+      "kind": "quality-gate",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 1,
+      "depends_on": [
+        "s07-video-candidates"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S07/animatic/quality-gate",
+      "fingerprint": "f67c9eea75693f91",
+      "payload": {
+        "title": "Ce qui manquait était une information, pas un algorithme",
+        "intent": "Montrer la sortie du creux sans cacher la différence entre gain total et marginal.",
+        "claim": "La pile complète sans observation locale tient mieux le protocole conjoint.",
+        "prompt": "Champ atmosphérique stylisé et physiquement crédible, sept flux de composition convergent vers une structure stable sans symboles chimiques générés, caméra lente, palette cyan et ambre, quatre espaces réservés aux barres compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Système complet — sans observation locale",
+          "O₃ +17,9 % · NO₂ +39,6 %",
+          "PM10 +20,2 % · PM2,5 +11,8 %"
+        ],
+        "facts": [
+          {
+            "label": "système complet partout",
+            "value": "O₃ +17,9 % · NO₂ +39,6 % · PM10 +20,2 % · PM2,5 +11,8 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+1 | **+17,90 %** | **+39,61 %** | **+20,23 %** | **+11,79 %** |"
+          }
+        ],
+        "duration_s": 85,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s07-deterministic-overlay",
+      "scene_id": "S07",
+      "kind": "deterministic-overlay",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 1,
+      "depends_on": [
+        "s07-quality-gate"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S07/animatic/deterministic-overlay",
+      "fingerprint": "e6746701f1c6e1da",
+      "payload": {
+        "title": "Ce qui manquait était une information, pas un algorithme",
+        "intent": "Montrer la sortie du creux sans cacher la différence entre gain total et marginal.",
+        "claim": "La pile complète sans observation locale tient mieux le protocole conjoint.",
+        "prompt": "Champ atmosphérique stylisé et physiquement crédible, sept flux de composition convergent vers une structure stable sans symboles chimiques générés, caméra lente, palette cyan et ambre, quatre espaces réservés aux barres compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Système complet — sans observation locale",
+          "O₃ +17,9 % · NO₂ +39,6 %",
+          "PM10 +20,2 % · PM2,5 +11,8 %"
+        ],
+        "facts": [
+          {
+            "label": "système complet partout",
+            "value": "O₃ +17,9 % · NO₂ +39,6 % · PM10 +20,2 % · PM2,5 +11,8 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+1 | **+17,90 %** | **+39,61 %** | **+20,23 %** | **+11,79 %** |"
+          }
+        ],
+        "duration_s": 85,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s07-composite",
+      "scene_id": "S07",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "wan22",
+      "workflow": "workflows/videogen/wan22-i2v-master-v1.json",
+      "checkpoint": "Wan2.2-I2V-A14B",
+      "candidates": 1,
+      "depends_on": [
+        "s07-deterministic-overlay"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S07/animatic/composite",
+      "fingerprint": "76cbd851b30a058a",
+      "payload": {
+        "title": "Ce qui manquait était une information, pas un algorithme",
+        "intent": "Montrer la sortie du creux sans cacher la différence entre gain total et marginal.",
+        "claim": "La pile complète sans observation locale tient mieux le protocole conjoint.",
+        "prompt": "Champ atmosphérique stylisé et physiquement crédible, sept flux de composition convergent vers une structure stable sans symboles chimiques générés, caméra lente, palette cyan et ambre, quatre espaces réservés aux barres compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Système complet — sans observation locale",
+          "O₃ +17,9 % · NO₂ +39,6 %",
+          "PM10 +20,2 % · PM2,5 +11,8 %"
+        ],
+        "facts": [
+          {
+            "label": "système complet partout",
+            "value": "O₃ +17,9 % · NO₂ +39,6 % · PM10 +20,2 % · PM2,5 +11,8 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+1 | **+17,90 %** | **+39,61 %** | **+20,23 %** | **+11,79 %** |"
+          }
+        ],
+        "duration_s": 85,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s08-deterministic-render",
+      "scene_id": "S08",
+      "kind": "deterministic-render",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S08/animatic/deterministic-render",
+      "fingerprint": "9b1f82d98f2ad1c9",
+      "payload": {
+        "title": "La bonne cible compte davantage que la bibliothèque",
+        "intent": "Montrer qu'une décision de modélisation dépasse le choix d'algorithme.",
+        "claim": "Apprendre directement la grandeur réglementaire aide les maxima et non la moyenne.",
+        "prompt": "Série horaire qui devient maximum ou moyenne, comparaison claire des deux chemins, aucune table dense, mouvement morphologique déterministe.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "O₃ +5,8 pts · NO₂ +6,5 pts",
+          "PM2,5 -1,5 pts"
+        ],
+        "facts": [
+          {
+            "label": "effet de la cible",
+            "value": "O₃ +5,8 pts · NO₂ +6,5 pts · PM2,5 -1,5 pts",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| O₃ | max glissant 8 h (**maximum**) | +17.50 % | +23.30 % | **+5.8 pts** |"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s08-composite",
+      "scene_id": "S08",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [
+        "s08-deterministic-render"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S08/animatic/composite",
+      "fingerprint": "99144b943f5e7167",
+      "payload": {
+        "title": "La bonne cible compte davantage que la bibliothèque",
+        "intent": "Montrer qu'une décision de modélisation dépasse le choix d'algorithme.",
+        "claim": "Apprendre directement la grandeur réglementaire aide les maxima et non la moyenne.",
+        "prompt": "Série horaire qui devient maximum ou moyenne, comparaison claire des deux chemins, aucune table dense, mouvement morphologique déterministe.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "O₃ +5,8 pts · NO₂ +6,5 pts",
+          "PM2,5 -1,5 pts"
+        ],
+        "facts": [
+          {
+            "label": "effet de la cible",
+            "value": "O₃ +5,8 pts · NO₂ +6,5 pts · PM2,5 -1,5 pts",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "| O₃ | max glissant 8 h (**maximum**) | +17.50 % | +23.30 % | **+5.8 pts** |"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s09-deterministic-render",
+      "scene_id": "S09",
+      "kind": "deterministic-render",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S09/animatic/deterministic-render",
+      "fingerprint": "45a27ac180f36f65",
+      "payload": {
+        "title": "À budget égal, l'ordre des jours change la décision",
+        "intent": "Donner le résultat opérationnel principal.",
+        "claim": "La correction avec observation antérieure rappelle davantage de dépassements O3.",
+        "prompt": "Courbe rappel-fausses alertes et pile de journées synchronisées, le même budget reste fixe pendant que davantage de journées à risque remontent, animation très lisible.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Budget : 30 %",
+          "CAMS 0,184 → correction 0,656",
+          "3,6×"
+        ],
+        "facts": [
+          {
+            "label": "rappel à budget égal",
+            "value": "30 % · 0,184 → 0,656 · 3,6×",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois"
+          }
+        ],
+        "duration_s": 75,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s09-composite",
+      "scene_id": "S09",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [
+        "s09-deterministic-render"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S09/animatic/composite",
+      "fingerprint": "64ddb914404646d8",
+      "payload": {
+        "title": "À budget égal, l'ordre des jours change la décision",
+        "intent": "Donner le résultat opérationnel principal.",
+        "claim": "La correction avec observation antérieure rappelle davantage de dépassements O3.",
+        "prompt": "Courbe rappel-fausses alertes et pile de journées synchronisées, le même budget reste fixe pendant que davantage de journées à risque remontent, animation très lisible.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Budget : 30 %",
+          "CAMS 0,184 → correction 0,656",
+          "3,6×"
+        ],
+        "facts": [
+          {
+            "label": "rappel à budget égal",
+            "value": "30 % · 0,184 → 0,656 · 3,6×",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "À 30 % de fausses alertes : 0,656 contre 0,184 — 3,6 fois"
+          }
+        ],
+        "duration_s": 75,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s10-deterministic-render",
+      "scene_id": "S10",
+      "kind": "deterministic-render",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S10/animatic/deterministic-render",
+      "fingerprint": "d67962f7b0b10a0f",
+      "payload": {
+        "title": "Le classement se reproduit mieux que la valeur exacte",
+        "intent": "Montrer la validation hors période et sa réserve statistique.",
+        "claim": "La comparaison ferme contre le MOS officiel porte sur la RMSE, pas sur tout indicateur.",
+        "prompt": "Calendrier basculant vers une période masquée, intervalle de confiance horizontal, une seule conclusion ferme mise en évidence et les autres atténuées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Occitanie 2025",
+          "RMSE : -3,22 µg/m³",
+          "IC95 : -4,87 à -1,74"
+        ],
+        "facts": [
+          {
+            "label": "validation Occitanie",
+            "value": "2025 · -3,22 µg/m³ · IC95 -4,87 à -1,74",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "notre RMSE est inférieur à celui du MOS officiel de **3,22 µg/m³**, IC95 [−4,87 ; −1,74]"
+          }
+        ],
+        "duration_s": 65,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s10-composite",
+      "scene_id": "S10",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [
+        "s10-deterministic-render"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S10/animatic/composite",
+      "fingerprint": "1be61040509e27de",
+      "payload": {
+        "title": "Le classement se reproduit mieux que la valeur exacte",
+        "intent": "Montrer la validation hors période et sa réserve statistique.",
+        "claim": "La comparaison ferme contre le MOS officiel porte sur la RMSE, pas sur tout indicateur.",
+        "prompt": "Calendrier basculant vers une période masquée, intervalle de confiance horizontal, une seule conclusion ferme mise en évidence et les autres atténuées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Occitanie 2025",
+          "RMSE : -3,22 µg/m³",
+          "IC95 : -4,87 à -1,74"
+        ],
+        "facts": [
+          {
+            "label": "validation Occitanie",
+            "value": "2025 · -3,22 µg/m³ · IC95 -4,87 à -1,74",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "notre RMSE est inférieur à celui du MOS officiel de **3,22 µg/m³**, IC95 [−4,87 ; −1,74]"
+          }
+        ],
+        "duration_s": 65,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s11-deterministic-render",
+      "scene_id": "S11",
+      "kind": "deterministic-render",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S11/animatic/deterministic-render",
+      "fingerprint": "3ce0985d25e587d9",
+      "payload": {
+        "title": "Le produit réellement diffusé est comparé sur une fenêtre encore courte",
+        "intent": "Montrer le benchmark réel et sa limite avant qu'elle soit demandée.",
+        "claim": "Le duel direct est informatif mais dix-sept jours ne permettent pas de conclure.",
+        "prompt": "Trois paires de barres avec fenêtre calendaire visible, réserve méthodologique affichée avant le résultat, style documentaire et non compétitif.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Même stations, mêmes jours",
+          "O₃ +13,7 % · NO₂ +59,8 % · PM2,5 +66,9 %",
+          "17 jours seulement"
+        ],
+        "facts": [
+          {
+            "label": "duel PREV'AIR",
+            "value": "17 jours · O₃ +13,7 % · NO₂ +59,8 % · PM2,5 +66,9 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "🔴 **17 jours NE CONCLUENT RIEN.**"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s11-composite",
+      "scene_id": "S11",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "deterministic",
+      "workflow": "workflows/videogen/deterministic-v1.json",
+      "checkpoint": "none",
+      "candidates": 1,
+      "depends_on": [
+        "s11-deterministic-render"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S11/animatic/composite",
+      "fingerprint": "4f1cd26252a622b6",
+      "payload": {
+        "title": "Le produit réellement diffusé est comparé sur une fenêtre encore courte",
+        "intent": "Montrer le benchmark réel et sa limite avant qu'elle soit demandée.",
+        "claim": "Le duel direct est informatif mais dix-sept jours ne permettent pas de conclure.",
+        "prompt": "Trois paires de barres avec fenêtre calendaire visible, réserve méthodologique affichée avant le résultat, style documentaire et non compétitif.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Même stations, mêmes jours",
+          "O₃ +13,7 % · NO₂ +59,8 % · PM2,5 +66,9 %",
+          "17 jours seulement"
+        ],
+        "facts": [
+          {
+            "label": "duel PREV'AIR",
+            "value": "17 jours · O₃ +13,7 % · NO₂ +59,8 % · PM2,5 +66,9 %",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "🔴 **17 jours NE CONCLUENT RIEN.**"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s12-keyframe",
+      "scene_id": "S12",
+      "kind": "keyframe",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 2,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S12/animatic/keyframe",
+      "fingerprint": "42ce0ae9780592ed",
+      "payload": {
+        "title": "Les limites définissent le produit utile",
+        "intent": "Transformer les faiblesses en garde-fous opérationnels.",
+        "claim": "Temps, rareté NO2 et support spatial imposent des conditions de repli.",
+        "prompt": "Triptyque sobre : calendrier, événement rare, territoire sans station, matière rouge très limitée aux frontières de validité, caméra presque fixe, nombreux espaces calmes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Temps",
+          "NO₂",
+          "Support spatial"
+        ],
+        "facts": [
+          {
+            "label": "rareté NO2",
+            "value": "270 dépassements · budget 40 % inatteignable",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable**"
+          },
+          {
+            "label": "support spatial",
+            "value": "station inconnue ≠ lieu quelconque",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**« Station inconnue » signifie *autre station du même réseau*, pas *lieu quelconque*.**"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s12-video-candidates",
+      "scene_id": "S12",
+      "kind": "video-candidates",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 4,
+      "depends_on": [
+        "s12-keyframe"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S12/animatic/video-candidates",
+      "fingerprint": "46d370f25832b4d0",
+      "payload": {
+        "title": "Les limites définissent le produit utile",
+        "intent": "Transformer les faiblesses en garde-fous opérationnels.",
+        "claim": "Temps, rareté NO2 et support spatial imposent des conditions de repli.",
+        "prompt": "Triptyque sobre : calendrier, événement rare, territoire sans station, matière rouge très limitée aux frontières de validité, caméra presque fixe, nombreux espaces calmes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Temps",
+          "NO₂",
+          "Support spatial"
+        ],
+        "facts": [
+          {
+            "label": "rareté NO2",
+            "value": "270 dépassements · budget 40 % inatteignable",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable**"
+          },
+          {
+            "label": "support spatial",
+            "value": "station inconnue ≠ lieu quelconque",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**« Station inconnue » signifie *autre station du même réseau*, pas *lieu quelconque*.**"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s12-quality-gate",
+      "scene_id": "S12",
+      "kind": "quality-gate",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s12-video-candidates"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S12/animatic/quality-gate",
+      "fingerprint": "e56c1d40c016ce8f",
+      "payload": {
+        "title": "Les limites définissent le produit utile",
+        "intent": "Transformer les faiblesses en garde-fous opérationnels.",
+        "claim": "Temps, rareté NO2 et support spatial imposent des conditions de repli.",
+        "prompt": "Triptyque sobre : calendrier, événement rare, territoire sans station, matière rouge très limitée aux frontières de validité, caméra presque fixe, nombreux espaces calmes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Temps",
+          "NO₂",
+          "Support spatial"
+        ],
+        "facts": [
+          {
+            "label": "rareté NO2",
+            "value": "270 dépassements · budget 40 % inatteignable",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable**"
+          },
+          {
+            "label": "support spatial",
+            "value": "station inconnue ≠ lieu quelconque",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**« Station inconnue » signifie *autre station du même réseau*, pas *lieu quelconque*.**"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s12-deterministic-overlay",
+      "scene_id": "S12",
+      "kind": "deterministic-overlay",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s12-quality-gate"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S12/animatic/deterministic-overlay",
+      "fingerprint": "3f2b933794ce244c",
+      "payload": {
+        "title": "Les limites définissent le produit utile",
+        "intent": "Transformer les faiblesses en garde-fous opérationnels.",
+        "claim": "Temps, rareté NO2 et support spatial imposent des conditions de repli.",
+        "prompt": "Triptyque sobre : calendrier, événement rare, territoire sans station, matière rouge très limitée aux frontières de validité, caméra presque fixe, nombreux espaces calmes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Temps",
+          "NO₂",
+          "Support spatial"
+        ],
+        "facts": [
+          {
+            "label": "rareté NO2",
+            "value": "270 dépassements · budget 40 % inatteignable",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable**"
+          },
+          {
+            "label": "support spatial",
+            "value": "station inconnue ≠ lieu quelconque",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**« Station inconnue » signifie *autre station du même réseau*, pas *lieu quelconque*.**"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s12-composite",
+      "scene_id": "S12",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s12-deterministic-overlay"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S12/animatic/composite",
+      "fingerprint": "0b6ab088bd277e2b",
+      "payload": {
+        "title": "Les limites définissent le produit utile",
+        "intent": "Transformer les faiblesses en garde-fous opérationnels.",
+        "claim": "Temps, rareté NO2 et support spatial imposent des conditions de repli.",
+        "prompt": "Triptyque sobre : calendrier, événement rare, territoire sans station, matière rouge très limitée aux frontières de validité, caméra presque fixe, nombreux espaces calmes.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Temps",
+          "NO₂",
+          "Support spatial"
+        ],
+        "facts": [
+          {
+            "label": "rareté NO2",
+            "value": "270 dépassements · budget 40 % inatteignable",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**270 sur 161 637 (0,17 %)** | **aucun budget ≤ 40 % atteignable**"
+          },
+          {
+            "label": "support spatial",
+            "value": "station inconnue ≠ lieu quelconque",
+            "source": "reports/VERITE_DOSSIER.md",
+            "evidence_contains": "**« Station inconnue » signifie *autre station du même réseau*, pas *lieu quelconque*.**"
+          }
+        ],
+        "duration_s": 60,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s13-keyframe",
+      "scene_id": "S13",
+      "kind": "keyframe",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 3,
+      "depends_on": [],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S13/animatic/keyframe",
+      "fingerprint": "933e65530db9aaa4",
+      "payload": {
+        "title": "Trois choix métier décideront du bon système",
+        "intent": "Fermer sur une discussion concrète avec ATMO Occitanie.",
+        "claim": "L'heure de coupure, le budget de fausses alertes et l'échelle géographique décident du produit.",
+        "prompt": "Territoire occitan au lever du jour, trois chemins lumineux sobres convergent vers un poste de décision humain, caméra lente ascendante, conclusion ouverte et calme, grand espace négatif pour trois questions compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Quelle heure de coupure ?",
+          "Quel budget de fausses alertes ?",
+          "Station, zone ou commune ?"
+        ],
+        "facts": [
+          {
+            "label": "choix métier",
+            "value": "heure de coupure · budget de fausses alertes · unité géographique",
+            "source": "story telling/02_TRAME_PRESENTATION.md",
+            "evidence_contains": "Le besoin porte-t-il sur une station, une zone ou une commune ?"
+          }
+        ],
+        "duration_s": 45,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s13-video-candidates",
+      "scene_id": "S13",
+      "kind": "video-candidates",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 6,
+      "depends_on": [
+        "s13-keyframe"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S13/animatic/video-candidates",
+      "fingerprint": "8f23340433eaa7c2",
+      "payload": {
+        "title": "Trois choix métier décideront du bon système",
+        "intent": "Fermer sur une discussion concrète avec ATMO Occitanie.",
+        "claim": "L'heure de coupure, le budget de fausses alertes et l'échelle géographique décident du produit.",
+        "prompt": "Territoire occitan au lever du jour, trois chemins lumineux sobres convergent vers un poste de décision humain, caméra lente ascendante, conclusion ouverte et calme, grand espace négatif pour trois questions compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Quelle heure de coupure ?",
+          "Quel budget de fausses alertes ?",
+          "Station, zone ou commune ?"
+        ],
+        "facts": [
+          {
+            "label": "choix métier",
+            "value": "heure de coupure · budget de fausses alertes · unité géographique",
+            "source": "story telling/02_TRAME_PRESENTATION.md",
+            "evidence_contains": "Le besoin porte-t-il sur une station, une zone ou une commune ?"
+          }
+        ],
+        "duration_s": 45,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s13-quality-gate",
+      "scene_id": "S13",
+      "kind": "quality-gate",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s13-video-candidates"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S13/animatic/quality-gate",
+      "fingerprint": "92ae1a75a8145b24",
+      "payload": {
+        "title": "Trois choix métier décideront du bon système",
+        "intent": "Fermer sur une discussion concrète avec ATMO Occitanie.",
+        "claim": "L'heure de coupure, le budget de fausses alertes et l'échelle géographique décident du produit.",
+        "prompt": "Territoire occitan au lever du jour, trois chemins lumineux sobres convergent vers un poste de décision humain, caméra lente ascendante, conclusion ouverte et calme, grand espace négatif pour trois questions compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Quelle heure de coupure ?",
+          "Quel budget de fausses alertes ?",
+          "Station, zone ou commune ?"
+        ],
+        "facts": [
+          {
+            "label": "choix métier",
+            "value": "heure de coupure · budget de fausses alertes · unité géographique",
+            "source": "story telling/02_TRAME_PRESENTATION.md",
+            "evidence_contains": "Le besoin porte-t-il sur une station, une zone ou une commune ?"
+          }
+        ],
+        "duration_s": 45,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s13-deterministic-overlay",
+      "scene_id": "S13",
+      "kind": "deterministic-overlay",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s13-quality-gate"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S13/animatic/deterministic-overlay",
+      "fingerprint": "8a1f04ee589b0989",
+      "payload": {
+        "title": "Trois choix métier décideront du bon système",
+        "intent": "Fermer sur une discussion concrète avec ATMO Occitanie.",
+        "claim": "L'heure de coupure, le budget de fausses alertes et l'échelle géographique décident du produit.",
+        "prompt": "Territoire occitan au lever du jour, trois chemins lumineux sobres convergent vers un poste de décision humain, caméra lente ascendante, conclusion ouverte et calme, grand espace négatif pour trois questions compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Quelle heure de coupure ?",
+          "Quel budget de fausses alertes ?",
+          "Station, zone ou commune ?"
+        ],
+        "facts": [
+          {
+            "label": "choix métier",
+            "value": "heure de coupure · budget de fausses alertes · unité géographique",
+            "source": "story telling/02_TRAME_PRESENTATION.md",
+            "evidence_contains": "Le besoin porte-t-il sur une station, une zone ou une commune ?"
+          }
+        ],
+        "duration_s": 45,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    },
+    {
+      "id": "s13-composite",
+      "scene_id": "S13",
+      "kind": "composite",
+      "stage": "animatic",
+      "engine": "hunyuan15",
+      "workflow": "workflows/videogen/hunyuan15-i2v-master-v1.json",
+      "checkpoint": "HunyuanVideo-1.5-720p-i2v",
+      "candidates": 1,
+      "depends_on": [
+        "s13-deterministic-overlay"
+      ],
+      "output_dir": "artifacts/videogen/atmo-occitanie-2026/S13/animatic/composite",
+      "fingerprint": "fc08be4ca801cacb",
+      "payload": {
+        "title": "Trois choix métier décideront du bon système",
+        "intent": "Fermer sur une discussion concrète avec ATMO Occitanie.",
+        "claim": "L'heure de coupure, le budget de fausses alertes et l'échelle géographique décident du produit.",
+        "prompt": "Territoire occitan au lever du jour, trois chemins lumineux sobres convergent vers un poste de décision humain, caméra lente ascendante, conclusion ouverte et calme, grand espace négatif pour trois questions compositées.",
+        "negative_constraints": [
+          "texte ou chiffre généré dans l'image",
+          "logo inventé ou déformé",
+          "fumée catastrophiste",
+          "caméra instable ou accélération gratuite",
+          "saturation publicitaire",
+          "morphing d'objet ou scintillement temporel"
+        ],
+        "screen_text": [
+          "Quelle heure de coupure ?",
+          "Quel budget de fausses alertes ?",
+          "Station, zone ou commune ?"
+        ],
+        "facts": [
+          {
+            "label": "choix métier",
+            "value": "heure de coupure · budget de fausses alertes · unité géographique",
+            "source": "story telling/02_TRAME_PRESENTATION.md",
+            "evidence_contains": "Le besoin porte-t-il sur une station, une zone ou une commune ?"
+          }
+        ],
+        "duration_s": 45,
+        "fps": 25,
+        "aspect_ratio": "16:9",
+        "master_resolution": "3840x2160",
+        "min_score": 85
+      }
+    }
+  ]
+}

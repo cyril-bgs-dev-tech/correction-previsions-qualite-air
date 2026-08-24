@@ -200,6 +200,35 @@ Régénérable : `python3 scripts/apport_en_derniere_position.py --suffixe _sans
 
 ---
 
+### Avec le module IFS : cinq familles tiennent, et trois n'en démontrent aucune
+
+| famille | socle · 32-34 mois | socle + IFS · 28-29 mois |
+|---|---:|---:|
+| `typologie` | +3,457 · 0,0030 ✅ | +3,647 · 0,0063 ✅ |
+| `speciation` | +2,416 · 0,0045 ✅ | +1,458 · 0,0171 ✅ |
+| `membres` | +0,864 · 0,0069 ✅ | +0,954 · 0,0123 ✅ |
+| **`ifs`** | — | **+0,920 · 0,0312 ✅** |
+| `precurseurs` | +0,966 · 0,0021 ✅ | +0,436 · 0,0192 ✅ |
+| `fourier` | +0,113 · 0,8772 🔴 | +0,106 · 0,9375 🔴 |
+| `profil` | +0,082 · 0,8943 🔴 | +0,005 · 0,4935 🔴 |
+| `tendance` | +0,046 · 0,6660 🔴 | −0,029 · 1,0000 🔴 |
+
+**Contrôle de cohérence** : `ifs` rend ici `p_PC = 0,0312`, la valeur exacte de sa
+confirmation — deux routes de calcul indépendantes, le même nombre.
+
+**Trois familles sur huit ne démontrent rien, sur les deux piles** : `fourier`, `profil`,
+`tendance`. Ce sont précisément celles du groupe **G2**, et c'est pourquoi leur sort se juge
+en retrait **conjoint** : jugées une à une, deux familles redondantes s'annulent.
+
+🔴 **Ce qu'il ne faut PAS lire dans ce tableau.** `speciation` passe de +2,416 à +1,458 et
+`precurseurs` de +0,966 à +0,436 — il serait tentant d'y voir l'IFS qui se substitue à elles.
+**La fenêtre a changé en même temps** (32-34 mois contre 28-29) : les deux colonnes ne sont pas
+appariées, et l'écart mélange le module avec les mois retirés. Trancher exigerait de mesurer
+les deux sur les mêmes lignes — règle M. Ce qui est établi ici, c'est que **cinq familles
+tiennent sur la pile qui porte le module**, pas la cause des variations entre colonnes.
+
+---
+
 ## ⚙️ L'enveloppe de stabilité — chantier ①, axe ÉVALUATION, 24/08
 
 Le socle publie « NO₂ 41,09 % ». Ce nombre n'est pas une propriété du modèle : c'est une

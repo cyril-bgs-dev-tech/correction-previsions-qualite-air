@@ -1,0 +1,14 @@
+generation 20260824-114756-cpu
+libelle criblage-ifs
+ressource cpu
+lance_le 2026-08-24T11:47:56+02:00
+code be20683+2modifs
+corpus cb9f42e4b80e
+n_taches 4
+---
+reports/apport_ifs_NO2_h2_double.csv :: /home/cyril/miniforge3/envs/llm-agent/bin/python3 -u scripts/apport_precurseurs.py --lot ifs --polluant NO2 --horizon 2 --axe double
+reports/apport_ifs_O3_h2_double.csv :: /home/cyril/miniforge3/envs/llm-agent/bin/python3 -u scripts/apport_precurseurs.py --lot ifs --polluant O3 --horizon 2 --axe double
+reports/apport_ifs_PM10_h2_double.csv :: /home/cyril/miniforge3/envs/llm-agent/bin/python3 -u scripts/apport_precurseurs.py --lot ifs --polluant PM10 --horizon 2 --axe double
+reports/apport_ifs_PM25_h2_double.csv :: /home/cyril/miniforge3/envs/llm-agent/bin/python3 -u scripts/apport_precurseurs.py --lot ifs --polluant PM25 --horizon 2 --axe double
+fini_le 2026-08-24T11:47:58+02:00
+code_fin be20683+2modifs
