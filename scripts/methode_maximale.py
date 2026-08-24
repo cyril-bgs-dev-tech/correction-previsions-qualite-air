@@ -902,12 +902,16 @@ if __name__ == "__main__":
                         "climatologie station × mois, ajustée pli par pli. Écrit dans "
                         "un artefact SUFFIXÉ : le chemin publié reste intact.")
     n = a.parse_args()
+    # ⚠️ Le paramètre s'appelle `n_spa`, l'option `--plis-spatiaux`. Ce décalage est
+    # précisément ce qui rend un appel positionnel fragile — et il m'a fait écrire
+    # `plis_spatiaux=` ici, refusé en quatre minutes par le contrôle d'artefact.
+    #
     # 🔴 Arguments NOMMÉS, jamais positionnels — 24/08/2026. Un `--lot` présent dans le
     # parseur et absent de l'appel positionnel a fait tourner la chimie sous l'étiquette des
     # précurseurs et ÉCRASER leur fichier. Rien n'a levé : le CSV existait, ses colonnes
     # étaient les bonnes, ses valeurs venaient d'ailleurs.
     raise SystemExit(main(polluant=n.polluant, horizon=n.horizon,
-                          plis_spatiaux=n.plis_spatiaux, ablation=n.ablation,
+                          n_spa=n.plis_spatiaux, ablation=n.ablation,
                           speciation=n.speciation, support_complet=n.support_complet,
                           exclure=tuple(x for x in n.exclure.split(',') if x),
                           precurseurs=n.precurseurs, fenetre=n.fenetre,
