@@ -41,7 +41,8 @@ case "$GROUPE" in
   *)  echo "groupe inconnu : $GROUPE (G2 seul est lançable)" >&2; exit 2 ;;
 esac
 
+# La cible se DEMANDE au code — voir `_cible_ablation.py` pour ce que la reconstruire a
+# failli coûter. Deux endroits qui portent la même règle finissent toujours par diverger.
 for p in NO2 O3 PM10 PM25; do
-  cible="reports/methode_maximale_${p}_h2_sans-feux-$(echo "$FAM" | tr ',' '-' | tr ' ' '-')-geoscf_fenetre-complete.csv"
-  echo "reports/ablation_jointe_$(echo "$FAM" | tr ',' '-')_${p}_h2.csv :: python3 -u scripts/ablation_jointe.py --polluant $p --familles $FAM --socle"
+  python3 scripts/reprise/_cible_ablation.py "$p" "$FAM" || exit 4
 done
