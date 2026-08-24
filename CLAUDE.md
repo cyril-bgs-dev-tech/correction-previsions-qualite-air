@@ -54,6 +54,8 @@ Aucune ne porte de constante : c'est ce qui les rend **adaptatives**.
 | **I** | **La concurrence se compte par RESSOURCE, jamais par processus.** § 1 interdit d'empiler sur *la même* ; **G** exige de remplir les *distinctes*. Ce ne sont pas deux avis : c'est une seule question — *quelle ressource ce travail consomme-t-il, et combien en reste-t-il ?* | ✅ `file_ressource.sh` (verrou **par nom de ressource**) |
 | **J** | **Une leçon vit à UN endroit ; les autres la CITENT.** Le premier lieu où elle est écrite fait foi. Toute récurrence est une **instance** — une ligne, un renvoi — jamais une réénonciation. | ✅ `scripts/auditer_regles.py` |
 | **K** | **Toute règle ajoutée solde une dette.** Elle nomme ce qu'elle remplace, ou dit pourquoi rien ne peut l'être. Un corpus qui ne fait que croître se lit de moins en moins. | ✅ `auditer_regles.py` (croissance) |
+| **M** | **Deux mesures ne se comparent que sur le MÊME corpus.** *(Ne remplace rien : aucune règle ne portait sur l'identité des ENTRÉES entre deux exécutions — les § 2 bis et 4 portent sur une exécution isolée.)* Ni la fenêtre, ni le nombre de mois, ni le nombre de colonnes, ni le nombre de lignes de test ne le montrent : compléter une famille jointe en `left` ne change que les VALEURS. | ✅ `aq.ingest.controle.empreinte_corpus` · `empreinte_entrees` de la pile |
+| **N** | **Une unité présente n'est pas une unité complète** — instance de la § 4, au niveau en dessous : le § 4 exige un artefact complet, N exige que chaque unité DEDANS le soit. Un mois à moitié livré, un jour amputé de trois heures, une colonne du « socle » absente d'un tiers des mois. **Elle remplace le corollaire « vérifier la structure » de la § 4**, qui ne disait pas à quelle profondeur s'arrêter. | ✅ contrôle des heures de `extraire_ifs` · garde de classification de `charger_speciation` |
 | **L** | **Une statistique ajustée sur un pli doit être DÉFINIE sur l'autre.** Quand le protocole cache une dimension (station, groupe, mois), toute statistique ajustée *le long* de cette dimension est introuvable de l'autre côté : elle replie, et les deux blocs se retrouvent sur des **échelles différentes** sans qu'aucune exception ne lève. La référence vient d'un découpage qui **croise** la dimension cachée, jamais du pli lui-même. | ✅ `aq.eval.critere.exiger_couverture_de_reference` |
 
 ### Ce que chacune a coûté
@@ -248,28 +250,16 @@ progresse. Quatre gestes, dans cet ordre :
 script. Après un `pkill`, **vérifier qu'il a pris effet** : le code de sortie ne suffit
 pas.
 
-**Et ce garde ment dans les deux sens — le motif doit désigner le processus, pas son
-nom.** Le 08/08 à 23 h 06, `pgrep -f "[m]ethode_maximale.py"` a refusé de démarrer le lot
-en annonçant un jumeau : il avait matché **le shell qui lançait ce lot**, dont la ligne de
-commande contenait le nom du script parce qu'elle enchaînait un `pgrep` de vérification.
-Aucun jumeau n'existait. Un garde en faux positif est pire qu'un garde absent — il bloque
-le travail *et* son message affirme le contraire de la réalité, ce qui envoie chercher un
-processus fantôme. Ancrer le motif sur l'**invocation réelle** —
-`pgrep -f "python3 -u scripts/[m]ethode_maximale\.py"` — et se rappeler que toute commande
-qui mentionne le motif entre elle-même dans `ps` : le contrôle et la chose contrôlée
-partagent le même espace de noms.
+**Et ce garde ment dans les deux sens.** Un faux positif est pire qu'un garde absent : il
+bloque le travail *et* affirme le contraire de la réalité, ce qui envoie chercher un
+processus fantôme. Coût : 08/08 à 23 h 06, lot refusé pour un jumeau inexistant.
 
-> **Instance du 17/08, et elle achève la règle : l'ancrage ne suffit pas — un garde par
-> motif ne peut pas vivre dans la commande qu'il garde.** Le motif était pourtant ancré sur
-> l'invocation réelle, `[m]` compris. Il a quand même levé deux fois sur un fantôme, parce
-> que la **ligne de lancement** qui suivait dans la *même* commande écrivait
-> `python3 -u scripts/mecanisme_speciation.py` **en clair** : le shell qui la portait
-> matchait son propre motif. Le `[m]` protège le motif contre lui-même, jamais contre
-> l'autre occurrence — et exclure `$$`/`$PPID` ne suffit pas non plus, l'enveloppe de
-> l'appel n'est ni l'un ni l'autre.
->
-> **Le garde et le lancement vont dans deux appels séparés.** C'est la seule forme où le
-> garde ne peut pas se voir.
+> **Mécanisé le 24/08 — `scripts/pids_de.sh`.** Trois formes du même défaut ont
+> échoué : le `[m]` ne protège que contre soi, pas contre une autre occurrence dans
+> la même commande (17/08) ; exclure `$$`/`$PPID` laisse passer le grand-parent d'une
+> substitution (23/08) ; et exclure toute la lignée laisse encore passer les commandes
+> qui **mentionnent** le motif. Le script lit `/proc`, exclut ses ancêtres et compare
+> aux **arguments** un par un. Adopté par les trois gardes du dépôt.
 
 **Si la conception du lot a changé, recalibrer.** La passe unitaire de la règle 1 vaut
 pour la granularité qu'elle a mesurée. Regrouper les requêtes, changer l'emprise ou le
@@ -673,7 +663,8 @@ ses signaux ; aucune commande ne le récupérera, seul un redémarrage de la VM 
 Et dans le même geste, **§ 1 bis rejouée à la lettre** : `pkill -f "veille_memoire.sh"` a
 tué **le shell qui exécutait la commande**, dont la ligne de commande contenait le motif.
 
-> **On ne tue jamais par motif. Pid explicites, puis vérification que le kill a pris.**
+> **On ne tue jamais par motif** — `scripts/pids_de.sh` rend les pid, puis on vérifie que
+> le kill a pris.
 
 ### Le fil commun
 
