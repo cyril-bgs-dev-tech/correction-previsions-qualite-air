@@ -172,13 +172,80 @@ def enveloppe_appariee(pol: str) -> dict | None:
             "rapport_stabilite": (max(abso) - min(abso)) / (max(ecart) - min(ecart))}
 
 
+def apports_avec_amplitude(pols: list[str]) -> pd.DataFrame:
+    """L'apport de chaque famille, et l'amplitude de CET apport au jackknife par mois.
+
+    Pourquoi les deux nombres vont ensemble
+    ----------------------------------------
+    « `fourier` apporte +0,443 pt » ne dit rien tant qu'on ignore de combien ce +0,443 bouge
+    quand on retire un mois de l'évaluation. S'il bouge de 0,090, c'est une quantité mesurée.
+    S'il bouge de 0,643 — le cas de `tendance` sur PM2,5, dont l'apport vaut −0,318 — alors
+    le nombre publié est un tirage, pas une mesure.
+
+    C'est le pendant, au niveau de la famille, de ce que la § 2 quinquies dit du seuil :
+    **un chiffre sans son échelle ne peut pas être lu du bon côté.**
+
+    ⚠️ Ce sont des retraits depuis la pile COMPLÈTE. Deux familles redondantes s'y annulent
+    mutuellement — c'est le défaut que l'ablation JOINTE existe pour lever, et un apport
+    faible ici ne prouve donc pas qu'une famille est inutile.
+    """
+    lignes = []
+    for pol in pols:
+        f = RACINE / f"reports/predictions_methode_maximale_{pol}_h2{VARIANTE}.parquet"
+        if not f.exists():
+            continue
+        t = pd.read_parquet(f)
+        t["mois"] = pd.to_datetime(t["jour"]).dt.strftime("%Y-%m")
+        mois = np.sort(t["mois"].unique())
+        for c in [c for c in t.columns if c.endswith("__ablation")]:
+            fam = c[len("pred__"):-len("__ablation")]
+            sans = t.rename(columns={COL_PRED: "_plein", c: COL_PRED})
+            jk = [gain(t[t["mois"] != m]) - gain(sans[sans["mois"] != m]) for m in mois]
+            lignes.append({"polluant": pol, "famille": fam,
+                           "apport_pt": gain(t) - gain(sans),
+                           "amplitude_pt": max(jk) - min(jk),
+                           "jack_bas": min(jk), "jack_haut": max(jk),
+                           "mesure": bool(abs(gain(t) - gain(sans)) > max(jk) - min(jk))})
+    return pd.DataFrame(lignes)
+
+
 def main() -> int:
     a = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     a.add_argument("--polluants", default="NO2,O3,PM10,PM25")
+    a.add_argument("--familles", action="store_true",
+                   help="l'apport de chaque famille du socle, et l'amplitude de cet apport")
     a.add_argument("--apparie", action="store_true",
                    help="compare l'amplitude du chiffre absolu à celle de l'écart apparié")
     o = a.parse_args()
+
+    if o.familles:
+        r = apports_avec_amplitude(o.polluants.split(","))
+        sortie = RACINE / "reports/apport_familles_avec_amplitude.csv"
+        r.to_csv(sortie, index=False)
+        pols = list(dict.fromkeys(r["polluant"]))
+        piv = r.pivot(index="famille", columns="polluant", values="apport_pt")
+        piv = piv.reindex(piv.mean(axis=1).sort_values(ascending=False).index)
+        print("APPORT DE CHAQUE FAMILLE SUR LE SOCLE · retrait, mêmes plis · et son amplitude")
+        print("═" * 100)
+        print(f"{'famille':14s}" + "".join(f"{p:>20s}" for p in pols))
+        print(f"{'':14s}" + "".join(f"{'apport   [ampl.]':>20s}" for _ in pols))
+        for fam in piv.index:
+            ligne = f"{fam:14s}"
+            for p in pols:
+                x = r[(r["famille"] == fam) & (r["polluant"] == p)].iloc[0]
+                ligne += f"{x['apport_pt']:+9.3f} [{x['amplitude_pt']:5.3f}]"
+            print(ligne)
+        n = int((~r["mesure"]).sum())
+        print(f"\nLecture : « apport » = ce que coûte le RETRAIT de la famille, mêmes plis.")
+        print(f"          « [ampl.] » = de combien cet apport bouge si l'on retire un mois.")
+        print(f"          **{n} des {len(r)} apports sont plus petits que leur propre "
+              f"amplitude** — ce ne sont pas des quantités mesurées.")
+        print(f"\n⚠️ Retraits depuis la pile COMPLÈTE : deux familles redondantes s'y annulent.")
+        print(f"   Un apport faible ici ne prouve pas qu'une famille est inutile — c'est ce que")
+        print(f"   l'ablation JOINTE existe pour lever.")
+        print(f"\nÉcrit : {sortie.relative_to(RACINE)}")
+        return 0
 
     if o.apparie:
         rs = [r for pol in o.polluants.split(",") if (r := enveloppe_appariee(pol))]

@@ -57,18 +57,46 @@ from verdict_apports import bootstrap_blocs, permutation_blocs  # noqa: E402
 MAX = "★ MAXIMALE — PARTOUT"
 
 
+# Le socle du contrat de produit s'obtient en retirant `geoscf` et `feux` ET en ouvrant la
+# fenêtre. Les deux vont ensemble : garder les colonnes GEOS-CF hors de leur couverture
+# donnerait au modèle un indicateur d'année déguisé.
+HORS_SOCLE = ("feux", "geoscf")
+
+
+def chemins(polluant: str, horizon: int, fam: list[str], support_complet: bool,
+            socle: bool) -> tuple[Path, Path, list[str]]:
+    """(référence, pile réduite, familles à passer à `--exclure`).
+
+    Le nom de sortie de `methode_maximale` est `_sans-` + les exclusions TRIÉES, puis
+    `_fenetre-complete`. Le reconstruire ici plutôt que le deviner : un nom faux ferait
+    échouer le contrôle d'artefact — ou pire, comparerait le mauvais fichier.
+    """
+    base = f"reports/methode_maximale_{polluant}_h{horizon}"
+    if socle:
+        excl = sorted(set(fam) | set(HORS_SOCLE))
+        ref = RACINE / f"{base}_sans-{'-'.join(sorted(HORS_SOCLE))}_fenetre-complete.csv"
+        sans = RACINE / f"{base}_sans-{'-'.join(excl)}_fenetre-complete.csv"
+        return ref, sans, excl
+    suff = "_sc" if support_complet else ""
+    return (RACINE / f"{base}{suff}.csv",
+            RACINE / f"{base}{suff}_sans-{'-'.join(fam)}.csv", fam)
+
+
 def main(polluant: str, horizon: int, axe: str, support_complet: bool,
-         familles: str) -> int:
+         familles: str, socle: bool = False) -> int:
     fam = sorted(x.strip() for x in familles.split(",") if x.strip())
     if len(fam) < 2:
         raise SystemExit("--familles attend au moins deux noms séparés par des virgules")
-    suff = "_sc" if support_complet else ""
-    ref = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv"
+    if socle and support_complet:
+        raise SystemExit("--socle et --support-complet définissent deux piles différentes : "
+                         "en choisir une. Les mêler comparerait deux mesures.")
+    if socle and (chevauche := sorted(set(fam) & set(HORS_SOCLE))):
+        raise SystemExit(f"⛔ {', '.join(chevauche)} ne fait pas partie du socle — le retirer "
+                         f"du socle ne retire rien. Mesurer un module se fait apparié sur "
+                         f"son propre support, pas par ablation du socle.")
+    ref, sans, excl = chemins(polluant, horizon, fam, support_complet, socle)
     if not ref.exists():
         raise SystemExit(f"référence absente : {ref.name} — lancer la pile complète d'abord")
-
-    sans = RACINE / (f"reports/methode_maximale_{polluant}_h{horizon}{suff}"
-                     f"_sans-{'-'.join(fam)}.csv")
     # Reprise sur l'ARTEFACT : la pile réduite est un ajustement de vingt minutes, et
     # relire son verdict ne doit pas la refaire. Le contrôle porte sur le contenu — le
     # fichier doit porter la configuration de référence — jamais sur la seule existence.
@@ -113,9 +141,11 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
         print(f"  pile réduite déjà écrite : {sans.name} — ajustement sauté", flush=True)
     else:
         cmd = [sys.executable, "-u", str(RACINE / "scripts/methode_maximale.py"),
-               "--polluant", polluant, "--horizon", str(horizon), "--exclure", ",".join(fam)]
+               "--polluant", polluant, "--horizon", str(horizon), "--exclure", ",".join(excl)]
         if support_complet:
             cmd.append("--support-complet")
+        if socle:
+            cmd += ["--fenetre", "complete"]
         print("  " + " ".join(cmd[2:]), flush=True)
         subprocess.run(cmd, check=False)
 
@@ -237,6 +267,9 @@ if __name__ == "__main__":
     a.add_argument("--horizon", type=int, default=2)
     a.add_argument("--axe", default="double")
     a.add_argument("--support-complet", action="store_true")
+    a.add_argument("--socle", action="store_true",
+                   help="mesurer sur le SOCLE du contrat de produit (sans feux ni geoscf, "
+                        "fenêtre complète) plutôt que sur la pile historique")
     a.add_argument("--familles", default="profil,fourier",
                    help="familles à retirer ensemble, séparées par des virgules")
     sys.exit(main(**vars(a.parse_args())))

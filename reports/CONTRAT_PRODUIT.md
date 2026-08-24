@@ -215,6 +215,40 @@ Régénérable : `python3 scripts/enveloppe_stabilite.py` et `--apparie`.
 
 ---
 
+### Onze apports sur vingt-huit ne sont pas des quantités mesurées
+
+La même machinerie, appliquée famille par famille : l'apport de chacune sur le socle, **et
+de combien cet apport bouge quand on retire un mois de l'évaluation.**
+
+| famille | NO₂ | O₃ | PM10 | PM2,5 |
+|---|---:|---:|---:|---:|
+| `typologie` | **+9,682** [0,319] | +0,096 [0,139] | **+2,217** [0,281] | +0,273 [0,226] |
+| `speciation` | **+1,012** [0,176] | **+3,491** [0,945] | **+2,603** [0,487] | **+1,434** [0,699] |
+| `precurseurs` | +0,210 [0,116] | **+1,497** [0,243] | **+0,946** [0,277] | **+1,224** [0,304] |
+| `membres` | +0,056 [0,063] | **+1,636** [0,338] | +0,353 [0,327] | **+1,300** [0,288] |
+| `profil` | −0,021 [0,076] | +0,123 [0,169] | +0,109 [0,142] | +0,010 [0,198] |
+| `fourier` | +0,443 [0,090] | +0,065 [0,141] | −0,158 [0,114] | −0,133 [0,218] |
+| `tendance` | −0,097 [0,080] | +0,160 [0,267] | +0,150 [0,237] | −0,318 [0,643] |
+
+*(en gras : au-dessus de l'effet utile de 0,5 pt ; entre crochets, l'amplitude au jackknife)*
+
+**Onze des vingt-huit apports sont plus petits que leur propre amplitude.** « `tendance`
+apporte −0,318 pt sur PM2,5 » a une amplitude de 0,643 : le nombre est un tirage, pas une
+mesure. Publier l'un sans l'autre, c'est laisser croire à une précision qui n'existe pas.
+
+**Une seule famille tient sur les quatre polluants : `speciation`** — et son apport dépasse
+partout son amplitude. `typologie` est massive sur NO₂ (+9,68) et PM10 (+2,22), quasi nulle
+ailleurs : c'est cohérent avec son mécanisme, la typologie encode l'exposition au trafic.
+
+⚠️ **Ce sont des retraits depuis la pile COMPLÈTE, donc deux familles redondantes s'y
+annulent mutuellement.** Un apport faible ne prouve pas qu'une famille est inutile — c'est
+exactement ce que l'ablation **jointe** existe pour lever, et pourquoi `profil`, `fourier` et
+`tendance` sont regroupées en G2 plutôt que jugées une à une.
+
+Régénérable : `python3 scripts/enveloppe_stabilite.py --familles`.
+
+---
+
 ## Ce qui reste à faire avant que ces chiffres soient définitifs
 
 1. **enveloppe de stabilité** — ⚙️ **moitié faite** : l'axe *évaluation* est mesuré
