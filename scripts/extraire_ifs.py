@@ -324,19 +324,35 @@ def main(annee: int, mois: int, jours: int) -> int:
     # Sans cette passe, presque chaque mois serait refusé pour trois ou quatre pas, et il
     # faudrait relancer le lot autant de fois qu'il y a de mois. Le garde aurait raison à
     # chaque fois, et le travail n'avancerait pas.
-    if rates:
-        print(f"\n  seconde passe sur {len(rates)} pas raté(s) — le frein est retombé "
-              f"(pause {_PAUSE:.2f}s)", flush=True)
+    # 🔴 UNE passe de rattrapage ne suffisait pas — mesuré le 24/08/2026.
+    #
+    # Juillet 2025 a été refusé pour UN pas manquant, `20250731/045h`, après une seconde
+    # passe qui en avait récupéré trois sur quatre. Interrogé juste après, le service
+    # servait ce pas en **0,4 seconde** : l'échec était transitoire, et la passe avait
+    # rejoué alors que le frein valait encore 2,00 s — c'est-à-dire pendant la limitation
+    # qu'elle était censée attendre.
+    #
+    # Les passes suivantes ATTENDENT donc, d'une durée qui croît, et le frein est remis à
+    # zéro avant chaque tentative : le garder saturé revient à réessayer avec le handicap
+    # qui a causé l'échec.
+    global _PAUSE
+    for passe, repos in ((2, 30), (3, 120)):
+        if not rates:
+            break
+        print(f"\n  passe {passe} sur {len(rates)} pas raté(s) — repos {repos}s "
+              f"(frein à {_PAUSE:.2f}s, remis à zéro)", flush=True)
+        time.sleep(repos)
+        _PAUSE = 0.0
         encore = []
         for date, e, cible in rates:
             if telecharger_pas(date, e, cible):
                 fichiers.append(cible)
             else:
-                encore.append((date, e))
-        print(f"  seconde passe : {len(rates) - len(encore)} récupéré(s) sur {len(rates)}"
-              + (f" · restent {', '.join(f'{d}/{h:03d}h' for d, h in encore[:6])}"
+                encore.append((date, e, cible))
+        print(f"  passe {passe} : {len(rates) - len(encore)} récupéré(s) sur {len(rates)}"
+              + (f" · restent {', '.join(f'{d}/{h:03d}h' for d, h, _ in encore[:6])}"
                  if encore else ""), flush=True)
-        rates = [(d, e, CACHE / f"ifs_{d}_{e:03d}h.grib2") for d, e in encore]
+        rates = encore
     echecs = len(rates)
 
     if not fichiers:
