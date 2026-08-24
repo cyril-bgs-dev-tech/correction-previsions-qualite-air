@@ -31,11 +31,51 @@ qui la relit : le verdict se réécrit en secondes, la pile demande vingt minute
 
 | ressource | ce qui y passe | verrou |
 |---|---|---|
-| **cpu** | un lot LightGBM à la fois — trois concurrents s'effondrent d'un ordre de grandeur | `/tmp/aq-file-cpu.lock` |
+| **cpu** | **quatre lots à `n_jobs=8`** — mesuré le 24/08 : 11,9 cœurs sur 32, 28 Go sur 68 | `/tmp/aq-file-cpu.lock` |
 | **réseau ECMWF** | acquisition IFS — 84 % d'attente serveur, aucun cœur consommé | aucun, mais un garde de jumeau |
+
+⚠️ **La ligne « un lot à la fois » a été fausse pendant huit jours.** Elle venait d'un essai
+en `n_jobs=-1`, où trois ajustements demandaient 96 fils sur 32 cœurs. À `n_jobs=8` la
+situation n'est pas la même, et LightGBM plafonne de toute façon à ~1,5 cœur par lot : la
+parallélisation utile est **entre** les ajustements. Le 24/08 à 13 h, la file sérialisée
+tournait à **charge 0,09 sur 32 cœurs** — une constante appliquée hors de son domaine de
+mesure, ce que la règle A interdit.
 
 Les faire tourner en parallèle est correct et souhaitable : une ressource au repos pendant
 qu'une tâche attend ailleurs est un défaut, pas une prudence.
+
+## Lancer en parallèle, et juger sur l'artefact
+
+```bash
+python3 scripts/plan_scores.py --taches | scripts/lancer_en_parallele.sh 3 90 20G cpu
+#                                                                        │  │   │   └ ressource verrouillée
+#                                                                        │  │   └ plafond mémoire par tâche
+#                                                                        │  └ décalage des démarrages (le pic est au CHARGEMENT)
+#                                                                        └ tâches simultanées
+```
+
+Le lanceur consomme **le format que `plan_scores.py --taches` émet déjà** (`cible :: commande`),
+et son verdict porte sur l'artefact : il exige qu'il **existe** *et* qu'il soit **postérieur au
+lancement**. Éprouvé sur trois tâches rendant toutes 0 — l'une écrivant, l'une laissant un
+fichier d'hier, l'une n'écrivant rien : seule la première passe.
+
+## Savoir ce qui est périmé — sans le refaire
+
+```bash
+python3 scripts/descendance.py                    # ce qui est périmé aujourd'hui, et par quel parent
+python3 scripts/descendance.py --si data/processed/meteo/speciation_metropole_202312.parquet
+python3 scripts/descendance.py --graphe           # la descendance déclarée, en entier
+```
+
+C'est la mécanisation de la plus grosse perte mesurée : le 23/08, compléter la spéciation a
+périmé des mesures publiées **sans que rien ne le dise**, et je l'ai découvert en les
+refaisant (3 h). La même question se répond maintenant en 6 s — la spéciation porte
+**100 artefacts**.
+
+⚠️ Il rend un **minorant** de la péremption, jamais un certificat de fraîcheur : une date
+postérieure ne prouve pas que l'artefact a été calculé sur ce parent-là. D'où le troisième
+état, `inaudité`, pour ceux qui n'ont pas d'empreinte d'entrées — là, la question ne peut
+pas être tranchée, et le script le dit au lieu de supposer.
 
 ## Vérifier que ça avance
 
