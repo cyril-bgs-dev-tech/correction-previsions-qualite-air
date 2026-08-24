@@ -93,7 +93,12 @@ def etapes() -> list[tuple[str, str, list[tuple[str, str]]]]:
         ("core7", "la pile sans indicateur d'époque dans la spéciation — prédiction 281e97ca",
          [(f"reports/methode_maximale_{p}_h2_spe-core7.csv", (m % p) + " --speciation core7")
           for p in P4]),
-        ("auditable", "le prix de l'auditabilité, mesuré en apparié et non en soustraction",
+        # ⬆️ Remonté avant l'IFS le 24/08, sur revue exécutive externe. L'argument : cribler
+        # une information neuve sur une base qui porte encore des mois entièrement absents
+        # oblige à la re-cribler ensuite. La pile auditable EST la référence propre — elle
+        # écarte mécaniquement toute famille trouée — et geler cette référence coûte quatre
+        # exécutions, contre huit si l'IFS doit être refait.
+        ("auditable", "LA RÉFÉRENCE PROPRE — écarte les familles trouées ; à geler avant tout ajout",
          [(f"reports/methode_maximale_{p}_h2_sc.csv", (m % p) + " --support-complet")
           for p in P4]),
         # 🔴 Le repère porte sur la PILE RÉDUITE, pas sur le verdict qui la relit. Le
@@ -101,12 +106,12 @@ def etapes() -> list[tuple[str, str, list[tuple[str, str]]]]:
         # c'est elle qui doit dater du corpus courant. Cinq des huit ablations semblaient
         # « faites » sur la foi de leur CSV final, alors que leur pile venait d'avant la
         # correction — exactement la confusion que la règle M interdit.
+        ("ifs", "la pile ne porte AUCUNE météo ; l'IFS est prévu donc déployable",
+         [(f"reports/apport_ifs_{p}_h2_double.csv", (a % p) + " --lot ifs") for p in P4]),
         ("ablations-jointes", "feux+tendance et geoscf+membres — conclusions à re-mesurer",
          [(f"reports/methode_maximale_{p}_h2_sans-{'-'.join(sorted(f.split(',')))}.csv",
            f"{PY_} scripts/ablation_jointe.py --polluant {p} --familles {f}")
           for f in ("feux,tendance", "membres,geoscf") for p in P4]),
-        ("ifs", "la pile ne porte AUCUNE météo ; l'IFS est prévu donc déployable",
-         [(f"reports/apport_ifs_{p}_h2_double.csv", (a % p) + " --lot ifs") for p in P4]),
     ]
 
 

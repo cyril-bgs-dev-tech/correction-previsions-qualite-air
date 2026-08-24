@@ -47,4 +47,7 @@ if [ -z "$TACHES" ]; then
   echo "✅ aucune tâche de mesure restante."
   exit 0
 fi
-echo "$TACHES" | scripts/file_ressource.sh cpu
+# La file passe par le contrat de génération : empreinte du code, du corpus, liste figée.
+# Voir `scripts/generation.sh` — six interruptions et deux chaînes cassées en une nuit ont
+# montré qu'une file sans instantané immuable n'est pas pilotable.
+echo "$TACHES" | scripts/generation.sh cpu "reprise-$(date +%d%m-%H%M)"
