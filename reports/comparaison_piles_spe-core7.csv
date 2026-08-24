@@ -1,0 +1,6 @@
+variante,polluant,verdict,fenetre_reference,fenetre_variante,perimetre,n_plis_divergents
+_spe-core7,NO2,fenêtres différentes,2023-08→2025-12,2024-01→2025-12,,
+_spe-core7,O3,fenêtres différentes,2023-08→2025-12,2024-01→2025-12,,
+_spe-core7,PM10,corpus différents,,,PARTOUT,1.0
+_spe-core7,PM10,corpus différents,,,AUX STATIONS,1.0
+_spe-core7,PM25,fenêtres différentes,2023-08→2025-12,2024-01→2025-12,,
