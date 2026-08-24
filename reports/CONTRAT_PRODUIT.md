@@ -92,12 +92,39 @@ calculée, on écrit **≈ 41 %**, pas 41,09 %.
 
 ---
 
+## L'intervalle du plan — chantier ②, mesuré le 24/08
+
+Bootstrap sur blocs de trois mois consécutifs, **sur le gain POOLÉ** — pas sur une moyenne
+de gains par pli, la RMSE n'étant pas linéaire. 10 000 tirages.
+
+| polluant | score | IC95 du plan | demi-largeur | **à dire** |
+|---|---:|---:|---:|---:|
+| NO₂ | 41,09 % | [40,00 ; 42,12] | ±1,06 pt | **≈ 41 %** |
+| O₃ | 19,44 % | **[13,55 ; 24,44]** | **±5,45 pt** | **≈ 19 %** |
+| PM10 | 22,65 % | [18,04 ; 27,79] | ±4,87 pt | **≈ 23 %** |
+| PM2,5 | 14,86 % | [11,97 ; 17,36] | ±2,69 pt | **≈ 15 %** |
+
+🔴 **L'ozone vaut entre 13,5 et 24,4 %.** Écrire « 20,51 % » n'était pas une précision,
+c'était une illusion de précision : l'intervalle couvre onze points.
+
+Cette incertitude est celle de l'**échantillonnage des mois et des stations** — « et si le
+corpus avait couvert d'autres mois ? ». Elle ne couvre ni le bruit d'exécution (≤ 0,04 pt
+par pli) ni la version du corpus (chantier ①).
+
+⚠️ Elle ne s'applique PAS aux décisions de famille : celles-ci reposent sur des écarts
+**appariés** — mêmes plis, même graine — qui soustraient le déplacement commun et sont un
+ordre de grandeur plus serrés (±0,2 à ±1,5 pt).
+
+*Les centres sont calculés sur les mois alignés en blocs ; PM10 en perd deux et PM2,5 un,
+d'où un léger écart aux scores de la table précédente.*
+
+---
+
 ## Ce qui reste à faire avant que ces chiffres soient définitifs
 
 1. **enveloppe de stabilité** — 6 à 10 perturbations de corpus préenregistrées, graine
    fixe, pour borner la sensibilité de version ;
-2. **intervalle du plan** — rééchantillonnage respectant blocs temporels et groupes
-   spatiaux ;
+2. ~~**intervalle du plan**~~ — ✅ fait, voir ci-dessus ;
 3. **recalibrer la règle de décision** — la conjonction partielle a une taille réelle de
    0,0015 pour un seuil annoncé à 0,05, soit 34 × trop sévère ;
 4. **registre exhaustif des configurations**, ouvert avant le prochain criblage — le
