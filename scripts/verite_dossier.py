@@ -1075,6 +1075,98 @@ def bloc_seuils_2030(lignes: list[dict]) -> str:
     return "\n".join(texte)
 
 
+def bloc_socle(lignes: list[dict]) -> str:
+    """LE chiffre du produit — le socle du contrat, et le module qui s'y ajoute.
+
+    Pourquoi ce bloc passe AVANT tous les autres
+    ---------------------------------------------
+    Jusqu'au 24/08/2026, toutes les mesures de ce document tenaient dans la fenêtre de
+    GEOS-CF v1 — 2023-08 → 2025-12, 29 mois. Or GEOS-CF est un **candidat** : une famille
+    dont on évalue l'utilité définissait le banc d'essai sur lequel on l'évaluait, et
+    toutes les autres familles perdaient huit mois pour l'accommoder.
+
+    Le contrat de produit (`reports/CONTRAT_PRODUIT.md`) fixe la fenêtre par la
+    **disponibilité**, avant tout candidat. Les blocs suivants restent exacts sur LEUR
+    fenêtre ; celui-ci porte le chiffre à citer.
+    """
+    V = "_sans-feux-geoscf_fenetre-complete"
+    MAX = "★ MAXIMALE — PARTOUT"
+    socle, module = {}, {}
+    for pol in ("NO2", "O3", "PM10", "PM25"):
+        f = RACINE / f"reports/methode_maximale_{pol}_h2{V}.csv"
+        if not f.exists():
+            return ""
+        socle[pol] = pd.read_csv(f).set_index("configuration")
+        g = RACINE / f"reports/methode_maximale_{pol}_h2{V}_avec-ifs.csv"
+        if g.exists():
+            module[pol] = pd.read_csv(g).set_index("configuration")
+
+    texte = [
+        "## 0 bis. LE CHIFFRE DU PRODUIT — le socle, sur fenêtre canonique\n",
+        "**C'est le chiffre à citer.** Périmètre **PARTOUT** — aucune observation à "
+        "l'inférence —, pile **auditable** (aucune famille portant un mois entièrement "
+        "absent), et fenêtre fixée par la **disponibilité**, avant tout candidat.\n",
+        "| polluant | fenêtre | mois | blocs | **gain du socle** |",
+        "|---|---|---:|---:|---:|",
+    ]
+    for pol, t in socle.items():
+        r = t.loc[MAX]
+        texte.append(f"| {NOM.get(pol, pol)} | {r['fenetre']} | {int(r['n_mois'])} | "
+                     f"{int(r['n_mois']) // 3} | **{r['gain_pct']:+.2f} %** |")
+        lignes.append({"bloc": "socle (contrat de produit)", "polluant": pol,
+                       "grain": MAX, "n": int(r["n_plis"]), "gain": r["gain_pct"],
+                       "relatif_pct": None})
+    texte.append(
+        "\n🔑 **À citer arrondis — ≈ 41 % · ≈ 19 % · ≈ 24 % · ≈ 15 %.** Ce n'est pas de la "
+        "prudence : quatorze perturbations d'évaluation préinscrites donnent une enveloppe "
+        "de ± 0,5 à ± 1,5 pt, et **retirer un seul mois déplace le chiffre jusqu'à "
+        "2,5 pt**. La deuxième décimale n'a pas de sens.\n")
+    if module:
+        texte += [
+            "### Le module météo prévue (IFS), sur son propre support\n",
+            "| polluant | fenêtre | mois | **socle + module** | "
+            "écart apparié · IC95 · `p⁺` · blocs |",
+            "|---|---|---:|---:|---|",
+        ]
+        # 🔴 L'écart apparié se LIT dans l'artefact de confirmation, il ne se recopie pas.
+        # Un nombre écrit en dur dans le générateur de la source unique est exactement le
+        # défaut que ce fichier existe pour empêcher : il survit à la mesure qui l'a produit.
+        fa = RACINE / ("reports/apport_derniere_position"
+                       f"{V}_avec-ifs.csv")
+        app = {}
+        if fa.exists():
+            t_app = pd.read_csv(fa)
+            for _, r_ in t_app[t_app["famille"] == "ifs"].iterrows():
+                app[r_["polluant"]] = (r_["apport_derniere_position_pt"],
+                                       r_["ic95_bas"], r_["ic95_haut"],
+                                       r_["p_permutation_positif"],
+                                       int(r_["blocs_positifs"]), int(r_["n_blocs"]))
+        for pol, t in module.items():
+            r = t.loc[MAX]
+            a = app.get(pol)
+            cell = ("—" if a is None else
+                    f"**{a[0]:+.3f} pt** [{a[1]:+.3f} ; {a[2]:+.3f}] · "
+                    f"p⁺={a[3]:.4f} · {a[4]}/{a[5]}")
+            texte.append(f"| {NOM.get(pol, pol)} | {r['fenetre']} | {int(r['n_mois'])} | "
+                         f"**{r['gain_pct']:+.2f} %** | {cell} |")
+            lignes.append({"bloc": "socle + module IFS", "polluant": pol, "grain": MAX,
+                           "n": int(r["n_plis"]), "gain": r["gain_pct"],
+                           "relatif_pct": None})
+        texte.append(
+            "\n⚠️ **Ces deux tableaux ne se soustraient PAS.** Les fenêtres diffèrent de "
+            "trois à cinq mois, et sous ce protocole deux fenêtres différentes ont des "
+            "partitions de test **disjointes** — zéro ligne commune sur l'ozone. PM10 "
+            "affiche −0,14 pt en poolé et **+1,216 en apparié** : c'est l'écart de fenêtre, "
+            "pas un désaccord. **Seule la colonne appariée conclut**, et elle est mesurée "
+            "sur les mêmes plis, le module en dernière position.\n")
+    texte.append(
+        "⚠️ **Ce que les blocs suivants deviennent.** Ils restent exacts, mais sur la "
+        "fenêtre de 29 mois bornée par GEOS-CF v1 — un **candidat** qui définissait le banc "
+        "d'essai sur lequel on le jugeait. Les citer à côté du socle exige de nommer leur "
+        "fenêtre à chaque fois. Détail et décision : `reports/CONTRAT_PRODUIT.md`.\n")
+    return "\n".join(texte)
+
+
 def bloc_meteo(lignes: list[dict]) -> str:
     """Ce que le modèle se refuse — mesuré, et à ne jamais citer comme un gain."""
     presents = [p for p in ("O3", "NO2", "PM25")
@@ -2738,6 +2830,7 @@ def main() -> int:
         f"**Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre "
         f"qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois "
         f"citées ailleurs sont périmées.*\n",
+        bloc_socle(lignes),
         bloc_double_aveugle(lignes),
         bloc_annee(lignes),
         bloc_saison(lignes),

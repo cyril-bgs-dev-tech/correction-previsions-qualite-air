@@ -1,6 +1,32 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 23/08/2026 à 13 h 05 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 25/08/2026 à 00 h 57 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+
+## 0 bis. LE CHIFFRE DU PRODUIT — le socle, sur fenêtre canonique
+
+**C'est le chiffre à citer.** Périmètre **PARTOUT** — aucune observation à l'inférence —, pile **auditable** (aucune famille portant un mois entièrement absent), et fenêtre fixée par la **disponibilité**, avant tout candidat.
+
+| polluant | fenêtre | mois | blocs | **gain du socle** |
+|---|---|---:|---:|---:|
+| NO₂ | 2023-09→2026-07 | 33 | 11 | **+41.09 %** |
+| O₃ | 2023-09→2026-07 | 33 | 11 | **+19.44 %** |
+| PM10 | 2024-01→2026-08 | 32 | 10 | **+23.67 %** |
+| PM2,5 | 2023-09→2026-07 | 34 | 11 | **+14.54 %** |
+
+🔑 **À citer arrondis — ≈ 41 % · ≈ 19 % · ≈ 24 % · ≈ 15 %.** Ce n'est pas de la prudence : quatorze perturbations d'évaluation préinscrites donnent une enveloppe de ± 0,5 à ± 1,5 pt, et **retirer un seul mois déplace le chiffre jusqu'à 2,5 pt**. La deuxième décimale n'a pas de sens.
+
+### Le module météo prévue (IFS), sur son propre support
+
+| polluant | fenêtre | mois | **socle + module** | écart apparié · IC95 · `p⁺` · blocs |
+|---|---|---:|---:|---|
+| NO₂ | 2024-03→2026-07 | 28 | **+42.25 %** | **+0.746 pt** [+0.447 ; +1.046] · p⁺=0.0033 · 8/9 |
+| O₃ | 2024-03→2026-07 | 28 | **+20.36 %** | **+0.886 pt** [+0.339 ; +1.535] · p⁺=0.0105 · 8/9 |
+| PM10 | 2024-03→2026-07 | 29 | **+23.53 %** | **+1.216 pt** [+0.477 ; +1.842] · p⁺=0.0104 · 8/9 |
+| PM2,5 | 2024-03→2026-07 | 29 | **+15.32 %** | **+0.830 pt** [+0.282 ; +1.399] · p⁺=0.0140 · 7/9 |
+
+⚠️ **Ces deux tableaux ne se soustraient PAS.** Les fenêtres diffèrent de trois à cinq mois, et sous ce protocole deux fenêtres différentes ont des partitions de test **disjointes** — zéro ligne commune sur l'ozone. PM10 affiche −0,14 pt en poolé et **+1,216 en apparié** : c'est l'écart de fenêtre, pas un désaccord. **Seule la colonne appariée conclut**, et elle est mesurée sur les mêmes plis, le module en dernière position.
+
+⚠️ **Ce que les blocs suivants deviennent.** Ils restent exacts, mais sur la fenêtre de 29 mois bornée par GEOS-CF v1 — un **candidat** qui définissait le banc d'essai sur lequel on le jugeait. Les citer à côté du socle exige de nommer leur fenêtre à chaque fois. Détail et décision : `reports/CONTRAT_PRODUIT.md`.
 
 ## 0. Le chiffre de déploiement — station **et** mois cachés ensemble
 
@@ -741,27 +767,27 @@ Double aveugle **station ET mois cachés**, J+1, fenêtre du flux GEOS-CF v1. L'
 | étage | NO₂ | O₃ | PM10 | PM2,5 |
 |---|---|---|---|---|
 | base (CAMS, terrain, calendrier) | +26.47 % | +7.62 % | +8.58 % | +3.27 % |
-| + typologie | +35.44 % *(+8.97)* | +7.54 % *(-0.08)* | +10.46 % *(+1.87)* | +3.34 % *(+0.08)* |
-| + membres | +36.06 % *(+0.62)* | +10.63 % *(+3.10)* | +13.97 % *(+3.52)* | +5.64 % *(+2.29)* |
-| + feux | +36.23 % *(+0.17)* | +12.39 % *(+1.76)* | +15.03 % *(+1.05)* | +8.26 % *(+2.62)* |
-| + geoscf | +38.79 % *(+2.56)* | +14.76 % *(+2.37)* | +17.68 % *(+2.66)* | +10.37 % *(+2.11)* |
-| + tendance | +38.79 % *(+0.00)* | +16.31 % *(+1.55)* | +18.01 % *(+0.32)* | +10.44 % *(+0.07)* |
-| + speciation | +39.83 % *(+1.03)* | +18.57 % *(+2.26)* | +20.04 % *(+2.03)* | +12.20 % *(+1.76)* |
-| + profil | +40.14 % *(+0.32)* | +19.12 % *(+0.54)* | +20.66 % *(+0.62)* | +12.80 % *(+0.61)* |
-| + fourier | +40.96 % *(+0.81)* | +19.26 % *(+0.14)* | +20.52 % *(-0.14)* | +12.63 % *(-0.18)* |
-| + precurseurs | +41.23 % *(+0.28)* | +20.52 % *(+1.26)* | +21.12 % *(+0.61)* | +13.65 % *(+1.02)* |
-| ★ MAXIMALE — PARTOUT | **+41.23 %** *(-0.00)* | **+20.51 %** *(-0.00)* | **+21.13 %** *(+0.01)* | **+13.65 %** *(-0.00)* |
-| − typologie (ablation) | +31.39 % | +20.42 % | +19.01 % | +13.61 % |
-| − membres (ablation) | +41.21 % | +19.88 % | +20.89 % | +13.49 % |
-| − feux (ablation) | +41.37 % | +20.27 % | +21.52 % | +13.89 % |
-| − geoscf (ablation) | +40.88 % | +19.59 % | +21.06 % | +13.56 % |
-| − tendance (ablation) | +41.46 % | +20.49 % | +21.02 % | +14.41 % |
-| − speciation (ablation) | +40.50 % | +19.85 % | +19.43 % | +12.68 % |
-| − profil (ablation) | +41.32 % | +20.18 % | +21.14 % | +13.76 % |
-| − fourier (ablation) | +40.73 % | +20.06 % | +21.19 % | +13.39 % |
-| − precurseurs (ablation) | +40.96 % | +19.26 % | +20.52 % | +12.63 % |
-| ★ MAXIMALE — AUX STATIONS (+ veille) | **+47.82 %** *(+6.86)* | **+25.86 %** *(+6.60)* | **+27.29 %** *(+6.77)* | **+22.22 %** *(+9.59)* |
-| plafond ERA5 (NON déployable) | +50.13 % *(+9.18)* | +28.55 % *(+9.29)* | +27.16 % *(+6.64)* | +24.40 % *(+11.77)* |
+| + typologie | +35.44 % *(+8.97)* | +7.54 % *(-0.08)* | +10.46 % *(+1.87)* | +3.35 % *(+0.08)* |
+| + membres | +36.06 % *(+0.62)* | +10.63 % *(+3.10)* | +13.97 % *(+3.52)* | +5.63 % *(+2.29)* |
+| + feux | +36.23 % *(+0.17)* | +12.39 % *(+1.76)* | +15.03 % *(+1.05)* | +8.25 % *(+2.62)* |
+| + geoscf | +38.79 % *(+2.56)* | +14.76 % *(+2.37)* | +17.68 % *(+2.66)* | +10.37 % *(+2.12)* |
+| + tendance | +38.79 % *(-0.00)* | +16.31 % *(+1.55)* | +18.01 % *(+0.32)* | +10.44 % *(+0.07)* |
+| + speciation | +40.42 % *(+1.63)* | +19.06 % *(+2.74)* | +20.39 % *(+2.39)* | +12.29 % *(+1.86)* |
+| + profil | +40.56 % *(+0.13)* | +19.28 % *(+0.23)* | +20.81 % *(+0.41)* | +12.75 % *(+0.46)* |
+| + fourier | +41.21 % *(+0.65)* | +19.14 % *(-0.15)* | +20.58 % *(-0.22)* | +13.10 % *(+0.35)* |
+| + precurseurs | +41.52 % *(+0.31)* | +20.51 % *(+1.37)* | +21.36 % *(+0.78)* | +13.96 % *(+0.86)* |
+| ★ MAXIMALE — PARTOUT | **+41.52 %** *(+0.00)* | **+20.51 %** *(+0.00)* | **+21.36 %** *(+0.00)* | **+13.96 %** *(+0.00)* |
+| − typologie (ablation) | +31.58 % | +20.47 % | +19.30 % | +13.49 % |
+| − membres (ablation) | +41.52 % | +19.95 % | +21.05 % | +13.69 % |
+| − feux (ablation) | +41.51 % | +20.48 % | +21.52 % | +14.31 % |
+| − geoscf (ablation) | +41.04 % | +20.15 % | +21.01 % | +13.63 % |
+| − tendance (ablation) | +41.58 % | +20.41 % | +20.73 % | +14.64 % |
+| − speciation (ablation) | +40.51 % | +19.85 % | +19.43 % | +12.67 % |
+| − profil (ablation) | +41.37 % | +20.52 % | +21.03 % | +13.98 % |
+| − fourier (ablation) | +40.90 % | +20.61 % | +21.36 % | +13.84 % |
+| − precurseurs (ablation) | +41.21 % | +19.14 % | +20.58 % | +13.10 % |
+| ★ MAXIMALE — AUX STATIONS (+ veille) | **+47.94 %** *(+6.73)* | **+26.01 %** *(+6.88)* | **+27.27 %** *(+6.69)* | **+22.36 %** *(+9.26)* |
+| plafond ERA5 (NON déployable) | +50.21 % *(+9.00)* | +28.53 % *(+9.40)* | +27.31 % *(+6.73)* | +24.36 % *(+11.26)* |
 
 ⚠️ **Les fenêtres diffèrent selon le polluant** : NO₂ 29 mois (2023-08→2025-12) · O₃ 29 mois (2023-08→2025-12) · PM10 24 mois (2024-01→2025-12) · PM2,5 29 mois (2023-08→2025-12). Seuls les **écarts entre étages** se comparent d'un polluant à l'autre, jamais les niveaux.
 
@@ -874,13 +900,13 @@ Chaque ligne retire **une seule** famille de la pile complète, toutes les autre
 
 | famille retirée | O₃ | NO₂ | PM10 | PM2,5 |
 |---|---|---|---|---|
-| − typologie | **+0.09** *(-0.08)* | **+9.84** *(+8.97)* | **+2.12** *(+1.87)* | **+0.04** *(+0.08)* |
-| − membres | **+0.64** *(+3.10)* | **+0.02** *(+0.62)* | **+0.24** *(+3.52)* | **+0.16** *(+2.29)* |
-| − feux | **+0.25** *(+1.76)* | **-0.14** *(+0.17)* | **-0.39** *(+1.05)* | **-0.24** *(+2.62)* |
-| − geoscf | **+0.93** *(+2.37)* | **+0.36** *(+2.56)* | **+0.07** *(+2.66)* | **+0.09** *(+2.11)* |
-| − tendance | **+0.02** *(+1.55)* | **-0.23** *(+0.00)* | **+0.11** *(+0.32)* | **-0.75** *(+0.07)* |
+| − typologie | **+0.04** *(-0.08)* | **+9.94** *(+8.97)* | **+2.05** *(+1.87)* | **+0.47** *(+0.08)* |
+| − membres | **+0.56** *(+3.10)* | **-0.00** *(+0.62)* | **+0.31** *(+3.52)* | **+0.27** *(+2.29)* |
+| − feux | **+0.03** *(+1.76)* | **+0.00** *(+0.17)* | **-0.17** *(+1.05)* | **-0.35** *(+2.62)* |
+| − geoscf | **+0.36** *(+2.37)* | **+0.48** *(+2.56)* | **+0.35** *(+2.66)* | **+0.33** *(+2.12)* |
+| − tendance | **+0.10** *(+1.55)* | **-0.07** *(-0.00)* | **+0.63** *(+0.32)* | **-0.67** *(+0.07)* |
 
-Les deux lectures **se contredisent en signe** sur **typologie** sur O₃ (*-0.08* → **+0.09**) · **feux** sur NO₂ (*+0.17* → **-0.14**) · **feux** sur PM10 (*+1.05* → **-0.39**) · **feux** sur PM2,5 (*+2.62* → **-0.24**) · **tendance** sur NO₂ (*+0.00* → **-0.23**) · **tendance** sur PM2,5 (*+0.07* → **-0.75**). Là où elles divergent, c'est l'ablation qui fait foi : la lecture cumulative attribue à un étage ce que sa **position** lui a donné, pas ce qu'il apporte.
+Les deux lectures **se contredisent en signe** sur **typologie** sur O₃ (*-0.08* → **+0.04**) · **membres** sur NO₂ (*+0.62* → **-0.00**) · **feux** sur PM10 (*+1.05* → **-0.17**) · **feux** sur PM2,5 (*+2.62* → **-0.35**) · **tendance** sur PM2,5 (*+0.07* → **-0.67**). Là où elles divergent, c'est l'ablation qui fait foi : la lecture cumulative attribue à un étage ce que sa **position** lui a donné, pas ce qu'il apporte.
 
 
 ⚠️ Un apport d'ablation faible ne veut pas dire « famille inutile » : il veut dire **redondante avec le reste de la pile**. Deux familles qui captent la même information s'annulent mutuellement à l'ablation alors que retirer les deux coûterait cher. Ce tableau ne se lit jamais comme une liste de coupes à opérer.
