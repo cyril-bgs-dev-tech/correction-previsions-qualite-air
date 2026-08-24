@@ -64,8 +64,13 @@ HORS_SOCLE = ("feux", "geoscf")
 
 
 def chemins(polluant: str, horizon: int, fam: list[str], support_complet: bool,
-            socle: bool) -> tuple[Path, Path, list[str]]:
-    """(référence, pile réduite, familles à passer à `--exclure`).
+            socle: bool) -> tuple[Path, Path, list[str], str]:
+    """(référence, pile réduite, familles à `--exclure`, suffixe du RAPPORT).
+
+    🔴 Le quatrième élément n'est pas cosmétique. Sans lui, l'ablation sur le socle écrirait
+    son verdict dans le fichier de l'ablation historique — « une variante écrase sa jumelle »,
+    déjà payé une fois sur ce dépôt quand un suffixe couvrait le parquet mais pas la légende.
+    Deux mesures différentes ne partagent jamais un nom.
 
     Le nom de sortie de `methode_maximale` est `_sans-` + les exclusions TRIÉES, puis
     `_fenetre-complete`. Le reconstruire ici plutôt que le deviner : un nom faux ferait
@@ -76,10 +81,10 @@ def chemins(polluant: str, horizon: int, fam: list[str], support_complet: bool,
         excl = sorted(set(fam) | set(HORS_SOCLE))
         ref = RACINE / f"{base}_sans-{'-'.join(sorted(HORS_SOCLE))}_fenetre-complete.csv"
         sans = RACINE / f"{base}_sans-{'-'.join(excl)}_fenetre-complete.csv"
-        return ref, sans, excl
+        return ref, sans, excl, "_socle"
     suff = "_sc" if support_complet else ""
     return (RACINE / f"{base}{suff}.csv",
-            RACINE / f"{base}{suff}_sans-{'-'.join(fam)}.csv", fam)
+            RACINE / f"{base}{suff}_sans-{'-'.join(fam)}.csv", fam, suff)
 
 
 def main(polluant: str, horizon: int, axe: str, support_complet: bool,
@@ -94,7 +99,7 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
         raise SystemExit(f"⛔ {', '.join(chevauche)} ne fait pas partie du socle — le retirer "
                          f"du socle ne retire rien. Mesurer un module se fait apparié sur "
                          f"son propre support, pas par ablation du socle.")
-    ref, sans, excl = chemins(polluant, horizon, fam, support_complet, socle)
+    ref, sans, excl, suff = chemins(polluant, horizon, fam, support_complet, socle)
     if not ref.exists():
         raise SystemExit(f"référence absente : {ref.name} — lancer la pile complète d'abord")
     # Reprise sur l'ARTEFACT : la pile réduite est un ajustement de vingt minutes, et
