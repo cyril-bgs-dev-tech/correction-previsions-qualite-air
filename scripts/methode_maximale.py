@@ -122,11 +122,15 @@ TAUX_MANQUE_MAX = 0.5
 # (+1,34 pt, p=0,020), PM10 (+0,74, p=0,0005) et PM2,5 (+1,07, p<10⁻⁴), et **rien sur le
 # NO₂** — qui est lui-même un précurseur, donc exempté par la chimie et non par la mesure.
 # Ici on demande ce qu'ils ajoutent avec GEOS-CF PRÉSENT : c'est l'amplitude publiable.
+# `ifs` est en DERNIÈRE position par construction : c'est un module au sens du contrat de
+# produit, et sa confirmation se lit en dernière position sur le socle restreint à son
+# propre support. Il n'entre que sur `--avec-ifs`.
 ORDRE = ["typologie", "membres", "feux", "geoscf", "tendance", "speciation", "profil",
-         "fourier", "precurseurs"]
+         "fourier", "precurseurs", "ifs"]
 PERIMETRE = {"typologie": "PARTOUT", "membres": "PARTOUT", "feux": "PARTOUT",
              "geoscf": "PARTOUT", "tendance": "PARTOUT", "speciation": "PARTOUT",
              "profil": "PARTOUT", "fourier": "PARTOUT", "precurseurs": "PARTOUT",
+             "ifs": "PARTOUT",
              "veille": "AUX STATIONS", "era5": "— (plafond)"}
 
 
@@ -221,7 +225,7 @@ def trier_couverture(couv, familles: dict, seuil_mois: float = 0.8,
 def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
          speciation: str = "brute", support_complet: bool = False,
          exclure: tuple[str, ...] = (), precurseurs: str = "completes",
-         fenetre: str = "geoscf") -> int:
+         fenetre: str = "geoscf", avec_ifs: bool = False) -> int:
     # Le garde à l'ENTRÉE, avant tout chargement : refuser après deux minutes de lecture
     # de parquets est un refus tardif, et le coût est payé pour rien.
     if fenetre == "complete" and "geoscf" not in exclure:
@@ -271,6 +275,42 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # restent le défaut pour ne pas changer la pile sans mesure ; `--precurseurs moyennes`
     # rend la variante parcimonieuse mesurable sur les mêmes plis.
     familles["precurseurs"] = moy_pre if precurseurs == "moyennes" else moy_pre + max_pre
+
+    # ── Le module MÉTÉO PRÉVUE, sur demande — 24/08/2026 ────────────────────────────
+    #
+    # L'IFS a tenu au criblage sur les quatre polluants : +0,86 à +1,66 pt appariés,
+    # p_PC = 0,0003. Mais ce criblage portait sur la pile à huit familles ; la confirmation
+    # se fait ici, en DERNIÈRE position, sur le socle.
+    #
+    # ⚠️ Il ne peut PAS entrer dans le socle : sa couverture commence en 2024-03 quand la
+    # fenêtre canonique commence en 2023-09. C'est un MODULE — son gain se mesure sur son
+    # propre support, et la fenêtre est restreinte ici plutôt que ses colonnes écartées
+    # comme indicateur d'époque. Sans cette restriction, la règle de couverture en deux
+    # passes le retirerait purement et simplement.
+    #
+    # Huit champs de surface, MOYENNES seules : le criblage a montré que les maxima
+    # n'ajoutent rien de démontrable (p_PC 0,0435 contre 0,0003).
+    if avec_ifs:
+        from apport_precurseurs import charger_lot as _cl  # noqa: PLC0415
+        ifs, moy_ifs, _max_ifs = _cl("ifs")
+        ifs["jour"] = pd.to_datetime(ifs["jour"]).dt.tz_localize(None)
+        avant_ifs = len(d)
+        d = d.merge(ifs[["station_id", "jour"] + moy_ifs], on=["station_id", "jour"],
+                    how="left")
+        if len(d) != avant_ifs:
+            raise SystemExit(f"jointure IFS : {avant_ifs:,} → {len(d):,} lignes")
+        familles["ifs"] = moy_ifs
+        # La fenêtre se restreint au support du module, et le retrait est COMPTÉ.
+        couvert_ifs = d[moy_ifs[0]].notna()
+        mois_ifs = sorted(d.loc[couvert_ifs, "mois"].unique())
+        hors = [m for m in mois_ok if m not in set(mois_ifs)]
+        if hors:
+            print(f"  module IFS : fenêtre restreinte à son support — {len(hors)} mois "
+                  f"retiré(s) ({hors[0]} → {hors[-1]})", flush=True)
+            mois_ok = [m for m in mois_ok if m in set(mois_ifs)]
+            d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
+        print(f"  module IFS : {len(moy_ifs)} colonnes · {mois_ok[0]} → {mois_ok[-1]} "
+              f"({len(mois_ok)} mois)", flush=True)
     # ⚠️ La dynamique de CAMS se calcule **avant** toute restriction de fenêtre. Elle
     # décale la série d'un jour par station : la calculer après le filtrage sur la
     # couverture GEOS-CF ferait sauter le décalage par-dessus le bord de fenêtre, et la
@@ -632,6 +672,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     # fichier et la seconde effacerait la première sans que rien ne lève (§ 4).
     suff += "_pre-moyennes" if precurseurs == "moyennes" else ""
     suff += "_fenetre-complete" if fenetre == "complete" else ""
+    suff += "_avec-ifs" if avec_ifs else ""
     partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv.partiel"
 
     # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
@@ -813,6 +854,9 @@ if __name__ == "__main__":
     a.add_argument("--support-complet", action="store_true",
                    help="écarter toute famille ayant au moins un MOIS entièrement absent — "
                         "sinon le modèle apprend la date par le motif de manque")
+    a.add_argument("--avec-ifs", action="store_true", dest="avec_ifs",
+                   help="ajoute le module météo prévue IFS en DERNIÈRE position et "
+                        "restreint la fenêtre à son support")
     a.add_argument("--fenetre", default="geoscf", choices=("geoscf", "complete"),
                    help="« geoscf » borne l'évaluation à la couverture de GEOS-CF v1 "
                         "(29 mois) ; « complete » prend tout le corpus apparié et EXIGE "
@@ -830,4 +874,4 @@ if __name__ == "__main__":
     raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.ablation,
                           n.speciation, n.support_complet,
                           tuple(x for x in n.exclure.split(',') if x), n.precurseurs,
-                          n.fenetre))
+                          n.fenetre, n.avec_ifs))

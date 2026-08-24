@@ -94,6 +94,21 @@ def main(polluant: str, horizon: int, axe: str, support_complet: bool,
             print(f"  pile réduite {sans.name} antérieure au corpus actuel "
                   f"(pas d'empreinte, référence {er}) — ajustement REFAIT", flush=True)
             deja = False
+        # 🔴 Et la DATE tranche quand aucune empreinte n'existe — 24/08/2026.
+        #
+        # Les deux fichiers peuvent être antérieurs à l'empreinte : le test ci-dessus est
+        # alors muet, et la reprise a comparé une référence du 24/08 à une pile réduite du
+        # 23/08 18 h 45, en annonçant « REDONDANTES, +0,317 pt ». Deux corpus, un verdict.
+        #
+        # Une pile réduite plus ANCIENNE que sa référence n'a pas pu voir les mêmes
+        # données. C'est plus grossier qu'une empreinte, mais ça ne dépend de rien.
+        elif sans.stat().st_mtime < ref.stat().st_mtime:
+            from datetime import datetime  # noqa: PLC0415
+            print(f"  pile réduite {sans.name} ({datetime.fromtimestamp(sans.stat().st_mtime):%d/%m %H:%M})"
+                  f" plus ANCIENNE que sa référence "
+                  f"({datetime.fromtimestamp(ref.stat().st_mtime):%d/%m %H:%M})"
+                  f" — ajustement REFAIT", flush=True)
+            deja = False
     if deja:
         print(f"  pile réduite déjà écrite : {sans.name} — ajustement sauté", flush=True)
     else:
