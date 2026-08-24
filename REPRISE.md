@@ -1,9 +1,67 @@
 # Reprise — l'état du projet
 
-> **Mis à jour le 23/08/2026 à 04 h 30.** Si la date ci-dessus a plus de deux jours,
+> **Mis à jour le 24/08/2026 à 20 h 30.** Si la date ci-dessus a plus de deux jours,
 > **méfie-toi de ce fichier** : sur ce projet il a déjà été périmé de dix jours tout en
 > s'annonçant comme l'état courant. Vérifie par `git log --oneline -5` et `ls -lt reports/`
 > avant de croire ce qui suit.
+
+---
+
+## ⭐ 24/08 — LE SOCLE EST POSÉ, DEUX GROUPES ET UN MODULE SONT DÉMONTRÉS
+
+**Le détail vit dans `reports/CONTRAT_PRODUIT.md`. Ici, seulement ce qui change une décision.**
+
+### Le chiffre du produit
+
+Le **socle** — huit familles disponibles sur toute la fenêtre canonique, fixée **avant** les
+candidats — remplace la pile bornée par GEOS-CF :
+
+    ≈ 41 %  NO₂     ≈ 19 %  O₃     ≈ 24 %  PM10     ≈ 15 %  PM2,5
+
+Arrondis **par obligation, pas par prudence** : retirer un seul mois de l'évaluation déplace
+le chiffre de 0,5 à **2,5 pt** (mesuré, 14 perturbations préinscrites).
+
+### Ce qui est démontré aujourd'hui, et ne l'était pas hier
+
+| | résultat | `p_PC` |
+|---|---|---|
+| **quatre familles du socle** | `typologie` +3,46 · `speciation` +2,42 · `precurseurs` +0,97 · `membres` +0,86 pt, **en dernière position** | 0,0021 à 0,0069 |
+| **module météo prévue (IFS)** | +0,75 à +1,22 pt sur les **quatre** polluants | 0,0312 |
+| **groupe `geoscf`+`membres`** | +0,86 à +1,69 pt — ce sont des **substituts** | 0,0357 |
+| **groupe G2** `profil`+`fourier`+`tendance` | +0,73 pt sur NO₂ seul — 🟡 RÉSERVE | 0,0468 |
+
+La pile de référence n'en démontrait **qu'une** (`typologie`). Fixer la fenêtre par la
+**disponibilité** a fait passer trois familles de « on ne peut pas trancher » à démontrée —
+prédit avant la mesure (`a2706756`, TENUE).
+
+### Les deux lectures qui changent le dossier
+
+**① `geoscf` et `membres` encodent la même chose** — l'accord entre modèles de
+chimie-transport. Sur NO₂, `membres` seule vaut +0,056 pt et la paire +0,856 : un facteur
+quinze. Donc l'apport marginal de +0,51 pt de GEOS-CF **n'est pas une déception, c'est la
+signature d'un substitut**. Ne plus le présenter comme un échec.
+
+**② Trois familles individuellement nulles valent +0,73 pt ensemble.** `fourier`, `profil` et
+`tendance` sortent toutes 🔴 à l'ablation individuelle. Sans le retrait **conjoint** elles
+auraient été retirées du socle sur la foi de trois mesures justes et d'une lecture fausse.
+
+### La règle de lecture qui vaut pour tout ce qui précède
+
+**L'écart APPARIÉ est 3,5 à 8,7 × plus stable que le chiffre ABSOLU** — mesuré. On arrondit
+les niveaux, on conclut sur les différences. Et deux mesures ne se comparent que sur le même
+corpus : les partitions de test de deux exécutions à fenêtres différentes sont **disjointes par
+construction** (zéro ligne commune sur O₃).
+
+### ⚙️ Reprendre
+
+```bash
+python3 scripts/descendance.py                  # ce qui est périmé, et par quel parent
+python3 scripts/plan_scores.py --taches | scripts/lancer_en_parallele.sh 4 90 20G cpu logs/x.log
+```
+
+⚠️ **Le cinquième argument est le journal.** Sans lui on écrit `| tee`, et le code de sortie
+appartient alors à `tee` : le 24/08, le garde a imprimé « ⛔ ABSENT » sur quatre artefacts et
+la commande a rendu 0.
 
 ---
 
