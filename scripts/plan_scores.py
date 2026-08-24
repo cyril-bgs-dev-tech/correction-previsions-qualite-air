@@ -48,6 +48,28 @@ def repere() -> float:
     return max(Path(f).stat().st_mtime for f in fs)
 
 
+def repere_code() -> float:
+    """L'instant de la dernière modification des scripts qui décident du contenu.
+
+    🔴 Le repère de CORPUS ne suffit pas — constaté le 24/08 à 02 h 43. Le résultat
+    `core7` de NO₂ était plus récent que le corpus et pourtant invalide : son processus
+    avait chargé `ablation_speciation` AVANT une reclassification commitée quatorze
+    minutes plus tôt, et n'écartait donc que quatre colonnes au lieu de huit. Sa fenêtre
+    s'en trouvait tronquée de 29 à 24 mois.
+
+    Python lit un module à l'import : une tâche longue porte le code de son DÉBUT, pas
+    celui de sa fin. Un artefact plus récent qu'un correctif n'a donc pas forcément été
+    produit avec.
+
+    ⚠️ Ce repère AVERTIT, il n'invalide pas : ces scripts changent sans cesse, et invalider
+    à chaque édition referait tout en permanence. C'est un signalement à l'humain — ou à
+    l'agent — qui décide.
+    """
+    fs = ["scripts/methode_maximale.py", "scripts/ablation_speciation.py",
+          "scripts/apport_precurseurs.py", "scripts/ablation_jointe.py"]
+    return max((RACINE / f).stat().st_mtime for f in fs if (RACINE / f).exists())
+
+
 def etapes() -> list[tuple[str, str, list[tuple[str, str]]]]:
     """(clé, ce que l'étape débloque, [(artefact, commande)])."""
     m = f"{PY_} scripts/methode_maximale.py --polluant %s --horizon 2"
@@ -88,12 +110,14 @@ def etapes() -> list[tuple[str, str, list[tuple[str, str]]]]:
     ]
 
 
-def main(taches: bool, tout: bool) -> int:
+def main(taches: bool, tout: bool, code: bool) -> int:
     t0 = repere()
-    lignes, reste = [], 0
+    tc = repere_code()
+    lignes, reste, suspects = [], 0, []
     for cle, pourquoi, travaux in etapes():
         faits = [c for c, _ in travaux
                  if (RACINE / c).exists() and (RACINE / c).stat().st_mtime >= t0]
+        suspects += [c for c in faits if (RACINE / c).stat().st_mtime < tc]
         manquants = [(c, k) for c, k in travaux
                      if not ((RACINE / c).exists() and (RACINE / c).stat().st_mtime >= t0)]
         reste += len(manquants)
@@ -116,7 +140,20 @@ def main(taches: bool, tout: bool) -> int:
             if len(manquants) > 4:
                 print(f"       ↳ … et {len(manquants) - 4} autre(s)")
     print("═" * 96)
-    print(f"{reste} tâche(s) restante(s) · lancer :  scripts/reprise/relancer.sh")
+    # ⚠️ Ce signal est GROSSIER par construction : il compare des dates, pas des
+    # sémantiques, et ces scripts changent sans cesse. Il tient donc en une ligne par
+    # défaut — un garde qui écrit vingt lignes à chaque exécution rend ses vraies alertes
+    # invisibles. `--code` donne la liste.
+    if suspects:
+        print(f"\n⚠️ {len(suspects)} artefact(s) antérieur(s) au dernier correctif de code "
+              f"({datetime.fromtimestamp(tc):%d/%m %H:%M}) — `--code` pour la liste.")
+        print("   Une tâche longue porte le code de son DÉBUT, pas de sa fin.")
+        if code:
+            for c in suspects:
+                print(f"     {c}")
+            print("   À refaire seulement si le correctif touchait ce qu'elle mesure ; "
+                  "supprimer l'artefact suffit, le plan le re-listera.")
+    print(f"\n{reste} tâche(s) restante(s) · lancer :  scripts/reprise/relancer.sh")
     return 0
 
 
@@ -124,4 +161,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--taches", action="store_true", help="liste pour file_ressource.sh")
     ap.add_argument("--tout", action="store_true")
+    ap.add_argument("--code", action="store_true",
+                    help="lister les artefacts antérieurs au dernier correctif de code")
     sys.exit(main(**vars(ap.parse_args())))
