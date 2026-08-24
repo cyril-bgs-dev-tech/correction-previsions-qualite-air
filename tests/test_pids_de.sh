@@ -58,6 +58,28 @@ rm -rf "$(dirname "$TEMOIN")"
 scripts/pids_de.sh >/dev/null 2>&1 && { echo "  ❌ accepte l'absence de motif"; ECHECS=$((ECHECS+1)); } \
   || echo "  ✅ refuse l'absence de motif"
 
+# ⑦ Une OPTION en première position est refusée — le faux négatif le plus coûteux.
+#
+# « pids_de.sh --contient motif » faisait chercher les processus contenant « --contient ».
+# Aucun n'en contient : le garde rendait zéro, sans un mot, et « zéro » se lit « rien ne
+# tourne ». Un faux positif bloque le travail et se voit ; un faux négatif AUTORISE un
+# doublon et se lit comme une bonne nouvelle.
+for opt in --contient --details; do
+  if scripts/pids_de.sh "$opt" motif >/dev/null 2>&1; then
+    echo "  ❌ accepte « $opt » comme motif"; ECHECS=$((ECHECS+1))
+  else
+    echo "  ✅ refuse « $opt » en première position"
+  fi
+done
+
+# ⑧ Et le balayage ne fuit pas sur stderr quand un processus meurt pendant la lecture.
+#    /proc change sous nos pieds ; l'ordre des redirections décide de qui voit l'erreur.
+FUITES=0
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+  FUITES=$((FUITES + $(scripts/pids_de.sh "bash" 2>&1 >/dev/null | wc -l)))
+done
+verifier "aucune fuite sur stderr en dix balayages" "0" "$FUITES"
+
 echo
 [ "$ECHECS" -eq 0 ] && echo "tous les contrôles passent" || echo "$ECHECS échec(s)"
 exit "$ECHECS"

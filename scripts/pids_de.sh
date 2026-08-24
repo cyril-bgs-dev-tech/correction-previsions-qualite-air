@@ -34,8 +34,28 @@
 #          scripts/pids_de.sh "scripts/methode_maximale.py" --details
 #          scripts/pids_de.sh "quelque-chose" --contient   # ancien comportement, laxiste
 set -uo pipefail
-[ $# -ge 1 ] || { echo "usage: $0 <motif> [--details]" >&2; exit 2; }
+[ $# -ge 1 ] || { echo "usage: $0 <motif> [--details] [--contient]" >&2; exit 2; }
 MOTIF="$1"
+
+# 🔴 Le motif est le PREMIER argument, et rien ne l'imposait — 24/08/2026.
+#
+# Appelé « pids_de.sh --contient methode_maximale », `$1` vaut « --contient » : le garde
+# cherche alors les processus dont la ligne de commande contient « --contient », et n'en
+# trouve JAMAIS. Il rend zéro, sans un mot, et « zéro » se lit « rien ne tourne ».
+#
+# C'est le défaut que la § 1 bis nomme — *ce garde ment dans les deux sens* — sous sa forme
+# la plus coûteuse : le faux négatif. Un faux positif bloque le travail et se voit ; un faux
+# négatif AUTORISE un doublon et se lit comme une bonne nouvelle. Le 31/07, deux `lot_ifs.sh`
+# concurrents ont fait perdre deux mois de données à cause exactement de cela.
+#
+# On ne corrige pas cela par de la vigilance : on le rend IMPOSSIBLE.
+case "$MOTIF" in
+  -*) echo "⛔ « $MOTIF » est une option, pas un motif. Le motif vient EN PREMIER :" >&2
+      echo "     $0 <motif> [--details] [--contient]" >&2
+      echo "   Sans ce refus, le garde chercherait « $MOTIF » dans les lignes de commande," >&2
+      echo "   n'en trouverait aucune, et son zéro se lirait « rien ne tourne »." >&2
+      exit 2 ;;
+esac
 LAXISTE=0
 for a in "$@"; do [ "$a" = "--contient" ] && LAXISTE=1; done
 export LAXISTE
@@ -53,7 +73,12 @@ done
 for d in /proc/[0-9]*; do
   p=${d#/proc/}
   case "$EXCLUS" in *" $p "*) continue ;; esac
-  cmd=$(tr '\0' ' ' < "$d/cmdline" 2>/dev/null) || continue
+  # ⚠️ L'ORDRE des redirections décide de qui voit l'erreur — 24/08/2026.
+  # `tr … < "$f" 2>/dev/null` : bash applique `< "$f"` d'ABORD, et si le fichier a disparu
+  # — /proc change sous nos pieds à chaque balayage — il imprime son « No such file » avant
+  # que `2>` ne détourne stderr. Le message s'échappe donc malgré la redirection.
+  # `2>/dev/null` posé EN PREMIER couvre l'échec de la redirection qui le suit.
+  cmd=$(tr '\0' ' ' 2>/dev/null < "$d/cmdline") || continue
   [ -n "$cmd" ] || continue
   # Chaque argument séparément : le motif doit ÊTRE un argument, ou en être le suffixe
   # après un « / ». « scripts/x.py » matche « /chemin/scripts/x.py » et « scripts/x.py »,
