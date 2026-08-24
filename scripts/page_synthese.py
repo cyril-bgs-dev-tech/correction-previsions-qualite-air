@@ -25,9 +25,12 @@ Sortie : reports/figures/p0_donnees.json
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(RACINE / "src"))
+from aq.rapport import libelle_echeance  # noqa: E402
 FIG = RACINE / "reports/figures"
 
 ORDRE = ["NO2", "O3", "PM10", "PM25"]
@@ -37,11 +40,17 @@ ORDRE = ["NO2", "O3", "PM10", "PM25"]
 # pas : la pile empile TOUS les leviers, GEOS-CF compris, à J+2, sur la fenêtre du flux
 # GEOS-CF v1. La page 04 mesure la même architecture SANS GEOS-CF, à J+1, sur 36 mois.
 # Les deux sont justes ; c'est de les confondre qui serait faux.
-# 🔴 La passe la plus CONTRÔLÉE, jamais la plus ancienne. `_h2.csv` (29 mois) porte un
-# défaut de support reproduit : des familles absentes sur un mois entier donnaient au modèle
-# un indicateur d'époque, alors que le protocole cache les mois. Elle reste comme historique
-# d'audit ; le suffixe `_spe-core7_sc_sans-feux-membres` est le résultat publiable.
-SUFFIXES_PILE = ("_spe-core7_sc_sans-feux-membres", "_spe-core7_sc", "")
+# 🔴 La passe la plus CONTRÔLÉE, jamais la plus ancienne — et depuis le 25/08 c'est le SOCLE.
+#
+# `_h2.csv` (29 mois) porte un défaut de support reproduit : des familles absentes sur un mois
+# entier donnaient au modèle un indicateur d'époque, alors que le protocole cache les mois.
+#
+# Et sa fenêtre était bornée par GEOS-CF v1 — un **candidat** qui définissait ainsi le banc
+# d'essai sur lequel on le jugeait, en faisant perdre huit mois à toutes les autres familles.
+# Le contrat de produit (`reports/CONTRAT_PRODUIT.md`) fixe la fenêtre par la DISPONIBILITÉ,
+# avant tout candidat : c'est le socle, et c'est lui qu'on publie.
+SUFFIXES_PILE = ("_sans-feux-geoscf_fenetre-complete",
+                 "_spe-core7_sc_sans-feux-membres", "_spe-core7_sc", "")
 
 
 def chemin_pile(p: str) -> Path:
@@ -53,8 +62,22 @@ def chemin_pile(p: str) -> Path:
 
 
 PILE = RACINE / "reports/methode_maximale_{p}_h2.csv"
+HORIZON = 2
+
+# 🔴 L'échéance se DÉRIVE, elle ne s'écrit pas — 25/08/2026.
+#
+# Cette signature annonçait « J+2 » pour `horizon=2`. Or `TRANCHES = {1: (1,24), 2: (25,48)}`
+# porte des heures depuis la sortie de 00 UTC : les heures 1 à 24 sont celles du JOUR DE LA
+# SORTIE, donc `horizon=1` est J0 et `horizon=2` est **J+1**. Vérifié sur les données le
+# 17/08 — premier jour couvert 2023-08-01 pour horizon 1, 2023-08-02 pour horizon 2.
+#
+# `libelle_echeance` existe exactement pour cela, et la page de garde du dossier l'ignorait au
+# profit d'une chaîne écrite à la main. C'est la § 4 ter — *un nom d'axe n'est pas ce qu'il
+# annonce* — sur la première page que lit un recruteur d'AASQA.
 SIGNATURE = {"perimetre": "PARTOUT", "epreuve": "double aveugle — station ET mois cachés",
-             "echeance": "J+2", "source": "pile complète, tous leviers dont GEOS-CF"}
+             "echeance": libelle_echeance(HORIZON),
+             "source": "socle du contrat de produit — fenêtre fixée par la disponibilité, "
+                       "hors GEOS-CF et feux (modules conditionnels)"}
 
 
 def main() -> int:
