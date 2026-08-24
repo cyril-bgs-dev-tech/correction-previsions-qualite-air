@@ -126,11 +126,11 @@ TAUX_MANQUE_MAX = 0.5
 # produit, et sa confirmation se lit en dernière position sur le socle restreint à son
 # propre support. Il n'entre que sur `--avec-ifs`.
 ORDRE = ["typologie", "membres", "feux", "geoscf", "tendance", "speciation", "profil",
-         "fourier", "precurseurs", "ifs"]
+         "fourier", "precurseurs", "ifs", "chimie"]
 PERIMETRE = {"typologie": "PARTOUT", "membres": "PARTOUT", "feux": "PARTOUT",
              "geoscf": "PARTOUT", "tendance": "PARTOUT", "speciation": "PARTOUT",
              "profil": "PARTOUT", "fourier": "PARTOUT", "precurseurs": "PARTOUT",
-             "ifs": "PARTOUT",
+             "ifs": "PARTOUT", "chimie": "PARTOUT",
              "veille": "AUX STATIONS", "era5": "— (plafond)"}
 
 
@@ -190,6 +190,47 @@ def anomaliser(ref: pd.DataFrame, tr: pd.DataFrame, te: pd.DataFrame,
     return ecart(tr, m_tr, "apprentissage"), ecart(te, m_te, "test")
 
 
+def joindre_module(d: pd.DataFrame, familles: dict, mois_ok: list[str],
+                   lot: str) -> tuple[pd.DataFrame, list[str]]:
+    """Un MODULE conditionnel, joint en dernière position — `ifs`, `chimie`.
+
+    Un module n'entre pas dans le socle : sa couverture est plus courte que la fenêtre
+    canonique. Son gain se mesure donc sur SON PROPRE SUPPORT, la fenêtre étant restreinte
+    ici plutôt que ses colonnes écartées comme indicateurs d'époque — sans quoi la règle de
+    couverture en deux passes le retirerait purement et simplement.
+
+    ⚠️ Le placement de l'appel n'est pas libre : APRÈS que `mois_ok` existe, et AVANT
+    l'échelle des configurations. Placé plus haut il lève `UnboundLocalError`, plus bas le
+    module n'entre jamais dans la pile — les deux ont été faits.
+
+    Moyennes seules : le criblage a montré que les maxima n'ajoutent rien de démontrable
+    (`p_PC` 0,0435 contre 0,0003 sur l'IFS).
+    """
+    from apport_precurseurs import charger_lot as _cl  # noqa: PLC0415
+    t, moyennes, _maxima = _cl(lot)
+    t["jour"] = pd.to_datetime(t["jour"]).dt.tz_localize(None)
+    avant = len(d)
+    d = d.merge(t[["station_id", "jour"] + moyennes], on=["station_id", "jour"], how="left")
+    if len(d) != avant:
+        raise SystemExit(f"jointure {lot} : {avant:,} → {len(d):,} lignes — la clé "
+                         f"(station, jour) n'est pas unique dans le lot.")
+    familles[lot] = moyennes
+    # La fenêtre se restreint au support du module, et le retrait est COMPTÉ (§ 2 quater).
+    mois_module = sorted(d.loc[d[moyennes[0]].notna(), "mois"].unique())
+    hors = [m for m in mois_ok if m not in set(mois_module)]
+    if hors:
+        print(f"  module {lot} : fenêtre restreinte à son support — {len(hors)} mois "
+              f"retiré(s) ({hors[0]} → {hors[-1]})", flush=True)
+        mois_ok = [m for m in mois_ok if m in set(mois_module)]
+        d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
+    if not mois_ok:
+        raise SystemExit(f"⛔ module {lot} : aucun mois commun avec la fenêtre. Un module "
+                         f"sans support n'est pas un module vide, c'est une erreur.")
+    print(f"  module {lot} : {len(moyennes)} colonnes · {mois_ok[0]} → {mois_ok[-1]} "
+          f"({len(mois_ok)} mois)", flush=True)
+    return d, mois_ok
+
+
 def joindre_geoscf(d: pd.DataFrame, polluant: str) -> tuple[pd.DataFrame, list[str]]:
     """GEOS-CF **flux v1 uniquement** — le seul qui couvre une fenêtre mesurable."""
     g = charger_geoscf(GRANDEUR_PAR_POLLUANT[polluant], "v1")
@@ -225,7 +266,8 @@ def trier_couverture(couv, familles: dict, seuil_mois: float = 0.8,
 def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
          speciation: str = "brute", support_complet: bool = False,
          exclure: tuple[str, ...] = (), precurseurs: str = "completes",
-         fenetre: str = "geoscf", avec_ifs: bool = False) -> int:
+         fenetre: str = "geoscf", avec_ifs: bool = False,
+         avec_chimie: bool = False) -> int:
     # Le garde à l'ENTRÉE, avant tout chargement : refuser après deux minutes de lecture
     # de parquets est un refus tardif, et le coût est payé pour rien.
     if fenetre == "complete" and "geoscf" not in exclure:
@@ -491,27 +533,9 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     #
     # Huit champs de surface, MOYENNES seules : le criblage a montré que les maxima
     # n'ajoutent rien de démontrable (p_PC 0,0435 contre 0,0003).
-    if avec_ifs:
-        from apport_precurseurs import charger_lot as _cl  # noqa: PLC0415
-        ifs, moy_ifs, _max_ifs = _cl("ifs")
-        ifs["jour"] = pd.to_datetime(ifs["jour"]).dt.tz_localize(None)
-        avant_ifs = len(d)
-        d = d.merge(ifs[["station_id", "jour"] + moy_ifs], on=["station_id", "jour"],
-                    how="left")
-        if len(d) != avant_ifs:
-            raise SystemExit(f"jointure IFS : {avant_ifs:,} → {len(d):,} lignes")
-        familles["ifs"] = moy_ifs
-        # La fenêtre se restreint au support du module, et le retrait est COMPTÉ.
-        couvert_ifs = d[moy_ifs[0]].notna()
-        mois_ifs = sorted(d.loc[couvert_ifs, "mois"].unique())
-        hors = [m for m in mois_ok if m not in set(mois_ifs)]
-        if hors:
-            print(f"  module IFS : fenêtre restreinte à son support — {len(hors)} mois "
-                  f"retiré(s) ({hors[0]} → {hors[-1]})", flush=True)
-            mois_ok = [m for m in mois_ok if m in set(mois_ifs)]
-            d = d[d["mois"].isin(mois_ok)].reset_index(drop=True)
-        print(f"  module IFS : {len(moy_ifs)} colonnes · {mois_ok[0]} → {mois_ok[-1]} "
-              f"({len(mois_ok)} mois)", flush=True)
+    for lot, actif in (("ifs", avec_ifs), ("chimie", avec_chimie)):
+        if actif:
+            d, mois_ok = joindre_module(d, familles, mois_ok, lot)
 
     # ── Les configurations, cumulatives et déclarées ─────────────────────────────────
     configs: list[tuple[str, list[str], str]] = [("base (CAMS, terrain, calendrier)",
@@ -676,6 +700,7 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     suff += "_pre-moyennes" if precurseurs == "moyennes" else ""
     suff += "_fenetre-complete" if fenetre == "complete" else ""
     suff += "_avec-ifs" if avec_ifs else ""
+    suff += "_avec-chimie" if avec_chimie else ""
     partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv.partiel"
 
     # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
@@ -857,6 +882,9 @@ if __name__ == "__main__":
     a.add_argument("--support-complet", action="store_true",
                    help="écarter toute famille ayant au moins un MOIS entièrement absent — "
                         "sinon le modèle apprend la date par le motif de manque")
+    a.add_argument("--avec-chimie", action="store_true", dest="avec_chimie",
+                   help="joint le MODULE chimie (formaldéhyde, glyoxal, NO, CO ; 4 moyennes) "
+                        "en dernière position ; la fenêtre est restreinte à son support")
     a.add_argument("--avec-ifs", action="store_true", dest="avec_ifs",
                    help="ajoute le module météo prévue IFS en DERNIÈRE position et "
                         "restreint la fenêtre à son support")
@@ -874,7 +902,13 @@ if __name__ == "__main__":
                         "climatologie station × mois, ajustée pli par pli. Écrit dans "
                         "un artefact SUFFIXÉ : le chemin publié reste intact.")
     n = a.parse_args()
-    raise SystemExit(main(n.polluant, n.horizon, n.plis_spatiaux, n.ablation,
-                          n.speciation, n.support_complet,
-                          tuple(x for x in n.exclure.split(',') if x), n.precurseurs,
-                          n.fenetre, n.avec_ifs))
+    # 🔴 Arguments NOMMÉS, jamais positionnels — 24/08/2026. Un `--lot` présent dans le
+    # parseur et absent de l'appel positionnel a fait tourner la chimie sous l'étiquette des
+    # précurseurs et ÉCRASER leur fichier. Rien n'a levé : le CSV existait, ses colonnes
+    # étaient les bonnes, ses valeurs venaient d'ailleurs.
+    raise SystemExit(main(polluant=n.polluant, horizon=n.horizon,
+                          plis_spatiaux=n.plis_spatiaux, ablation=n.ablation,
+                          speciation=n.speciation, support_complet=n.support_complet,
+                          exclure=tuple(x for x in n.exclure.split(',') if x),
+                          precurseurs=n.precurseurs, fenetre=n.fenetre,
+                          avec_ifs=n.avec_ifs, avec_chimie=n.avec_chimie))
