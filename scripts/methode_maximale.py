@@ -54,6 +54,7 @@ Sortie : reports/methode_maximale_<polluant>_h<n>.csv
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import time
 from pathlib import Path
@@ -308,7 +309,8 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
          speciation: str = "brute", support_complet: bool = False,
          exclure: tuple[str, ...] = (), precurseurs: str = "completes",
          fenetre: str = "geoscf", avec_ifs: bool = False,
-         avec_chimie: bool = False, mois_de: str = "") -> int:
+         avec_chimie: bool = False, mois_de: str = "",
+         suffixe_extra: str = "") -> int:
     # Le garde à l'ENTRÉE, avant tout chargement : refuser après deux minutes de lecture
     # de parquets est un refus tardif, et le coût est payé pour rien.
     if fenetre == "complete" and "geoscf" not in exclure:
@@ -316,6 +318,19 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
             "--fenetre complete exige --exclure geoscf : garder les colonnes GEOS-CF hors "
             "de leur couverture donne au modèle un indicateur d'année déguisé — « geoscf "
             "est absent » vaut exactement « nous sommes après 2025-12 ».")
+    # 🔴 Les refus d'ARGUMENTS passent avant le premier parquet — 25/08/2026.
+    # Posée près de son usage, la validation du suffixe ne levait qu'APRÈS le chargement :
+    # quelques minutes de lecture payées pour une faute de frappe. Ce fichier porte déjà la
+    # leçon vingt lignes plus haut — « un refus tardif, et le coût est payé pour rien ».
+    if suffixe_extra and not re.fullmatch(r"_[A-Za-z0-9-]+", suffixe_extra):
+        raise SystemExit(f"⛔ --suffixe-extra « {suffixe_extra} » : attendu « _mot-cle » "
+                         f"(underscore, puis lettres, chiffres et tirets).")
+    if mois_de:
+        _r = Path(mois_de) if Path(mois_de).is_absolute() else RACINE / mois_de
+        if not _r.exists():
+            raise SystemExit(f"⛔ --mois-de : {_r} introuvable. On n'épingle pas sur une "
+                             f"référence qui n'existe pas.")
+
     depart = time.time()
     jeu = charger(polluant, horizon)
     base_cols = colonnes_admises(jeu)
@@ -763,10 +778,16 @@ def main(polluant: str, horizon: int, n_spa: int, ablation: bool = False,
     suff += "_fenetre-complete" if fenetre == "complete" else ""
     suff += "_avec-ifs" if avec_ifs else ""
     suff += "_avec-chimie" if avec_chimie else ""
-    # L'épinglage ne change PAS le nom : une pile réduite épinglée sur sa référence est la
-    # mesure que l'on veut comparer à elle, et lui donner un autre nom la rendrait
-    # introuvable pour `ablation_jointe`. Ce que l'épinglage change est inscrit dans la
-    # colonne `n_mois` de la sortie, que le garde de fenêtre lit.
+    # L'épinglage ne change PAS le nom par lui-même : une pile réduite épinglée sur sa
+    # référence est la mesure qu'on veut lui comparer, et la renommer la rendrait introuvable
+    # pour `ablation_jointe`. Ce que l'épinglage change est inscrit dans `n_mois`.
+    #
+    # 🔴 Mais alors DEUX épinglages différents écrivent le même fichier. C'est « une variante
+    # écrase sa jumelle », déjà payé sur ce dépôt. Le nom de la variante ne peut pas se
+    # deviner depuis la liste de mois — il appartient à l'appelant, qui seul sait pourquoi il
+    # épingle. D'où `--suffixe-extra`, explicite et obligatoire dès qu'on épingle plusieurs
+    # fois la même pile.
+    suff += suffixe_extra
     partiel = RACINE / f"reports/methode_maximale_{polluant}_h{horizon}{suff}.csv.partiel"
 
     # ── Le PÉRIMÈTRE EFFECTIF, affiché avant la première mesure ──────────────────
@@ -948,6 +969,10 @@ if __name__ == "__main__":
     a.add_argument("--support-complet", action="store_true",
                    help="écarter toute famille ayant au moins un MOIS entièrement absent — "
                         "sinon le modèle apprend la date par le motif de manque")
+    a.add_argument("--suffixe-extra", default="", dest="suffixe_extra", metavar="_MOT",
+                   help="suffixe supplémentaire du nom de sortie — obligatoire dès qu'on "
+                        "épingle plusieurs variantes de la même pile, sans quoi elles "
+                        "s'écrasent")
     a.add_argument("--mois-de", default="", dest="mois_de", metavar="CSV_PAR_PLI",
                    help="restreindre la fenêtre aux mois d'un artefact `_par_pli.csv` de "
                         "référence ; ne peut que restreindre, jamais élargir")
@@ -985,4 +1010,4 @@ if __name__ == "__main__":
                           exclure=tuple(x for x in n.exclure.split(',') if x),
                           precurseurs=n.precurseurs, fenetre=n.fenetre,
                           avec_ifs=n.avec_ifs, avec_chimie=n.avec_chimie,
-                          mois_de=n.mois_de))
+                          mois_de=n.mois_de, suffixe_extra=n.suffixe_extra))
