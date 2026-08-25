@@ -30,7 +30,15 @@ SORTIE = PAGES / "rendu"
 
 # Par défaut, les deux pages écrites à la main — les seules sans générateur pour les
 # revérifier à chaque exécution.
-DEFAUT = ["presentation.html", "figures.html"]
+# 🔴 Le défaut visait `presentation.html` — un document du 02/08, 162 Ko — quand le livrable
+# réel est `presentation_atmo.html`, 750 Ko, celui qu'`injecter_pages.py` régénère.
+#
+# Coût, le 25/08 : toute une nuit de contrôles de rendu passés au vert sur un fichier que
+# personne ne modifiait. Le contrôle ne mentait pas, il regardait ailleurs — et sa hauteur
+# de page, identique d'une exécution à l'autre, aurait dû me le dire dès la première.
+#
+# Un contrôle dont la cible n'est pas l'artefact publié est un zéro de non-lecture (§ 4 bis).
+DEFAUT = ["presentation_atmo.html", "presentation.html", "figures.html"]
 
 
 def main(noms: list[str]) -> int:
