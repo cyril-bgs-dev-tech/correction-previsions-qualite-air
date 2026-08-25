@@ -263,6 +263,17 @@ trois colonnes côte à côte suffisent à recalculer RMSE, biais, corrélation,
 dépassement — **ou votre propre critère**, sans nous croire sur parole, et à regarder les cas
 où la correction échoue autant que ceux où elle réussit.
 
+### Et les prédictions du modèle que ce dossier revendique
+
+`reports/matrice_socle/` publie les sorties du **socle** — 359 000 lignes, quatre polluants,
+32 à 34 mois, au grain **journalier**. Mêmes trois colonnes : `observe`, `cams`, `corrige`.
+
+**Ces fichiers reproduisent le chiffre publié à la deuxième décimale**, et le README y donne
+les quatre lignes de Python qui le recalculent. Rien à croire sur parole.
+
+⚠️ **Deux matrices, deux produits — pas deux versions.** Celle-ci répond à *« de combien
+peut-on corriger, partout ? »*, la suivante à *« que prédit-on, ici, à cette heure ? »*.
+
 ⚠️ **Ces valeurs viennent du protocole *spatial* et du modèle de base** — station cachée, mois connu, sans les leviers de la pile complète. Le `resume.csv` y annonce donc **+19,2 %** sur le NO₂ là où l'épreuve principale du dossier donne **≈ 41 %** : deux épreuves, deux modèles, deux chiffres — tous deux justes. Le README de la matrice détaille lequel répond à quoi.
 
 Format Parquet, un fichier par polluant, plus un extrait CSV lisible sans outil.
