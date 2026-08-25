@@ -32,15 +32,20 @@ donc **calculée** par `aq.rapport.libelle_echeance`, jamais écrite à la main.
 
 ## 🔴 Le protocole de ces valeurs — à lire AVANT de comparer à un autre chiffre
 
-`resume.csv` annonce **+19,2 % sur le NO₂**. Le README du dépôt annonce **+39,6 %**. Les deux
+`resume.csv` annonce **+19,2 % sur le NO₂**. Le README du dépôt annonce **≈ 41 %**. Les deux
 sont justes : **ce ne sont pas la même épreuve, ni le même modèle.**
 
 | | cette matrice | le chiffre du dossier |
 |---|---|---|
 | **protocole** | **spatial** — la station est cachée, le mois est connu | **double aveugle** — station **et** mois cachés |
-| **modèle** | le post-traitement **de base** | la **pile complète** : spéciation, dynamique, GEOS-CF, typologie… |
-| **période** | l'année 2026 en continu | 24 mois communs aux quatre polluants |
-| **grain** | horaire | horaire, agrégé selon l'épreuve |
+| **modèle** | le post-traitement **de base**, au grain horaire | le **socle** — huit familles : spéciation, précurseurs, dynamique, typologie, ensemble… |
+| **période** | l'année 2026 en continu | 32 à 34 mois, fenêtre propre à chaque polluant |
+| **grain** | horaire | **journalier** |
+
+⚠️ **Ce sont donc deux produits, pas deux versions.** Le socle est un modèle **journalier** ;
+cette matrice sert la chaîne **horaire**, plus fine en temps mais bâtie sur moins de leviers.
+Le premier répond à « de combien peut-on corriger », la seconde à « que prédit-on, ici, à
+cette heure ».
 
 Sur ce projet, un même gain vaut **+3,31 %** ou **+22,94 %** selon l'épreuve, et **l'ordre des
 polluants change** avec elle. Un pourcentage sans son protocole n'est donc pas un résultat

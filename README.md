@@ -41,25 +41,45 @@ une station nouvelle, une date future.
 ### La pile complète, en double aveugle
 
 Le tableau ci-dessus isole ce que l'apprentissage ajoute à une moyenne glissante. Celui-ci
-donne ce que vaut la méthode **entière** — tous les leviers empilés — à J+1, sur 24 mois de
-support commun et une pile identique aux quatre polluants :
+donne ce que vaut la méthode **entière** à J+1, sur le **socle** — les huit familles
+disponibles sur toute la fenêtre, identiques aux quatre polluants. GEOS-CF et les feux n'y
+sont pas : ce sont des **modules conditionnels**, mesurés à part sur leur propre support.
 
-| polluant | PARTOUT *(aucune observation du point)* | aux stations *(avec son historique)* |
-|---|---|---|
-| **NO₂** | **+39,6 %** | +45,7 % |
-| **PM10** | **+20,2 %** | +26,3 % |
-| **O₃** | **+17,9 %** | +24,1 % |
-| **PM2,5** | **+11,8 %** | +19,6 % |
+| polluant | fenêtre | PARTOUT *(aucune observation du point)* | aux stations *(avec son historique)* |
+|---|---|---|---|
+| **NO₂** | 33 mois | **≈ 41 %** | ≈ 47 % |
+| **PM10** | 32 mois | **≈ 24 %** | ≈ 30 % |
+| **O₃** | 33 mois | **≈ 19 %** | ≈ 27 % |
+| **PM2,5** | 34 mois | **≈ 15 %** | ≈ 22 % |
+
+⚠️ **Arrondis par obligation, pas par prudence.** Quatorze perturbations d'évaluation et vingt
+réajustements donnent une enveloppe de **0,7 à 3,0 pt** selon le polluant : retirer un seul
+mois déplace le chiffre jusqu'à 2,5 pt. La deuxième décimale n'a pas de sens. En revanche
+l'**écart apparié** est 3,5 à 8,7 × plus stable que le niveau — on arrondit les niveaux, on
+conclut sur les différences.
+
+⚠️ **Et les quatre lignes ne se comparent pas entre elles** : leurs fenêtres diffèrent, et sous
+ce protocole deux fenêtres différentes n'ont même pas les mêmes lignes de test — la rotation
+des groupes de stations est indexée sur le rang du mois.
 
 **Citer deux chiffres, jamais un.** Le périmètre `PARTOUT` vaut là où aucune station
 n'existe — c'est celui de la spatialisation, et le seul que CAMS ne sait pas faire. L'autre
 exige l'historique du point.
 
-L'apport du dernier étage — sept traceurs de **composition** du champ CAMS, que le dépôt ne
-téléchargeait pas — est le premier de ce projet à être publié **avec son intervalle** :
-NO₂ +1,5 % [+0,9 ; +2,2] · O₃ +5,9 % [+3,4 ; +8,3] · PM10 +6,0 % [+4,2 ; +7,6] ·
-PM2,5 +4,3 % [+2,4 ; +6,5]. Bornes basses toutes positives, même verdict sous blocs de
-trois et six mois, Holm franchi — seuils fixés avant lecture.
+**Le plus gros levier du modèle est la composition du champ CAMS**, et il se mesure en
+retirant ses deux familles *ensemble* — la spéciation et les précurseurs gazeux se masquent
+l'une l'autre à l'ablation individuelle :
+
+| | coût du retrait conjoint | IC95 | part du gain total |
+|---|---:|---:|---:|
+| O₃ | **+7,32 pt** | [+5,77 ; +9,26] | **38 %** |
+| PM2,5 | **+5,03 pt** | [+3,13 ; +6,91] | **35 %** |
+| PM10 | **+5,94 pt** | [+4,60 ; +7,33] | **25 %** |
+| NO₂ | **+2,86 pt** | [+2,03 ; +3,78] | 7 % |
+
+Les quatre bornes basses sont positives, `p_PC` = 0,0021. **Le levier principal n'est donc pas
+l'apprentissage du biais : c'est de quoi la masse est faite.** C'est un argument de mécanisme,
+pas de performance.
 
 **Le nombre de décimales suit l'intervalle**, pas l'inverse.
 
@@ -243,7 +263,7 @@ trois colonnes côte à côte suffisent à recalculer RMSE, biais, corrélation,
 dépassement — **ou votre propre critère**, sans nous croire sur parole, et à regarder les cas
 où la correction échoue autant que ceux où elle réussit.
 
-⚠️ **Ces valeurs viennent du protocole *spatial* et du modèle de base** — station cachée, mois connu, sans les leviers de la pile complète. Le `resume.csv` y annonce donc **+19,2 %** sur le NO₂ là où l'épreuve principale du dossier donne +39,6 % : deux épreuves, deux chiffres, tous deux justes. Le README de la matrice détaille lequel répond à quoi.
+⚠️ **Ces valeurs viennent du protocole *spatial* et du modèle de base** — station cachée, mois connu, sans les leviers de la pile complète. Le `resume.csv` y annonce donc **+19,2 %** sur le NO₂ là où l'épreuve principale du dossier donne **≈ 41 %** : deux épreuves, deux modèles, deux chiffres — tous deux justes. Le README de la matrice détaille lequel répond à quoi.
 
 Format Parquet, un fichier par polluant, plus un extrait CSV lisible sans outil.
 **Pas besoin de cloner** : GitLab sert chaque fichier séparément. La comparaison à PREV'AIR

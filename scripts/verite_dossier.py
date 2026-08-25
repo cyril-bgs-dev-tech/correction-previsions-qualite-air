@@ -1360,7 +1360,22 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
         f = RACINE / f"reports/apport_observation_veille_{p}_ic.csv"
         return float(pd.read_csv(f).iloc[0]["relatif_pct"]) if f.exists() else None
 
-    src = {p: (prod(p), maxi(p), aveugle(p), veille(p)) for p in POLLUANTS}
+    def socle(p: str) -> tuple[float, float, int] | None:
+        """Le SOCLE du contrat de produit — la ligne de tête depuis le 25/08/2026.
+
+        `maxi()` ci-dessus lit la pile la mieux contrôlée du 17/08 ; elle reste dans le
+        tableau parce que ce tableau existe pour DISTINGUER des mesures voisines, pas pour
+        n'en garder qu'une. Mais l'étoile revient à celle que le dossier publie.
+        """
+        f = RACINE / f"reports/methode_maximale_{p}_h2_sans-feux-geoscf_fenetre-complete.csv"
+        if not f.exists():
+            return None
+        t = pd.read_csv(f)
+        aux = _ligne_unique(t, "configuration", "★ MAXIMALE — AUX STATIONS", f)
+        par = _ligne_unique(t, "configuration", "★ MAXIMALE — PARTOUT", f)
+        return float(par["gain_pct"]), float(aux["gain_pct"]), int(par["n_mois"])
+
+    src = {p: (prod(p), maxi(p), aveugle(p), veille(p), socle(p)) for p in POLLUANTS}
     src = {p: v for p, v in src.items() if any(x is not None for x in v)}
     if not src:
         return ""
@@ -1411,14 +1426,21 @@ def bloc_reconciliation(lignes: list[dict]) -> str:
                                "n": 0, "gain": float("nan"), "relatif_pct": x})
         texte.append(f"| {num} | {nom} | {epreuve} | {ech} | " + " | ".join(cells) + " |")
 
+    ligne("⓪a", "**SOCLE — PARTOUT** ⭐ *(le chiffre du dossier)*",
+          "double aveugle, station **et** mois cachés", "**J+1**",
+          lambda v: v[4][0] if v[4] else None, gras=True)
+    ligne("⓪b", "**SOCLE — aux stations**", "idem, **+ la veille**", "J+1",
+          lambda v: v[4][1] if v[4] else None)
     ligne("①a", "**production, contre la chaîne en service** ⭐", "origine glissante, "
           "station **connue**", "**J0**", lambda v: v[0][0] if v[0] else None, gras=True)
     ligne("①b", "production, contre CAMS brut", "idem", "J0",
           lambda v: v[0][1] if v[0] else None)
-    ligne("②", "**maximale — AUX STATIONS**", "double aveugle, pile complète **+ veille**",
+    ligne("②", "maximale — AUX STATIONS *(pile du 17/08, dépassée par ⓪b)*",
+          "double aveugle, pile complète **+ veille**",
           "J+1", lambda v: v[1][0] if v[1] else None)
-    ligne("③", "**maximale — PARTOUT** ⭐", "double aveugle, **sans** la veille",
-          "J+1", lambda v: v[1][1] if v[1] else None, gras=True)
+    ligne("③", "maximale — PARTOUT *(pile du 17/08, **dépassée** par ⓪a)*",
+          "double aveugle, **sans** la veille",
+          "J+1", lambda v: v[1][1] if v[1] else None)
     ligne("④", "apport de la seule observation de la veille (§ 7)", "usage A contre usage B",
           "J+1", lambda v: v[3])
     ligne("⑤", "double aveugle de référence", "base seule, **aucun levier**", "J+1",

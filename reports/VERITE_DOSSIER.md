@@ -1,6 +1,6 @@
 # La vérité du dossier — chiffres gelés
 
-*Généré le 25/08/2026 à 00 h 57 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
+*Généré le 25/08/2026 à 11 h 03 par `scripts/verite_dossier.py`. **Toute figure, slide ou phrase du dossier doit dériver de ce document.** Un chiffre qui n'y figure pas est à retirer ou à re-mesurer — les fenêtres de 11 et 17 mois citées ailleurs sont périmées.*
 
 ## 0 bis. LE CHIFFRE DU PRODUIT — le socle, sur fenêtre canonique
 
@@ -250,10 +250,12 @@ Ce projet produit **cinq familles de scores** qui portent des noms voisins et r�
 
 | # | famille | épreuve | échéance | O₃ | NO₂ | PM10 | PM2,5 |
 |---|---|---|---|---|---|---|---|
+| ⓪a | **SOCLE — PARTOUT** ⭐ *(le chiffre du dossier)* | double aveugle, station **et** mois cachés | **J+1** | **+19,44 %** | **+41,09 %** | **+23,67 %** | **+14,54 %** |
+| ⓪b | **SOCLE — aux stations** | idem, **+ la veille** | J+1 | +27,33 % | +47,32 % | +29,87 % | +21,52 % |
 | ①a | **production, contre la chaîne en service** ⭐ | origine glissante, station **connue** | **J0** | **+22,94 %** | **+44,31 %** | **+26,12 %** | **+19,51 %** |
 | ①b | production, contre CAMS brut | idem | J0 | +27,19 % | +51,32 % | +31,33 % | +19,51 % |
-| ② | **maximale — AUX STATIONS** | double aveugle, pile complète **+ veille** | J+1 | +24,05 % | +45,71 % | +26,25 % | +19,56 % |
-| ③ | **maximale — PARTOUT** ⭐ | double aveugle, **sans** la veille | J+1 | **+17,90 %** | **+39,61 %** | **+20,23 %** | **+11,79 %** |
+| ② | maximale — AUX STATIONS *(pile du 17/08, dépassée par ⓪b)* | double aveugle, pile complète **+ veille** | J+1 | +24,05 % | +45,71 % | +26,25 % | +19,56 % |
+| ③ | maximale — PARTOUT *(pile du 17/08, **dépassée** par ⓪a)* | double aveugle, **sans** la veille | J+1 | +17,90 % | +39,61 % | +20,23 % | +11,79 % |
 | ④ | apport de la seule observation de la veille (§ 7) | usage A contre usage B | J+1 | +9,24 % | +22,76 % | — | +9,28 % |
 | ⑤ | double aveugle de référence | base seule, **aucun levier** | J+1 | +3,31 % | +25,71 % | +11,36 % | +5,14 % |
 

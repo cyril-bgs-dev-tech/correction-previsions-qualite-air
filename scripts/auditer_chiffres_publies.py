@@ -53,8 +53,21 @@ def pieces() -> list[Path]:
     `reports/figures/*.html` est dans `.gitignore`, et une recherche qui les saute rend un
     zéro indiscernable d'un zéro de non-occurrence (§ 4 bis)."""
     fs = sorted((RACINE / "reports/figures").glob("*.html"))
-    fs += [RACINE / n for n in ("presentation_atmo.html", "NOTE_ATMO_OCCITANIE.md")
-           if (RACINE / n).exists()]
+    # 🔴 Le périmètre ne couvrait que `reports/figures` — 25/08/2026.
+    #
+    # Il rendait « zéro chiffre périmé » pendant que `README.md`, la première page que voit
+    # quiconque ouvre le dépôt, publiait encore +39,6 %. Un contrôle dont la CIBLE n'est pas
+    # ce qu'on publie rend un zéro de non-lecture (§ 4 bis) — le même défaut que
+    # `render_check.py` visant un fichier du 02/08 pendant qu'on en modifiait un autre.
+    #
+    # Toute pièce lue par un tiers entre ici. La liste est explicite plutôt que globale : un
+    # glob attraperait les brouillons et noierait le verdict.
+    for n in ("README.md", "LIVRABLE.md", "presentation_atmo.html",
+              "NOTE_ATMO_OCCITANIE.md", "docs/BESOINS_ATMO_OCCITANIE_2025.md",
+              "reports/matrice_predictions_2026/README.md",
+              "reports/CONTRAT_PRODUIT.md", "reports/VERITE_DOSSIER.md"):
+        if (RACINE / n).exists():
+            fs.append(RACINE / n)
     return fs
 
 
@@ -73,16 +86,28 @@ def actuels() -> dict[str, str]:
 
 
 def main() -> int:
-    courants, trouves, ok = actuels(), [], []
+    courants, trouves, pistes, ok = actuels(), [], [], []
     fs = pieces()
     for f in fs:
         texte = f.read_text(errors="ignore")
         for a, b in ENTITES.items():
             texte = texte.replace(a, b)
         for val, origine in PERIMES.items():
-            for m in re.finditer(re.escape(val) + r"\s*%", texte):
-                brut = BALISE.sub(" ", texte[max(0, m.start() - 70):m.start() + 30])
-                trouves.append((f, val, origine, re.sub(r"\s+", " ", brut).strip()))
+            # 🔴 Le même chiffre périmé s'écrit aussi ARRONDI — 25/08/2026.
+            # `README.md`, première page du dépôt, publie « +39,6 % » quand le motif exigeait
+            # deux décimales. Un chiffre de tête reste un chiffre de tête quand on lui retire
+            # une décimale : on cherche les deux formes.
+            # ⚠️ La forme ARRONDIE élargit le filet — et elle coïncide. « +14,0 % » de
+            # `LIVRABLE.md` est le résultat d'un partage des jours à la médiane, sans rapport
+            # avec le 13,96 de la pile dépassée. Les deux formes sont donc rapportées
+            # SÉPARÉMENT : l'exacte est un fait, l'arrondie est une piste à regarder.
+            # Les mêler produirait un contrôle qui crie au loup, et on cesserait de le lire.
+            arrondi = f"{round(float(val.replace(',', '.')), 1):.1f}".replace(".", ",")
+            for motif, sur in ((re.escape(val), True), (re.escape(arrondi), False)):
+                for m in re.finditer(motif + r"\s*%", texte):
+                    brut = BALISE.sub(" ", texte[max(0, m.start() - 70):m.start() + 30])
+                    ctx = re.sub(r"\s+", " ", brut).strip()
+                    (trouves if sur else pistes).append((f, val, origine, ctx))
         for val, quoi in courants.items():
             if re.search(re.escape(val) + r"\s*%", texte):
                 ok.append((f.name, val, quoi))
@@ -99,6 +124,12 @@ def main() -> int:
             print(f"      « …{ctx}… »")
     else:
         print("\n✅ aucun chiffre de tête périmé dans les pièces publiées")
+    if pistes:
+        print(f"\n🟠 {len(pistes)} forme(s) ARRONDIE(S) d'un chiffre périmé — à regarder, "
+              f"pas à corriger d'office :\n")
+        for f, val, _o, ctx in pistes:
+            print(f"  ~{val} %  ·  {f.relative_to(RACINE)}")
+            print(f"      « …{ctx[-88:]}… »")
     if ok:
         print(f"\n✅ {len(ok)} présence(s) d'un chiffre COURANT : "
               + ", ".join(f"{v} % dans {n}" for n, v, _ in ok[:6]))
