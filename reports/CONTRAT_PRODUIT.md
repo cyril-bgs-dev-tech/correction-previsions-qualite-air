@@ -374,18 +374,61 @@ Régénérable : `python3 scripts/enveloppe_stabilite.py --familles`.
 
 ---
 
+### ✅ Chantier ① complet — l'axe APPRENTISSAGE, 25/08/2026
+
+Perturber ce qui est **noté** était gratuit. Perturber ce qui est **appris** demandait un
+réajustement par perturbation — et l'épinglage de fenêtre l'a rendu possible sans code neuf :
+épingler sur une liste de mois **amputée** retire le mois de tout le corpus, donc de
+l'apprentissage. Vingt mesures, cinq perturbations par polluant.
+
+| | amplitude ÉVALUATION | amplitude APPRENTISSAGE | rapport |
+|---|---:|---:|---:|
+| NO₂ | 0,42 pt | **0,71 pt** | × 1,7 |
+| O₃ | 1,54 pt | **1,50 pt** | × 1,0 |
+| PM10 | 2,47 pt | **3,03 pt** | × 1,2 |
+| PM2,5 | 1,61 pt | **2,04 pt** | × 1,3 |
+
+**L'enveloppe d'évaluation était un bon minorant** : l'enveloppe complète ne la dépasse que
+d'un facteur 1,0 à 1,7. Les deux axes s'accordent largement — corrélation **+0,78**, écart
+médian **0,194 pt**.
+
+**L'enveloppe complète du chiffre publié est donc de 0,7 à 3,0 pt selon le polluant.** Les
+arrondis ≈ 41 · ≈ 19 · ≈ 24 · ≈ 15 % ne sont pas prudents, ils sont **obligatoires**, et
+PM10 est le cas le plus exposé.
+
+### 🔴 Deux perturbations changent de SIGNE entre les deux axes
+
+| | mois | évaluation | apprentissage |
+|---|---|---:|---:|
+| O₃ | 2023-09 | **+0,414** | **−0,959** |
+| PM10 | 2024-01 | **+0,181** | **−1,456** |
+
+Retirer ces mois de la **notation** améliore le chiffre ; les retirer de l'**apprentissage**
+le dégrade. Ce sont des mois que le modèle a besoin de **voir**, et sur lesquels il est
+mauvais.
+
+> **L'axe évaluation seul aurait désigné ces mois comme des gêneurs à écarter.** C'est
+> exactement l'inverse : ce sont des mois porteurs pour l'apprentissage. Un jackknife
+> d'évaluation ne dit rien de la valeur d'une donnée — seulement de son effet sur la note.
+
+Régénérable : `reports/perturbations/taches.txt`, puis
+`reports/enveloppe_stabilite_apprentissage.csv`.
+
 ## Ce qui reste à faire avant que ces chiffres soient définitifs
 
-1. **enveloppe de stabilité** — ⚙️ **moitié faite** : l'axe *évaluation* est mesuré
-   (14 perturbations, ci-dessus). Reste l'axe *apprentissage* — perturber ce qui est appris
-   demande un réajustement par perturbation, et c'est le seul poste encore coûteux ;
+1. ~~**enveloppe de stabilité**~~ — ✅ **complète** : axe évaluation (14 perturbations) et
+   axe apprentissage (20 mesures réajustées). Enveloppe totale **0,7 à 3,0 pt** ;
 2. ~~**intervalle du plan**~~ — ✅ fait, voir ci-dessus ;
 3. ~~**recalibrer la règle de décision**~~ — ✅ fait : seuil calibré à **0,0950** pour 12
    configurations criblées, au lieu des 0,05 nominaux 36 × trop sévères ;
 4. **registre exhaustif des configurations**, ouvert avant le prochain criblage — le
    compte actuel ne recense que celles ayant laissé un CSV.
 
-En attendant, ces quatre scores restent **exploratoires**, et ils le seront dit. Ce qui a
-changé le 24/08 : ils ont désormais une **échelle** — ± 0,5 à 1,5 pt d'enveloppe
-d'évaluation, et jusqu'à 2,5 pt pour le retrait d'un seul mois. C'est ce qui rend l'arrondi
-obligatoire plutôt que prudent.
+**Trois des quatre chantiers sont clos.** Ne reste que le ④ — le registre exhaustif des
+configurations criblées, dont le compte actuel ne recense que celles ayant laissé un CSV.
+C'est de la comptabilité, pas de la mesure : il change le **seuil calibré**, pas les chiffres.
+
+Les quatre scores ont désormais une **échelle mesurée sur les deux axes** — 0,7 à 3,0 pt
+d'enveloppe totale. Cités **arrondis**, ils sont défendables ; cités à la deuxième décimale,
+ils ne le sont pas. Et les **écarts appariés**, eux, restent 3,5 à 8,7 × plus stables que les
+niveaux : c'est sur eux que les conclusions se prennent.
