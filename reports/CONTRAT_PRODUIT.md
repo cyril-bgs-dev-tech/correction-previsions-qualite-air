@@ -414,6 +414,43 @@ mauvais.
 Régénérable : `reports/perturbations/taches.txt`, puis
 `reports/enveloppe_stabilite_apprentissage.csv`.
 
+### ✅ Chantier ④ — le compte des degrés de liberté, et pourquoi il ne décide rien
+
+Le seuil calibré vaut **0,0874** pour les **14 configurations de criblage** réellement
+inscrites (il valait 0,0950 pour 12). Tous les verdicts publiés passent : G3 0,0021 · socle
+0,0021-0,0069 · IFS 0,0312 · `geoscf`+`membres` 0,0357 · G2 0,0468.
+
+**L'objection qui restait** : les ablations de groupe sont jugées contre ce seuil sans entrer
+dans son `K`. Répondre qu'elles ont été préinscrites — ce qui est vrai — serait exactement le
+raisonnement qui arrange. `--k` rend donc la question **mesurable** :
+
+| K forcé | 14 | 24 | 34 | 57 |
+|---|---:|---:|---:|---:|
+| seuil calibré | 0,0874 | 0,0910 | 0,0900 | 0,0874 |
+
+**Le seuil ne se resserre pas — et il n'est même pas monotone.** La raison est mesurée, pas
+supposée : sous ce plan, **`p_PC` ne peut prendre que CINQ valeurs distinctes**.
+
+| blocs | valeurs atteignables par `p_PC` sous H₀ |
+|---|---|
+| 9 | 0,0059 · 0,0586 · 0,2695 · 0,7617 · 1 |
+| 11 | 0,0176 · 0,0981 · 0,3398 · 0,8232 · 1 |
+
+Quatre polluants et neuf à onze blocs ne produisent pas assez de configurations de signes pour
+que la conjonction partielle soit continue. Le seuil calibré est donc une **fonction en
+escalier** de `K`, pas une fonction décroissante — et entre 14 et 57 il reste sur la même
+marche.
+
+> **La conclusion ne dépend pas du périmètre de `K`.** C'est plus solide que n'importe quel
+> argument sur ce qui « compte » comme criblage, parce que cela n'exige de croire personne.
+
+⚠️ **Deux réserves.** Au-delà de 14, le nul est **rééchantillonné avec remise** parmi les
+séries observées : l'estimation du resserrement est donc un **minorant**. Et la table
+ci-dessus est celle du test de signe, plus grossière que la permutation par retournement
+réellement employée — elle explique le mécanisme, elle ne remplace pas la calibration.
+
+Régénérable : `python3 scripts/calibrer_decision.py [--k N]`.
+
 ## Ce qui reste à faire avant que ces chiffres soient définitifs
 
 1. ~~**enveloppe de stabilité**~~ — ✅ **complète** : axe évaluation (14 perturbations) et
@@ -424,9 +461,10 @@ Régénérable : `reports/perturbations/taches.txt`, puis
 4. **registre exhaustif des configurations**, ouvert avant le prochain criblage — le
    compte actuel ne recense que celles ayant laissé un CSV.
 
-**Trois des quatre chantiers sont clos.** Ne reste que le ④ — le registre exhaustif des
-configurations criblées, dont le compte actuel ne recense que celles ayant laissé un CSV.
-C'est de la comptabilité, pas de la mesure : il change le **seuil calibré**, pas les chiffres.
+**Les quatre chantiers sont clos.** Le ④ a rendu davantage qu'un compte : il a montré que le
+seuil calibré **ne dépend pas** du périmètre retenu, parce que la loi nulle du `p_PC` est
+quantifiée à cinq valeurs. Une objection de méthode a été retirée par la mesure plutôt que
+par un argument.
 
 Les quatre scores ont désormais une **échelle mesurée sur les deux axes** — 0,7 à 3,0 pt
 d'enveloppe totale. Cités **arrondis**, ils sont défendables ; cités à la deuxième décimale,

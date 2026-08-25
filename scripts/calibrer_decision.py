@@ -47,7 +47,8 @@ POLLUANTS = ("NO2", "O3", "PM10", "PM25")
 BLOC = 3
 
 
-def main(axe: str, horizon: int, alpha: float, tirages: int, graine: int) -> int:
+def main(axe: str, horizon: int, alpha: float, tirages: int, graine: int,
+         k_criblage: int = 0) -> int:
     series = charger(axe, horizon)
     complets = {k: v for k, v in series.items() if len(v) == len(POLLUANTS)}
     if not complets:
@@ -83,7 +84,28 @@ def main(axe: str, horizon: int, alpha: float, tirages: int, graine: int) -> int
     tous = pc_nul.ravel()
     taille = float((tous < alpha).mean())
     seuil_1 = float(np.quantile(tous, alpha))
-    seuil_K = float(np.quantile(pc_nul.min(axis=0), alpha))
+    # 🔴 Combien de degrés de liberté le criblage a-t-il RÉELLEMENT consommés ? — 25/08/2026
+    #
+    # `len(cles)` ne compte que les verdicts de criblage (`apport_*`). Les ablations de groupe
+    # sont jugées CONTRE ce seuil sans y entrer — elles ont été préinscrites comme un plan de
+    # taille fixe (DEC-2026-08-24-03) et rapportées en entier, négatives comprises, donc elles
+    # ne relèvent pas de la sélection que cette correction protège.
+    #
+    # Mais trancher cela par argument est exactement le raisonnement qui arrange. `--k` rend
+    # la question MESURABLE : on voit ce que le seuil devient si on les compte, et ce qui
+    # tombe alors. Un plan dont la conclusion dépend du périmètre de K doit le dire.
+    # ⚠️ Le paramètre s'appelle `k_criblage` et non `k` : deux boucles de cette fonction
+    # font `for k in cles`, et un paramètre nommé `k` recevait donc la dernière CLÉ — un
+    # tuple. Python rebinde la variable de boucle dans la portée de la fonction.
+    k_eff = k_criblage if k_criblage > 0 else len(cles)
+    if k_eff > pc_nul.shape[0]:
+        # Le tirage nul est indexé par configuration observée ; pour un K plus grand on
+        # rééchantillonne AVEC REMISE parmi les colonnes nulles — même loi, plus de tirages.
+        idx = np.random.default_rng(graine).integers(0, pc_nul.shape[0], size=k_eff)
+        base = pc_nul[idx]
+    else:
+        base = pc_nul[:k_eff]
+    seuil_K = float(np.quantile(base.min(axis=0), alpha))
 
     print(f"CALIBRATION DE LA DÉCISION · axe {axe} · {len(cles)} configurations · "
           f"{tirages:,} tirages · α = {alpha}")
@@ -91,7 +113,9 @@ def main(axe: str, horizon: int, alpha: float, tirages: int, graine: int) -> int
     print(f"  taille RÉELLE du seuil nominal {alpha}    : {taille:.4f}  "
           f"(marge {alpha / max(taille, 1e-9):.0f} ×)")
     print(f"  seuil calibré, UNE configuration        : p_PC < {seuil_1:.4f}")
-    print(f"  seuil calibré, criblage de {len(cles):2d} ensemble  : p_PC < {seuil_K:.4f}")
+    print(f"  seuil calibré, criblage de {k_eff:2d} ensemble  : p_PC < {seuil_K:.4f}"
+          + ("" if k_criblage <= 0 else
+             f"   (K forcé, {len(cles)} verdicts de criblage réels)"))
     print("═" * 98)
     print(f"  {'configuration':56s} {'p_PC':>8s} {'nominal':>9s} {'calibré':>9s}")
     lignes, bascules = [], 0
@@ -123,4 +147,7 @@ if __name__ == "__main__":
     a.add_argument("--alpha", type=float, default=0.05)
     a.add_argument("--tirages", type=int, default=6000)
     a.add_argument("--graine", type=int, default=20260824)
+    a.add_argument("--k", type=int, default=0, dest="k_criblage",
+                   help="forcer le nombre de degrés de liberté du criblage ; 0 = les compter "
+                        "sur les verdicts présents")
     sys.exit(main(**vars(a.parse_args())))
