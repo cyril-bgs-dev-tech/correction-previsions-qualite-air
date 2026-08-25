@@ -36,6 +36,7 @@ import csv
 import glob
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parents[1]
@@ -64,7 +65,16 @@ DERIVEES_DE_BASE = ("profil", "fourier", "tendance")
 TETE_LUE = 262_144
 
 
+@lru_cache(maxsize=None)
 def _mtime(p: Path) -> float:
+    """La date d'un fichier, MÉMORISÉE — 25/08/2026.
+
+    Le graphe relie chaque pile à TOUTES les sources de ses familles : soixante piles contre
+    quelques centaines de parquets font des dizaines de milliers d'appels `stat`. Sur `/mnt/d`,
+    traversé depuis WSL, un `stat` coûte des centaines de microsecondes — le balayage passait
+    de 6 s à plus de deux minutes. Le même chemin est interrogé des dizaines de fois ; le
+    mémoriser suffit.
+    """
     return p.stat().st_mtime
 
 
@@ -127,7 +137,14 @@ def descendance() -> list[tuple[Path, list[tuple[str, Path]]]]:
     # 🔴 `Path.read_text()[:N]` lit le fichier ENTIER avant de tronquer. Sur ce dépôt cela
     # faisait 4,1 Go pour 696 CSV, et le balayage n'aboutissait pas. On lit une tête bornée,
     # une seule fois par fichier, et on croise contre TOUS les noms de piles d'un coup.
+    # 🔴 Une boucle « nom in tete » par pile coûte O(fichiers × piles) — 25/08/2026.
+    # Le balayage prenait 5,8 s avec vingt piles ; à soixante il ne finissait plus. Une
+    # alternance COMPILÉE parcourt chaque tête une seule fois, quel que soit le nombre de
+    # piles. C'est le même correctif que celui du `read_text()` intégral, un cran plus loin.
     noms = {n[:-4]: piles[n] for n in piles}
+    if not noms:
+        return liens
+    motif = re.compile("|".join(sorted(map(re.escape, noms), key=len, reverse=True)))
     candidats = [f for f in sorted((RACINE / "reports").glob("*.csv")) if not PILE.match(f.name)]
     candidats += sorted((RACINE / "reports").glob("*.md"))
     candidats += sorted((RACINE / "reports/decisions").glob("*.md"))
@@ -137,9 +154,8 @@ def descendance() -> list[tuple[Path, list[tuple[str, Path]]]]:
                 tete = fh.read(TETE_LUE)
         except OSError:
             continue
-        cites = [p for nom, p in noms.items() if nom in tete]
-        if cites:
-            liens.append((f, [("pile", p) for p in cites]))
+        if cites := {noms[m] for m in motif.findall(tete)}:
+            liens.append((f, [("pile", x) for x in sorted(cites)]))
     return liens
 
 
