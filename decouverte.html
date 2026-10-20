@@ -1,0 +1,2181 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Découverte ATMO</title>
+
+<style>
+/* ════════════════════════════════════════════════════════════════════════════
+   DÉCOUVERTE ATMO — document 1 de la série « comprendre avant de mesurer »
+
+   Identité : le sujet, c'est l'air. Le document se lit comme un sondage
+   vertical de l'atmosphère — un rail de gauche marque les sept paliers, chaque
+   chapitre s'ouvre sur une ligne d'horizon. Serif pour lire, sans pour situer,
+   mono pour compter.
+
+   Palette validée par `validate_palette.js` (skill dataviz) :
+     clair  #0E8D7C ↔ #B4471F — 5 contrôles au vert
+     sombre #1FA492 ↔ #D26F4A — 5 contrôles au vert
+   L'ambre ne sert JAMAIS de marque de graphique (hors bande de luminosité en
+   sombre) : uniquement texte et filets du fil réglementaire.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: light dark;
+
+  /* — sol et surfaces : une brume froide, pas du papier — */
+  --fond:       #F2F5F4;
+  --surface:    #FFFFFF;
+  --surface-2:  #E9EFED;
+  --trait:      #D5DFDC;
+  --trait-fort: #B3C3BF;
+
+  /* — encres : neutres biaisés vers l'accent — */
+  --encre:   #0B1719;
+  --encre-2: #435557;
+  --encre-3: #6E8184;
+
+  /* — rôles de donnée — */
+  --accent:      #0E8D7C;   /* gain, mesure du projet   */
+  --accent-pale: #DDEDE9;
+  --contre:      #B4471F;   /* dégradation, écarté      */
+  --contre-pale: #F6E5DE;
+  --neutre:      #5F7276;   /* référence, produit brut  */
+  --neutre-pale: #E4EAE9;
+
+  /* — fil réglementaire : texte et filets seulement — */
+  --regle:      #8A6A10;
+  --regle-fond: rgba(199, 156, 40, .075);
+  --regle-trait:rgba(199, 156, 40, .34);
+
+  /* — échelle officielle de l'indice ATMO (arrêté du 10/07/2020, annexe I) — */
+  --atmo-1: #50F0E6; --atmo-2: #50CCAA; --atmo-3: #F0E641;
+  --atmo-4: #FF5050; --atmo-5: #960032; --atmo-6: #872181;
+
+  --serif: "Iowan Old Style", Charter, Constantia, Cambria, Georgia, "Times New Roman", serif;
+  --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  --spine: 66ch;      /* la colonne de lecture      */
+  --large: 1080px;    /* les débords de données     */
+  --r: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond:       #091416;
+    --surface:    #0E1E21;
+    --surface-2:  #14272B;
+    --trait:      #1C333799;
+    --trait-fort: #2B474C;
+
+    --encre:   #E6EFEE;
+    --encre-2: #A1B3B5;
+    --encre-3: #74898D;
+
+    --accent:      #1FA492;
+    --accent-pale: #0D2E2C;
+    --contre:      #D26F4A;
+    --contre-pale: #331F18;
+    --neutre:      #7E9599;
+    --neutre-pale: #17282B;
+
+    --regle:      #DFB25C;
+    --regle-fond: rgba(223, 178, 92, .06);
+    --regle-trait:rgba(223, 178, 92, .30);
+  }
+}
+
+:root[data-theme="dark"] {
+  --fond:       #091416;
+  --surface:    #0E1E21;
+  --surface-2:  #14272B;
+  --trait:      #1C333799;
+  --trait-fort: #2B474C;
+
+  --encre:   #E6EFEE;
+  --encre-2: #A1B3B5;
+  --encre-3: #74898D;
+
+  --accent:      #1FA492;
+  --accent-pale: #0D2E2C;
+  --contre:      #D26F4A;
+  --contre-pale: #331F18;
+  --neutre:      #7E9599;
+  --neutre-pale: #17282B;
+
+  --regle:      #DFB25C;
+  --regle-fond: rgba(223, 178, 92, .06);
+  --regle-trait:rgba(223, 178, 92, .30);
+}
+
+/* ═══ Socle ══════════════════════════════════════════════════════════════ */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { color: var(--accent); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+svg { display: block; }
+strong { font-weight: 640; color: var(--encre); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ═══ Trame de composition ═══════════════════════════════════════════════
+   Une colonne de lecture étroite, et des « débords » qui en sortent à la
+   largeur des données (règle `.deborde`, en fin de feuille).
+   ⚠️ Une grille nommée sur `.flux` ne marcherait pas : les figures et les
+   tableaux vivent DANS les `<section>`, donc deux niveaux plus bas, et une
+   colonne de grille ne traverse pas un descendant.                          */
+.flux { width: min(var(--spine), calc(100vw - 40px)); margin: 0 auto; }
+
+/* ═══ Rail de sondage — le fil conducteur du document ════════════════════ */
+.rail { display: none; }
+
+@media (min-width: 1240px) {
+  .rail {
+    display: block;
+    position: fixed;
+    left: max(18px, calc((100vw - var(--large)) / 2 - 132px));
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 118px;
+  }
+  .rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .rail a {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 0;
+    text-decoration: none;
+    color: var(--encre-3);
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    line-height: 1.25;
+  }
+  .rail a::before {
+    content: "";
+    height: 2px;
+    width: 12px;
+    background: var(--trait-fort);
+    transition: width .18s ease, background .18s ease;
+    justify-self: end;
+  }
+  .rail a:hover { color: var(--encre-2); }
+  .rail a:hover::before { width: 20px; }
+  .rail a[data-ici] { color: var(--accent); }
+  .rail a[data-ici]::before { width: 26px; background: var(--accent); }
+}
+
+/* ═══ Ouverture ══════════════════════════════════════════════════════════ */
+.tete { padding: 84px 0 0; }
+
+.serie {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .17em;
+  color: var(--accent);
+  margin: 0 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.serie::after { content: ""; flex: 1; height: 1px; background: var(--trait); }
+
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(38px, 6.4vw, 66px);
+  line-height: 1.03;
+  font-weight: 600;
+  letter-spacing: -.022em;
+  margin: 0 0 26px;
+  text-wrap: balance;
+}
+h1 em { font-style: italic; color: var(--accent); }
+
+.sous-titre {
+  font-size: 19.5px;
+  line-height: 1.58;
+  color: var(--encre-2);
+  margin: 0 0 34px;
+  text-wrap: pretty;
+}
+
+.carte-lecture {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  padding: 15px 0;
+  border-top: 1px solid var(--trait);
+  border-bottom: 1px solid var(--trait);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .05em;
+  color: var(--encre-3);
+  text-transform: uppercase;
+}
+.carte-lecture b { color: var(--encre-2); font-weight: 500; }
+
+/* ═══ Chapitres ══════════════════════════════════════════════════════════ */
+.chap { padding: 92px 0 0; scroll-margin-top: 32px; }
+
+.chap-tete { margin-bottom: 38px; }
+.chap-num {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 18px;
+  border-top: 2px solid var(--encre);
+  padding-top: 12px;
+}
+.chap-num b {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .14em;
+  color: var(--accent);
+  font-weight: 600;
+}
+.chap-num span {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--encre-3);
+}
+
+h2 {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.9vw, 40px);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: -.018em;
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+.chapeau { font-size: 18.5px; line-height: 1.6; color: var(--encre-2); margin: 0; text-wrap: pretty; }
+
+h3 {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 660;
+  letter-spacing: .002em;
+  margin: 46px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--trait-fort);
+}
+h4 { font-size: 15.5px; font-weight: 640; margin: 30px 0 8px; letter-spacing: -.008em; }
+
+p { margin: 0 0 20px; text-wrap: pretty; }
+.chap p:last-child { margin-bottom: 0; }
+
+/* ═══ Citation en exergue ════════════════════════════════════════════════ */
+.exergue {
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.5vw, 26px);
+  line-height: 1.4;
+  font-style: italic;
+  color: var(--encre);
+  margin: 38px 0;
+  padding-left: 22px;
+  border-left: 2px solid var(--accent);
+  text-wrap: pretty;
+}
+.exergue small {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: .07em;
+  color: var(--encre-3);
+  text-transform: uppercase;
+}
+
+/* ═══ Chiffres de tête ═══════════════════════════════════════════════════ */
+.chiffres {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  background: var(--trait);
+  border: 1px solid var(--trait);
+  border-radius: var(--r);
+  margin: 34px 0;
+  overflow: hidden;
+}
+.chiffre { background: var(--surface); padding: 20px 20px 18px; }
+.chiffre .v {
+  font-family: var(--mono);
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 600;
+  letter-spacing: -.03em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+  display: block;
+}
+.chiffre .v.grave { color: var(--contre); }
+.chiffre .l {
+  margin: 9px 0 0;
+  font-size: 13.5px;
+  line-height: 1.48;
+  color: var(--encre-2);
+}
+.chiffre .s {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--encre-3);
+  line-height: 1.5;
+}
+
+/* ═══ Figures ════════════════════════════════════════════════════════════ */
+figure {
+  margin: 40px 0;
+  padding: 24px 24px 20px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--r);
+}
+figure .fig-t {
+  font-size: 15.5px;
+  font-weight: 640;
+  margin: 0 0 5px;
+  letter-spacing: -.01em;
+}
+figure .fig-s { margin: 0 0 20px; font-size: 14px; line-height: 1.55; color: var(--encre-2); }
+.fig-cadre { overflow-x: auto; }
+.fig-cadre svg { width: 100%; height: auto; }
+figcaption {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--trait);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.62;
+  letter-spacing: .02em;
+  color: var(--encre-3);
+}
+figcaption b { color: var(--encre-2); font-weight: 500; }
+
+/* marques SVG */
+.g-lab  { font-family: var(--mono); font-size: 11px; fill: var(--encre-2); }
+.g-val  { font-family: var(--mono); font-size: 11.5px; font-weight: 600; fill: var(--encre); font-variant-numeric: tabular-nums; }
+.g-ax   { font-family: var(--mono); font-size: 9.5px; fill: var(--encre-3); }
+.g-tit  { font-family: var(--mono); font-size: 10px; fill: var(--encre-3); letter-spacing: .1em; }
+.g-grille { stroke: var(--trait); stroke-width: 1; }
+.g-axe    { stroke: var(--trait-fort); stroke-width: 1.2; }
+
+/* légende de figure */
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0 0 16px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .05em;
+  color: var(--encre-2);
+}
+.legende span { display: inline-flex; align-items: center; gap: 7px; }
+.legende i { width: 13px; height: 13px; border-radius: 2px; flex: none; }
+
+/* ═══ Tableaux ═══════════════════════════════════════════════════════════ */
+.tab-cadre { overflow-x: auto; margin: 30px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 480px; }
+th, td { padding: 10px 13px; text-align: right; border-bottom: 1px solid var(--trait); }
+th:first-child, td:first-child { text-align: left; }
+thead th {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--encre-3);
+  font-weight: 600;
+  border-bottom: 1px solid var(--trait-fort);
+  white-space: nowrap;
+}
+tbody td { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+tbody td:first-child { font-family: var(--sans); font-weight: 500; }
+tbody tr:hover { background: var(--surface-2); }
+td.nous { color: var(--accent); font-weight: 640; }
+td.moins { color: var(--contre); }
+tfoot td { border-bottom: 0; padding-top: 12px; font-family: var(--sans); font-size: 12.5px; color: var(--encre-3); text-align: left; }
+
+/* barres dans les cellules */
+.jauge-cell { display: grid; gap: 4px; justify-items: end; }
+.jauge-cell b { font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.jauge-cell i {
+  display: block;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 2px;
+  min-width: 2px;
+}
+.jauge-cell i.faible { background: var(--neutre); }
+.jauge-cell em { font-style: normal; font-family: var(--mono); font-size: 10px; color: var(--encre-3); }
+.jauge-cell em.plus { color: var(--accent); }
+.jauge-cell em.moins { color: var(--contre); }
+
+/* ═══ Cartes de source ═══════════════════════════════════════════════════ */
+.groupe { margin-top: 44px; }
+.groupe-tete {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--trait-fort);
+}
+.groupe-tete b { font-size: 15px; font-weight: 660; }
+.groupe-tete span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--encre-3); text-transform: uppercase; }
+
+.cartes { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.carte {
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--r);
+  padding: 18px 19px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.carte-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.carte-h b { font-size: 15.5px; font-weight: 640; letter-spacing: -.012em; }
+/* Pas de `white-space: nowrap` : à 390 px de large, « NASA · Global Modeling and
+   Assimilation Office » déborde la fenêtre et pousse la page hors cadre. */
+.carte-h span {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  line-height: 1.5;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--encre-3);
+  text-align: right;
+  min-width: 0;
+}
+.carte p { margin: 0; font-size: 14px; line-height: 1.56; color: var(--encre-2); }
+.carte dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  gap: 5px 12px;
+  padding-top: 11px;
+  border-top: 1px dashed var(--trait-fort);
+}
+.carte dt {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--encre-3);
+  align-self: baseline;
+}
+.carte dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--encre);
+  font-variant-numeric: tabular-nums;
+}
+.limite {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--r);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--encre-2);
+}
+.limite b {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--contre);
+  margin-bottom: 3px;
+  font-weight: 600;
+}
+
+/* ═══ Deux airs — le comparateur d'ouverture ════════════════════════════ */
+.deux-airs {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  background: var(--trait);
+  border: 1px solid var(--trait);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 34px 0;
+}
+.air { background: var(--surface); padding: 22px 22px 20px; }
+.air.reel { background: var(--surface-2); }
+.air-tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 4px;
+}
+.air.reel .air-tag { color: var(--contre); }
+.air h4 { margin: 0 0 12px; font-size: 17px; font-weight: 640; letter-spacing: -.014em; }
+.air > p { margin: 0 0 16px; font-size: 13.5px; line-height: 1.55; color: var(--encre-2); }
+.air ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.air li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--trait);
+}
+.air li:last-child { border-bottom: 0; padding-bottom: 0; }
+.air li b { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* ═══ Les quatre polluants ══════════════════════════════════════════════ */
+.polluants { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin: 30px 0; }
+.pol {
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--r);
+  padding: 16px 17px;
+}
+.pol b { display: block; font-size: 16px; font-weight: 660; letter-spacing: -.014em; margin-bottom: 3px; }
+.pol .nom { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--encre-3); display: block; margin-bottom: 9px; }
+.pol p { margin: 0 0 9px; font-size: 13px; line-height: 1.52; color: var(--encre-2); }
+.pol p:last-child { margin-bottom: 0; }
+.pol .corps { color: var(--encre); font-weight: 560; }
+
+/* ═══ Encadrés ═══════════════════════════════════════════════════════════ */
+.encadre {
+  margin: 34px 0;
+  padding: 20px 22px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r);
+}
+.encadre.reserve { border-left-color: var(--contre); }
+.encadre.reglement { border-left-color: var(--regle); background: linear-gradient(var(--regle-fond), var(--regle-fond)), var(--surface); }
+.encadre > b:first-child {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.encadre.reserve > b:first-child { color: var(--contre); }
+.encadre.reglement > b:first-child { color: var(--regle); }
+.encadre p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.62; color: var(--encre-2); }
+.encadre p:last-child { margin-bottom: 0; }
+.encadre code { font-family: var(--mono); font-size: 13px; background: var(--surface-2); padding: 1px 5px; border-radius: 2px; }
+
+/* ═══ Listes de fond ═════════════════════════════════════════════════════ */
+/* Puce en position absolue, pas en colonne de grille : un `li` qui contient un
+   titre, un paragraphe ET une pastille produit plusieurs éléments de grille, et
+   les surnuméraires retombent dans la colonne étroite de la puce — le texte s'y
+   écrase sur 30 px de large et l'article atteint 1 200 px de haut. */
+.liste-num { list-style: none; margin: 26px 0; padding: 0; counter-reset: pas; }
+.liste-num > li {
+  position: relative;
+  padding: 15px 0 15px 44px;
+  border-bottom: 1px solid var(--trait);
+  counter-increment: pas;
+}
+.liste-num > li::before {
+  content: counter(pas, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 19px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+.liste-num b { display: block; font-size: 15px; font-weight: 640; margin-bottom: 4px; letter-spacing: -.01em; }
+.liste-num p { margin: 0; font-size: 14px; line-height: 1.58; color: var(--encre-2); }
+.liste-num .preuve {
+  display: inline-block;
+  margin-top: 7px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--accent);
+  background: var(--accent-pale);
+  border-radius: 2px;
+  padding: 2px 8px;
+}
+
+.puces { list-style: none; margin: 22px 0; padding: 0; display: grid; gap: 12px; }
+.puces li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 15px;
+  line-height: 1.58;
+  color: var(--encre-2);
+}
+.puces li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 9px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.puces li.non::before { background: var(--contre); border-radius: 1px; }
+
+/* ═══ Échelle ATMO officielle ════════════════════════════════════════════ */
+.echelle { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; margin: 22px 0 10px; }
+.echelle div { padding: 9px 6px 10px; border-radius: 2px; text-align: center; }
+.echelle b { display: block; font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em; color: #0B1719; line-height: 1.3; }
+.echelle .clair b { color: #FFFFFF; }
+.echelle span { font-family: var(--mono); font-size: 9px; color: #0B1719; opacity: .72; }
+.echelle .clair span { color: #FFFFFF; opacity: .8; }
+
+/* ═══ Clôture ════════════════════════════════════════════════════════════ */
+.fin { padding: 96px 0 0; }
+.methode {
+  margin: 40px 0 0;
+  padding: 26px 0 0;
+  border-top: 2px solid var(--encre);
+}
+.methode h3 { margin-top: 0; border-bottom: 0; padding-bottom: 0; }
+.methode dl {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) 1fr;
+  gap: 10px 20px;
+  margin: 18px 0 0;
+  font-size: 13.5px;
+}
+.methode dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--encre-3); padding-top: 3px; }
+.methode dd { margin: 0; color: var(--encre-2); line-height: 1.58; }
+.methode code { font-family: var(--mono); font-size: 12.5px; color: var(--encre); }
+
+/* Un chemin de fichier est une chaîne insécable : sans cette règle il impose sa
+   largeur à la grille entière et pousse la page hors cadre sur téléphone. */
+code { overflow-wrap: anywhere; }
+
+/* ═══ Étroit ═════════════════════════════════════════════════════════════ */
+@media (max-width: 660px) {
+  body { font-size: 16.5px; }
+  .methode dl { grid-template-columns: 1fr; gap: 2px; }
+  .methode dt { padding-top: 14px; }
+  .carte dl { grid-template-columns: 1fr; gap: 2px 0; }
+  .carte dt { padding-top: 7px; }
+  .echelle { grid-template-columns: repeat(3, 1fr); }
+  .deux-airs, .chiffres { border-radius: var(--r); }
+}
+
+.pied {
+  margin: 56px 0 0;
+  padding: 22px 0 72px;
+  border-top: 1px solid var(--trait);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  line-height: 1.75;
+  color: var(--encre-3);
+}
+
+/* ═══ Débord ═════════════════════════════════════════════════════════════
+   Un bloc de données sort de la colonne de lecture et se recentre sur elle.
+   Déclaré EN DERNIER : `figure`, `.tab-cadre` et `.chiffres` posent chacun
+   leur propre `margin` en raccourci, et à spécificité égale c'est l'ordre
+   source qui tranche. Sous 1120 px, `min()` ramène le bloc à la largeur
+   disponible : plus de débord, donc aucun défilement horizontal.            */
+.deborde {
+  width: min(var(--large), calc(100vw - 40px));
+  max-width: none;
+  margin-left: calc(50% - min(var(--large), calc(100vw - 40px)) / 2);
+  margin-right: auto;
+}
+</style>
+
+<nav class="rail" aria-label="Sommaire">
+  <ol>
+    <li><a href="#ch1">Ce que l'air fait</a></li>
+    <li><a href="#ch2">Les sources</a></li>
+    <li><a href="#ch3">Lire un score</a></li>
+    <li><a href="#ch4">La stratégie AASQA</a></li>
+    <li><a href="#ch5">Ce qui paie</a></li>
+    <li><a href="#ch6">Ce qui arrive</a></li>
+    <li><a href="#ch7">Spatialiser</a></li>
+  </ol>
+</nav>
+
+<main class="flux">
+
+  <!-- ════════════════ OUVERTURE ════════════════ -->
+  <header class="tete">
+    <p class="serie">Découverte · document 1</p>
+    <h1>L'air qu'on respire, et <em>ceux qui le surveillent</em></h1>
+    <p class="sous-titre">
+      Une entrée en matière, sans prérequis : ce que la pollution fait au vivant, qui produit
+      les données, comment on note un modèle de prévision, ce que fait réellement une
+      association de surveillance — et pourquoi la prochaine réglementation européenne va
+      demander de prévoir la qualité de l'air <strong>là où il n'y a aucune station</strong>.
+    </p>
+    <p class="carte-lecture">
+      <span><b>Pour</b> lecteur non spécialiste</span>
+      <span><b>Durée</b> ~20 min</span>
+      <span><b>Chiffres</b> tous mesurés, tous traçables</span>
+      <span><b>Sources</b> en fin de document</span>
+    </p>
+  </header>
+
+  <!-- ════════════════ 1 — CE QUE L'AIR FAIT AU VIVANT ════════════════ -->
+  <section class="chap" id="ch1">
+    <div class="chap-tete">
+      <p class="chap-num"><b>01</b> <span>Introduction</span></p>
+      <h2>Deux airs, la même personne</h2>
+      <p class="chapeau">
+        La pollution de l'air ne se ressent presque jamais. Elle ne pique pas les yeux, elle
+        ne sent rien, elle n'interrompt aucune journée. C'est exactement ce qui la rend
+        difficile à traiter : <strong>elle ne s'éprouve pas, elle se compte</strong> — sur
+        des décennies, et à l'échelle d'une population.
+      </p>
+    </div>
+
+    <p>
+      Un adulte inspire de l'ordre de <strong>15 000 litres d'air par jour</strong>, sans
+      arbitrage possible : on choisit son eau, sa nourriture, son logement, jamais l'air de la
+      rue où l'on marche. Cette dose quotidienne est la même pour tout le monde ; ce qui
+      change d'un endroit à l'autre, c'est <em>ce qu'elle contient</em>.
+    </p>
+    <p>
+      Imaginons deux personnes identiques, sur trente ans. La première respire un air conforme
+      aux lignes directrices sanitaires de l'Organisation mondiale de la santé. La seconde
+      respire l'air tel qu'il est mesuré aujourd'hui, en moyenne, par les stations françaises.
+      Aucune des deux ne remarquera quoi que ce soit. À l'échelle d'un pays, l'écart entre ces
+      deux airs se lit pourtant sans ambiguïté dans les statistiques de mortalité.
+    </p>
+
+    <div class="chiffres deborde">
+      <div class="chiffre">
+        <span class="v grave">40 000</span>
+        <p class="l">décès attribuables chaque année en France aux particules fines PM2,5, chez les 30 ans et plus.</p>
+        <p class="s">Santé publique France · période 2016-2019</p>
+      </div>
+      <div class="chiffre">
+        <span class="v grave">8 mois</span>
+        <p class="l">d'espérance de vie perdus en moyenne, à 30 ans, du fait de l'exposition aux PM2,5.</p>
+        <p class="s">Santé publique France · période 2016-2019</p>
+      </div>
+      <div class="chiffre">
+        <span class="v">7 %</span>
+        <p class="l">de la mortalité française attribuée aux PM2,5 sur 2016-2019 — contre 9 % sur 2007-2008.</p>
+        <p class="s">La situation s'améliore, et cela se mesure</p>
+      </div>
+    </div>
+
+    <div class="deux-airs deborde">
+      <div class="air">
+        <p class="air-tag">Air A · la référence sanitaire</p>
+        <h4>L'air que l'OMS considère comme sûr</h4>
+        <p>Lignes directrices 2021, en moyenne annuelle.</p>
+        <ul>
+          <li>PM2,5 <b>5 µg/m³</b></li>
+          <li>PM10 <b>15 µg/m³</b></li>
+          <li>NO₂ <b>10 µg/m³</b></li>
+          <li><span>O₃ <em style="font-style:normal;font-size:10.5px;color:var(--encre-3)">sur 8 h</em></span> <b>100 µg/m³</b></li>
+        </ul>
+        <p style="margin:16px 0 0;font-size:13px">
+          L'OMS estime que le respect de ces niveaux éviterait environ
+          <strong>80 % des décès attribuables aux PM2,5</strong>.
+        </p>
+      </div>
+      <div class="air reel">
+        <p class="air-tag">Air B · ce qui est mesuré</p>
+        <h4>L'air des stations françaises</h4>
+        <p>Médiane des moyennes annuelles 2025, et son rapport à la ligne OMS.</p>
+        <ul>
+          <li>PM2,5 <b>8,97 µg/m³ · 1,79×</b></li>
+          <li>PM10 <b>14,82 µg/m³ · 0,99×</b></li>
+          <li>NO₂ <b>11,76 µg/m³ · 1,18×</b></li>
+          <li><span>O₃ <em style="font-style:normal;font-size:10.5px;color:var(--encre-3)">évalué en pointe, pas en moyenne</em></span> <b>—</b></li>
+        </ul>
+        <p style="margin:16px 0 0;font-size:13px">
+          Sur les PM2,5, <strong>97,9 % des stations sont au-dessus</strong> de la ligne OMS.
+          C'est cet écart-là, et pas un pic spectaculaire, qui produit les chiffres ci-dessus.
+        </p>
+      </div>
+    </div>
+
+    <p>
+      Voilà la métaphore, et elle est décevante par construction : les deux colonnes se
+      ressemblent. Aucun des écarts n'est spectaculaire, aucun ne se remarquerait en marchant
+      dans la rue. C'est <strong>précisément le problème</strong> — l'effet vient de la
+      permanence, pas de l'intensité. Une différence de trois microgrammes, respirée quinze
+      mille litres par jour pendant des décennies, ne ressemble à rien et pèse le poids qu'on
+      vient de lire.
+    </p>
+
+    <div class="encadre reserve">
+      <b>Ce que « décès attribuable » veut dire</b>
+      <p>
+        Ces 40 000 décès ne sont pas des personnes identifiées dont un certificat porterait
+        « pollution de l'air ». Ce sont des décès <em>en excès</em> : la mortalité observée
+        comparée à celle qu'on attendrait si l'air respecté les niveaux de référence, calculée
+        par des fonctions dose-réponse issues d'études épidémiologiques. C'est une estimation
+        de population, robuste dans son ordre de grandeur, jamais un compte individuel. Le
+        distinguer n'affaiblit pas le chiffre : cela évite de le faire dire ce qu'il ne dit pas.
+      </p>
+    </div>
+
+    <h3>Les quatre polluants dont il sera question</h3>
+    <p>
+      La réglementation en surveille une douzaine. Quatre suffisent à décrire l'essentiel de
+      l'enjeu sanitaire quotidien — et ce sont ceux que ce dossier mesure.
+    </p>
+
+    <div class="polluants deborde">
+      <div class="pol">
+        <b>PM2,5</b>
+        <span class="nom">Particules fines · &lt; 2,5 µm</span>
+        <p><span class="corps">D'où</span> : combustion — chauffage au bois, moteurs, industrie, agriculture. Une partie se forme dans l'air à partir d'autres gaz.</p>
+        <p><span class="corps">Effet</span> : assez petites pour atteindre les alvéoles et passer dans le sang. Le polluant au plus lourd bilan : maladies cardiovasculaires, respiratoires, cancers.</p>
+      </div>
+      <div class="pol">
+        <b>PM10</b>
+        <span class="nom">Particules · &lt; 10 µm</span>
+        <p><span class="corps">D'où</span> : les mêmes sources, plus les remises en suspension — chantiers, agriculture, usure des routes, poussières sahariennes.</p>
+        <p><span class="corps">Effet</span> : arrêtées plus haut dans les voies respiratoires. C'est le polluant qui déclenche le plus souvent les procédures préfectorales en France.</p>
+      </div>
+      <div class="pol">
+        <b>NO₂</b>
+        <span class="nom">Dioxyde d'azote</span>
+        <p><span class="corps">D'où</span> : combustion à haute température — trafic routier au premier chef. Très localisé : la concentration chute en quelques centaines de mètres.</p>
+        <p><span class="corps">Effet</span> : irritant respiratoire, aggravation de l'asthme, en particulier chez l'enfant. Bon traceur de l'exposition au trafic.</p>
+      </div>
+      <div class="pol">
+        <b>O₃</b>
+        <span class="nom">Ozone troposphérique</span>
+        <p><span class="corps">D'où</span> : n'est pas émis. Il se <em>fabrique</em> dans l'air, sous l'effet du soleil, à partir des oxydes d'azote et de composés organiques.</p>
+        <p><span class="corps">Effet</span> : inflammation respiratoire, baisse de la fonction pulmonaire. Polluant d'été, régional : il culmine loin des villes qui l'ont produit.</p>
+      </div>
+    </div>
+
+    <h3>Où en sont réellement les stations françaises</h3>
+    <p>
+      Voici l'écart, mesuré. Chaque barre part de zéro et se lit en <strong>multiples de la
+      ligne directrice sanitaire de l'OMS</strong> : à 1,0, l'air est au niveau que
+      l'organisation considère comme sûr. Les losanges marquent les deux valeurs limites du
+      droit — celle en vigueur, et celle qui s'appliquera au 1<sup>er</sup> janvier 2030.
+    </p>
+
+    <figure class="deborde">
+      <p class="fig-t">La ligne sanitaire, la loi d'aujourd'hui, la loi de 2030</p>
+      <p class="fig-s">
+        Moyennes annuelles 2025 des stations françaises retenues (taux de saisie ≥ 75 %),
+        rapportées à la ligne directrice OMS 2021 du polluant. La barre couvre la moitié
+        centrale des stations ; le trait vertical est la médiane.
+      </p>
+      <div class="legende">
+        <span><i style="background:var(--accent)"></i> moitié centrale des stations</span>
+        <span><i style="background:var(--regle);transform:rotate(45deg);border-radius:1px"></i> valeur limite 2030</span>
+        <span><i style="border:2px solid var(--neutre);border-radius:50%"></i> valeur limite en vigueur</span>
+      </div>
+      <div class="fig-cadre">
+        <svg viewBox="0 0 900 300" role="img" aria-label="Pour les PM2,5 la médiane des stations vaut 1,79 fois la ligne OMS, la valeur limite en vigueur 5 fois et celle de 2030 encore 2 fois. Pour le NO2 : médiane 1,18, limite 2030 2 fois, limite en vigueur 4 fois. Pour les PM10 : médiane 0,99, limite 2030 1,33 fois, limite en vigueur 2,67 fois.">
+          <!-- Échelle : 0 → 5,2 × OMS mappé sur x 200 → 813, soit 118 px par unité.
+               Les repères de loi sont sur la même ligne que la barre : ils se
+               distinguent par la FORME autant que par la couleur (losange plein /
+               cercle évidé), jamais par la couleur seule. -->
+          <g class="g-grille">
+            <line x1="200" y1="40" x2="200" y2="250" />
+            <line x1="318" y1="40" x2="318" y2="250" />
+            <line x1="436" y1="40" x2="436" y2="250" />
+            <line x1="554" y1="40" x2="554" y2="250" />
+            <line x1="672" y1="40" x2="672" y2="250" />
+            <line x1="790" y1="40" x2="790" y2="250" />
+          </g>
+          <g class="g-ax" text-anchor="middle">
+            <text x="200" y="30">0</text>
+            <text x="318" y="30">1× OMS</text>
+            <text x="436" y="30">2×</text>
+            <text x="554" y="30">3×</text>
+            <text x="672" y="30">4×</text>
+            <text x="790" y="30">5×</text>
+          </g>
+          <line x1="318" y1="36" x2="318" y2="258" stroke="var(--encre)" stroke-width="1.6" />
+          <text x="318" y="276" class="g-tit" text-anchor="middle">LIGNE DIRECTRICE OMS 2021</text>
+
+          <!-- ─── PM2,5 · OMS 5 · q25 8,07 · méd. 8,97 · q75 9,96 · VL2030 10 · VL 25 -->
+          <g>
+            <text x="176" y="70" class="g-lab" text-anchor="end">PM2,5</text>
+            <text x="176" y="86" class="g-ax" text-anchor="end">médiane 8,97 µg/m³</text>
+            <text x="176" y="101" class="g-ax" text-anchor="end">243 stations</text>
+            <line x1="200" y1="82" x2="813" y2="82" stroke="var(--trait)" stroke-width="1" />
+            <rect x="390" y="73" width="45" height="18" rx="3" fill="var(--accent)" />
+            <line x1="412" y1="67" x2="412" y2="97" stroke="var(--encre)" stroke-width="2" />
+            <text x="436" y="56" class="g-ax" text-anchor="middle" fill="var(--regle)">limite 2030</text>
+            <text x="790" y="56" class="g-ax" text-anchor="middle">limite en vigueur</text>
+            <path d="M436 82 l8 -8 l8 8 l-8 8 Z" transform="translate(-8,0)" fill="var(--regle)" stroke="var(--surface)" stroke-width="2" />
+            <circle cx="790" cy="82" r="7" fill="var(--surface)" stroke="var(--neutre)" stroke-width="2.5" />
+          </g>
+
+          <!-- ─── NO₂ · OMS 10 · q25 8,12 · méd. 11,76 · q75 17,15 · VL2030 20 · VL 40 -->
+          <g>
+            <text x="176" y="140" class="g-lab" text-anchor="end">NO₂</text>
+            <text x="176" y="156" class="g-ax" text-anchor="end">médiane 11,76 µg/m³</text>
+            <text x="176" y="171" class="g-ax" text-anchor="end">341 stations</text>
+            <line x1="200" y1="152" x2="813" y2="152" stroke="var(--trait)" stroke-width="1" />
+            <rect x="296" y="143" width="107" height="18" rx="3" fill="var(--accent)" />
+            <line x1="339" y1="137" x2="339" y2="167" stroke="var(--encre)" stroke-width="2" />
+            <path d="M436 152 l8 -8 l8 8 l-8 8 Z" transform="translate(-8,0)" fill="var(--regle)" stroke="var(--surface)" stroke-width="2" />
+            <circle cx="672" cy="152" r="7" fill="var(--surface)" stroke="var(--neutre)" stroke-width="2.5" />
+          </g>
+
+          <!-- ─── PM10 · OMS 15 · q25 13,12 · méd. 14,82 · q75 17,08 · VL2030 20 · VL 40 -->
+          <g>
+            <text x="176" y="210" class="g-lab" text-anchor="end">PM10</text>
+            <text x="176" y="226" class="g-ax" text-anchor="end">médiane 14,82 µg/m³</text>
+            <text x="176" y="241" class="g-ax" text-anchor="end">322 stations</text>
+            <line x1="200" y1="222" x2="813" y2="222" stroke="var(--trait)" stroke-width="1" />
+            <rect x="303" y="213" width="31" height="18" rx="3" fill="var(--accent)" />
+            <line x1="317" y1="207" x2="317" y2="237" stroke="var(--encre)" stroke-width="2" />
+            <path d="M357 222 l8 -8 l8 8 l-8 8 Z" transform="translate(-8,0)" fill="var(--regle)" stroke="var(--surface)" stroke-width="2" />
+            <circle cx="515" cy="222" r="7" fill="var(--surface)" stroke="var(--neutre)" stroke-width="2.5" />
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        Lecture · <b>PM2,5 : 238 stations sur 243, soit 97,9 %, sont au-dessus de la ligne
+        OMS.</b> La valeur limite qui s'applique aujourd'hui vaut <b>cinq fois</b> cette ligne ;
+        celle de 2030 la vaudra encore <b>deux fois</b>. NO₂ : 214 stations sur 341 (62,8 %)
+        au-dessus. PM10 : 154 sur 322 (47,8 %). L'ozone est absent — il n'a pas de moyenne
+        annuelle réglementaire. Source : <code>reports/exposition_oms.csv</code>, dérivé de
+        <code>seuils_2030.csv</code>.
+      </figcaption>
+    </figure>
+
+    <p class="exergue">
+      L'écart le plus important de ce graphique n'est pas entre les stations et la loi. Il est
+      entre la <em>loi</em> et la <em>santé</em> — et il reste ouvert après 2030.
+    </p>
+
+    <p>
+      À l'échelle européenne, l'Agence européenne pour l'environnement chiffre le même
+      phénomène pour 2023 : <strong>182 000 décès</strong> attribuables aux PM2,5 au-dessus de
+      la ligne OMS dans l'UE à 27, <strong>63 000</strong> à l'ozone et <strong>34 000</strong>
+      au NO₂ — soit près de 2,9 millions d'années de vie perdues au total. Et une trajectoire
+      qui va dans le bon sens : les décès attribuables aux PM2,5 ont <strong>baissé de
+      57 %</strong> entre 2005 et 2023.
+    </p>
+    <p>
+      C'est le cadre. La suite de ce document porte sur un maillon précis de la réponse
+      publique : <strong>savoir, la veille, ce que sera l'air demain</strong> — pour prévenir,
+      restreindre, protéger.
+    </p>
+  </section>
+
+  <!-- ════════════════ 2 — LES SOURCES ════════════════ -->
+  <section class="chap" id="ch2">
+    <div class="chap-tete">
+      <p class="chap-num"><b>02</b> <span>Préliminaires</span></p>
+      <h2>Qui produit les données</h2>
+      <p class="chapeau">
+        Prévoir la qualité de l'air ne repose pas sur une source unique. Quatre familles
+        cohabitent : les chaînes nationales françaises, l'ensemble européen Copernicus, un
+        modèle américain totalement indépendant des précédents, et un écosystème d'open data
+        français qui fournit la vérité terrain. Aucune n'est suffisante seule.
+      </p>
+    </div>
+
+    <div class="groupe deborde">
+      <div class="groupe-tete"><b>Modèles français</b> <span>chaîne nationale · assimilée</span></div>
+      <div class="cartes">
+        <div class="carte">
+          <div class="carte-h"><b>PREV'AIR</b> <span>INERIS · Météo-France · CNRS</span></div>
+          <p>
+            La plateforme nationale de prévision. Elle fait tourner <strong>deux</strong>
+            modèles de chimie-transport — <strong>CHIMERE</strong> et
+            <strong>MOCAGE</strong> — et publie quatre produits : prévisions, prévisions
+            <em>corrigées</em>, analyses et évaluations.
+          </p>
+          <dl>
+            <dt>Maille</dt><dd>≈ 1,7 km</dd>
+            <dt>Échéances</dt><dd>J−1 → J+5</dd>
+            <dt>Atouts</dt><dd>inventaire d'émissions national, assimilation de mesures</dd>
+          </dl>
+          <p class="limite"><b>Limite pratique</b> La diffusion publique n'expose qu'une fenêtre glissante d'environ six jours : le passé n'est pas récupérable si on ne l'archive pas au jour le jour.</p>
+        </div>
+        <div class="carte">
+          <div class="carte-h"><b>Les 18 AASQA</b> <span>agréées par l'État</span></div>
+          <p>
+            Une association par région, dont <strong>Atmo Occitanie</strong>. Elles exploitent
+            le réseau de mesure, font tourner leurs propres modèles régionaux — plus fins que
+            le national — et produisent la prévision effectivement diffusée au public et aux
+            préfets.
+          </p>
+          <dl>
+            <dt>Statut</dt><dd>art. L.221-3 du code de l'environnement</dd>
+            <dt>Réseau</dt><dd>476 stations actives en métropole</dd>
+            <dt>Occitanie</dt><dd>38 stations, dont 23 de fond</dd>
+          </dl>
+          <p class="limite"><b>Limite pratique</b> Les configurations exactes — modèle, version, résolution, stations assimilées — ne sont pas toutes publiques : impossible de rejouer leur chaîne à l'identique depuis l'extérieur.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="groupe deborde">
+      <div class="groupe-tete"><b>Modèles européens</b> <span>Copernicus · ensemble</span></div>
+      <div class="cartes">
+        <div class="carte">
+          <div class="carte-h"><b>CAMS Europe</b> <span>Copernicus · ECMWF</span></div>
+          <p>
+            Le service européen de surveillance de l'atmosphère. Sa prévision régionale n'est
+            pas un modèle mais la <strong>médiane d'un ensemble de neuf à onze modèles</strong>
+            — dont CHIMERE et MOCAGE. Libre d'accès, couverture continentale, archive profonde.
+          </p>
+          <dl>
+            <dt>Maille</dt><dd>0,1° ≈ 8 × 11 km</dd>
+            <dt>Échéances</dt><dd>J0 → J+3</dd>
+            <dt>Atouts</dt><dd>archive complète, ensemble, gratuité</dd>
+          </dl>
+          <p class="limite"><b>Limite pratique</b> Maille trop grossière pour un gradient urbain, pas d'assimilation dans le produit prévision, et un inventaire d'émissions européen moins fin que les inventaires nationaux.</p>
+        </div>
+        <div class="carte">
+          <div class="carte-h"><b>Le post-traitement officiel</b> <span>CAMS · optimised at observation sites</span></div>
+          <p>
+            Copernicus distribue aussi une version <strong>déjà corrigée</strong> de sa
+            prévision, recalée sur les observations aux stations. C'est le point de comparaison
+            naturel de toute correction statistique : quelqu'un le fait déjà, officiellement,
+            et il faut se mesurer à lui.
+          </p>
+          <dl>
+            <dt>Nature</dt><dd>correction apprise, réentraînée en continu</dd>
+            <dt>Grain</dt><dd>horaire</dd>
+            <dt>Publication</dt><dd>Bertrand <em>et al.</em>, ACP 23, 2023</dd>
+          </dl>
+          <p class="limite"><b>Limite pratique</b> Corrige l'heure, pas la grandeur sur laquelle porte le seuil réglementaire — un maximum journalier n'est pas la somme de vingt-quatre corrections horaires.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="groupe deborde">
+      <div class="groupe-tete"><b>Modèle États-Unis</b> <span>indépendant · le regard extérieur</span></div>
+      <div class="cartes">
+        <div class="carte">
+          <div class="carte-h"><b>GEOS-CF</b> <span>NASA · Global Modeling and Assimilation Office</span></div>
+          <p>
+            Un modèle global de chimie-transport américain, en accès libre. Son intérêt n'est
+            pas d'être meilleur — il est nettement moins bon sur la France — mais d'être
+            <strong>indépendant</strong> : autre inventaire d'émissions, autre assimilation,
+            autres erreurs. Là où il se trompe, CAMS ne se trompe pas forcément.
+          </p>
+          <dl>
+            <dt>Maille</dt><dd>0,25°</dd>
+            <dt>Échéances</dt><dd>jusqu'à J+5, sortie 12 UTC</dd>
+            <dt>Atout</dt><dd>décorrélation des erreurs</dd>
+          </dl>
+          <p class="limite"><b>Limite pratique</b> Le fournisseur a changé de flux en cours de route : deux versions successives qui ne sont pas le même prédicteur, à mesurer séparément sous peine de mélanger des choux et des carottes.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="groupe deborde">
+      <div class="groupe-tete"><b>Open data français</b> <span>la vérité terrain, et le décor</span></div>
+      <div class="cartes">
+        <div class="carte">
+          <div class="carte-h"><b>LCSQA / Geod'Air</b> <span>le flux national de mesures</span></div>
+          <p>
+            Le laboratoire central de surveillance de la qualité de l'air centralise et valide
+            les mesures des dix-huit AASQA, et les transmet à l'Europe. Flux national ouvert,
+            sans authentification, avec une profondeur historique remontant à 2001.
+          </p>
+          <dl>
+            <dt>Temps réel</dt><dd>1 à 2 h de latence, données provisoires</dd>
+            <dt>Validées</dt><dd>publiées au 30 septembre de l'année N+1</dd>
+            <dt>Rôle</dt><dd>c'est la <em>vérité</em> contre laquelle tout se mesure</dd>
+          </dl>
+          <p class="limite"><b>Limite pratique</b> Une mesure porte un code de validité qu'il faut savoir lire : filtrer trop large jette des données valides, filtrer trop étroit garde des artefacts d'instrument.</p>
+        </div>
+        <div class="carte">
+          <div class="carte-h"><b>Portails ouverts</b> <span>data.gouv.fr · Atmo Occitanie · IGN</span></div>
+          <p>
+            Atmo Occitanie publie vingt-sept jeux de données ouverts, dont l'historique des
+            <strong>épisodes réellement déclenchés</strong> et l'inventaire régional
+            d'émissions. À quoi s'ajoutent le relief, l'occupation des sols, les feux de
+            végétation détectés par satellite et les colonnes de NO₂ vues depuis l'espace.
+          </p>
+          <dl>
+            <dt>Relief</dt><dd>Copernicus GLO-30, lecture partielle</dd>
+            <dt>Feux</dt><dd>GFAS · flux d'émissions</dd>
+            <dt>Satellite</dt><dd>TROPOMI · 3,9 km</dd>
+          </dl>
+          <p class="limite"><b>Limite pratique</b> Les épisodes déclenchés sont diffusés le matin du jour qu'ils concernent : c'est une cible d'évaluation, jamais une entrée de prévision.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="encadre">
+      <b>Ce que cette carte des sources implique</b>
+      <p>
+        Toutes ces sources décrivent le même air, et elles ne sont pas indépendantes : CHIMERE
+        et MOCAGE sont à la fois les modèles de PREV'AIR <em>et</em> deux membres de l'ensemble
+        européen. Comparer « la France » à « l'Europe » revient donc souvent à comparer un
+        modèle à un ensemble qui le contient. Une seule source du tableau est réellement
+        extérieure au reste : <strong>GEOS-CF</strong>. Le chapitre 5 montrera que c'est aussi
+        la seule qui apporte de l'information sur les quatre polluants à la fois.
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════════ 3 — LIRE UN SCORE ════════════════ -->
+  <section class="chap" id="ch3">
+    <div class="chap-tete">
+      <p class="chap-num"><b>03</b> <span>Compréhension méthodologique</span></p>
+      <h2>Comment on note un modèle</h2>
+      <p class="chapeau">
+        Avant de dire quel modèle est bon, il faut un score. Celui qui sert partout dans ce
+        domaine s'appelle le <strong>RMSE</strong>. Il tient en une phrase, il se lit dans
+        l'unité du polluant — et il ment sur exactement une chose, qu'il faut savoir.
+      </p>
+    </div>
+
+    <h3>Le RMSE en une minute</h3>
+    <p>
+      <strong>RMSE</strong>, pour <em>root mean square error</em> : l'erreur quadratique
+      moyenne. On prend l'écart entre ce que le modèle annonce et ce que la station mesure, à
+      chaque heure et à chaque station ; on l'élève au carré ; on en fait la moyenne ; on
+      reprend la racine. Le résultat est <strong>dans l'unité du polluant</strong> — des
+      µg/m³ — donc directement lisible : un RMSE de 12 µg/m³ sur l'ozone signifie qu'on se
+      trompe typiquement de 12 µg/m³. <strong>Plus bas est meilleur.</strong>
+    </p>
+    <p>
+      Le passage par le carré n'est pas anodin. Prenons trois jours d'erreurs :
+      <strong>+2</strong>, <strong>−1</strong> et <strong>+6</strong> µg/m³. L'erreur moyenne
+      en valeur absolue vaut 3,0. Le RMSE, lui, vaut <strong>3,7</strong> : la grosse erreur
+      du troisième jour pèse davantage que les deux petites réunies. C'est voulu — en qualité
+      de l'air, se tromper de 6 le jour du pic coûte bien plus cher que se tromper de 2 deux
+      fois de suite.
+    </p>
+
+    <div class="encadre reserve">
+      <b>Ce que le RMSE global ne dit pas</b>
+      <p>
+        Un modèle peut avoir un excellent RMSE annuel <em>et</em> rater tous les épisodes. Il
+        suffit qu'il soit très bon les 350 jours ordinaires et systématiquement en dessous les
+        15 jours qui comptent : les 350 bons jours écrasent la moyenne. C'est le piège
+        classique du domaine, et il a un remède simple : <strong>ne jamais publier un RMSE
+        global sans un score de détection à côté</strong> — combien d'épisodes attrapés, pour
+        combien de fausses alertes.
+      </p>
+      <p>
+        Corollaire : un pourcentage de gain ne veut rien dire seul. Il exige toujours trois
+        mots — <strong>quel polluant, quelle épreuve, quel périmètre</strong>. Sur l'ozone, la
+        même correction vaut de <code>+3,3 %</code> à <code>+22,5 %</code> selon la difficulté
+        de l'épreuve qu'on lui impose. Ce ne sont pas des chiffres contradictoires : ce sont
+        des réponses à des questions différentes.
+      </p>
+    </div>
+
+    <h3>Les modèles bruts, notés sur les mêmes lignes</h3>
+    <p>
+      Voici la comparaison la plus propre disponible : CHIMERE — dans sa configuration
+      européenne, en tant que membre de l'ensemble — face à la médiane de l'ensemble CAMS dont
+      il fait partie. Mêmes stations, mêmes jours, même échéance, même grandeur. Rien d'autre
+      ne change.
+    </p>
+
+    <figure class="deborde">
+      <p class="fig-t">Un modèle seul contre la médiane de l'ensemble qui le contient</p>
+      <p class="fig-s">RMSE en µg/m³, échéance J+1, station cachée du modèle. Plus court est meilleur.</p>
+      <div class="legende">
+        <span><i style="background:var(--neutre)"></i> CHIMERE brut, membre européen 10 km</span>
+        <span><i style="background:var(--accent)"></i> médiane de l'ensemble CAMS</span>
+      </div>
+      <div class="fig-cadre">
+        <svg viewBox="0 0 900 288" role="img" aria-label="Ozone : CHIMERE 18,68 contre CAMS médiane 12,53. NO2 : 22,64 contre 23,04. PM10 : 9,01 contre 7,47. PM2,5 : 5,82 contre 4,31 µg par mètre cube.">
+          <!-- axe 0 → 25 µg/m³ mappé sur x 120 → 800 (27,2 px / µg) -->
+          <g class="g-grille">
+            <line x1="256" y1="34" x2="256" y2="258" />
+            <line x1="392" y1="34" x2="392" y2="258" />
+            <line x1="528" y1="34" x2="528" y2="258" />
+            <line x1="664" y1="34" x2="664" y2="258" />
+            <line x1="800" y1="34" x2="800" y2="258" />
+          </g>
+          <line x1="120" y1="34" x2="120" y2="258" class="g-axe" />
+          <g class="g-ax" text-anchor="middle">
+            <text x="120" y="26">0</text>
+            <text x="256" y="26">5</text>
+            <text x="392" y="26">10</text>
+            <text x="528" y="26">15</text>
+            <text x="664" y="26">20</text>
+            <text x="800" y="26">25 µg/m³</text>
+          </g>
+
+          <!-- O₃ : 18,68 → 508 px ; 12,53 → 341 px -->
+          <g>
+            <text x="0" y="58" class="g-lab">O₃</text>
+            <rect x="120" y="46" width="508" height="15" rx="3" fill="var(--neutre)" />
+            <text x="638" y="58" class="g-val">18,68</text>
+            <rect x="120" y="65" width="341" height="15" rx="3" fill="var(--accent)" />
+            <text x="471" y="77" class="g-val" fill="var(--accent)">12,53</text>
+            <text x="524" y="77" class="g-ax">−33 % pour l'ensemble</text>
+          </g>
+
+          <!-- NO₂ : 22,64 → 616 ; 23,04 → 627 -->
+          <g>
+            <text x="0" y="118" class="g-lab">NO₂</text>
+            <rect x="120" y="106" width="616" height="15" rx="3" fill="var(--neutre)" />
+            <text x="746" y="118" class="g-val">22,64</text>
+            <rect x="120" y="125" width="627" height="15" rx="3" fill="var(--accent)" />
+            <text x="757" y="137" class="g-val" fill="var(--accent)">23,04</text>
+          </g>
+
+          <!-- PM10 : 9,01 → 245 ; 7,47 → 203 -->
+          <g>
+            <text x="0" y="178" class="g-lab">PM10</text>
+            <rect x="120" y="166" width="245" height="15" rx="3" fill="var(--neutre)" />
+            <text x="375" y="178" class="g-val">9,01</text>
+            <rect x="120" y="185" width="203" height="15" rx="3" fill="var(--accent)" />
+            <text x="333" y="197" class="g-val" fill="var(--accent)">7,47</text>
+          </g>
+
+          <!-- PM2,5 : 5,82 → 158 ; 4,31 → 117 -->
+          <g>
+            <text x="0" y="238" class="g-lab">PM2,5</text>
+            <rect x="120" y="226" width="158" height="15" rx="3" fill="var(--neutre)" />
+            <text x="288" y="238" class="g-val">5,82</text>
+            <rect x="120" y="245" width="117" height="15" rx="3" fill="var(--accent)" />
+            <text x="247" y="257" class="g-val" fill="var(--accent)">4,31</text>
+          </g>
+
+          <text x="120" y="280" class="g-ax">Sur 3 polluants sur 4, la médiane de l'ensemble bat le modèle pris seul. Le NO₂ est l'exception.</text>
+        </svg>
+      </div>
+      <figcaption>
+        <b>87 334 lignes pour l'O₃, 109 186 pour le NO₂, 56 096 pour les PM10, 76 844 pour les
+        PM2,5</b>, évaluées sur exactement les mêmes couples station–jour. Source :
+        <code>reports/duel_chimere_&lt;polluant&gt;_h2.csv</code>. ⚠️ Il s'agit du CHIMERE
+        <b>européen à 10 km sans assimilation</b>, pas du CHIMERE national de PREV'AIR — voir
+        la réserve au chapitre 4.
+      </figcaption>
+    </figure>
+
+    <p class="exergue">
+      Moyenner sept modèles vaut mieux que garder le meilleur d'entre eux.
+      <small>Le résultat le plus général de ce chapitre</small>
+    </p>
+
+    <p>
+      Pourquoi ? Parce qu'il n'existe pas de « meilleur modèle » dans l'absolu :
+      <strong>il existe des modèles qui se trompent différemment</strong>. Chacun a sa
+      physique, son inventaire d'émissions, ses approximations. Quand l'un surestime, l'autre
+      sous-estime souvent, et la médiane annule une partie de ces écarts. C'est exactement ce
+      que montre le graphique : sur l'ozone, CHIMERE seul se trompe de <strong>49 %</strong>
+      de plus que l'ensemble dont il est membre.
+    </p>
+    <p>
+      Le NO₂ fait exception, et c'est instructif : ce polluant est dominé par des sources très
+      locales — une avenue, un échangeur — que <em>aucun</em> des modèles ne résout à 10 km de
+      maille. Quand tous les membres ratent la même chose, les moyenner ne la retrouve pas.
+    </p>
+
+    <h3>Et les chaînes françaises, dans leur vraie configuration</h3>
+    <p>
+      Le tableau ci-dessous vient d'une source différente : le rapport annuel du LCSQA sur les
+      performances de PREV'AIR. Il porte sur les <em>vraies</em> chaînes nationales — assimilées,
+      à maille fine — et non sur leurs versions européennes.
+    </p>
+
+    <p class="fig-s deborde" style="margin-top:30px;margin-bottom:-18px">RMSE en µg/m³, échéance J0, France, stations de fond. <em>Performances Prev'air en 2024</em>, INERIS/LCSQA, publié le 08/04/2026.</p>
+    <div class="tab-cadre deborde">
+      <table>
+        <thead>
+          <tr><th>Polluant</th><th>MOCAGE</th><th>CHIMERE brut</th><th>AS-CHI <em>(corrigé)</em></th><th>Gain de la correction</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>O₃ <em>(avril-septembre)</em></td><td>14,6</td><td>13,9</td><td class="nous">13,3</td><td>+4,3 %</td></tr>
+          <tr><td>NO₂</td><td>17,5</td><td>16,7</td><td class="nous">11,2</td><td>+32,9 %</td></tr>
+          <tr><td>PM10</td><td>7,8</td><td>9,9</td><td class="nous">4,7</td><td>+52,5 %</td></tr>
+          <tr><td>PM2,5</td><td>5,80</td><td>7,65</td><td class="nous">3,05</td><td>+60,1 %</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="5">Ces chiffres ne se comparent <strong>pas</strong> à ceux du graphique précédent : autre échéance, autre grandeur agrégée, autre parc de stations. Deux tableaux justes, deux questions différentes.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <p>
+      Deux enseignements. D'abord, <strong>aucun modèle ne domine partout</strong> : MOCAGE bat
+      CHIMERE sur les particules, CHIMERE bat MOCAGE sur les gaz. Ensuite, et c'est le point
+      central de ce document, la ligne « AS-CHI » est celle qui compte : c'est la sortie brute
+      <em>corrigée par une méthode statistique</em>. Sur les PM2,5, cette seule correction
+      divise l'erreur par 2,5. Le chapitre suivant explique comment.
+    </p>
+  </section>
+
+  <!-- ════════════════ 4 — LA STRATÉGIE AASQA ════════════════ -->
+  <section class="chap" id="ch4">
+    <div class="chap-tete">
+      <p class="chap-num"><b>04</b> <span>Compréhension méthodologique</span></p>
+      <h2>Ce que fait une AASQA — et un point de comparaison</h2>
+      <p class="chapeau">
+        Une association agréée de surveillance de la qualité de l'air n'est pas un laboratoire
+        de recherche. C'est un service public régional, avec des obligations datées. Comprendre
+        sa stratégie de prévision, c'est comprendre pourquoi elle ne se contente pas de faire
+        tourner un modèle.
+      </p>
+    </div>
+
+    <h3>Six missions, fixées par arrêté</h3>
+    <p>
+      L'arrêté du 16 avril 2021 et les articles L.221-1 à L.221-3 du code de l'environnement
+      confient à chaque AASQA un mandat précis. Sa gouvernance est quadripartite — État,
+      collectivités, industriels, associations et personnalités qualifiées.
+    </p>
+    <ol class="liste-num">
+      <li><b>Surveiller et évaluer</b><p>Par mesure fixe, mesure indicative <em>et</em> modélisation. Les trois sont sur le même plan dans le texte.</p></li>
+      <li><b>Informer chaque jour</b><p>Préfets et public, sur le <em>constat</em> et sur la <em>prévision</em>. C'est cette seconde obligation qui rend la prévision réglementaire, et non facultative.</p></li>
+      <li><b>Calculer et diffuser l'indice ATMO</b><p>Quotidiennement, à l'échelle de la commune ou de l'EPCI, jamais au-delà.</p></li>
+      <li><b>Élaborer les inventaires d'émissions</b><p>Qui émet quoi, où, dans quelle quantité — la matière première de toute politique de réduction.</p></li>
+      <li><b>Caractériser chimiquement les particules</b><p>Distinguer le chauffage au bois du trafic, du brûlage agricole ou des poussières sahariennes.</p></li>
+      <li><b>Assurer le rapportage européen</b><p>Via le LCSQA, les données transitant par Geod'Air. C'est ce qui rend les chiffres français comparables aux autres pays.</p></li>
+    </ol>
+
+    <h3>L'indice ATMO, l'objet public de la prévision</h3>
+    <p>
+      C'est le produit que tout le monde connaît. Il se calcule à partir de cinq polluants —
+      SO₂, NO₂, O₃, PM10, PM2,5 — et l'indice de la zone est le <strong>sous-indice le plus
+      dégradé</strong> des cinq. Jamais une moyenne : le polluant le plus mauvais décide seul.
+    </p>
+    <div class="echelle">
+      <div style="background:var(--atmo-1)"><b>Bon</b><span>PM2,5 0-10</span></div>
+      <div style="background:var(--atmo-2)"><b>Moyen</b><span>11-20</span></div>
+      <div style="background:var(--atmo-3)"><b>Dégradé</b><span>21-25</span></div>
+      <div style="background:var(--atmo-4)"><b>Mauvais</b><span>26-50</span></div>
+      <div class="clair" style="background:var(--atmo-5)"><b>Très mauvais</b><span>51-75</span></div>
+      <div class="clair" style="background:var(--atmo-6)"><b>Extrême</b><span>&gt; 75</span></div>
+    </div>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--encre-3);letter-spacing:.03em">
+      Couleurs et bornes officielles — arrêté du 10 juillet 2020, annexe I. Bornes affichées pour les PM2,5.
+    </p>
+    <p>
+      Un point est structurant et souvent ignoré : <strong>l'indice officiel n'est pas calculé
+      à partir des stations</strong>. Il vient d'une modélisation spatialisée — on calcule la
+      grandeur en chaque point du modèle, on classe chaque point, on prend le maximum par
+      commune, puis le maximum des communes de l'EPCI. Les mesures ne servent qu'en
+      assimilation. Autrement dit : <em>l'indice que vous lisez le matin est déjà un produit de
+      modélisation</em>, et sa qualité dépend directement de celle de la prévision.
+    </p>
+
+    <h3>Leur stratégie de prévision, en trois temps</h3>
+    <p>
+      La chaîne opérationnelle française ne se contente pas d'un modèle physique. Elle enchaîne
+      trois gestes, et c'est le deuxième qui fait l'essentiel du gain vu au chapitre 3.
+    </p>
+    <ol class="liste-num">
+      <li>
+        <b>Un modèle de chimie-transport</b>
+        <p>CHIMERE en configuration nationale — maille fine, inventaire français, assimilation des mesures récentes. C'est le point de départ physique.</p>
+      </li>
+      <li>
+        <b>Une adaptation statistique par krigeage</b>
+        <p>
+          On calcule l'écart <em>mesure − modèle</em> à chaque station — l'« innovation » — puis
+          on l'<strong>interpole spatialement</strong> pour l'appliquer partout ailleurs. En
+          pratique : « le modèle s'est trompé de +8 µg/m³ à Toulouse et de +6 à Albi hier, donc
+          il se trompe probablement d'environ +7 entre les deux ». Krigeage ordinaire à
+          l'origine, krigeage à dérive externe depuis 2010.
+        </p>
+        <span class="preuve">c'est ce que la ligne « AS-CHI » du chapitre 3 mesure</span>
+      </li>
+      <li>
+        <b>L'expertise du prévisionniste</b>
+        <p>Un humain relit, arbitre, corrige à la main. Ce geste n'est pas traçable de l'extérieur et n'est pas reproductible dans une évaluation automatique — il faut le dire plutôt que l'ignorer.</p>
+      </li>
+    </ol>
+
+    <h3>Peut-on se donner un point de comparaison ? <code style="font-family:var(--mono);font-size:.86em">AASQA_base_simul</code></h3>
+    <p>
+      Oui — et c'est utile, parce que sans référence un pourcentage ne veut rien dire. L'idée :
+      <strong>rejouer leur stratégie sur nos propres entrées</strong>, avec les mêmes gestes
+      qu'ils déclarent employer. On obtient une ligne de base qu'on peut opposer à n'importe
+      quelle autre méthode, sur les mêmes lignes et sur trois ans.
+    </p>
+
+    <div class="encadre">
+      <b>Comment cette base est construite</b>
+      <p>
+        <strong>Point de départ</strong> — CHIMERE, le membre européen de l'ensemble CAMS, à
+        10 km, sans assimilation. C'est le même modèle qu'eux, dans une configuration moins
+        favorable.
+      </p>
+      <p>
+        <strong>Correction</strong> — krigeage du biais récent, dans des réglages usuels
+        <em>figés avant la mesure</em> : fenêtre de 30 jours, portée 200 km, pondération
+        inverse à la distance, stations donneuses de même typologie. Ces réglages ont été
+        choisis par un balayage préalable, et non re-choisis pour chaque polluant : leur
+        donner deux chances quand on n'en prend qu'une fausserait la comparaison en notre
+        faveur.
+      </p>
+    </div>
+
+    <figure class="deborde">
+      <p class="fig-t">Ce que leur adaptation statistique retire à l'erreur</p>
+      <p class="fig-s">
+        Chaque trait relie le modèle brut à sa version corrigée par krigeage. RMSE en µg/m³,
+        échéance J+1, station cachée, mêmes lignes pour les deux points.
+      </p>
+      <div class="legende">
+        <span><i style="background:var(--neutre)"></i> CHIMERE brut</span>
+        <span><i style="background:var(--accent)"></i> + krigeage du biais récent</span>
+      </div>
+      <div class="fig-cadre">
+        <svg viewBox="0 0 900 258" role="img" aria-label="Le krigeage fait passer l'ozone de 18,68 à 13,55, le NO2 de 22,64 à 18,28, les PM10 de 9,01 à 7,74 et les PM2,5 de 5,82 à 5,62 µg par mètre cube.">
+          <!-- axe 0 → 25 µg/m³ mappé sur x 120 → 800 -->
+          <g class="g-grille">
+            <line x1="256" y1="34" x2="256" y2="212" />
+            <line x1="392" y1="34" x2="392" y2="212" />
+            <line x1="528" y1="34" x2="528" y2="212" />
+            <line x1="664" y1="34" x2="664" y2="212" />
+            <line x1="800" y1="34" x2="800" y2="212" />
+          </g>
+          <line x1="120" y1="34" x2="120" y2="212" class="g-axe" />
+          <g class="g-ax" text-anchor="middle">
+            <text x="120" y="26">0</text>
+            <text x="256" y="26">5</text>
+            <text x="392" y="26">10</text>
+            <text x="528" y="26">15</text>
+            <text x="664" y="26">20</text>
+            <text x="800" y="26">25 µg/m³</text>
+          </g>
+
+          <!-- O₃ 18,68 → 628 ; 13,55 → 489 -->
+          <g>
+            <text x="0" y="62" class="g-lab">O₃</text>
+            <line x1="489" y1="58" x2="628" y2="58" stroke="var(--trait-fort)" stroke-width="2.5" />
+            <circle cx="628" cy="58" r="7" fill="var(--neutre)" stroke="var(--surface)" stroke-width="2" />
+            <circle cx="489" cy="58" r="7" fill="var(--accent)" stroke="var(--surface)" stroke-width="2" />
+            <text x="648" y="62" class="g-val">18,68</text>
+            <text x="430" y="62" class="g-val" fill="var(--accent)" text-anchor="end">13,55</text>
+            <text x="704" y="62" class="g-ax" fill="var(--accent)">−27,4 %</text>
+          </g>
+
+          <!-- NO₂ 22,64 → 736 ; 18,28 → 617 -->
+          <g>
+            <text x="0" y="106" class="g-lab">NO₂</text>
+            <line x1="617" y1="102" x2="736" y2="102" stroke="var(--trait-fort)" stroke-width="2.5" />
+            <circle cx="736" cy="102" r="7" fill="var(--neutre)" stroke="var(--surface)" stroke-width="2" />
+            <circle cx="617" cy="102" r="7" fill="var(--accent)" stroke="var(--surface)" stroke-width="2" />
+            <text x="756" y="106" class="g-val">22,64</text>
+            <text x="558" y="106" class="g-val" fill="var(--accent)" text-anchor="end">18,28</text>
+            <text x="812" y="106" class="g-ax" fill="var(--accent)">−19,2 %</text>
+          </g>
+
+          <!-- PM10 9,01 → 365 ; 7,74 → 331 -->
+          <g>
+            <text x="0" y="150" class="g-lab">PM10</text>
+            <line x1="331" y1="146" x2="365" y2="146" stroke="var(--trait-fort)" stroke-width="2.5" />
+            <circle cx="365" cy="146" r="7" fill="var(--neutre)" stroke="var(--surface)" stroke-width="2" />
+            <circle cx="331" cy="146" r="7" fill="var(--accent)" stroke="var(--surface)" stroke-width="2" />
+            <text x="385" y="150" class="g-val">9,01</text>
+            <text x="272" y="150" class="g-val" fill="var(--accent)" text-anchor="end">7,74</text>
+            <text x="432" y="150" class="g-ax" fill="var(--accent)">−14,0 %</text>
+          </g>
+
+          <!-- PM2,5 5,82 → 278 ; 5,62 → 273 -->
+          <g>
+            <text x="0" y="194" class="g-lab">PM2,5</text>
+            <line x1="273" y1="190" x2="278" y2="190" stroke="var(--trait-fort)" stroke-width="2.5" />
+            <circle cx="278" cy="190" r="7" fill="var(--neutre)" stroke="var(--surface)" stroke-width="2" />
+            <circle cx="273" cy="190" r="7" fill="var(--accent)" stroke="var(--surface)" stroke-width="2" />
+            <text x="298" y="194" class="g-val">5,82</text>
+            <text x="214" y="194" class="g-val" fill="var(--accent)" text-anchor="end">5,62</text>
+            <text x="345" y="194" class="g-ax" fill="var(--accent)">−3,3 %</text>
+          </g>
+
+          <text x="120" y="238" class="g-ax">La méthode fonctionne, et son gain varie d'un facteur huit selon le polluant.</text>
+        </svg>
+      </div>
+      <figcaption>
+        Source : <code>reports/duel_chimere_&lt;polluant&gt;_h2.csv</code>, variante de krigeage
+        <b>30 j · 200 km · p=1 · même typologie</b>, figée avant la mesure.
+      </figcaption>
+    </figure>
+
+    <div class="encadre reserve">
+      <b>Ce que cette base de comparaison n'est pas</b>
+      <p>
+        <strong>Ce n'est pas PREV'AIR, et la nuance est décisive.</strong> Leur CHIMERE tourne
+        en configuration nationale — maille plus fine, inventaire français, assimilation de
+        données ; celui utilisé ici est le membre européen à 10 km de l'ensemble CAMS. Cette
+        base dit ce que leur <em>famille de méthode</em> vaut sur les entrées dont nous
+        disposons. Elle ne dit rien de la qualité de leur produit, qui est meilleur.
+      </p>
+      <p>
+        Elle reste utile pour ce à quoi elle sert : donner un adversaire honnête, mesuré sur
+        les mêmes lignes, plutôt que de comparer une méthode à rien.
+      </p>
+    </div>
+
+    <p>
+      Deux conclusions se dégagent, et la seconde est la plus intéressante.
+    </p>
+    <ul class="puces">
+      <li><strong>Le krigeage fonctionne.</strong> Il retire jusqu'à 27,4 % de l'erreur d'un modèle brut. Ce n'est pas une méthode à contester, c'est une méthode à mesurer — ce qui vient d'être fait.</li>
+      <li><strong>Le point de départ pèse autant que la méthode.</strong> Sur l'ozone, la médiane de l'ensemble CAMS <em>sans aucune correction</em> (12,53) est déjà meilleure que CHIMERE <em>avec</em> krigeage (13,55). Améliorer sa méthode et améliorer son entrée sont deux leviers de même ordre — et on ne peut pas les distinguer sans une table qui les sépare.</li>
+    </ul>
+  </section>
+
+  <!-- ════════════════ 5 — CE QUI PAIE ════════════════ -->
+  <section class="chap" id="ch5">
+    <div class="chap-tete">
+      <p class="chap-num"><b>05</b> <span>Définition stratégique</span></p>
+      <h2>Quelles données améliorent vraiment la prévision</h2>
+      <p class="chapeau">
+        La question est simple à poser et difficile à mesurer : si on ajoute une source
+        d'information à un modèle de correction, <strong>combien gagne-t-on, et est-ce que ça
+        tient ?</strong> Voici la réponse, source par source, sur l'épreuve la plus dure que le
+        projet sache construire.
+      </p>
+    </div>
+
+    <div class="encadre">
+      <b>L'épreuve : double aveugle</b>
+      <p>
+        Tous les chiffres de ce chapitre sont mesurés avec la <strong>station et le mois cachés
+        en même temps</strong>. Le modèle prédit un endroit qu'il n'a jamais vu, à une période
+        qu'il n'a jamais vue. C'est la condition d'un déploiement réel, et c'est nettement plus
+        sévère qu'un découpage aléatoire — les mêmes leviers affichent facilement le double sur
+        une épreuve plus douce.
+      </p>
+      <p>
+        Le périmètre est <strong>« partout »</strong> : aucune observation passée de la station
+        n'entre dans le modèle. C'est ce qui rend ces chiffres transposables là où il n'y a
+        aucune station — le sujet du chapitre 7.
+      </p>
+    </div>
+
+    <h3>L'empilement, source par source</h3>
+    <p>
+      On part d'une base — la prévision CAMS, le relief, le calendrier — et on ajoute une
+      famille de variables à la fois, dans un ordre <em>déclaré avant la mesure</em>. Le
+      pourcentage est la réduction de RMSE par rapport à la prévision brute.
+    </p>
+
+    <div class="tab-cadre deborde">
+      <table>
+        <thead>
+          <tr><th>Ce qu'on ajoute</th><th>NO₂</th><th>O₃</th><th>PM10</th><th>PM2,5</th></tr>
+        </thead>
+        <tbody>
+<!-- ══ TABLE SOCLE · générée par scripts/table_decouverte.py ══ -->
+          <tr>
+            <td>modèle de base</td>
+            <td><span class="jauge-cell"><b>+27,61 %</b><i style="width:55px"></i></span></td>
+            <td><span class="jauge-cell"><b>+4,89 %</b><i style="width:10px"></i></span></td>
+            <td><span class="jauge-cell"><b>+13,04 %</b><i style="width:26px"></i></span></td>
+            <td><span class="jauge-cell"><b>+5,46 %</b><i style="width:11px"></i></span></td>
+          </tr>
+          <tr>
+            <td>+ typologie de station <span style="font-size:12px;color:var(--encre-3)">(trafic, fond, urbain)</span></td>
+            <td><span class="jauge-cell"><b>+36,00 %</b><i style="width:72px"></i><em class="plus">+8,38</em></span></td>
+            <td><span class="jauge-cell"><b>+5,07 %</b><i style="width:10px"></i><em class="plus">+0,17</em></span></td>
+            <td><span class="jauge-cell"><b>+14,60 %</b><i style="width:29px"></i><em class="plus">+1,56</em></span></td>
+            <td><span class="jauge-cell"><b>+5,76 %</b><i style="width:12px"></i><em class="plus">+0,30</em></span></td>
+          </tr>
+          <tr>
+            <td>+ accord des modèles européens <span style="font-size:12px;color:var(--encre-3)">(9 modèles de CAMS)</span></td>
+            <td><span class="jauge-cell"><b>+36,89 %</b><i style="width:74px"></i><em class="plus">+0,89</em></span></td>
+            <td><span class="jauge-cell"><b>+8,82 %</b><i style="width:18px"></i><em class="plus">+3,76</em></span></td>
+            <td><span class="jauge-cell"><b>+16,61 %</b><i style="width:33px"></i><em class="plus">+2,01</em></span></td>
+            <td><span class="jauge-cell"><b>+8,28 %</b><i style="width:17px"></i><em class="plus">+2,51</em></span></td>
+          </tr>
+          <tr>
+            <td>+ tendance récente du modèle <span style="font-size:12px;color:var(--encre-3)">(sans lire une observation)</span></td>
+            <td><span class="jauge-cell"><b>+37,13 %</b><i style="width:74px"></i><em class="plus">+0,24</em></span></td>
+            <td><span class="jauge-cell"><b>+10,55 %</b><i style="width:21px"></i><em class="plus">+1,72</em></span></td>
+            <td><span class="jauge-cell"><b>+17,63 %</b><i style="width:35px"></i><em class="plus">+1,02</em></span></td>
+            <td><span class="jauge-cell"><b>+9,80 %</b><i style="width:20px"></i><em class="plus">+1,52</em></span></td>
+          </tr>
+          <tr>
+            <td>+ composition du champ CAMS <span style="font-size:12px;color:var(--encre-3)">(de quoi la masse est faite)</span></td>
+            <td><span class="jauge-cell"><b>+39,99 %</b><i style="width:80px"></i><em class="plus">+2,86</em></span></td>
+            <td><span class="jauge-cell"><b>+17,92 %</b><i style="width:36px"></i><em class="plus">+7,38</em></span></td>
+            <td><span class="jauge-cell"><b>+22,56 %</b><i style="width:45px"></i><em class="plus">+4,93</em></span></td>
+            <td><span class="jauge-cell"><b>+13,21 %</b><i style="width:26px"></i><em class="plus">+3,41</em></span></td>
+          </tr>
+          <tr>
+            <td>+ forme de la journée</td>
+            <td><span class="jauge-cell"><b>+40,02 %</b><i style="width:80px"></i><em class="plus">+0,03</em></span></td>
+            <td><span class="jauge-cell"><b>+17,64 %</b><i style="width:35px"></i><em class="moins">-0,28</em></span></td>
+            <td><span class="jauge-cell"><b>+22,63 %</b><i style="width:45px"></i><em class="plus">+0,07</em></span></td>
+            <td><span class="jauge-cell"><b>+13,54 %</b><i style="width:27px"></i><em class="plus">+0,33</em></span></td>
+          </tr>
+          <tr>
+            <td>+ cycles saisonniers</td>
+            <td><span class="jauge-cell"><b>+40,89 %</b><i style="width:82px"></i><em class="plus">+0,87</em></span></td>
+            <td><span class="jauge-cell"><b>+17,94 %</b><i style="width:36px"></i><em class="plus">+0,30</em></span></td>
+            <td><span class="jauge-cell"><b>+22,72 %</b><i style="width:45px"></i><em class="plus">+0,09</em></span></td>
+            <td><span class="jauge-cell"><b>+13,32 %</b><i style="width:27px"></i><em class="moins">-0,22</em></span></td>
+          </tr>
+          <tr>
+            <td>+ précurseurs gazeux <span style="font-size:12px;color:var(--encre-3)">(NH₃, SO₂, PAN, COV)</span></td>
+            <td><span class="jauge-cell"><b>+41,09 %</b><i style="width:82px"></i><em class="plus">+0,20</em></span></td>
+            <td><span class="jauge-cell"><b>+19,42 %</b><i style="width:39px"></i><em class="plus">+1,48</em></span></td>
+            <td><span class="jauge-cell"><b>+23,67 %</b><i style="width:47px"></i><em class="plus">+0,94</em></span></td>
+            <td><span class="jauge-cell"><b>+14,54 %</b><i style="width:29px"></i><em class="plus">+1,22</em></span></td>
+          </tr>
+          <tr>
+            <td><b>Maximum atteint — partout</b> <span style="font-size:12px;color:var(--encre-3)">(aucune observation)</span></td>
+            <td><span class="jauge-cell"><b>+41,09 %</b><i style="width:82px"></i></span></td>
+            <td><span class="jauge-cell"><b>+19,44 %</b><i style="width:39px"></i></span></td>
+            <td><span class="jauge-cell"><b>+23,67 %</b><i style="width:47px"></i></span></td>
+            <td><span class="jauge-cell"><b>+14,54 %</b><i style="width:29px"></i></span></td>
+          </tr>
+          <tr>
+            <td><b>Maximum aux stations instrumentées</b> <span style="font-size:12px;color:var(--encre-3)">(avec l'observation de la veille)</span></td>
+            <td><span class="jauge-cell"><b>+47,32 %</b><i style="width:95px"></i></span></td>
+            <td><span class="jauge-cell"><b>+27,33 %</b><i style="width:55px"></i></span></td>
+            <td><span class="jauge-cell"><b>+29,87 %</b><i style="width:60px"></i></span></td>
+            <td><span class="jauge-cell"><b>+21,52 %</b><i style="width:43px"></i></span></td>
+          </tr>
+          <!-- ══ FIN TABLE SOCLE ══ -->
+        </tbody>
+        <tfoot>
+          <tr><td colspan="5">Épreuve double aveugle — station <strong>et</strong> mois cachés ensemble — échéance <strong>J+1</strong>, sur <strong>24 mois communs aux quatre polluants</strong> (2024-01 → 2025-12), avec la <strong>même pile</strong> et un support vérifié sans trou. Les colonnes se comparent donc directement, ce qui n'était pas le cas des versions antérieures de ce tableau.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <h3>Le classement qui compte n'est pas celui-là</h3>
+    <p>
+      Un empilement flatte ce qui arrive tôt. La typologie de station gagne 8,97 points sur le
+      NO₂ parce qu'elle passe en deuxième position — si elle passait en dernier, une partie de
+      son apport aurait déjà été captée par les autres. La lecture honnête consiste à
+      <strong>retirer une famille à la fois de la pile complète</strong> et à mesurer ce qu'on
+      perd. Voici ce que ça change.
+    </p>
+
+    <div class="tab-cadre deborde">
+      <table>
+        <thead>
+          <tr><th>Famille retirée de la pile complète</th><th>O₃</th><th>NO₂</th><th>PM10</th><th>PM2,5</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Typologie de station</td><td>+0,25</td><td class="nous">+9,59</td><td>+1,87</td><td>+0,04</td></tr>
+          <tr><td>Membres d'ensemble</td><td>+1,58</td><td class="moins">−0,11</td><td>+0,58</td><td>+1,18</td></tr>
+          <tr><td>Feux de végétation</td><td>+1,63</td><td class="moins">−0,18</td><td class="moins">−0,12</td><td>+1,58</td></tr>
+          <tr style="background:var(--accent-pale)"><td><strong>GEOS-CF</strong></td><td class="nous">+1,77</td><td class="nous">+2,34</td><td class="nous">+2,10</td><td class="nous">+1,62</td></tr>
+          <tr><td>Tendance récente</td><td>+2,09</td><td>+0,15</td><td>+0,45</td><td>+0,13</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="5">Points de pourcentage perdus si la famille disparaît. Un apport faible signifie <strong>redondant avec le reste</strong>, jamais « inutile » : deux familles qui captent la même information s'annulent mutuellement à ce test.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <p class="exergue">
+      Une seule source paie sur les quatre polluants à la fois — et c'est la seule qui vienne
+      de l'extérieur.
+      <small>GEOS-CF · +1,62 à +2,34 points</small>
+    </p>
+
+    <p>
+      Le mécanisme est net. La typologie de station, les membres d'ensemble, la tendance
+      récente : toutes <em>réarrangent</em> une information que CAMS contient déjà. Elles se
+      recouvrent, donc elles se volent leur crédit selon leur rang dans l'empilement — d'où les
+      valeurs négatives du second tableau. GEOS-CF, lui, apporte une opinion construite avec un
+      autre inventaire d'émissions et une autre assimilation. <strong>Le modèle n'apprend pas à
+      le croire : il apprend <em>où</em> le croire</strong> — et c'est pour cela qu'une simple
+      moyenne des deux modèles est toujours pire que CAMS seul, alors que GEOS-CF utilisé comme
+      variable gagne.
+    </p>
+
+    <h3>Ce qui a été testé et n'a rien donné</h3>
+    <p>
+      Une liste de leviers gagnants sans les échecs n'est pas une mesure, c'est une vitrine.
+      Voici ce qui a été mesuré puis écarté.
+    </p>
+    <ul class="puces">
+      <li class="non"><strong>Le sol et la géologie</strong> — gains onze fois sous le seuil de rétention. Un témoin sur l'ozone réfute en plus le mécanisme invoqué.</li>
+      <li class="non"><strong>L'information de voisinage par graphe</strong> — +0,28 point, sept fois sous le critère de rétention. Les stations voisines n'ont presque rien à dire que les autres variables ne disent déjà.</li>
+      <li class="non"><strong>La dispersion entre membres d'ensemble comme prédicteur</strong> — nulle. Elle reste utile comme <em>indicateur de méfiance</em> — l'erreur est 6,6 fois plus grande quand les modèles divergent — mais elle ne prédit pas la valeur.</li>
+      <li class="non"><strong>La classification directe des dépassements, la perte pondérée, la régression quantile</strong> — trois techniques qui semblaient gagner, et dont l'avantage disparaît dès qu'on les compare à budget de fausses alertes égal. Ce qui décide d'une alerte, c'est <em>l'ordre des jours par risque</em>, pas la fonction de perte.</li>
+      <li class="non"><strong>La météo de réanalyse</strong> — elle gagne réellement (+7,9 % sur l'ozone), mais elle décrit le présent depuis le futur : elle n'existe pas à l'heure où la prévision est émise. C'est un <em>plafond</em>, jamais un gain.</li>
+    </ul>
+  </section>
+
+  <!-- ════════════════ 6 — CE QUI ARRIVE ════════════════ -->
+  <section class="chap" id="ch6">
+    <div class="chap-tete">
+      <p class="chap-num"><b>06</b> <span>Perspective réglementaire</span></p>
+      <h2>Ce qui arrive côté Europe</h2>
+      <p class="chapeau">
+        La directive (UE) 2024/2881 remplace le cadre en vigueur depuis 2008. Elle est adoptée,
+        en vigueur, et sa transposition en droit français est due au
+        <strong>11 décembre 2026</strong>. Elle change deux choses : les seuils, et le statut
+        de la modélisation.
+      </p>
+    </div>
+
+    <div class="encadre reglement">
+      <b>Calendrier</b>
+      <p>
+        <strong>23 octobre 2024</strong> — adoption. · <strong>décembre 2024</strong> — entrée
+        en vigueur. · <strong>11 décembre 2026</strong> — transposition en droit national, soit
+        dans moins de cinq mois. · <strong>1<sup>er</sup> janvier 2030</strong> — application
+        des nouvelles valeurs limites. Un report jusqu'à 2040 reste possible sous conditions,
+        sur demande déposée avant le 31 décembre 2028.
+      </p>
+    </div>
+
+    <h3>Les seuils, divisés par deux</h3>
+    <div class="tab-cadre deborde">
+      <table>
+        <thead>
+          <tr><th>Polluant</th><th>Limite annuelle actuelle</th><th>Limite annuelle 2030</th><th>Ligne OMS 2021</th><th>Nouveautés</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>PM2,5</td><td>25 µg/m³</td><td class="nous">10 µg/m³</td><td>5 µg/m³</td><td style="text-align:left;font-family:var(--sans);font-size:13px">limite journalière 25 µg/m³, 18 j/an max</td></tr>
+          <tr><td>PM10</td><td>40 µg/m³</td><td class="nous">20 µg/m³</td><td>15 µg/m³</td><td style="text-align:left;font-family:var(--sans);font-size:13px">journalière 45 au lieu de 50, 18 j au lieu de 35</td></tr>
+          <tr><td>NO₂</td><td>40 µg/m³</td><td class="nous">20 µg/m³</td><td>10 µg/m³</td><td style="text-align:left;font-family:var(--sans);font-size:13px">horaire 200 µg/m³ : 3 h/an au lieu de 18</td></tr>
+          <tr><td>O₃</td><td colspan="2" style="text-align:center">valeur cible 120 µg/m³ sur le max 8 h</td><td>100 µg/m³</td><td style="text-align:left;font-family:var(--sans);font-size:13px">18 jours de dépassement par an au lieu de 25</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="5">Les nouvelles limites se rapprochent des lignes OMS sans les atteindre — sur les PM2,5, la limite 2030 vaudra encore le double de la ligne sanitaire.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <h3>Ce que ça change, mesuré station par station</h3>
+    <p>
+      Un changement de seuil n'est pas une abstraction : à air rigoureusement constant, il fait
+      basculer des stations d'un côté à l'autre de la loi. Voici le calcul, sur les moyennes
+      annuelles 2025 réellement mesurées.
+    </p>
+
+    <figure class="deborde">
+      <p class="fig-t">408 stations françaises, deux jeux de seuils</p>
+      <p class="fig-s">
+        Chaque carré est une station évaluée en 2025 avec un taux de saisie suffisant. Une
+        station est marquée dès qu'elle dépasse la limite annuelle d'<em>au moins un</em> des
+        trois polluants concernés. La disposition ne porte aucune information géographique.
+      </p>
+      <div class="legende">
+        <span><i style="background:var(--neutre-pale);border:1px solid var(--trait-fort)"></i> sous la limite</span>
+        <span><i style="background:var(--contre)"></i> en dépassement</span>
+      </div>
+      <div class="fig-cadre">
+        <svg viewBox="0 0 900 226" role="img" aria-label="Aujourd'hui 6 stations sur 408 dépassent une valeur limite annuelle. Avec les seuils de 2030 appliqués au même air, elles sont 109, soit un facteur 18,2.">
+          <g class="g-tit">
+            <text x="0" y="14">AUJOURD'HUI · SEUILS DE 2008</text>
+            <text x="470" y="14">EN 2030 · MÊME AIR, AUTRES SEUILS</text>
+          </g>
+          <g id="grille-aujourdhui"></g>
+          <g id="grille-2030"></g>
+          <g>
+            <text x="0" y="196" class="g-val" font-size="26" fill="var(--encre)">6</text>
+            <text x="26" y="196" class="g-lab">stations sur 408</text>
+            <text x="0" y="216" class="g-ax">1,5 % du parc évalué</text>
+          </g>
+          <g>
+            <text x="470" y="196" class="g-val" font-size="26" fill="var(--contre)">109</text>
+            <text x="530" y="196" class="g-lab">stations sur 408</text>
+            <text x="470" y="216" class="g-ax">26,7 % du parc — un facteur 18,2</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        Détail par polluant · <b>NO₂</b> 5 stations en dépassement aujourd'hui, <b>57</b> en
+        2030, sur 341 évaluées · <b>PM10</b> 1 → <b>37</b> sur 322 · <b>PM2,5</b> 0 →
+        <b>57</b> sur 243. L'ozone est exclu : il n'a pas de valeur limite annuelle. Source :
+        <code>scripts/seuils_2030.py</code>.
+      </figcaption>
+    </figure>
+
+    <div class="encadre reserve">
+      <b>Ce que ce calcul ne dit pas</b>
+      <p>
+        Les moyennes de 2025 ne sont pas une prévision de 2030 : les émissions baisseront d'ici
+        là, et une partie de ces stations repassera sous le seuil. Ce calcul mesure une chose
+        et une seule — <strong>l'effet du changement de seuil, à air constant</strong>. C'est
+        précisément la question qu'une collectivité doit se poser aujourd'hui pour dimensionner
+        sa feuille de route, et non une projection.
+      </p>
+    </div>
+
+    <p>
+      En Occitanie, sur les 25 stations retenues, on passe de <strong>2 à 5</strong> stations en
+      dépassement. Et un fait qui prépare le chapitre suivant :
+      <strong>quatre des treize départements de la région n'ont aucune station retenue</strong>
+      — l'Ariège, l'Aude, le Lot et la Lozère. Pour eux, la conformité 2030 <em>ne peut pas
+      être posée depuis la mesure</em>.
+    </p>
+
+    <h3>Les changements structurels, au-delà des chiffres</h3>
+    <ul class="puces">
+      <li><strong>La modélisation devient obligatoire</strong> là où les seuils d'évaluation sont dépassés. Sous le cadre de 2008 elle était un complément facultatif aux stations ; elle devient un instrument de constat à part entière.</li>
+      <li><strong>De nouveaux polluants à surveiller</strong> — particules ultrafines et carbone suie — sur des « super-sites », six urbains et six ruraux par pays.</li>
+      <li><strong>Des feuilles de route qualité de l'air obligatoires</strong> pour les zones dont le dépassement est attendu au-delà de 2030, à établir avant 2028.</li>
+      <li><strong>Un droit à réparation</strong> pour les personnes dont la santé a été affectée par un non-respect des normes. C'est un changement de nature : la qualité des estimations devient opposable.</li>
+    </ul>
+  </section>
+
+  <!-- ════════════════ 7 — SPATIALISER ════════════════ -->
+  <section class="chap" id="ch7">
+    <div class="chap-tete">
+      <p class="chap-num"><b>07</b> <span>Avancées</span></p>
+      <h2>Prévoir là où il n'y a pas de station</h2>
+      <p class="chapeau">
+        C'est le point où tout ce document converge. Les méthodes en service corrigent
+        remarquablement bien <em>près</em> des stations, parce qu'elles s'appuient sur les
+        mesures du moment. La réglementation qui arrive demande, elle, de se prononcer sur des
+        territoires <strong>où il n'y a rien à mesurer</strong>.
+      </p>
+    </div>
+
+    <h3>Pourquoi le krigeage ne peut pas répondre à cette question</h3>
+    <p>
+      Reprenons le mécanisme du chapitre 4. Le krigeage calcule l'écart mesure − modèle
+      <em>aux stations</em>, puis l'interpole. Sa qualité décroît donc avec la distance à la
+      station la plus proche : excellente à 5 km, encore utile à 50, sans fondement à 150. Là
+      où le réseau est lâche, il n'y a plus d'innovation à interpoler — il ne reste que le
+      modèle brut.
+    </p>
+    <p>
+      Une correction <em>apprise</em> fonctionne autrement. Elle n'utilise que des variables
+      disponibles à l'heure d'émission : le relief, la typologie du lieu, le calendrier, les
+      autres modèles. Elle ne demande aucune mesure au moment où elle s'applique. En
+      contrepartie, elle est moins performante là où le krigeage excelle — c'est un
+      arbitrage, pas une supériorité.
+    </p>
+
+    <figure class="deborde">
+      <p class="fig-t">Deux méthodes, deux domaines de validité</p>
+      <p class="fig-s">Schéma de principe. La portée du krigeage dépend du polluant et de la densité du réseau ; l'ordre de grandeur affiché correspond à la portée mesurée de l'autocorrélation des résidus.</p>
+      <div class="fig-cadre">
+        <svg viewBox="0 0 900 260" role="img" aria-label="Schéma : autour de chaque station, un disque où le krigeage est informatif. Entre les stations et loin d'elles, seule une correction apprise depuis des variables de terrain peut se prononcer.">
+          <defs>
+            <pattern id="hachure" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="0" y2="7" stroke="var(--trait-fort)" stroke-width="1.4" />
+            </pattern>
+            <clipPath id="territoire">
+              <rect x="20" y="34" width="860" height="176" rx="4" />
+            </clipPath>
+          </defs>
+
+          <rect x="20" y="34" width="860" height="176" rx="4" fill="url(#hachure)" opacity=".55" />
+
+          <!-- les halos sont détourés par le territoire : une portée ne déborde pas
+               de la zone qu'elle prétend couvrir. -->
+          <g clip-path="url(#territoire)">
+            <g fill="var(--accent)" opacity=".2">
+              <circle cx="140" cy="104" r="54" /><circle cx="268" cy="156" r="54" />
+              <circle cx="196" cy="76" r="54" /><circle cx="418" cy="104" r="54" />
+              <circle cx="352" cy="170" r="54" /><circle cx="524" cy="80" r="54" />
+            </g>
+            <g fill="var(--accent)" stroke="var(--surface)" stroke-width="2">
+              <circle cx="140" cy="104" r="6" /><circle cx="268" cy="156" r="6" />
+              <circle cx="196" cy="76" r="6" /><circle cx="418" cy="104" r="6" />
+              <circle cx="352" cy="170" r="6" /><circle cx="524" cy="80" r="6" />
+            </g>
+          </g>
+
+          <rect x="20" y="34" width="860" height="176" rx="4" fill="none" stroke="var(--trait-fort)" stroke-width="1.5" />
+          <text x="196" y="26" class="g-ax" text-anchor="middle">stations de mesure</text>
+
+          <g>
+            <line x1="672" y1="70" x2="672" y2="180" stroke="var(--contre)" stroke-width="1.5" stroke-dasharray="4 4" />
+            <text x="688" y="112" class="g-lab" fill="var(--contre)">aucune station</text>
+            <text x="688" y="130" class="g-lab" fill="var(--contre)">à moins de 30 km</text>
+            <text x="688" y="152" class="g-ax">le krigeage n'a rien à interpoler</text>
+          </g>
+
+          <g class="g-ax">
+            <rect x="20" y="226" width="14" height="14" rx="2" fill="var(--accent)" opacity=".2" />
+            <text x="42" y="237">portée utile du krigeage — quelques dizaines de km</text>
+            <rect x="380" y="226" width="14" height="14" rx="2" fill="url(#hachure)" stroke="var(--trait-fort)" />
+            <text x="402" y="237">domaine où seule une correction apprise peut se prononcer</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        Chiffres réels · <b>43 EPCI français n'ont aucune station à moins de 30 km.</b> En
+        Occitanie, <b>4 départements sur 13</b> n'ont aucune station retenue pour l'évaluation
+        annuelle. C'est exactement le cas que la directive confie à la modélisation.
+      </figcaption>
+    </figure>
+
+    <p class="exergue">
+      La différence de nature compte plus que l'écart de score. Une méthode qui exige des
+      observations au moment où elle corrige ne peut pas, par construction, répondre là où il
+      n'y en a pas.
+    </p>
+
+    <h3>Ce que le projet fait déjà dans le sens des attentes réglementaires</h3>
+    <p>
+      Voici la liste complète, chaque point avec ce qui l'étaye. Elle est donnée telle quelle,
+      avec ses réserves : un dossier qui ne présenterait que ses succès n'aurait aucune valeur
+      probante.
+    </p>
+
+    <ol class="liste-num">
+      <li>
+        <b>La validation retire les stations, comme le droit va l'exiger</b>
+        <p>
+          Le modèle n'est jamais évalué sur une station qu'il a vue à l'apprentissage. Or la
+          <strong>décision d'exécution (UE) 2026/1208</strong> formalise précisément le
+          <em>leave-one-out</em> pour les applications qui mêlent modèles et mesures, applicable
+          au 30 juin 2028. La méthode de validation retenue va donc dans le sens que le droit
+          prend.
+        </p>
+        <span class="preuve">l'alignement réglementaire le plus direct du dossier</span>
+      </li>
+      <li>
+        <b>Et elle bloque aussi l'espace, pas seulement l'identité</b>
+        <p>
+          Retirer une station ne suffit pas si sa voisine est à 2 km. Les stations sont donc
+          regroupées en grappes géographiques, et des grappes entières sont exclues, avec un
+          fossé autour de la zone de test. Le gain sur l'ozone passe de +28,6 % à
+          <strong>+18,5 %</strong> — et à environ <strong>+13,5 %</strong> une fois corrigé du
+          fait qu'un fossé retire aussi des données d'entraînement.
+        </p>
+        <span class="preuve">le seul chiffre du dossier qui soit décomposé entre fuite et famine</span>
+      </li>
+      <li>
+        <b>Le critère européen d'évaluation des modèles est calculé</b>
+        <p>
+          Le cadre FAIRMODE du Centre commun de recherche définit un indicateur, le MQI, qui
+          rapporte l'erreur du modèle à l'incertitude de la mesure elle-même. Sur le NO₂ à
+          J+1, la prévision brute satisfait le critère sur <strong>41,4 %</strong> des
+          stations ; après correction, sur <strong>96,2 %</strong>.
+        </p>
+        <span class="preuve">MQI agrégés : O₃ 0,309 → 0,255 · NO₂ 0,606 → 0,485 · PM2,5 0,488 → 0,354</span>
+      </li>
+      <li>
+        <b>La grandeur apprise est celle sur laquelle porte le seuil</b>
+        <p>
+          Maximum glissant 8 h pour l'ozone, maximum horaire pour le NO₂, moyenne journalière
+          pour les particules. Apprendre directement la grandeur réglementaire plutôt que de
+          corriger l'heure puis d'agréger vaut <strong>+5,8 points</strong> sur l'ozone et
+          <strong>+6,5</strong> sur le NO₂ — et rien sur les PM2,5, dont le grain est une
+          moyenne et non un maximum. Ce renversement de signe est ce qui distingue une mesure
+          d'une coïncidence.
+        </p>
+      </li>
+      <li>
+        <b>Les scores sont recalculés dans les conventions du référentiel national</b>
+        <p>
+          Stations de fond seules, taux de saisie ≥ 75 %, score calculé par station puis
+          moyenné sans pondération, échéances séparées, ozone limité à avril-septembre. Sans ce
+          recalcul, comparer nos chiffres à un rapport d'AASQA reviendrait à comparer deux
+          grandeurs différentes.
+        </p>
+        <span class="preuve">et le changement de convention joue dans les deux sens : −1,6 pt sur NO₂, +3,2 sur PM2,5</span>
+      </li>
+      <li>
+        <b>Des champs spatialisés sont produits et contrôlés</b>
+        <p>
+          France, Occitanie et Nouvelle-Aquitaine, en grille. Le contrôle porte sur le niveau
+          réellement observé aux stations de fond du territoire : le champ corrigé y recolle à
+          <strong>0,1 à 4 µg/m³</strong> près, alors que le champ européen brut est
+          <strong>quatre à six fois trop bas</strong> sur le NO₂.
+        </p>
+      </li>
+      <li>
+        <b>L'ordre d'agrégation de l'indice est respecté</b>
+        <p>
+          Le guide de calcul officiel impose : grandeur en chaque point du modèle, qualificatif
+          par point, maximum par commune, maximum des communes de l'EPCI. Jamais une moyenne
+          spatiale. Une sortie au point est directement agrégeable dans cet ordre.
+        </p>
+      </li>
+      <li>
+        <b>La persistance de la décision est prise en compte</b>
+        <p>
+          Exiger un dépassement prédit <em>deux jours de suite</em> retire un tiers des fausses
+          alertes sans perdre un seul épisode. Ce n'est pas une astuce : l'arrêté du 7 avril
+          2016 exige lui-même cette persistance pour faire basculer une procédure d'information
+          en procédure d'alerte.
+        </p>
+        <span class="preuve">−33 % de fausses alertes, rappel strictement inchangé</span>
+      </li>
+      <li>
+        <b>La détection est évaluée à budget de fausses alertes constant</b>
+        <p>
+          Un service ne choisit pas un seuil pour maximiser un score : il subit un budget
+          d'alertes au-delà duquel plus personne ne l'écoute. À la précision d'annonce du
+          produit officiel, la part d'épisodes détectés passe de <strong>46 % à 77 %</strong>.
+        </p>
+      </li>
+      <li>
+        <b>Le seuil 2030 est chiffré station par station</b>
+        <p>
+          Et pas seulement en agrégat : chaque station porte son verdict avant et après, ce qui
+          permet de désigner les territoires où la question <em>ne peut pas</em> être posée
+          faute de mesure — le point de départ de toute demande de spatialisation.
+        </p>
+      </li>
+      <li>
+        <b>Chaque chiffre est régénérable, depuis une source unique</b>
+        <p>
+          Un document de référence gèle toutes les valeurs publiées, et un script les
+          reconstruit depuis les données. Un chiffre qui n'y figure pas est retiré ou
+          re-mesuré. C'est la condition pour qu'une évaluation soit opposable plutôt que
+          déclarative.
+        </p>
+      </li>
+    </ol>
+
+    <div class="encadre reserve">
+      <b>Et les limites, énoncées avant qu'on les trouve</b>
+      <p>
+        <strong>Contre les épisodes réellement déclenchés par arrêté préfectoral, le bilan est
+        mauvais : 2 sur 33 sur les PM10.</strong> La chaîne officielle en attrape 1, et
+        l'observation elle-même seulement 21 — douze de ces épisodes n'ont aucune station
+        au-dessus du seuil en moyenne journalière, ce qui signifie que la procédure se
+        déclenche sur autre chose que la grandeur prédite. Le constat reste défavorable.
+      </p>
+      <p>
+        Au seuil français de procédure sur l'ozone — 180 µg/m³ en maximum horaire — <strong>3
+        dépassements détectés sur 32</strong>. L'événement est trop rare pour être appris : il
+        y en a 32 dans tout le corpus.
+      </p>
+      <p>
+        <strong>La correction dégrade une partie des stations</strong>, de 2,1 % à 42,5 % selon
+        l'épreuve imposée. Là où elle en dégrade le plus, son gain médian est le plus faible —
+        elle y est quasi neutre et le signe bascule d'une station à l'autre.
+      </p>
+      <p>
+        Enfin : aucune variable d'émission n'entre dans le modèle, la maille reste à 10 km, et
+        le gradient urbain — la différence entre une avenue et le parc d'à côté — est hors de
+        portée.
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════════ CLÔTURE ════════════════ -->
+  <section class="fin" id="fin">
+    <div class="chap-tete">
+      <p class="chap-num"><b>——</b> <span>Pour retenir</span></p>
+      <h2>Cinq phrases</h2>
+    </div>
+    <ul class="puces">
+      <li>La pollution de l'air ne s'éprouve pas, elle se compte : <strong>40 000 décès par an en France</strong>, et <strong>97,9 % des stations</strong> au-dessus de la ligne sanitaire de l'OMS sur les PM2,5.</li>
+      <li>Il n'existe pas de meilleur modèle, seulement des modèles qui se trompent différemment — <strong>d'où l'intérêt de les moyenner</strong>.</li>
+      <li>Les chaînes en service corrigent leur modèle en interpolant l'écart aux stations. <strong>Ça marche, et ça s'arrête où le réseau s'arrête.</strong></li>
+      <li>Parmi toutes les données ajoutables, <strong>la seule qui paie sur les quatre polluants est celle qui vient de l'extérieur</strong> du système qu'on corrige.</li>
+      <li>À partir de 2030, il faudra se prononcer sur des territoires sans station. <strong>C'est une question de méthode, pas de budget de capteurs.</strong></li>
+    </ul>
+
+    <div class="methode">
+      <h3>D'où viennent les chiffres</h3>
+      <dl>
+        <dt>Santé</dt>
+        <dd>Santé publique France, <em>Impacts de l'exposition chronique aux particules fines sur la mortalité en France continentale</em>, estimations 2016-2019 · Agence européenne pour l'environnement, <em>Harm to human health from air pollution in Europe: burden of disease status 2025</em>, données 2023.</dd>
+
+        <dt>Réglementation</dt>
+        <dd>Directive (UE) 2024/2881 du 23 octobre 2024 · arrêté du 10 juillet 2020 (indice ATMO) · arrêté du 7 avril 2016 (seuils et procédures) · arrêté du 16 avril 2021 (dispositif de surveillance) · lignes directrices OMS 2021 · décision d'exécution (UE) 2026/1208.</dd>
+
+        <dt>Modèles</dt>
+        <dd>CAMS Europe (Copernicus/ECMWF) · PREV'AIR (INERIS, Météo-France, CNRS, LCSQA) · GEOS-CF (NASA GMAO) · Bertrand, Meleux, Ung, Descombes &amp; Colette, <em>Improving the European air quality forecast of CAMS using machine learning techniques</em>, ACP 23, 5317 (2023) · <em>Performances Prev'air en 2024</em>, INERIS/LCSQA, 08/04/2026.</dd>
+
+        <dt>Mesures</dt>
+        <dd>Toutes les valeurs propres au projet dérivent de <code>reports/VERITE_DOSSIER.md</code>, régénéré par <code>scripts/verite_dossier.py</code>. Les distributions du chapitre 1 sont produites par <code>scripts/exposition_oms.py</code> à partir de <code>reports/seuils_2030.csv</code>. Les scores de modèles des chapitres 3 et 4 sont relus depuis <code>reports/duel_chimere_&lt;polluant&gt;_h2.csv</code>.</dd>
+
+        <dt>Réserve</dt>
+        <dd>Chaque pourcentage de ce document est cité avec son polluant, son épreuve et son périmètre. Deux chiffres voisins qui ne portent pas les mêmes trois mots ne se comparent pas — c'est la règle la plus contraignante du dossier, et la plus utile.</dd>
+      </dl>
+    </div>
+
+    <p class="pied">
+      Découverte ATMO · document 1 de la série « comprendre avant de mesurer »<br>
+      Sources ouvertes créditées ci-dessus — Copernicus, NASA, INERIS/LCSQA, IGN, Santé publique France, Agence européenne pour l'environnement.
+    </p>
+  </section>
+
+</main>
+
+<script type="module">
+/* ── Rail : marquer le chapitre en vue ─────────────────────────────────────
+   IntersectionObserver plutôt qu'un écouteur de défilement : le navigateur
+   fait le travail, et rien ne se déclenche quand rien ne bouge.            */
+const liens = [...document.querySelectorAll(".rail a")];
+const cibles = liens
+  .map((a) => document.querySelector(a.getAttribute("href")))
+  .filter(Boolean);
+
+if (cibles.length === liens.length && "IntersectionObserver" in window) {
+  const vus = new Set();
+  const marquer = () => {
+    let actif = null;
+    for (const c of cibles) if (vus.has(c)) { actif = c; break; }
+    for (const a of liens) {
+      const cible = document.querySelector(a.getAttribute("href"));
+      if (cible === actif) a.setAttribute("data-ici", "");
+      else a.removeAttribute("data-ici");
+    }
+  };
+  const obs = new IntersectionObserver(
+    (entrees) => {
+      for (const e of entrees) e.isIntersecting ? vus.add(e.target) : vus.delete(e.target);
+      marquer();
+    },
+    { rootMargin: "-12% 0px -70% 0px", threshold: 0 }
+  );
+  for (const c of cibles) obs.observe(c);
+}
+
+/* ── Figure du chapitre 6 : 408 carrés, générés plutôt qu'écrits ───────────
+   Écrire 816 <rect> à la main serait illisible et fragile. Les deux grilles
+   partagent la même géométrie ; seul le compte marqué change.              */
+const COLONNES = 34, LIGNES = 12, COTE = 9, PAS = 11;
+const TOTAL = COLONNES * LIGNES;            // 408 — le parc réellement évalué
+const SVGNS = "http://www.w3.org/2000/svg";
+
+const grille = (noeud, marquees, x0) => {
+  if (!noeud) return;
+  for (let i = 0; i < TOTAL; i++) {
+    const r = document.createElementNS(SVGNS, "rect");
+    r.setAttribute("x", x0 + (i % COLONNES) * PAS);
+    r.setAttribute("y", 26 + Math.floor(i / COLONNES) * PAS);
+    r.setAttribute("width", COTE);
+    r.setAttribute("height", COTE);
+    r.setAttribute("rx", 2);
+    if (i < marquees) {
+      r.setAttribute("fill", "var(--contre)");
+    } else {
+      r.setAttribute("fill", "var(--neutre-pale)");
+      r.setAttribute("stroke", "var(--trait-fort)");
+      r.setAttribute("stroke-width", "0.8");
+    }
+    noeud.appendChild(r);
+  }
+};
+
+grille(document.getElementById("grille-aujourdhui"), 6, 0);
+grille(document.getElementById("grille-2030"), 109, 470);
+</script>

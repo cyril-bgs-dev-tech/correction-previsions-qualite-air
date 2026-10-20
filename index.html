@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Correction des prévisions de qualité de l'air</title>
+<meta name="description" content="Post-traitement statistique des prévisions CAMS Europe aux stations françaises : les présentations du projet.">
+<style>
+/* Page d'accueil : une colonne de lecture, quatre présentations en cartes, la principale en tête. */
+:root{
+  --bg:#f4f6f5; --surface:#ffffff; --ink:#132222; --muted:#55666a; --line:#d5dfdd;
+  --accent:#0f7f78; --accent-soft:#e1f1ef;
+  --display:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e1716;--surface:#15211f;--ink:#e2ecea;--muted:#9db0ad;--line:#26393a;--accent:#3fc2b6;--accent-soft:#163331;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0e1716;--surface:#15211f;--ink:#e2ecea;--muted:#9db0ad;--line:#26393a;--accent:#3fc2b6;--accent-soft:#163331;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body)}
+.wrap{max-width:1080px;margin:0 auto;padding-block:48px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.k{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(2rem,4.6vw,3.1rem)/1.08 var(--display);margin:10px 0 14px;text-wrap:balance}
+.lede{max-width:68ch;color:var(--muted);margin:0 0 30px}
+.lede b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+.card:hover,.card:focus-visible{border-color:var(--accent);transform:translateY(-2px)}
+.card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;border-bottom:1px solid var(--line);background:#fff}
+.card .txt{padding:16px 18px 18px;display:grid;gap:6px}
+.card h2{font:600 1.2rem/1.25 var(--display);margin:0}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.card .go{font:600 13px var(--mono);color:var(--accent)}
+.card.main{grid-column:1/-1}
+.card.main img{aspect-ratio:21/9}
+.card.main h2{font-size:1.5rem}
+.foot{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+.foot a{color:var(--accent)}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card.main img{aspect-ratio:16/9}}
+@media (max-width:620px){.grid{grid-template-columns:minmax(0,1fr)}.card.main img{aspect-ratio:16/10}}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="k">Qualité de l'air · prévision à J+1</div>
+  <h1>Corriger une prévision de qualité de l'air, et savoir de combien</h1>
+  <p class="lede">Les prévisions européennes <b>CAMS</b> se trompent d'une façon qui se réapprend. Ce projet apprend la correction
+  <b>observation moins CAMS</b> aux stations françaises, sur 36 mois et quatre polluants, évaluée avec <b>station et mois cachés
+  ensemble</b>, la condition d'un déploiement réel. Quatre présentations, selon ce que vous cherchez :</p>
+
+  <div class="grid">
+    <a class="card main" href="presentation.html">
+      <img src="apercus/presentation.png" alt="Présentation complète : gains par polluant et chemin de lecture" loading="eager">
+      <div class="txt">
+        <h2>Le dossier complet</h2>
+        <p>Chaque source analysée, ce que la correction apprend et ce qu'elle refuse d'apprendre, la composition retenue,
+        l'architecture, les résultats contre la chaîne réglementaire année par année, et les cas où elle nuit.</p>
+        <span class="go">Ouvrir le dossier →</span>
+      </div>
+    </a>
+    <a class="card" href="territoires.html">
+      <img src="apercus/territoires.png" alt="Carte de France du gain de la correction par territoire" loading="lazy">
+      <div class="txt">
+        <h2>La carte par territoire</h2>
+        <p>Le gain de la correction région par région et département par département, pour l'ozone, le NO₂, les PM10 et les PM2,5.</p>
+        <span class="go">Explorer la carte →</span>
+      </div>
+    </a>
+    <a class="card" href="decouverte.html">
+      <img src="apercus/decouverte.png" alt="Document de découverte : l'air qu'on respire, et ceux qui le surveillent" loading="lazy">
+      <div class="txt">
+        <h2>Découverte, sans prérequis</h2>
+        <p>Les polluants, les acteurs, la notation d'un modèle, l'empilement des données source par source, et ce qui a été testé sans rien donner.</p>
+        <span class="go">Lire la découverte →</span>
+      </div>
+    </a>
+    <a class="card" href="dossier-aasqa.html">
+      <img src="apercus/dossier-aasqa.png" alt="Dossier pour une association de surveillance de la qualité de l'air" loading="lazy">
+      <div class="txt">
+        <h2>Le dossier pour une AASQA</h2>
+        <p>Ce que la correction change pour une association de surveillance, où elle échoue, et ce qu'il faudrait pour l'exploiter.</p>
+        <span class="go">Lire le dossier →</span>
+      </div>
+    </a>
+  </div>
+
+  <p class="foot">Code, protocole et chiffres régénérables : <a href="https://github.com/cyril-bgs-dev-tech/correction-previsions-qualite-air">github.com/cyril-bgs-dev-tech/correction-previsions-qualite-air</a>.
+  Projet indépendant de Cyril Bourgeois.</p>
+</main>
+</body>
+</html>
