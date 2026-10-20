@@ -13,6 +13,21 @@ LCSQA, cible journalière. Prévisions extraites à 476 points ; **438 stations 
 ---
 
 
+## ▶ [Ouvrir les présentations](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/)
+
+[![Le dossier complet : sources, composition retenue, résultats contre la chaîne réglementaire](reports/figures/apercus/presentation.png)](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/presentation.html)
+
+**[Le dossier complet](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/presentation.html)** : chaque source analysée, ce que la correction apprend et ce qu'elle
+refuse d'apprendre, la composition retenue, l'architecture, les résultats contre la chaîne réglementaire année par
+année, et les cas où elle nuit.
+
+| [La carte par territoire](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/territoires.html) | [Découverte, sans prérequis](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/decouverte.html) | [Le dossier pour une AASQA](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/dossier-aasqa.html) |
+|---|---|---|
+| [![Carte du gain par territoire](reports/figures/apercus/territoires.png)](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/territoires.html) | [![Découverte : l'air qu'on respire](reports/figures/apercus/decouverte.png)](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/decouverte.html) | [![Dossier pour une AASQA](reports/figures/apercus/dossier-aasqa.png)](https://cyril-bgs-dev-tech.github.io/correction-previsions-qualite-air/dossier-aasqa.html) |
+| gain région par région, département par département, pour les quatre polluants | l'empilement des données source par source, et ce qui n'a rien donné | ce que la correction change, où elle échoue, ce qu'il faudrait pour l'exploiter |
+
+Sources des pages : `reports/figures/presentation_atmo.html`, `vue_territoires.html`, `Découverte_ATMO.html`, `dossier_aasqa.html`.
+
 ## Aperçu de la démonstration
 
 ![Vue de la démonstration Streamlit](reports/figures/captures/app0.png)
